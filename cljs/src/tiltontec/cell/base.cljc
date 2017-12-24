@@ -162,6 +162,9 @@ rule to get once behavior or just when fm-traversing to find someone"
       "anon")
     "no-md"))
 
+(defn c-slot-name [rc]
+  (:slot @rc))
+
 (defn c-value-state [rc]
   (let [v (c-value rc)]
     (cond

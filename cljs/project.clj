@@ -1,21 +1,34 @@
-(defproject todomx "0.1.0-SNAPSHOT"
-  :description "The TiltonTec MatrixCLJS treatment of TodoFRP/MVC"
-  :url "https://github.com/kennytilton"
+(defproject matrixcljs "0.1.0-SNAPSHOT"
+  :description "Matrix dataflow library for CLJS"
+  :url "https://github.com/kennytilton/matrix"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
+
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [com.cognitect/transit-cljs "0.8.239"]
-                 [funcool/bide "1.5.0"]
-                 [clj-http "3.7.0"]
-                 [cljs-http "0.1.44"]
-                 ;;[clj-http-lite "0.3.0"]
-                 [cljs-ajax "0.7.2"]
-                 [cheshire "5.8.0"]
-                 [se.haleby/stub-http "0.2.3"]
-                 [com.taoensso/tufte "1.1.2"]
-                 #_ [hiccups "0.3.0"]]
+                 [com.taoensso/tufte "1.1.2"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
-  :plugins [[lein-npm "0.6.2"]]
+  :plugins [[lein-cljsbuild "1.1.3"]
+            [lein-npm "0.6.2"]]
+  :profiles {:dev {:dependencies [[com.cemerick/piggieback "0.2.1"]
+                                  [org.clojure/tools.nrepl "0.2.10"]]
+                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
+  :test-paths ["test"]
   :npm {:dependencies [[source-map-support "0.4.0"]]}
   :source-paths ["src" "target/classes"]
   :clean-targets ["out" "release"]
-  :target-path "target")
+  :target-path "target"
+  :cljsbuild {:builds {;; [note to self: go back to 5/26 on rube repo for minify]
+                       ;;
+                       :cellsdev {:source-paths ["src"]
+                                  :compiler {:output-to "resources/public/js/main.js"
+                                             :output-dir "resources/public/js/out"
+                                             :optimizations :whitespace}}
+                       :cellstest {:source-paths ["src" "test"]
+                                   :compiler {:output-to "resources/public/js/main-test.js"
+                                              :optimizations :whitespace
+                                              :pretty-print true}}
+                       }
+              :test-commands {"unit" ["phantomjs"
+                                      "resources/test/phantom/runner.js"
+                                      "resources/test/test.html"]}})
