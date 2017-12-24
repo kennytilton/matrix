@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: cljs-ajax:0.7.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/cljs-ajax/cljs-ajax/0.7.2/cljs-ajax-0.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: com.taoensso/tufte:1.1.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/taoensso/tufte/1.1.2/tufte-1.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
