@@ -32,7 +32,7 @@ Now follow these critical elements of the setup instructions from the `mies` tem
 >
 >    ./scripts/watch
 
-If you have not already done so, open `MatrixCLJS/index.html` in Chrome, FireFox, Opera or Safari on Mac OS X. You should see the same application as the live demo above.
+If you have not already done so, open `Tag/index.html` in Chrome, FireFox, Opera or Safari on Mac OS X. You should see the same application as the live demo above.
 
 ## Reactive programming with MatrixCLJS
 
