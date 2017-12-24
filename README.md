@@ -17,7 +17,10 @@ Here is a [live tryout](https://kennytilton.github.io/MatrixCLJS/).
 
 ## Build the TodoMVC Demo
 
-This project was created from David Nolen's excellent [mies template](https://github.com/swannodette/mies). Follow these critical elements of the setup instructions from the `mies` template:
+This project was created from David Nolen's excellent [mies template](https://github.com/swannodette/mies).  First:
+> make the Tag directory your present working directory.
+
+Now follow these critical elements of the setup instructions from the `mies` template:
 
 > Most of the following scripts require [rlwrap](http://utopia.knoware.nl/~hlub/uck/rlwrap/) (on OS X installable via brew).
 >
