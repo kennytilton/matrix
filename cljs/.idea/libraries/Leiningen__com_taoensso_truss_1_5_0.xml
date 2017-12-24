@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: com.taoensso/truss:1.5.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/taoensso/truss/1.5.0/truss-1.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
