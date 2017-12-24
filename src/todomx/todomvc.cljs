@@ -1,4 +1,4 @@
-(ns todomx.matrix
+(ns todomx.todomvc
   (:require [cljs.pprint :as pp]
             [clojure.string :as str]
             [bide.core :as r]

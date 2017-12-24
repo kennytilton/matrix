@@ -62,9 +62,6 @@
 ; And now the annotated code....
 ;
 
-;(ns shopping-2.core
-;  (:require-macros [cljs.core.async.macros :refer [go]])
-;  (:require [cljs.core.async :as async :refer [put! chan <! >! close!]]))
 
 (ns example.gentle-intro
   (:require-macros [cljs.core.async.macros :refer [go]])
@@ -104,9 +101,10 @@
 
 (defn matrix-build! []
   ;; edit here vvvvvv to rotate thru the gentle-intro* functions declared above
-  (gentle-intro-to-Tag))
+  (gentle-intro-models))
 
 (def gentle-intro-ls-key "matrixcljs-gentle-intro")
+(def edit-intro-instructions "Edit function matrix-build! in todomx/gentle_intro.cljs to try other examples.")
 
 (defn gentle-intro-input-cells []
 
@@ -169,7 +167,7 @@
                (h1 {} "Gentle Intro: Input cells")
                (p {} "Input cells, accessors, and observers connecting matrix to world")
                (p {} "(see JS console for output)->")
-               (p {} "Edit todomx/gentle_intro.cljs line 95 to try other examples."))]))
+               (p {} edit-intro-instructions))]))
 
 (defn gentle-intro-formulaic-cells []
 
@@ -234,7 +232,7 @@
                  (h1 {} "Gentle Intro: Formulaic cells")
                  (p {} "Formulaic cells, matrix HTML")
                  (p {} "(see JS console for output)->")
-                 (p {} "Edit todomx/gentle_intro.cljs line 95 to try other examples."))])))
+                 (p {} edit-intro-instructions))])))
 
 (defn gentle-intro-models []
   ;
@@ -249,7 +247,7 @@
   ; Yes, this scared us at first, the idea of our object models running by themselves. But this
   ; is not the under-specified, non-deterministic chaos of constraint logic programming: our
   ; rules were as linear and unambiguous as spreadsheet formulae. So once we got over the
-  ; seeming loss of control we found automatic dataflow quite liberating. Our the creations were
+  ; seeming loss of control we found automatic dataflow quite liberating. Our creations were
   ; easier to understand and more reliable. Soon manual state change propagation (when we
   ; fell back into old ways) was the paradigm that felt strange.
   ;
@@ -291,7 +289,7 @@
                  (h1 {} "Gentle Intro: Models")
                  (p {} "Models: objects with cells as properties")
                  (p {} "(see JS console for output)->")
-                 (p {} "Edit todomx/gentle_intro.cljs line 95 to try other examples."))])))
+                 (p {} edit-intro-instructions))])))
 
 (def ^:export to-do 42)
 

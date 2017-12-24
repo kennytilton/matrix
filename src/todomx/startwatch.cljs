@@ -72,7 +72,7 @@
         ;; an input over which we have no control, such as an external device that sends
         ;; data at a fixed rate we cannot change.
 
-        :ticker  (c? (js/setInterval #(md-reset! me :tick true) 110))
+        :ticker  (c? (js/setInterval #(md-reset! me :tick true) 10))
 
         :content (c? (let [self me]
                        (if (with-synapse (:throttle [last (atom nil)])
@@ -85,10 +85,10 @@
                                ;; of events coming through. Ouside the synapse body, a second print statememnt
                                ;; will show when the "content" formula actually gets re-run (and actually
                                ;; then leads to a DOM update).
-                               (println :tick-raw-unthrottled (now))
+                               ;;(println :tick-raw-unthrottled (now))
 
                                (let [prop? (or (nil? @last)
-                                               (>= (- (now) @last) 990))]
+                                               (>= (- (now) @last) 1))]
                                  (when prop?
                                    (reset! last (now)))
 
@@ -99,6 +99,6 @@
 
                          (let [d (js/Date.)]
                            ;; this next print reveals which ticks got out of the synapse.
-                           (println :tick!!!!!!!!!!!!!!!!!)
+                           ;;(println :tick!!!!!!!!!!!!!!!!!)
                            (str (first (str/split (.toTimeString d) " ")) ":" (.getUTCMilliseconds d)))
                          "*checks watch*")))}))

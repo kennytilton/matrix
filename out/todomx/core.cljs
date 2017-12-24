@@ -6,7 +6,7 @@
     ;;[goog.net.XhrIo :as xhr]
 
     ; --- vvvv matrix-build! possiblilities --------
-    [todomx.matrix :as tmx]
+    [todomx.todomvc :as tmx]
     [example.gentle-intro :as gi]
     [todomx.ticktock :as tt]
     [todomx.startwatch :as sw]
@@ -40,7 +40,7 @@
 
 (let [root (dom/getElement "tagroot")
 
-      app-matrix (tmx/matrix-build!)                         ;; <-- switch to (gi/matrix-build!) to explore the gentle intro
+      app-matrix (gi/matrix-build!)                         ;; <-- switch to (gi/matrix-build!) to explore the gentle intro
       app-dom (binding [*tag-trace* nil]                ;; <-- set to nil if console too noisy
                 (tag-dom-create
                   (md/md-get app-matrix :mx-dom)))
