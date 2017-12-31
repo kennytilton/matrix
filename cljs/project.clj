@@ -1,6 +1,6 @@
-(defproject matrixcljs "0.1.0-SNAPSHOT"
+(defproject com.tiltontec/matrix "0.1.0-SNAPSHOT"
   :description "Matrix dataflow library for CLJS"
-  :url "https://github.com/kennytilton/matrix"
+  :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -20,11 +20,11 @@
   :target-path "target"
   :cljsbuild {:builds {;; [note to self: go back to 5/26 on rube repo for minify]
                        ;;
-                       :cellsdev {:source-paths ["src"]
+                       :mxdev {:source-paths ["src"]
                                   :compiler {:output-to "resources/public/js/main.js"
                                              :output-dir "resources/public/js/out"
                                              :optimizations :whitespace}}
-                       :cellstest {:source-paths ["src" "test"]
+                       :mxtest {:source-paths ["src" "test"]
                                    :compiler {:output-to "resources/public/js/main-test.js"
                                               :optimizations :whitespace
                                               :pretty-print true}}

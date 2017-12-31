@@ -198,7 +198,7 @@
                 (prog1
                  (action opcode defer-info)
 
-                 (p :finbiz
+                 (tufte/p :finbiz
                     (finish-business))
                  (ufb-assert-q-empty :tell-dependents)
                  (ufb-assert-q-empty :change))))))))
