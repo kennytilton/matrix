@@ -1,13 +1,13 @@
-# Tag
+# Matrix / CLJS
 ### ...by TodoMVC Example
 
-Welcome to Tag, a sneaky-powerful Web framework as simple as its name.
+Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [Tag](https://github.com/kennytilton/tag/tree/master/cljs), a sneaky-powerful Web framework as simple as its name.
 
-We explain Tag with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
+We explain Tag in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
 
 > What happens if a sophisticated, generic reactive library supports every aspect of a web app, including the model, logical view, DOM manipulation, and object persistence?
 
-The reactive library in question is [MatrixCLJS](https://github.com/kennytilton/MatrixJS/tree/master/js/matrixjs), a ClojureScript port of the Common Lisp original, [Cells](http://smuglispweeny.blogspot.com/2008/02/cells-manifesto.html). Cells has evolved over two decades to meet the demands of several enterprise applications, one of them this [algebra learning environment](http://tiltonsalgebra.com/#), another an 80kloc [clinical drug trial management system](http://smuglispweeny.blogspot.com/2008/03/my-biggest-lisp-project.html). So that much is reasonably solid. The rest is...proof-of-concept.
+Matrix itself -- the generic dataflow engine -- is a ClojureScript port of the Common Lisp original, [Cells](http://smuglispweeny.blogspot.com/2008/02/cells-manifesto.html). Cells has evolved over two decades to meet the demands of several enterprise applications, one of them this [algebra learning environment](http://tiltonsalgebra.com/#), another an 80kloc [clinical drug trial management system](http://smuglispweeny.blogspot.com/2008/03/my-biggest-lisp-project.html). So that much is reasonably solid. The rest is...proof-of-concept.
 
 Let us begin by seeing the beast in action.
 
