@@ -1,4 +1,4 @@
-(defproject com.tiltontec/matrix "0.1.0-SNAPSHOT"
+(defproject com.tiltontec/matrix "0.1.2-SNAPSHOT"
   :description "Matrix dataflow library for CLJS"
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
@@ -6,6 +6,7 @@
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.671"]
+                 [com.cognitect/transit-cljs "0.8.243"]
                  [com.taoensso/tufte "1.1.2"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-cljsbuild "1.1.3"]

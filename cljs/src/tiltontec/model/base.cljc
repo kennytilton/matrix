@@ -93,8 +93,8 @@
        (cond
          (= c :not-found)
          ;; these need at least an initial observe
-         (do (when (= slot :kids)
-               (pme :md-awaken-noslot-obs slot
+         (do (when (and (= slot :kids)(slot @me))
+               (pme :md-awaken-kids-nocz-nonnil-obs slot
                  (keys (md-cz me))
                  (:kids (md-cz me) :hunh))
                )

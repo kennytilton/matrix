@@ -27,11 +27,7 @@
     [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
               :refer-macros [c? c?+ c_? c?_]
-              :refer [c-in c-reset! make-c-formula]])
-
-    #?(:clj
-    [clj-http.client :as client]
-       :cljs [cljs-http.client :as client])))
+              :refer [c-in c-reset! make-c-formula]])))
 
 (defn existing-syn [synapse-id]
   (assert (keyword? synapse-id) "Synapse ID must be a keyword")

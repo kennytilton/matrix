@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: com.cognitect/transit-cljs:0.8.239">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/cognitect/transit-cljs/0.8.239/transit-cljs-0.8.239.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
