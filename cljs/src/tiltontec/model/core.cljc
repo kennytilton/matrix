@@ -246,12 +246,6 @@
   (let [me (or me 'me)]
     `(md-get (tiltontec.model.core/fm! ~what ~me) ~slot)))
 
-(defn mxu-find-class
-      "Search up the matrix from node 'where' looking for element with class"
-      [where class]
-      (fget #(= class (md-get % :class))
-            where :me? false :up? true))
-
 (defn mxu-find-name
   "Search up the matrix from node 'where' looking for element with given name"
   [where name]
