@@ -1,3 +1,11 @@
+# Usage
+
+Your project.clj dependency: `[com.tiltontec/matrix "0.1.2-SNAPSHOT"]`
+
+See example project `todomx` in its own repo for individual modules to require. (Yes, we need to simplify that.)
+
+To build locally, check the scripts directory. `scripts/build` from the project root dir to build once, `scripts/watch` to build continuously.
+
 # Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
 ````cljs
