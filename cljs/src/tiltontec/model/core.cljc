@@ -54,6 +54,8 @@
       (c-get c)
       (slot @me))))
 
+(defn <mget [me slot] (md-get me slot))
+
 (defn md-getx [tag me slot]
   (md-get me slot)
   #_
@@ -86,6 +88,9 @@
          slot "
          ;; but has " (str (keys @me))
          )))))
+
+(defn mset!> [me slot new-value]
+  (md-reset! me slot new-value))
 
 ;;(rmap-setf [slot me] new-value))))
 

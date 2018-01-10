@@ -19,6 +19,7 @@
   (str s ": " #?(:cljs (str bits)
                  :clj ($/join ", " bits))))
 
+
 (defn call-trc [s & os]
   ;; (break) ;; uncomment to escape loop
   (when *trx?*

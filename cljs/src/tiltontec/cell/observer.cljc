@@ -52,7 +52,7 @@
 (defmacro defobserver [slot types params & body]
      (assert (keyword? slot) "defobserver> slot should be a keyword.")
      (let [ftypes (concat types (take-last (- 1 (count types))
-                                           '(::tiltontec.cell.base/model
+                                           '(:tiltontec.cell.base/model
                                              ;;js/Object js/Object
                                              )))
            fparams (concat params

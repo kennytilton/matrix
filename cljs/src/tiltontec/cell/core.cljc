@@ -59,7 +59,7 @@
                                      :input? true}
 
                               options)
-         :meta {:type ::tiltontec.cell.base/cell})))
+         :meta {:type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
   (let [options (apply hash-map kvs)
@@ -81,7 +81,7 @@
                                      :input? false}         ;; not redundant: can start with rule, continue as input
 
                               options)
-         :meta {:type ::tiltontec.cell.base/c-formula})))
+         :meta {:type :tiltontec.cell.base/c-formula})))
 
 ;;___________________ constructors _______________________________
 ;; I seem to have created a zillion of these, but I normally
