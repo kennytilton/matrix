@@ -92,6 +92,11 @@
 (defn mset!> [me slot new-value]
   (md-reset! me slot new-value))
 
+(defn mswap!> [me slot swap-fn & swap-fn-args]
+  (mset!> me slot (apply swap-fn (<mget me slot) swap-fn-args)))
+
+
+
 ;;(rmap-setf [slot me] new-value))))
 
 (defn backdoor-reset!? [me slot new-value]
