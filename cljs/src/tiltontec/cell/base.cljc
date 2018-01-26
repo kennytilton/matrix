@@ -61,7 +61,7 @@ rule to get once behavior or just when fm-traversing to find someone"
   ([] (cells-reset {}))
   ([options]
    (reset! +c-debug+ (:debug options false))
-   (reset! @+pulse+ 0)
+   (reset! +pulse+ 0)
    (reset! +client-q-handler+ (:client-queue-handler options))))
 
 (defmacro without-c-dependency [& body]

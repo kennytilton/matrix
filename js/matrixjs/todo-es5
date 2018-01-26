@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+java -jar compiler.jar                         \
+	--language_in ECMASCRIPT_2015              \
+	--language_out ECMASCRIPT5                 \
+	--js js/Matrix/Cells.js                    \
+	--js js/Matrix/Model.js                    \
+	--js js/Tag.js                             \
+	--js js/TodoFRP/Todo.js                    \
+	--js js/TodoFRP/app.js                     \
+	--externs js/extRouter.js                  \
+	--compilation_level SIMPLE_OPTIMIZATIONS   \
+	--js_output_file public/TodoFRP.app.smp.js

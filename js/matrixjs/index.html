@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MatrixJS • TodoFRP</title>
+    <link rel="stylesheet" href="css/todomvc-common/base.css">
+    <link rel="stylesheet" href="css/todomvc-app-css/index.css">
+    <script src="https://rawgit.com/flatiron/director/master/build/director.min.js"></script>
+
+    <!-- ALERT
+
+    After making any changes in the js sub-directory, rebuild the ES5 version (built by
+    the google closure compiler) thus:
+
+      cd MatrixJS/js/matrixjs
+      ./todo-es5
+
+    The GitHub version compiles clean, so any warnings are worth investigating. Errors should
+    not produce a new compilation (included next).
+
+    -->
+
+    <script src="public/TodoFRP.app.smp.js"></script>
+
+</head>
+<body>
+    <h1>Script failed to load.</h1>
+    <p>Was the google closure compilation clean? If so...</p>
+    <p>Please check the browser console for diagnostics.</p>
+
+    <script>
+        document.body.innerHTML = window.todoFRP();
+    </script>
+</body>
+</html>

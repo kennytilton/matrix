@@ -246,6 +246,8 @@ in the CL version of Cells SETF itself is the change API dunction."
        (with-integrity (:change (c-slot c))
          (c-value-assume c new-value nil)))))))
 
+(defn cset!> [c new-value]
+  (c-reset! c new-value))
 
 
 (defmacro c-reset-next! [f-c f-new-value]
@@ -266,6 +268,11 @@ execution as soon as the current change is manifested."
                  (let [c# ~f-c
                        new-value# ~f-new-value]
                    (call-c-reset-next! c# new-value#)))])))
+
+(defmacro cset-next!>
+  "Completely untested!!!!!!!!!!!!!!!"
+  [f-c f-new-value]
+  `(c-reset-next! ~f-c ~f-new-value))
 
 
 (defn call-c-reset-next! [c new-value]

@@ -25,7 +25,7 @@
    #?(:cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]]
       :clj [tiltontec.cell.integrity :refer [with-integrity]])
-   [tiltontec.cell.evaluate :refer [c-get]]
+   [tiltontec.cell.evaluate :refer [c-get <cget]]
    #?(:clj [tiltontec.cell.observer
             :refer [defobserver fn-obs]]
       :cljs [tiltontec.cell.observer
@@ -33,7 +33,7 @@
 
    #?(:cljs [tiltontec.cell.core
              :refer-macros [c? c?+ c-reset-next!]
-             :refer [c-in c-reset!]]
+             :refer [c-in c-reset! cset!>]]
       :clj [tiltontec.cell.core :refer :all])
    ))
 
@@ -138,9 +138,48 @@
     (is (= 2 (:value @sib)))
     (is (= (c-get sib) 2))))
 
+(deftest obs-sees-current
+  ;
+  ; Confirm that observers only see values current with
+  ; the current update. Todo: have observers kick off deferred
+  ; updates and confirm we do not see *future* updates.
+  ;
+  (let [obs (atom nil)
+        obsd (atom {})
+        obsr (fn [tag]
+               (fn-obs (let [o (apply concat
+                                      (sort-by first
+                                        (for [[k v] @obs]
+                                          [k (<cget v)])))]
+                         (swap! obsd update-in [(<cget (:a @obs))] conj o)
+                         (println :tag tag :a (<cget (:a @obs)))
+                         (println :tag tag :sees o))))
+        a (c-in 0 :obs (fn-obs (println :a-now new)))
+        b (c?+ [:obs (obsr :b)]
+            (* 10 (<cget a)))
+        c (c?+ [:obs (obsr :c)]
+            (* 100 (<cget a)))
+        d (c?+ [:obs (fn-obs (println :d-now new))]
+            (+ (<cget b) (<cget c)(<cget a)))
+        e (c?+ [:obs (fn-obs (println :e-now new))]
+            (+ (<cget c)(<cget b)(<cget a)))
+        ]
+    (reset! obs {:a a :b b :c c})
+    (is (= 0 (<cget d)(<cget e)(<cget a)(<cget c)(<cget b)))
+
+    (cset!> a 1)
+    (is (= 1 (<cget a)))
+    (is (= 10 (<cget b)))
+    (is (= 100 (<cget c)))
+    (is (= 111 (<cget d)))
+    (is (= 111 (<cget e)))
+    (println @obsd)
+    (doseq [[k v] @obsd]
+      (is (apply = v)))))
 
 (deftest no-prop-no-obs
   (let [sia (c-in 0)
+
         obs (atom false)
         sib (c?+ [:obs (fn-obs (reset! obs true))]
                  (if (even? (c-get sia))
@@ -163,6 +202,6 @@
     (is (not @run))))
     
         
-#?(:cljs (do
-           (cljs.test/run-tests)
-           ))
+;#?(:cljs (do
+;           (cljs.test/run-tests)
+;           ))

@@ -160,6 +160,9 @@
     (any-ref? c) @c
     :else c))
 
+(defn <cget [c]
+  (c-get c))
+
 (declare calculate-and-link
          c-value-assume)
 
@@ -211,7 +214,7 @@
                         :cljs (:type (meta c)))))
 
 (defmethod c-awaken :default [c]
-  ;;(trx :awk-fallthru-entry (type c)(seq? c)(coll? c)(vector? c))
+  (trx :awk-fallthru-entry (type c)(seq? c)(coll? c)(vector? c))
   (cond
     (coll? c) (doall (for [ce c]
                        (c-awaken ce)))
@@ -225,7 +228,7 @@
   ;
   ; nothing to calculate, but every cellular slot should be output on birth
   ;
-  ;; (trx :awk-input (c-slot c)@+pulse+ (c-pulse-observed c))
+
   (#?(:clj dosync :cljs do)
    (when (> @+pulse+ (c-pulse-observed c))                  ;; safeguard against double-call
      (when-let [me (c-me c)]
@@ -236,7 +239,7 @@
 (defmethod c-awaken ::cty/c-formula [c]
   (#?(:clj dosync :cljs do)
    ;; hhack -- bundle this up into reusable with evic
-   ;; (trx :c-formula-awk (c-slot c)(c-current? c))
+   ;;(trx :c-formula-awk (c-slot c)(c-current? c))
    (binding [*depender* nil]
      (when-not (c-current? c)
        (calculate-and-set c :fn-c-awaken nil)))))
