@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/matrix.iml" filepath="$PROJECT_DIR$/matrix.iml" />
-      <module fileurl="file://$PROJECT_DIR$/todomx.iml" filepath="$PROJECT_DIR$/todomx.iml" />
     </modules>
   </component>
 </project>
