@@ -112,7 +112,7 @@
     (odd? (count arg-list)) (apply make :type arg-list)
     :else
     (#?(:clj dosync :cljs do)
-     ;;(println (str :md-making (nth iargs 1)))
+     ;;(println :md-making (nth arg-list 1))
       
      (let [iargs (apply hash-map arg-list)
            me (#?(:clj ref :cljs atom)
