@@ -56,7 +56,7 @@ Above we see the CSS `class` tracking the completed property of the lexically cl
 
 Why the "input" characterization? It cannot be rules all the way down. These cells are the inputs into the dataflow from outside imperative code. The diagram below is of a *directed acyclic graph* that can help imagine the flow that arises when input cells change and their new values are then consumed by dependent formulaic cells when their recomputation is triggered. In the diagram below, cells 7, 5, and 3 would be the input cells.
 
-![DAG graphic](https://github.com/kennytilton/matrix/blob/master/cljs/resources/Directed_acyclic_graph.png) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/master/cljs/matrix/resources/Directed_acyclic_graph.png) 
 
 The dataflow engine propagates each new input value by recursively recomputing dependent formulaic cells in a [glitch](https://en.wikipedia.org/wiki/Reactive_programming#Glitches)-free cascade. We get useful behavior out of this cascading calculation via "on change" callbacks. We name these callbacks "observers" (not to be confused with [RxJS](http://reactivex.io/rxjs/) or [MobX](https://github.com/mobxjs/mobx/blob/master/README.md) *observables*). Much simplified:
 ````cljs
