@@ -60,7 +60,7 @@ Why the "input" characterization? It cannot be rules all the way down. These cel
 
 The dataflow engine propagates each new input value by recursively recomputing dependent formulaic cells in a [glitch](https://en.wikipedia.org/wiki/Reactive_programming#Glitches)-free cascade. We get useful behavior out of this cascading calculation via "on change" callbacks. We name these callbacks "observers" (not to be confused with [RxJS](http://reactivex.io/rxjs/) or [MobX](https://github.com/mobxjs/mobx/blob/master/README.md) *observables*). Much simplified:
 ````cljs
-(defmethod observe-by-type [:tiltontec.tag.html/tag] [slot me new-value prior-value _]
+(defmethod observe-by-type [:tiltontec.webmx.html/tag] [slot me new-value prior-value _]
   (case slot
         :hidden (set! (.-hidden dom) new-value)
         :class (classlist/set dom new-value)

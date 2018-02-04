@@ -42,7 +42,7 @@
 
                       (let [new-syn#
                             (let [~@closure-bindings]
-                              (println :making-syn!? (:slot @*depender*))
+                              ;; (println :making-syn!? (:slot @*depender*))
                               (make-c-formula
                                 :model (:model @*depender*)
                                 :slot ~synapse-id

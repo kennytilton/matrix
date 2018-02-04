@@ -76,7 +76,7 @@
   ;; (println :md-reset slot )
   (assert me)
   (if-let [c  (md-cell me slot)]
-    (do ;; (println :gotc!)
+    (do                                                     ;; (println :gotc!)
       (c-reset! c new-value))
     (do
       (println :reset-oops)
@@ -205,6 +205,24 @@
 
             (when (:must? options)
               (err :fasc-must-failed what where options)))))))
+
+(defn nextsib [mx]
+  (without-c-dependency
+    (loop [sibs (md-kids (mx-par mx))]
+      (when sibs
+        (if (= mx (first sibs))
+          (second sibs)
+          (recur (rest sibs)))))))
+
+(defn prevsib [mx]
+  (without-c-dependency
+    (loop [sibs (md-kids (mx-par mx))]
+      (when sibs
+        (cond
+          (= mx (first sibs)) nil
+          (= mx (second sibs)) (first sibs)
+          :default
+          (recur (rest sibs)))))))
 
 (defn fget [what where & options]
   ;;(println :fget-entry (if (any-ref? where) [(:tag @where)(:class @where)] where) (any-ref? where))
