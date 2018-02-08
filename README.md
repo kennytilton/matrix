@@ -1,6 +1,6 @@
 # Usage
 
-Your project.clj dependency: `[com.tiltontec/matrix "0.1.2-SNAPSHOT"]`
+[![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/matrix.svg)](https://clojars.org/com.tiltontec/matrix)
 
 See example project `todomx` in its own repo for individual modules to require. (Yes, we need to simplify that.)
 
