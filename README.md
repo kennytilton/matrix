@@ -9,7 +9,8 @@ To build locally, check the scripts directory. `scripts/build` from the project 
 # Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
 ````cljs
-  (li {:class   (c? (if (md-get todo :completed) "completed" ""))
+  (li {:class   (c? (when (md-get todo :completed)
+                        "completed"))
        ...}...)
 ````
 Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, a Matrix-aware object lifted from `window.localStorage`. `(md-get <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. A so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
