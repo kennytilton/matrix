@@ -1,4 +1,4 @@
-(defproject com.tiltontec/matrix "0.1.2-SNAPSHOT"
+(defproject com.tiltontec/matrix "0.1.3-SNAPSHOT"
   :description "Matrix dataflow library for CLJS"
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"

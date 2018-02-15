@@ -31,8 +31,8 @@
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get c-awaken not-to-be]]
@@ -305,10 +305,10 @@
       ;;(println :bingo-par (any-ref? *par*))
       (doall (remove nil? (flatten (list ~@tree))))))
 
-(defmacro c?kids [& tree]
-  `(c? (assert ~'me "no me for c?kids")
-    ;;(print :c?kids-me!!! (:id (deref ~'me)))
-       (the-kids ~@tree)))
+(defmacro cFkids [& tree]
+  `(cF (assert ~'me "no me for cFkids")
+     ;;(print :cFkids-me!!! (:id (deref ~'me)))
+     (the-kids ~@tree)))
 
 (defn kid-values-kids [me x-kids]
   (let [x-kids (if (= x-kids unbound) [] x-kids)

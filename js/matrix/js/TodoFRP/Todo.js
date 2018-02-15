@@ -4,7 +4,8 @@ const TODO_LS_PREFIX = "todos-MatrixJS.";
 
 class Todo extends MXStorable {
     constructor(islots) {
-        super( Object.assign( { lsPrefix: TODO_LS_PREFIX},
+        super( Object.assign( {
+                lsPrefix: TODO_LS_PREFIX},
             islots,
             { title: cI(islots.title),
                 completed: cI(islots.completed || false)}))

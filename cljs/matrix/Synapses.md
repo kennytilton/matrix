@@ -9,8 +9,8 @@ What are synapses? Synapses are pretty much the same as Cells except they are sp
 So synapses are Cells that sit between two other Cells mediating the values passing from one to the other. Let us look at a very simple one that returns to its host rule the delta between two consecutive values of another cell. The use case is an alarm we want to turn on if we see a sensor value jump by more than five:
 ````
 (deftest synaptic-delta
-  (let [sensor (c-in nil)
-        alarm (c? (when-let [delta (with-synapse (:delta-sensor [prior (atom nil)])
+  (let [sensor (cI nil)
+        alarm (cF (when-let [delta (with-synapse (:delta-sensor [prior (atom nil)])
                                      (when-let [reading (c-get sensor)]
                                        (let [delta (Math/abs (if @prior
                                                                (- reading @prior)
@@ -26,9 +26,9 @@ In the remaining test code not shown we reset the sensor to different values che
 The `with-synapse` form can be thought of this way (which would never work!):
 ````
 (deftest synaptic-delta
-  (let [sensor (c-in nil)
-        alarm (c? (if (let [prior (atom nil)]
-                           (c? (when-let [reading (c-get sensor)]
+  (let [sensor (cI nil)
+        alarm (cF (if (let [prior (atom nil)]
+                           (cF (when-let [reading (c-get sensor)]
                                   (let [delta (Math/abs (if @prior
                                                             (- reading @prior)
                                                             0))]
@@ -43,8 +43,8 @@ That would never work because we would get a new internal formulaic Cell (with a
 By the way, the full form is rather verbose, but where we see common uses of synapses we can create a library of canned synapses so the above looks like:
 ````
 (deftest synaptic-delta
-  (let [sensor (c-in nil)
-        alarm (c? (if (> (cSynDelta (:threshhold 5)
+  (let [sensor (cI nil)
+        alarm (cF (if (> (cSynDelta (:threshhold 5)
                             (c-get sensor))
                       :on :off)))]
     ...))
@@ -58,8 +58,8 @@ Transforming a stream of values to its first derivative is fun, but synapses wer
   ; unmodified stream value only when it has changed by a certain amount
   ; when compared with the prior value reported
   (cells-init)
-  (let [temp (c-in 0)
-        alarm (c? (expensive-alarm-determination
+  (let [temp (cI 0)
+        alarm (cF (expensive-alarm-determination
                     (with-synapse (:sensitivity-x [sensitivity 10.0
                                                    reported (atom nil)]) 
                       (when-let [raw-temp (c-get temp)]

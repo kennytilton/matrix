@@ -1,6 +1,7 @@
 (ns tiltontec.cell.observer
   (:require
    #?(:cljs [tiltontec.util.base
+             :refer [type-cljc]
              :refer-macros [trx]]
       :clj  [tiltontec.util.base
              :refer :all])
@@ -21,13 +22,6 @@
    #?(:clj [tiltontec.model.macros :refer :all]
       :cljs [tiltontec.model.macros
              :refer-macros [pme]])))
-
-(defn type-cljc [x]
-  #?(:clj (type x)
-     :cljs (or (when-let [m (meta x)]
-                 (:type m))
-               (type x))))
-
 
 (defmulti observe-by-type (fn [slot-name me new-val old-val c]
                     [(type-cljc me)]))

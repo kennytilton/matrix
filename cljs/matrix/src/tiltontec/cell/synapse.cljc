@@ -26,8 +26,8 @@
     #?(:clj
     [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
-              :refer-macros [c? c?+ c_? c?_]
-              :refer [c-in c-reset! make-c-formula]])))
+              :refer-macros [cF cF+ c_F cF_]
+              :refer [cI c-reset! make-c-formula]])))
 
 (defn existing-syn [synapse-id]
   (assert (keyword? synapse-id) "Synapse ID must be a keyword")

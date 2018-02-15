@@ -77,3 +77,9 @@
                                    slot#))
                  [~'ref]
                  (~(keyword slot#) (meta ~'ref)))) slots)))
+
+(defn type-cljc [x]
+  #?(:clj (type x)
+     :cljs (or (when-let [m (meta x)]
+                 (:type m))
+             (type x))))

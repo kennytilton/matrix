@@ -36,7 +36,7 @@
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
-    [tiltontec.cell.evaluate :refer [c-get c-value-assume
+    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume
                                      record-dependency ensure-value-is-current]]))
 
 ;;#?(:cljs (set! *print-level* 3))
@@ -85,7 +85,7 @@
 
 ;;___________________ constructors _______________________________
 ;; I seem to have created a zillion of these, but I normally
-;; use just c-in, c?, and c?n (which starts out as c? and becomes c-in).
+;; use just cI, cF, and cFn (which starts out as cF and becomes cI).
 ;; 
 
 (defmacro c-fn-var [[c] & body]
@@ -99,39 +99,39 @@
 (defmacro c-fn [& body]
   `(c-fn-var (~'slot-c#) ~@body))
 
-(defmacro c? [& body]
+(defmacro cF [& body]
   `(make-c-formula
-    :code '~body
-    :value unbound
-    :rule (c-fn ~@body)))
+     :code '~body
+     :value unbound
+     :rule (c-fn ~@body)))
 
 ;(defmacro bound-cache []
 ;  `(when (not= cache unbound)
 ;     cache))
 
-(defmacro c?+ [[& options] & body]
+(defmacro cF+ [[& options] & body]
   `(make-c-formula
-    ~@options
-    :code '~body
-    :value unbound
-    :rule (c-fn ~@body)))
+     ~@options
+     :code '~body
+     :value unbound
+     :rule (c-fn ~@body)))
 
-(defmacro c?n [& body]
-          `(make-c-formula
-             :code '(without-c-dependency ~@body)
-             :input? true
-             :value unbound
-             :rule (c-fn (without-c-dependency ~@body))))
+(defmacro cFn [& body]
+  `(make-c-formula
+     :code '(without-c-dependency ~@body)
+     :input? true
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
-(defmacro c?+n [[& options] & body]
-          `(make-c-formula
-             ~@options
-             :code '(without-c-dependency ~@body)
-             :input? true
-             :value unbound
-             :rule (c-fn (without-c-dependency ~@body))))
+(defmacro cF+n [[& options] & body]
+  `(make-c-formula
+     ~@options
+     :code '(without-c-dependency ~@body)
+     :input? true
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
-(defmacro c_?n [& body]
+(defmacro c_Fn [& body]
   `(make-c-formula
     :code '(without-c-dependency ~@body)
     :input? true
@@ -139,7 +139,7 @@
     :value unbound
     :rule (c-fn (without-c-dependency ~@body))))
 
-(defmacro c?n-dbg [& body]
+(defmacro cFn-dbg [& body]
   `(make-c-formula
     :code '(without-c-dependency ~@body)
     :input? true
@@ -147,7 +147,7 @@
     :value unbound
     :rule (c-fn (without-c-dependency ~@body))))
 
-(defmacro c?n-until [args & body]
+(defmacro cFn-until [args & body]
   `(make-c-formula
     :optimize :when-value-t
     :code '~body
@@ -156,7 +156,7 @@
     :rule (c-fn ~@body)
     ~@args))
 
-(defmacro c?once [& body]
+(defmacro cFonce [& body]
   `(make-c-formula
     :code '(without-c-dependency ~@body)
     :input? nil
@@ -171,17 +171,17 @@
     :value unbound
     :rule (c-fn (without-c-dependency ~@body))))
 
-(defmacro c?1 [& body]
-  `(c?once ~@body))
+(defmacro cF1 [& body]
+  `(cFonce ~@body))
 
-(defmacro c?dbg [& body]
+(defmacro cFdbg [& body]
   `(make-c-formula
     :code '~body
     :value unbound
     :debug true
     :rule (c-fn ~@body)))
 
-(defmacro c?_  [[& options] & body]
+(defmacro cF_  [[& options] & body]
   `(make-c-formula
     ~@options
     :code '~body
@@ -189,7 +189,7 @@
     :lazy true
     :rule (c-fn ~@body)))
 
-(defmacro c_? [[& options] & body]
+(defmacro c_F [[& options] & body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
     ~@options
@@ -198,7 +198,7 @@
     :lazy :until-asked
     :rule (c-fn ~@body)))
 
-(defmacro c_?dbg [& body]
+(defmacro c_Fdbg [& body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
     :code '~body
@@ -216,15 +216,15 @@
     :rule (c-fn ~@body)
     ~@keys))
 
-(defn c-in [value & option-kvs]
+(defn cI [value & option-kvs]
   (apply make-cell
-         (list* :value value
-                :input? true
-                option-kvs)))
+    (list* :value value
+      :input? true
+      option-kvs)))
 
 ;; --- where change and animation begin -------
 
-(defn c-reset! [c new-value]
+(defn cset!> [c new-value]
   "The moral equivalent of a Common Lisp SETF, and indeed
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
@@ -246,8 +246,11 @@ in the CL version of Cells SETF itself is the change API dunction."
        (with-integrity (:change (c-slot c))
          (c-value-assume c new-value nil)))))))
 
-(defn cset!> [c new-value]
-  (c-reset! c new-value))
+(defn c-reset! [c new-value]
+  (cset!> c new-value))
+
+(defn cswap!> [c swap-fn & swap-fn-args]
+  (cset!> c (apply swap-fn (<cget c) swap-fn-args)))
 
 
 (defmacro c-reset-next! [f-c f-new-value]

@@ -30,8 +30,8 @@
              :refer [observe]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get c-awaken]]

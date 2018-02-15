@@ -87,7 +87,7 @@
 
     ;; --- also easy with an optimize edge case lost to history -------
     (and (c-input? c)
-      (c-valid? c)                                          ;; a c?n (ruled-then-input) cell will not be valid at first
+      (c-valid? c)                                          ;; a cFn (ruled-then-input) cell will not be valid at first
       (not (and (c-formula? c)
              (= (c-optimize c) :when-value-t)
              (nil? (c-value c)))))

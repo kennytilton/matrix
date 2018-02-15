@@ -1,9 +1,9 @@
-const todoSession = new TagSession( null, 'TodoFRPSession',
+const todoSession = new TagSession( null, 'TodoMVCSession',
                         { routes: {'/completed' : ()=> todoRoute.v = 'Completed',
                                    '/active'    : ()=> todoRoute.v = 'Active',
                                    '/'          : ()=> todoRoute.v = 'All'}});
 
-function todoFRP() {
+function todoMVC() {
 
     todoSession.init();
 
@@ -44,7 +44,7 @@ function todoFRP() {
                 .map( s => p({},s)))]);
 }
 
-window['todoFRP'] = todoFRP;
+window['todoMVC'] = todoMVC;
 
 function todoAddNew (dom, e) {
     if (e.key !== 'Enter') return;

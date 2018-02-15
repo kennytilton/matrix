@@ -9,7 +9,7 @@ params = urllib.urlencode([
     #('js_code', sys.argv[1]),
     ('code_url', 'https://raw.githubusercontent.com/kennytilton/MatrixJS/master/js/matrixjs/js/Matrix/Cells.js'),
     ('code_url', 'https://raw.githubusercontent.com/kennytilton/MatrixJS/master/js/matrixjs/js/Matrix/Model.js'),
-    ('code_url', 'https://raw.githubusercontent.com/kennytilton/MatrixJS/master/js/matrixjs/js/Tag.js'),
+    ('code_url', 'https://raw.githubusercontent.com/kennytilton/MatrixJS/master/js/matrixjs/js/mxWeb.js'),
     ('compilation_level', 'ADVANCED_OPTIMIZATIONS'),
     ('output_format', 'text'),
     ('output_info', 'warnings'),

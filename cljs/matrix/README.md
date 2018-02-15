@@ -41,7 +41,7 @@ Now let us look at how we build reactive web apps. Since the Matrix dataflow lib
 ### Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
 ````cljs
-  (li {:class   (c? (if (md-get todo :completed) "completed" ""))
+  (li {:class   (cF (if (md-get todo :completed) "completed" ""))
        ...}...)
 ````
 Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, a Matrix-aware object lifted from `window.localStorage`. `(md-get <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. A so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
@@ -49,7 +49,7 @@ Above we see the CSS `class` tracking the completed property of the lexically cl
 *Input* cells are assigned new values by conventional imperative code, usually in an event handler.
 ````cljs
 (input {:class "toggle" ::tag/type "checkbox"
-        :checked (c? (md-get todo :completed))
+        :checked (cF (md-get todo :completed))
         :onclick #(md-reset! todo :completed (not (md-get todo :completed)))}) ;; <-- triggering the dataflow
 ````
 `md-reset!` is the dataflow "writer" that mirrors `md-get`. It causes all direct or indirect dependents to recalculate. Note also the `checked` attribute, another example of a property following the `completed` property of our todo.

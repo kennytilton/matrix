@@ -113,7 +113,7 @@ Sweet. `#footer` works the same. As the `empty` property toggles between truthy 
 
 *Hey! The above just makes the `hidden` matrix property true or false. What actually updates the DOM?* 
 
-Great question. Matrix internals invoke whatever observers we specify; in this case the MatrixJS HTML sub-component `Tag.js` has our back, `tag` being the JS class for all HTML element proxies in the matrix. Without getting too far into the weeds, here is how a change in the matrix `hidden` property makes it to the DOM, with a Tag-supplied universal slot observer (not shown) already having worked out that it needs to handle `hidden` as a global attribute observation:
+Great question. Matrix internals invoke whatever observers we specify; in this case the MatrixJS HTML sub-component `mxWeb.js` has our back, `tag` being the JS class for all HTML element proxies in the matrix. Without getting too far into the weeds, here is how a change in the matrix `hidden` property makes it to the DOM, with a Tag-supplied universal slot observer (not shown) already having worked out that it needs to handle `hidden` as a global attribute observation:
 ```javascript
 function obsAttrGlobal (property, md, newv, oldv, c) {
    if (oldv===kUnbound) {
@@ -183,7 +183,7 @@ span({ class: "todo-count",
           let remCt = Todos.items.filter(todo => !todo.completed).length;
           return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;})})
 ```
-Again simply declarative, and again `Tag.js` supplies an observer to propagate transparently to the actual DOM:
+Again simply declarative, and again `mxWeb.js` supplies an observer to propagate transparently to the actual DOM:
 ```javascript
 function obsContent (slot, md, newv, oldv, c) {
    if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
