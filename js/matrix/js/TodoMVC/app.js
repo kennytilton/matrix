@@ -51,7 +51,7 @@ function todoAddNew (dom, e) {
 
     let title = e.target.value.trim();
     if (title !== '')
-        // gotta force a new array so matrix internals will see the change
+        // force a new array so matrix internals (changed test is ===) will detect the change
         Todos.itemsRaw = Todos.itemsRaw.concat(new Todo({title: title}));
 
     e.target.value = null;
@@ -59,10 +59,10 @@ function todoAddNew (dom, e) {
 
 function toggleAllCompletion (dom) {
     let toggall = document.getElementById("toggle-all"),
-        makeDone = !dom2mx(toggall).checked;
+        newCompleted = !dom2mx(toggall).checked;
 
-    Todos.items.filter( td => xor( td.completed, makeDone))
-                .map( td => td.completed = makeDone);
+    Todos.items.filter( td => xor( td.completed, newCompleted))
+                .map( td => td.completed = newCompleted);
 }
 
 //--- the do-list item beef ----------------------------------------------------------
@@ -94,9 +94,7 @@ function todoListItem( c, todo) {
 }
 
 function todoToggleCompleted (dom,e) {
-    let mx = dom2mx(dom),
-        todo = mx.todo;
-    clg('tTC toggle', mx.tag, mx.id, dom.id);
+    let todo = dom2mx(dom).todo;
     todo.completed = !todo.completed;
 }
 
@@ -117,6 +115,7 @@ function todoEdit ( edtdom, e) {
 
     if (e.type === 'blur' || ['Escape', 'Enter'].includes( e.key)) {
         if ( e.key === 'Escape') {
+            // restore original value from before start of abandoned edit
             e.target.value = li.todo.title;
         } else {
             let title = e.target.value.trim();
