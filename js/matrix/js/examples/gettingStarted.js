@@ -7,16 +7,29 @@ function gettingStarted(n) {
         case 1:
             // ...or an array of nodes.
             return [ h1("Hello, world. (multi node) case=" +n),
-                    h2("Booya!")];
+                    h1("Booya!")
+                , h1({style: "background:yellow"}, "bingo")
+                , h1({style: "background:gray"}, {name: "boing"}, "bongo")
+                , h1({style: "background:cyan"}, {name: "coolio"}, c => "yowza "+c.md.name)
+            ];
+            break;
+        case 110:
+            // ...or an array of nodes.
+            return [ h2("Hello, world. (multi node) case=" +n),
+                h2("Booya!")
+                , h2({style: "background:yellow"}, "bingo")
+                , h2({style: "background:gray"}, {name: "boing"}, "bongo")
+                , h2({style: "background:cyan"}, {name: "coolio"}, c => "yowza "+c.md.name)
+        ];
             break;
         case 2:
              // If a map is the first argument, we take it to be HTML attributes
             // return [h2( {style: "background-color:yellow"}, ["Credits RSN....."])];
             return [ section({ class: "todoapp"},
-                        p("hi mom") //header({class: "header"})
-            ),
+                        header({class: "header"},
+                            h1("todos"))),
 
-                h2( {style: "background-color:yellow"}, ["Credits RSN..."])];
+                h2( {style: "background-color:yellow"}, "Credits RSN..?.")];
             break;
 
         case 3: // Web components? We don't need no stinkin web components!
@@ -31,8 +44,8 @@ function gettingStarted(n) {
 
         case 4: // JSX? Pre-processor? We don't need no etc!
             return [ section({ class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"))),
+                        header({class: "header"},
+                            h1("todos?"))),
 
                 // see this function for why we call it 'without JSX'
                 todoMVCCreditsSansJSX('<a href="http://tiltontec.com">Kenny Tilton')];
@@ -66,9 +79,9 @@ function todoMVCCredits (createdBy) {
 function todoMVCCreditsSansJSX (createdBy) {
     // credits showing off full power of JS for page building -- without JSX
     return footer({class: "info"},
-        ['Double-click the text of a todo to change it',
-            'Created by '+createdBy,
-            'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
-            .map( s => p({},s)));
+            ['Double-click the text of a todo to change it',
+                'Created by '+createdBy,
+                'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
+                .map( s => p({},s)));
 }
 window['gettingStarted'] = gettingStarted;

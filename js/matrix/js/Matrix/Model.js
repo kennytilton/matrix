@@ -14,6 +14,12 @@ Object.defineProperty(Array.prototype,'packedFlat'
 Array.prototype['packedFlat'] = Array.prototype.packedFlat;
 */
 
+function allArgs(args) {
+    // expects a special arguments instance, array-like but not really
+    return Array.apply(null, args).slice(0)
+}
+window['allArgs'] = allArgs;
+
 function cdrArgs(args) {
     // expects a special arguments instance, array-like but not really
     return Array.apply(null, args).slice(1)
@@ -256,7 +262,7 @@ function cKids( kidFactories, options = {}) {
 			        if (!isModel(c.md))
 			            throw 'ckids c.md not model';
 
-			        clg('expanding ', c.md.dbg());
+			        //clg('expanding ', c.md.dbg());
 
 			        let ks = kfExpand( c, kidFactories);
 			        //clg('ckids kids',ks);

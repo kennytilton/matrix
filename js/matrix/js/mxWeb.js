@@ -161,6 +161,10 @@ class Tag extends Model {
 	}
 	dbg() { return `tag ${this.tag} nm=${this.name} id=${this.id} `}
     static cname() { return "Tag"}
+    static isTagKid (k) {
+	    // Tag children can be strings or functions (called with a Cell whos md is the parent) that return Tags
+        return isString(k) || (k instanceof Function);
+    }
 
     tagToHTML() {
 		let tag = this.tag
@@ -181,14 +185,12 @@ class Tag extends Model {
         } else if ( typeof mx === "function") {
             return mx().tagToHTML();
         } else {
-            clg('toh fallthru ', typeof mx, mx.constructor.name);
-            //debugger;
-            return mx().tagToHTML();
+            return mx.tagToHTML();
         }
     }
 
     kidsToHTML() {
-	    clg('making kids HTML for', this.dbg());
+	    //clg('making kids HTML for', this.dbg());
 		return this.kids? this.kids.reduce((pv, kid)=>{ return pv + Tag.toHTML( kid);},''):'';
 	}
 	slotObserverResolve(slot) {
@@ -400,38 +402,61 @@ function tagStyleBuild(md) {
 }
 
 
-function tag( tag, islots, kids) {
-    // clg(`tag ${tag} ${islots.name} sees parent ${parent}, kids ` + kids);
-    //clg('tag entry', tag, typeof kids, kids, kids==='undefined', kids instanceof Array);
+function tag( tag, attrs, customs, kids) {
 
     return function (c) {
         //clg('tag ', typeof par, id, par === null, isModel(par), typeof par ==='undefined', factory.cname());
         let opts = Object.assign({}, {tag: tag}
                                 , kids ? {kids: cKids( kids)} : null
-                                , islots)
+                                , attrs, customs)
             , tg = new Tag( c ? c.md : null
-                            , islots.name || tag
+                            , customs.name || tag
                             , opts);
         //clg(`tag sees ids ${id} and mdid ${md.id} name ${md.name}`);
         return tg;
     };
 }
 
-function div(islots) {
-	return tag('div', islots, cdrArgs(arguments));
+function genTagEx(tagName) {
+    window[tagName] = function () {
+        if ( Tag.isTagKid( arguments[0])) {
+            return tag( tagName, {}, {}, allArgs(arguments));
+        } else {
+            if ( Tag.isTagKid( arguments[1])) {
+                return tag( tagName, arguments[0], {}, cdrArgs(arguments));
+            } else {
+                return tag( tagName, arguments[0],  arguments[1], cddrArgs(arguments));
+            }
+        }
+    }
 }
-function header(islots) {
-	return tag('header', islots,  cdrArgs(arguments));
-}
-function footer(islots) {
-	return tag('footer', islots, cdrArgs(arguments));
-}
-function h1(islots, content) {
-	return tag('h1', Object.assign( {content: content}, islots), cddrArgs(arguments));
-}
+
+/*[ 'div', 'header', 'footer', 'section',
+    'h1','h2','h3','h4','h5','h6',
+    'ul','li','label','button','span','input','p','a',
+    'img'].map( tg => genTagEx( tg));*/
+
+['a', 'abbr', 'acronym', 'address', 'applet', 'area', 'article', 'aside', 'audio',
+    'b', 'base', 'basefont', 'bdi', 'bdo', 'bgsound', 'big', 'blink',
+    'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center',
+    'cite', 'code', 'col', 'colgroup', 'command', 'content',
+    'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'embed',
+    'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'frame', 'frameset',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html',
+    'i', 'iframe', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen',
+    'label', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'multicol',
+    'nav', 'nextid', 'nobr', 'noembed', 'noframes', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output',
+    'p', 'param', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby',
+    's', 'samp', 'script', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span',
+    'strike', 'strong', 'style', 'sub', 'summary', 'sup',
+    'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title',
+    'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp'].map( tg => genTagEx( tg));
+
+/*
 function h2(islots, content) {
 	return tag('h2', islots, content);
 }
+
 function h3(islots, content) {
 	return tag('h3', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
@@ -481,6 +506,29 @@ function img(islots) {
 function a(islots, content) {
 	return tag('a', Object.assign( {content: content}, islots));
 }
+
+function div(islots) {
+	return tag('div', islots, cdrArgs(arguments));
+}
+function header(islots) {
+	return tag('header', islots,  cdrArgs(arguments));
+}
+function footer(islots) {
+	return tag('footer', islots, cdrArgs(arguments));
+}
+function h1() {
+	if ( Tag.isTagKid( arguments[0])) {
+	    clg('tag no maps');
+        return tag('h1', {}, {}, allArgs(arguments));
+    } else {
+         if ( Tag.isTagKid( arguments[1])) {
+             return tag('h1', arguments[0], {}, cdrArgs(arguments));
+         } else {
+            return tag('h1', arguments[0],  arguments[1], cddrArgs(arguments));
+        }
+	}
+}
+*/
 
 //--- Persistence via window.localStorage ---------------------------------------
 
