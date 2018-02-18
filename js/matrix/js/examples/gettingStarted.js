@@ -45,7 +45,7 @@ function gettingStarted(n) {
         case 4: // JSX? Pre-processor? We don't need no etc!
             return [ section({ class: "todoapp"},
                         header({class: "header"},
-                            h1("todos?"))),
+                            h1("todos"))),
 
                 // see this function for why we call it 'without JSX'
                 todoMVCCreditsSansJSX('<a href="http://tiltontec.com">Kenny Tilton')];
@@ -53,7 +53,7 @@ function gettingStarted(n) {
 
         case 5:
             return tag("h1",
-                    {style: "background-color:yellow"},
+                    {style: "background-color:yellow"},{},
                     "Just attrs (bkg yellow) and string content");
             break;
 
@@ -61,8 +61,15 @@ function gettingStarted(n) {
             return tag("h1",
                     {style: "background-color:yellow"},
                     {test42: cF( c => 40+2)},
-                    cF( c=> "just attrs"));
+                    c=> "attrs, customs, ruled string content " + c.md.test42);
             break;
+
+        case 7:
+            return h1( {style: "background-color:yellow"},
+                        {test42: cF( c => 40+2)},
+                        c=> "attrs, customs, ruled string content " + c.md.test42);
+            break;
+
         default:
             return h1("Undefined gettingStarted case: " +n);
     }

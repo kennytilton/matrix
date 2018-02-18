@@ -163,7 +163,7 @@ class Tag extends Model {
     static cname() { return "Tag"}
     static isTagKid (k) {
 	    // Tag children can be strings or functions (called with a Cell whos md is the parent) that return Tags
-        return isString(k) || (k instanceof Function);
+        return isString(k) || (k instanceof Function) || (k instanceof Array);
     }
 
     tagToHTML() {
