@@ -43,6 +43,10 @@ function localStorageLoad (keyPrefix) {
 	return values;
 }
 
+function isString(s) {
+	return typeof s === 'string';
+}
+
 // --- localStorag setup ------------------------------
 
 Storage.prototype['setObject'] = function(key, value) {

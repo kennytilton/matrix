@@ -256,6 +256,8 @@ function cKids( kidFactories, options = {}) {
 			        if (!isModel(c.md))
 			            throw 'ckids c.md not model';
 
+			        clg('expanding ', c.md.dbg());
+
 			        let ks = kfExpand( c, kidFactories);
 			        //clg('ckids kids',ks);
 			        return ks instanceof Array? pkdFlat(ks) : [ks];
@@ -266,8 +268,9 @@ function cKids( kidFactories, options = {}) {
 window['cKids'] = cKids;
 
 var kfExpandFinal = m => m === null
-                    || isModel(m)
-                    || (m instanceof Array && m.every(kfExpandFinal));
+	|| isString(m)
+	|| isModel(m)
+	|| (m instanceof Array && m.every(kfExpandFinal));
 
 function kfExpand( c, kf) {
     if ( kfExpandFinal(kf)) {

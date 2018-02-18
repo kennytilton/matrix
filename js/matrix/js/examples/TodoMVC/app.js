@@ -7,7 +7,7 @@ function todoMVC() {
 
     todoSession.init();
 
-    return Tag.mxToHTML(
+    return Tag.tagToHTML(
         [section({ class: "todoapp", name: "todoapp"},
             header({class: "header"},
                 h1("todos"),

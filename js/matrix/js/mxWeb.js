@@ -48,7 +48,7 @@ function obsKids (slot, md, newv, oldv, c) {
         } else {
             let incubator = document.createElement('div');
 
-            incubator.innerHTML = newk.toHTML();
+            incubator.innerHTML = Tag.toHTML( newk);
 
             let newDom = newk.domCache = incubator.removeChild( incubator.firstChild);
             frag.appendChild( newDom);
@@ -161,7 +161,8 @@ class Tag extends Model {
 	}
 	dbg() { return `tag ${this.tag} nm=${this.name} id=${this.id} `}
     static cname() { return "Tag"}
-	toHTML() {
+
+    tagToHTML() {
 		let tag = this.tag
 			, others = tagAttrsBuild(this)
 			, s = tagStyleBuild(this)
@@ -170,15 +171,25 @@ class Tag extends Model {
         return `<${tag} ${attrs}>${this.content || this.kidsToHTML()}</${tag}>`;
 	}
 
-    static mxToHTML (mx) {
-        // mx can be a function returning one node or an array of nodes
-        return Array.isArray(mx) ?
-			mx.reduce( function( cum, chunk) { return cum + chunk().toHTML()}, "")
-			: mx().toHTML();
+    static toHTML (mx) {
+        if (isString(mx)) {
+            return mx;
+        } else if ( Array.isArray(mx)) {
+            return mx.reduce(function (cum, chunk) {
+                return cum + Tag.toHTML(chunk)
+            }, "");
+        } else if ( typeof mx === "function") {
+            return mx().tagToHTML();
+        } else {
+            clg('toh fallthru ', typeof mx, mx.constructor.name);
+            //debugger;
+            return mx().tagToHTML();
+        }
     }
 
     kidsToHTML() {
-		return this.kids? this.kids.reduce((pv, kid)=>{ return pv+kid.toHTML();},''):'';
+	    clg('making kids HTML for', this.dbg());
+		return this.kids? this.kids.reduce((pv, kid)=>{ return pv + Tag.toHTML( kid);},''):'';
 	}
 	slotObserverResolve(slot) {
 		let obs = this.slotObservers[slot];
@@ -402,7 +413,6 @@ function tag( tag, islots, kids) {
                             , islots.name || tag
                             , opts);
         //clg(`tag sees ids ${id} and mdid ${md.id} name ${md.name}`);
-        if (!isTag(tg)) throw 'tag made not-isTag';
         return tg;
     };
 }
@@ -416,22 +426,22 @@ function header(islots) {
 function footer(islots) {
 	return tag('footer', islots, cdrArgs(arguments));
 }
-function h1(content, islots) {
+function h1(islots, content) {
 	return tag('h1', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
-function h2(content, islots) {
-	return tag('h2', Object.assign( {content: content}, islots), cddrArgs(arguments));
+function h2(islots, content) {
+	return tag('h2', islots, content);
 }
-function h3(content, islots) {
+function h3(islots, content) {
 	return tag('h3', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
-function h4(content, islots) {
+function h4(islots, content) {
 	return tag('h4', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
-function h5(content, islots) {
+function h5(islots, content) {
 	return tag('h5', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
-function h6(content, islots) {
+function h6(islots, content) {
 	return tag('h6', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
 function section(islots) {
@@ -445,15 +455,15 @@ function ul(islots) {
 function li(islots) {
 	return tag('li', islots, cdrArgs(arguments));
 }
-// todo Standardize all these so islots precedes content
-function label(content, islots) { // can a label have kids?
+
+function label(islots, content) { // can a label have kids?
 	return tag('label', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
 function labelx(islots) { // todo can a label have kids?
 	ast( islots.content, 'labelx sees islots sans content');
 	return tag('label', islots, cdrArgs(arguments));
 }
-function button(content, islots, kids) {
+function button(islots, content, kids) {
 	return tag('button', Object.assign( {content: content}, islots), cddrArgs(arguments));
 }
 function span( islots) {
