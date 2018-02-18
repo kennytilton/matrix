@@ -44,7 +44,7 @@ function todoMVC() {
                 .map( s => p({},s)))]);
 }
 
-console.log('seeting up todomvc!!!!!!!!!!!!!!! '+todoMVC);
+
 
 window['todoMVC'] = todoMVC;
 

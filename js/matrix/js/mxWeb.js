@@ -171,9 +171,10 @@ class Tag extends Model {
 	}
 
     static mxToHTML (mx) {
-        // for now we are assuming matrix page will be an array of matrices since body
-        // can have multiple children
-        return mx.reduce( function( cum, chunk) { return cum + chunk().toHTML()}, "");
+        // mx can be a function returning one node or an array of nodes
+        return Array.isArray(mx) ?
+			mx.reduce( function( cum, chunk) { return cum + chunk().toHTML()}, "")
+			: mx().toHTML();
     }
 
     kidsToHTML() {
