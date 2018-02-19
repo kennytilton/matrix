@@ -289,6 +289,7 @@ function kfExpand( c, kf) {
         return kfExpand( c, kf.map(k => kfExpand( c,k )));
     } else {
         clg('expand bad kf', kf, kf===null, typeof kf);
-        throw 'kfexpand fell thru';
+        debugger;
+        //throw 'kfexpand fell thru';
     }
 }

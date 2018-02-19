@@ -62,15 +62,26 @@ function gettingStarted(n) {
                     {style: "background-color:yellow"},
                     {test42: cF( c => 40+2)},
                     c=> "attrs, customs, ruled string content " + c.md.test42);
-            break;
 
         case 7:
             return h1( {style: "background-color:yellow"},
-                        {test42: cF( c => 40+2)},
-                        c=> "attrs, customs, ruled string content " + c.md.test42);
-            break;
+                {test42: cF( c => 40+2)},
+            c=> "attrs, customs, ruled string content " + c.md.test42);
 
-        default:
+        case 8:
+            return h1( {style: {background_color: "cyan",
+                                padding: "36px"}},
+                {test42: cF( c => 40+2)},
+            c=> "style literal object " + c.md.test42);
+
+        case 9:
+            return h1( {style: mkCSS({background_color: cF( c => "cy"+"an"),
+                                      padding: cF( c => "36"+"px")})},
+                    {test42: cF( c => 40+2)},
+                    c=> "style object " + c.md.test42);
+
+
+default:
             return h1("Undefined gettingStarted case: " +n);
     }
 }
