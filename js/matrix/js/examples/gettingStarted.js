@@ -80,11 +80,28 @@ function gettingStarted(n) {
                     {test42: cF( c => 40+2)},
                     c=> "style object " + c.md.test42);
 
+        case 10: // style property tracks tag custom input cell updated by onclick handler
+            return h1( { style: mkCSS({
+                                    background_color: cF( c => (((c.md.tag.ival % 2) === 0)? "black":"red")),
+                                    color: "white",
+                font_size: cF( c=> c.md.tag.ival + "px"),
+                                    padding: cF( c => c.md.tag.ival+"px")}),
+                        onclick: 'dom2mx(this).ival += 1'}, //'booya(this)'},
+                    { ival: cI( 14)},
+                c=> "booya ival=" + c.md.ival);
 
-default:
-            return h1("Undefined gettingStarted case: " +n);
+        case 11:
+            let whoa = {title: "Lucky Jim"};
+            return [label({id: 4232}, "Cool"),
+                label({ id: 4243, for: "toggle-all",
+                    onclick: "'toggleAllCompletion( this)'"},
+                    whoa.title)];
+
+        default:
+            return h1("Undefined gettingStarted case: " + n);
     }
 }
+
 
 function todoMVCCredits (createdBy) {
     // simulated "web component", aka custom Tag

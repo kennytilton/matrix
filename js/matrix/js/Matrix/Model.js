@@ -98,7 +98,8 @@ class Model {
 					, { enumerable: true
 						, get: () =>  value
 						, set: (newv) => {
-							throw `Slot ${slot} cannot be set to ${newv} because it is not mediated by an input Cell`;
+					    debugger;
+							throw `Slot ${slot} of ${name} cannot be set to ${newv} because it is not mediated by an input Cell`;
 					}});
 			}
 		}

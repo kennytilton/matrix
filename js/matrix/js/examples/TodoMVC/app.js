@@ -7,14 +7,15 @@ function todoMVC() {
 
     todoSession.init();
 
-    return Tag.tagToHTML(
-        [section({ class: "todoapp", name: "todoapp"},
+    return [
+        section({ class: "todoapp"},// {name: "todoapp"},
             header({class: "header"},
                 h1("todos"),
                 input({ class: "new-todo",
                         autofocus: true,
                         placeholder: "What needs doing?",
-                        onkeypress: 'todoAddNew'})),
+                        onkeypress: 'todoAddNew'}))
+            ,
 
             section({ class: "main",
                       hidden: cF( c => Todos.empty)},
@@ -25,23 +26,29 @@ function todoMVC() {
                         checked: cF( c => Todos.items.length > 0
                                           && Todos.items.every( i => i.completed))}),
 
-                label( "Mark all as complete",
+                label(
                     { for: "toggle-all",
-                      onclick: 'toggleAllCompletion( this)'}),
+                      onclick: 'toggleAllCompletion( this)'},
+                    "Mark all as complete")
 
-                ul({ class: "todo-list", name: "todo-list",
+                , ul({ class: "todo-list"},
+                     {name: "todo-list",
                      kidValues: cF( c=> Todos.routeItems),
                      kidKey: k => k.todo,
                      kidFactory: todoListItem},
-                   c => c.kidValuesKids())),
+                   c => c.kidValuesKids())
+            ),
 
-            todoDashboard()),
+            // , todoDashboard()
+        ),
 
         footer({class: "info"},
             ['Double-click the text of a todo to change it',
              'Created by <a href="http://tiltontec.com">Kenneth Tilton',
              'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
-                .map( s => p({},s)))]);
+                .map( s => p({},s)))
+    ];
+    // return ["Booya", "Hi mom"];
 }
 
 
@@ -70,29 +77,34 @@ function toggleAllCompletion (dom) {
 //--- the do-list item beef ----------------------------------------------------------
 
 function todoListItem( c, todo) {
-    return li({ todo: todo,
-                class: cF(c => (todo.completed ? "completed" : ""))},
+    clg('todolistitem entry', todo.title);
+    return li({ class: cF(c => (todo.completed ? "completed" : ""))},
+                {todo: todo},
 
             div({class: "view"},
-                input({class: "toggle", type: "checkbox",
+                input({class: "toggle",
+                        type: "checkbox",
                         checked: cF( c=> todo.completed),
-                        todo: todo,
                         onclick: 'todoToggleCompleted',
-                        title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)}),
+                        title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)}
+                        ,{todo: todo}
+                        )
 
-                label( cF( c => todo.title),
-                    { ondblclick: 'todoStartEditing'}),
+                , label({ ondblclick: 'todoStartEditing'},
+                    {content: cF( c=> todo.title)})
 
-                button(null, { class: "destroy",
-                                todo: todo,
-                                onclick: 'dom2mx(this).todo.delete()'})),
+                , button({ class: "destroy",
+                         onclick: 'dom2mx(this).todo.delete()'},
+                        {todo: todo})
+            )
 
-            input({ name: "myEditor", class: "edit",
-                    todo: todo,
+            , input({ class: "edit",
                     value: cFI( c=> todo.title),
                     onblur: 'todoEdit',
                     onkeydown: 'todoEdit', // picks up Escape. Not needed in CLJS version... goog.closure?
-                    onkeypress: 'todoEdit'}));
+                    onkeypress: 'todoEdit'},
+            {name: "myEditor"})
+    );
 }
 
 function todoToggleCompleted (dom,e) {

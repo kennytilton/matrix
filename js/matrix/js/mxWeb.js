@@ -19,8 +19,12 @@ function obsContent (slot, md, newv, oldv, c) {
 
 function notToBe( mx) {
     mx.state = kDoomed;
-    for( let k of mx.kids) {
-        notToBe( k);
+    clg(' not to be!', mx, typeof mx);
+    clg('kids ', mx.kids, typeof mx.kids, mx.kids===null);
+    if ( mx.kids ) {
+        for( let k of mx.kids) {
+            notToBe( k);
+        }
     }
     for (let slot in mx.cells) {
         let c = mx.cells[slot];
@@ -64,10 +68,11 @@ function obsDisabled (slot, md, newv, oldv, c) {
 	md.dom.disabled = !!newv;
 }
 
-function obsStyleProperty (property, md, newv, oldv, c) {
+function obsStyleProperty (mxprop, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
-	//clg(`setting ${property}!!! `+ newv);
-	md.dom.style[property] = newv;
+    let cssProp = mxprop.replace('_', '-')
+	clg(`setting ${cssProp}!!! `+ newv);
+	md.tag.dom.style[cssProp] = newv;
 }
 
 function obsTagEventHandler (property, md, newv, oldv, c) {
@@ -303,11 +308,12 @@ function tag( tag, attrs, customs, kids) {
 
     return function (c) {
         //clg('tag ', typeof par, id, par === null, isModel(par), typeof par ==='undefined', factory.cname());
-        let opts = Object.assign({}, {tag: tag}
-            , kids ? {kids: cKids( kids)} : null
-            , attrs, customs)
+        let cu = customs || {}
+            , opts = Object.assign({}, {tag: tag}
+                    , kids ? {kids: cKids( kids)} : null
+                    , attrs, cu)
             , tg = new Tag( c ? c.md : null
-            , customs.name || tag
+            , cu.name || tag
             , opts);
         //clg(`tag sees ids ${id} and mdid ${md.id} name ${md.name}`);
         return tg;
