@@ -125,9 +125,9 @@ class TagSession extends Model {
 window['TagSession'] = TagSession;
 
 class Tag extends Model {
-	constructor(parent, name, islots) {
+	constructor(parent, name, attrs, islots) {
 
-		let superSlots = Object.assign({}, islots);
+		let superSlots = Object.assign({}, attrs, islots);
 		delete superSlots.id;
 
 		super( parent, (name || islots.name), superSlots, false);
@@ -144,9 +144,9 @@ class Tag extends Model {
 		this.slotObservers = [];
 		this.callbacks = new Map;
         this.attrKeys = [];
-        for ( let k in islots)
+        for ( let k in attrs)
             this.attrKeys.push( k);
-        //clg('attrkeys', this.attrKeys);
+        clg('attrkeys', this.attrKeys, );
 
 		// --- binding mxDom with dom -----------------
 
@@ -301,10 +301,11 @@ function tagAttrsBuild(md) {
                 default: {
 
                     if (md[prop]) {
-                        if (TagAttributesGlobal.has(prop)) {
+                        //attrs += ` ${prop}="${md[prop]}"`;
+                         if (TagAttributesGlobal.has(prop)) {
                             // clg('bingo attr global '+prop+'='+md[prop]);
                             attrs += ` ${prop}="${md[prop]}"`;
-                        } else clg('hunh prop?', prop);
+                        } else clg('unknown attribute prop', prop);
 
                     }
                 }
@@ -322,10 +323,11 @@ function tag( tag, attrs, customs, kids) {
         let cu = customs || {}
             , opts = Object.assign({}, {tag: tag}
                     , kids ? {kids: cKids( kids)} : null
-                    , attrs, cu)
+                    , cu)
             , tg = new Tag( c ? c.md : null
-            , cu.name || tag
-            , opts);
+                        , cu.name || tag
+                        , attrs
+                        , opts);
         //clg(`tag sees ids ${id} and mdid ${md.id} name ${md.name}`);
         return tg;
     };
@@ -408,7 +410,7 @@ function tagStyleBuild(md) {
         //clg(' model style!!!!');
         style = style( md);
     }
-    //clg('doing style', style);
+    clg('doing style', style);
 
     if ( isString( style)) {
         ss = style;
