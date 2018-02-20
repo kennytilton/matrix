@@ -1,11 +1,14 @@
 
 
-const jsDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
+const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
 
 function dom2mx(dom, mustFind=true) {
-	let js = jsDom[dom.id];
+    //clg('dom2mx dom id',dom.id);
+	let js = mxDom[dom.id];
 	if ( !js && mustFind) {
-		throw `dom2mx cannot find jsDom with dom.sid ${dom.sid}, dom.id ${dom.id}`;
+
+	    debugger;
+		throw `dom2mx cannot find mxDom for with dom.sid ${dom.sid}, dom.id ${dom.id}`;
 	}
 	return js;
 }
@@ -19,8 +22,8 @@ function obsContent (slot, md, newv, oldv, c) {
 
 function notToBe( mx) {
     mx.state = kDoomed;
-    clg(' not to be!', mx, typeof mx);
-    clg('kids ', mx.kids, typeof mx.kids, mx.kids===null);
+    //clg(' not to be!', mx, typeof mx);
+    //clg('kids ', mx.kids, typeof mx.kids, mx.kids===null);
     if ( mx.kids ) {
         for( let k of mx.kids) {
             notToBe( k);
@@ -140,9 +143,14 @@ class Tag extends Model {
 
 		this.slotObservers = [];
 		this.callbacks = new Map;
+        this.attrKeys = [];
+        for ( let k in islots)
+            this.attrKeys.push( k);
+        //clg('attrkeys', this.attrKeys);
 
-		// --- binding jsDom with dom -----------------
-		jsDom[this.id]=this;
+		// --- binding mxDom with dom -----------------
+
+		mxDom[this.id]=this;
 		this.domCache = null;
 		Object.defineProperty( this, 'dom',
 			{enumerable: true,
@@ -177,7 +185,8 @@ class Tag extends Model {
 		let tag = this.tag
 			, others = tagAttrsBuild(this)
 			, s = tagStyleBuild(this)
-			, attrs = `${others} ${s}`;
+			, attrs = `id=${this.id} ${others} ${s}`;
+
 		ast(tag);
         return `<${tag} ${attrs}>${this.content || this.kidsToHTML()}</${tag}>`;
 	}
@@ -229,13 +238,6 @@ window['Tag'] = Tag;
 
 var isTag = x => x instanceof Tag;
 
-function setClick (dom, event) {
-	//clg('setclick dom id '+dom.id);
-	let jso = jsDom[dom.id];
-	//clg('setclick jsdom '+jso.id);
-	jso.click = event;
-}
-
 // ---- formerly tags.js ------------------------------------------
 
 /* global Tag TagEvents */
@@ -255,60 +257,60 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onvolumechange','onwaiting']);
 
 function tagEventHandler( event, prop ) {
-    clg( 'Bam tagEventHandler!', event, prop);
+    //clg( 'Bam tagEventHandler!', event, prop);
     let md = dom2mx( event.target);
     md.callbacks.get(prop)(md, event, prop)
 }
 function tagAttrsBuild(md) {
 	let attrs = '';
-	for (let prop in md) {
-		if (md.hasOwnProperty(prop)) {
-			if (TagEvents.has(prop)) {
-				clg('bingo event!!!!!!!!!! '+prop);
-				ast( md[prop] instanceof Function);
-				md.callbacks.set( prop, md[prop]);
-                attrs += ` ${prop}="tagEventHandler(event, '${prop}')"`;
-                /*let code = md[prop];
-                if ( ["this","\\("].every( clue => code.search(clue) == -1 ) )
-                    attrs += ` ${prop}="${md[prop]}(this, event)"`;
-                else
-                    attrs += ` ${prop}="${code}"`;*/
-			} else {
-				switch (prop) {
-					case 'disabled':
-					case 'autofocus':
-					case 'hidden':
-					case 'checked':
-						// booleans can stand alone. So weird.
-						if (md[prop]) {
-						 attrs += ` ${prop}`;
-						 }
-						break;
-					case 'value': // todo make tagSpecificAttrs a class attribute of appropriate tags
-						attrs += ` ${prop}="${md[prop]}"`;
-						break;
-					case 'placeholder': // todo make tagSpecificAttrs a class attribute of appropriate tags
-						attrs += ` ${prop}="${md[prop]}"`;
-						break;
+    md.attrKeys.forEach( function (prop) {
+	    if (TagEvents.has(prop)) {
+	        if ( !(md[prop] instanceof Function)) {
+                clg('bingo event!!!!!!!!!! ' + prop);
+                clg('bingo event handler!!!!!!!!!! ' + md[prop]);
+            }
 
-                    case 'style':
-                        attrs += tagStyleBuild( md);
-                        break;
+            ast( md[prop] instanceof Function, 'tagattrsbuild handler not fn');
+            md.callbacks.set( prop, md[prop]);
+            attrs += ` ${prop}="tagEventHandler(event, '${prop}')"`;
+        } else {
+            switch (prop) {
+                case 'id':
+                    //clg('skipping id!!!!!!!!!!!');
+                    break;
+                case 'disabled':
+                case 'autofocus':
+                case 'hidden':
+                case 'checked':
+                    // booleans can stand alone. So weird.
+                    if (md[prop]) {
+                     attrs += ` ${prop}`;
+                     }
+                    break;
+                case 'value':
+                    attrs += ` ${prop}="${md[prop]}"`;
+                    break;
+                case 'placeholder':
+                    attrs += ` ${prop}="${md[prop]}"`;
+                    break;
 
-					default: {
-						/*if (md.tag=='button') {
-						 clg(md.tag + ' def prop ' + prop +'='+ md[prop]);
-						 clg(TagAttributesGlobal.has(prop));
-						 }*/
-						if (TagAttributesGlobal.has(prop) && md[prop]) {
-							// clg('bingo attr global '+prop+'='+md[prop]);
-							attrs += ` ${prop}="${md[prop]}"`;
-						}
-					}
-				}
-			}
-		}
-	}
+                case 'style':
+                    attrs += tagStyleBuild( md);
+                    break;
+
+                default: {
+
+                    if (md[prop]) {
+                        if (TagAttributesGlobal.has(prop)) {
+                            // clg('bingo attr global '+prop+'='+md[prop]);
+                            attrs += ` ${prop}="${md[prop]}"`;
+                        } else clg('hunh prop?', prop);
+
+                    }
+                }
+            }
+        }
+	});
 	//if (md.tag==='input') clg(md.tag + ' attrs ' + attrs);
 	return attrs;
 }
@@ -403,10 +405,10 @@ function tagStyleBuild(md) {
         style = md.style;
 
     if ( style instanceof Function) {
-        clg(' model style!!!!');
+        //clg(' model style!!!!');
         style = style( md);
     }
-    clg('doing style', style);
+    //clg('doing style', style);
 
     if ( isString( style)) {
         ss = style;

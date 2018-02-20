@@ -83,7 +83,7 @@ function todoListItem( c, todo) {
                         title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
                     {todo: todo})
 
-                , label({ ondblclick: 'todoStartEditing'},
+                , label({ ondblclick: todoStartEditing},
                     {content: cF( c=> todo.title)})
 
                 , button({ class: "destroy",
