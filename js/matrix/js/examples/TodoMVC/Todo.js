@@ -21,7 +21,7 @@ class Todo extends MXStorable {
             { itemsRaw: cI( MXStorable.loadAllItems( Todo, TODO_LS_PREFIX)
                                         .sort( (a,b) => a.created < b.created ? -1 : 1) || []),
 
-            items: cF( c => c.mx().itemsRaw.filter( td => !td.deleted)),
+            items: cF( c => c.md.itemsRaw.filter( td => !td.deleted)),
 
             routeItems: cF( c => c.md.items
                                     .filter( td => todoRoute.v === 'All'

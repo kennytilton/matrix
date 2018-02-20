@@ -14,7 +14,7 @@ function todoMVC() {
                 input({ class: "new-todo",
                         autofocus: true,
                         placeholder: "What needs doing?",
-                        onkeypress: 'todoAddNew'}))
+                        onkeypress: todoAddNew}))
             , section({ class: "main",
                       hidden: cF( c => Todos.empty)},
 
@@ -26,7 +26,7 @@ function todoMVC() {
 
                 label(
                     { for: "toggle-all",
-                      onclick: 'toggleAllCompletion( this)'},
+                      onclick: toggleAllCompletion},
                     "Mark all as complete")
 
                 , ul({ class: "todo-list"},
@@ -49,7 +49,7 @@ function todoMVC() {
 
 window['todoMVC'] = todoMVC;
 
-function todoAddNew (dom, e) {
+function todoAddNew (mx, e) {
     if (e.key !== 'Enter') return;
 
     let title = e.target.value.trim();
@@ -61,7 +61,7 @@ function todoAddNew (dom, e) {
     e.target.value = null;
 }
 
-function toggleAllCompletion (dom) {
+function toggleAllCompletion () {
     let toggall = document.getElementById("toggle-all"),
         newCompleted = !dom2mx(toggall).checked;
 
@@ -79,7 +79,7 @@ function todoListItem( c, todo) {
                 input({class: "toggle",
                         type: "checkbox",
                         checked: cF( c=> todo.completed),
-                        onclick: 'todoToggleCompleted',
+                        onclick: todoToggleCompleted,
                         title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
                     {todo: todo})
 
@@ -87,28 +87,28 @@ function todoListItem( c, todo) {
                     {content: cF( c=> todo.title)})
 
                 , button({ class: "destroy",
-                         onclick: 'dom2mx(this).todo.delete()'},
+                         onclick: mx => mx.todo.delete()},
                         {todo: todo})
             )
 
             , input({ class: "edit",
                     value: cFI( c=> todo.title),
-                    onblur: 'todoEdit',
-                    onkeydown: 'todoEdit', // picks up Escape. Not needed in CLJS version... goog.closure?
-                    onkeypress: 'todoEdit'},
+                    onblur: todoEdit,
+                    onkeydown: todoEdit, // picks up Escape. Not needed in CLJS version... goog.closure?
+                    onkeypress: todoEdit},
             {name: "myEditor"})
     );
 }
 
-function todoToggleCompleted (dom,e) {
-    let todo = dom2mx(dom).todo;
+function todoToggleCompleted (mx,e) {
+    let todo = mx.todo;
     todo.completed = !todo.completed;
 }
 
 //--- item editing callbacks
 
-function todoStartEditing (dom,e) {
-    let li = dom2mx(dom).fmTag('li', 'myLi') // find overarching li, then...
+function todoStartEditing (mx,e) {
+    let li = mx.fmTag('li', 'myLi') // find overarching li, then...
         , edt = li.fmDown('myEditor');
     edt.dom.li = li; // avoid a little navigation later
     li.dom.classList.add("editing");
@@ -116,8 +116,8 @@ function todoStartEditing (dom,e) {
     edt.dom.setSelectionRange(0, edt.dom.value.length); // the correct UX starting an edit
 }
 
-function todoEdit ( edtdom, e) {
-    let li = edtdom.li;
+function todoEdit ( edtmx, e) {
+    let li = edtmx.dom.li;
     if ( !li.dom.classList.contains("editing")) return;
 
     if (e.type === 'blur' || ['Escape', 'Enter'].includes( e.key)) {
@@ -154,7 +154,7 @@ function todoDashboard () {
 
         , button({ class: "clear-completed",
                   hidden: cF(c => Todos.items.filter(todo => todo.completed).length === 0),
-                  onclick: 'Todos.items.filter( td => td.completed ).map( td => td.delete())'},
+                  onclick: mx => Todos.items.filter( td => td.completed ).map( td => td.delete())},
             "Clear completed")
         );
 }

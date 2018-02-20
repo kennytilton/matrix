@@ -139,6 +139,7 @@ class Tag extends Model {
 		}
 
 		this.slotObservers = [];
+		this.callbacks = new Map;
 
 		// --- binding jsDom with dom -----------------
 		jsDom[this.id]=this;
@@ -253,17 +254,25 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onselect','onshow','onsort','onstalled','onsubmit','onsuspend','ontimeupdate','ontoggle'
 	,'onvolumechange','onwaiting']);
 
+function tagEventHandler( event, prop ) {
+    clg( 'Bam tagEventHandler!', event, prop);
+    let md = dom2mx( event.target);
+    md.callbacks.get(prop)(md, event, prop)
+}
 function tagAttrsBuild(md) {
 	let attrs = '';
 	for (let prop in md) {
 		if (md.hasOwnProperty(prop)) {
 			if (TagEvents.has(prop)) {
-				//clg('bingo event!!!!!!!!!! '+prop);
-                let code = md[prop];
+				clg('bingo event!!!!!!!!!! '+prop);
+				ast( md[prop] instanceof Function);
+				md.callbacks.set( prop, md[prop]);
+                attrs += ` ${prop}="tagEventHandler(event, '${prop}')"`;
+                /*let code = md[prop];
                 if ( ["this","\\("].every( clue => code.search(clue) == -1 ) )
                     attrs += ` ${prop}="${md[prop]}(this, event)"`;
                 else
-                    attrs += ` ${prop}="${code}"`;
+                    attrs += ` ${prop}="${code}"`;*/
 			} else {
 				switch (prop) {
 					case 'disabled':

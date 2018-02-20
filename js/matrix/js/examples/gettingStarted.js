@@ -84,9 +84,9 @@ function gettingStarted(n) {
             return h1( { style: mkCSS({
                                     background_color: cF( c => (((c.md.tag.ival % 2) === 0)? "black":"red")),
                                     color: "white",
-                font_size: cF( c=> c.md.tag.ival + "px"),
+                                    font_size: cF( c=> c.md.tag.ival + "px"),
                                     padding: cF( c => c.md.tag.ival+"px")}),
-                        onclick: 'dom2mx(this).ival += 1'}, //'booya(this)'},
+                        onclick: mx => mx.ival += 1},
                     { ival: cI( 14)},
                 c=> "booya ival=" + c.md.ival);
 
@@ -94,8 +94,19 @@ function gettingStarted(n) {
             let whoa = {title: "Lucky Jim"};
             return [label({id: 4232}, "Cool"),
                 label({ id: 4243, for: "toggle-all",
-                    onclick: "'toggleAllCompletion( this)'"},
+                    onclick: mx => clg('case 11 inline handler', mx)},
                     whoa.title)];
+
+        case 12:
+            return [ h1({ onclick: function (mx, e, prop) {
+                clg("case 12new onclick", e, dom2mx(e.target)===mx)
+            }}, "new onclick!")];
+
+        case 13:
+            let newonc = function (mx, e, prop) {
+                clg("new onclick", e, dom2mx(e.target)===mx)
+            };
+            return [ h1({ onclick: newonc}, "new onclick 2!")];
 
         default:
             return h1("Undefined gettingStarted case: " + n);
