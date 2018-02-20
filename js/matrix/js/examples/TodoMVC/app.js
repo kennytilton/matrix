@@ -15,9 +15,7 @@ function todoMVC() {
                         autofocus: true,
                         placeholder: "What needs doing?",
                         onkeypress: 'todoAddNew'}))
-            ,
-
-            section({ class: "main",
+            , section({ class: "main",
                       hidden: cF( c => Todos.empty)},
 
                 input({ id: "toggle-all",
@@ -36,10 +34,8 @@ function todoMVC() {
                      kidValues: cF( c=> Todos.routeItems),
                      kidKey: k => k.todo,
                      kidFactory: todoListItem},
-                   c => c.kidValuesKids())
-            ),
-
-            // , todoDashboard()
+                   c => c.kidValuesKids()))
+            , todoDashboard()
         ),
 
         footer({class: "info"},
@@ -86,9 +82,8 @@ function todoListItem( c, todo) {
                         type: "checkbox",
                         checked: cF( c=> todo.completed),
                         onclick: 'todoToggleCompleted',
-                        title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)}
-                        ,{todo: todo}
-                        )
+                        title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
+                    {todo: todo})
 
                 , label({ ondblclick: 'todoStartEditing'},
                     {content: cF( c=> todo.title)})
@@ -148,21 +143,21 @@ function todoEdit ( edtdom, e) {
 function todoDashboard () {
     return footer({class: "footer",
                     hidden: cF( c => Todos.empty)},
+        span({ class: "todo-count"},
+            {content: cF(c => { let remCt = Todos.items.filter(todo => !todo.completed).length;
+                return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;})})
 
-            span({ class: "todo-count",
-                    content: cF(c => { let remCt = Todos.items.filter(todo => !todo.completed).length;
-                                    return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;})}),
-
-            ul( { class: "filters", name: "filters"},
+        , ul( { class: "filters"}, {name: "filters"},
                 [["All", "#/"], ["Active","#/active"], ["Completed","#/completed"]]
-                    .map( ([ label, route]) => li({},  a({href: route,
-                                                        content: label, // selector: label,
-                                                        selected: cF( c => todoRoute.v === label),
-                                                        class: cF( c => c.md.selected ? "selected":"")})))),
+                    .map( ([ label, route]) => li( a({href: route,
+                                                        class: cF( c => c.md.selected ? "selected":"")},
+                        { selected: cF( c => todoRoute.v === label),
+                            content: label}))))
 
-            button("Clear completed",
-                { class: "clear-completed",
+        , button({ class: "clear-completed",
                   hidden: cF(c => Todos.items.filter(todo => todo.completed).length === 0),
-                  onclick: 'Todos.items.filter( td => td.completed ).map( td => td.delete())'}));
+                  onclick: 'Todos.items.filter( td => td.completed ).map( td => td.delete())'},
+            "Clear completed")
+        );
 }
 
