@@ -23,12 +23,12 @@ class Todo extends MXStorable {
 
             items: cF( c => c.mx().itemsRaw.filter( td => !td.deleted)),
 
-            routeItems: cF( c => c.mx().items
+            routeItems: cF( c => c.md.items
                                     .filter( td => todoRoute.v === 'All'
                                                 || xor( todoRoute.v==='Active', td.completed))
                                     .sort( (a,b) => a.created < b.created ? -1 : 1)),
 
-            empty: cF( c => c.mx().items.length === 0)})
+            empty: cF( c => c.md.items.length === 0)})
     }
 }
 

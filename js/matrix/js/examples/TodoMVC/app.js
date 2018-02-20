@@ -8,7 +8,7 @@ function todoMVC() {
     todoSession.init();
 
     return [
-        section({ class: "todoapp"},// {name: "todoapp"},
+        section({ class: "todoapp"},
             header({class: "header"},
                 h1("todos"),
                 input({ class: "new-todo",
@@ -35,8 +35,7 @@ function todoMVC() {
                      kidKey: k => k.todo,
                      kidFactory: todoListItem},
                    c => c.kidValuesKids()))
-            , todoDashboard()
-        ),
+            , todoDashboard()),
 
         footer({class: "info"},
             ['Double-click the text of a todo to change it',
@@ -44,7 +43,6 @@ function todoMVC() {
              'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
                 .map( s => p({},s)))
     ];
-    // return ["Booya", "Hi mom"];
 }
 
 
@@ -56,7 +54,8 @@ function todoAddNew (dom, e) {
 
     let title = e.target.value.trim();
     if (title !== '')
-        // force a new array so matrix internals (changed test is ===) will detect the change
+        // use concat vs push to force a new array so
+        // matrix internals will detect the change (unchanged test is ===)
         Todos.itemsRaw = Todos.itemsRaw.concat(new Todo({title: title}));
 
     e.target.value = null;
@@ -73,7 +72,6 @@ function toggleAllCompletion (dom) {
 //--- the do-list item beef ----------------------------------------------------------
 
 function todoListItem( c, todo) {
-    clg('todolistitem entry', todo.title);
     return li({ class: cF(c => (todo.completed ? "completed" : ""))},
                 {todo: todo},
 
