@@ -146,7 +146,7 @@ class Tag extends Model {
         this.attrKeys = [];
         for ( let k in attrs)
             this.attrKeys.push( k);
-        clg('attrkeys', this.attrKeys, );
+        //clg('attrkeys', this.attrKeys, );
 
 		// --- binding mxDom with dom -----------------
 
@@ -242,7 +242,7 @@ var isTag = x => x instanceof Tag;
 
 /* global Tag TagEvents */
 const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class','contenteditable'
-	,'contextmenu','dir','draggable','dropzone','hidden','href','id','itemid','itemprop','itemref','itemscope'
+	,'contextmenu','dir','draggable','dropzone','for','hidden','href','id','itemid','itemprop','itemref','itemscope'
 	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type']);
 
 const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','onblur','oncancel'
@@ -317,9 +317,20 @@ function tagAttrsBuild(md) {
 }
 
 function tag( tag, attrs, customs, kids) {
+    if (customs)
+        for ( let k in attrs || {})
+        if (customs.hasOwnProperty( k)) {
+            clg(`WARNING: duplicate key ${k} in tag ${tag}`);
+        }
+    if (attrs)
+        for ( let k in customs || {})
+        if (attrs.hasOwnProperty( k)) {
+            clg(`WARNING: duplicate key ${k} in tag ${tag}`);
+        }
 
     return function (c) {
         //clg('tag ', typeof par, id, par === null, isModel(par), typeof par ==='undefined', factory.cname());
+
         let cu = customs || {}
             , opts = Object.assign({}, {tag: tag}
                     , kids ? {kids: cKids( kids)} : null
@@ -410,7 +421,7 @@ function tagStyleBuild(md) {
         //clg(' model style!!!!');
         style = style( md);
     }
-    clg('doing style', style);
+    //clg('doing style', style);
 
     if ( isString( style)) {
         ss = style;
@@ -418,14 +429,14 @@ function tagStyleBuild(md) {
         style.cssProps.forEach( function (mxprop) {
             let cssProp = mxprop.replace('_', '-')
                 , cssValue = style[mxprop];
-            clg('bildstyle',mxprop, cssProp, cssValue);
+            //clg('bildstyle',mxprop, cssProp, cssValue);
             ss += `${cssProp}:${cssValue};`;
         })
     } else { // raw map
         for (let prop in style) {
             let cssProp = prop.replace('_', '-')
                 , cssValue = style[prop];
-            clg('bildstyle',cssProp, cssValue);
+            //clg('bildstyle',cssProp, cssValue);
             ss += `${cssProp}:${cssValue};`;
         }
     }

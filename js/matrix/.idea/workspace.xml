@@ -37,8 +37,8 @@
       <file leaf-file-name="mxWeb.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/mxWeb.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="307" column="53" lean-forward="false" selection-start-line="307" selection-start-column="53" selection-end-line="307" selection-end-column="53" />
+            <state relative-caret-position="367">
+              <caret line="238" column="34" lean-forward="true" selection-start-line="238" selection-start-column="34" selection-end-line="238" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -47,26 +47,9 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="102" column="37" lean-forward="false" selection-start-line="102" selection-start-column="37" selection-end-line="102" selection-end-column="37" />
-              <folding>
-                <marker date="1519153492892" expanded="true" signature="2566:3056" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="3636:3700" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="3765:4080" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4112:4702" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4265:4700" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4300:4429" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4435:4650" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4514:4563" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4569:4640" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4822:5850" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4842:4910" ph="{&quot;class&quot;: &quot;footer&quot;...}" />
-                <marker date="1519153492892" expanded="true" signature="4961:5139" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="4979:5137" ph="{...}" />
-                <marker date="1519153492892" expanded="true" signature="5333:5450" ph="{&quot;href&quot;: route...}" />
-                <marker date="1519153492892" expanded="true" signature="5476:5564" ph="{&quot;content&quot;: label...}" />
-                <marker date="1519153492892" expanded="true" signature="5587:5805" ph="{&quot;class&quot;: &quot;clear-completed&quot;...}" />
-              </folding>
+            <state relative-caret-position="27">
+              <caret line="75" column="17" lean-forward="false" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -113,8 +96,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>toh f</find>
-      <find>tag sees</find>
       <find>kid sess</find>
       <find>expanding</find>
       <find>toHtml</find>
@@ -143,6 +124,8 @@
       <find>tag2</find>
       <find>Bam</find>
       <find>not t</find>
+      <find>doing sty</find>
+      <find>attrkeys</find>
     </findStrings>
     <replaceStrings>
       <replace>MVC</replace>
@@ -172,8 +155,8 @@
         <option value="$PROJECT_DIR$/js/Matrix/Model.js" />
         <option value="$PROJECT_DIR$/js/examples/TodoMVC/Todo.js" />
         <option value="$PROJECT_DIR$/js/examples/gettingStarted.js" />
-        <option value="$PROJECT_DIR$/js/examples/TodoMVC/app.js" />
         <option value="$PROJECT_DIR$/gettingStarted.html" />
+        <option value="$PROJECT_DIR$/js/examples/TodoMVC/app.js" />
         <option value="$PROJECT_DIR$/js/mxWeb.js" />
       </list>
     </option>
@@ -315,7 +298,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="61715000" />
+    <option name="totallyTimeSpent" value="62624000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="116" y="109" width="1422" height="907" extended-state="0" />
@@ -473,24 +456,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="531">
           <caret line="103" column="22" lean-forward="false" selection-start-line="103" selection-start-column="22" selection-end-line="103" selection-end-column="22" />
-          <folding>
-            <marker date="1519153492892" expanded="true" signature="2566:3056" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3636:3700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3765:4080" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4112:4702" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4265:4700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4300:4429" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4435:4650" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4514:4563" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4569:4640" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4822:5850" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4842:4910" ph="{&quot;class&quot;: &quot;footer&quot;...}" />
-            <marker date="1519153492892" expanded="true" signature="4961:5139" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4979:5137" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="5333:5450" ph="{&quot;href&quot;: route...}" />
-            <marker date="1519153492892" expanded="true" signature="5476:5564" ph="{&quot;content&quot;: label...}" />
-            <marker date="1519153492892" expanded="true" signature="5587:5805" ph="{&quot;class&quot;: &quot;clear-completed&quot;...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -605,24 +571,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="199">
           <caret line="89" column="56" lean-forward="false" selection-start-line="89" selection-start-column="56" selection-end-line="89" selection-end-column="56" />
-          <folding>
-            <marker date="1519153492892" expanded="true" signature="2566:3056" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3636:3700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3765:4080" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4112:4702" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4265:4700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4300:4429" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4435:4650" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4514:4563" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4569:4640" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4822:5850" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4842:4910" ph="{&quot;class&quot;: &quot;footer&quot;...}" />
-            <marker date="1519153492892" expanded="true" signature="4961:5139" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4979:5137" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="5333:5450" ph="{&quot;href&quot;: route...}" />
-            <marker date="1519153492892" expanded="true" signature="5476:5564" ph="{&quot;content&quot;: label...}" />
-            <marker date="1519153492892" expanded="true" signature="5587:5805" ph="{&quot;class&quot;: &quot;clear-completed&quot;...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -733,31 +682,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="102" column="37" lean-forward="false" selection-start-line="102" selection-start-column="37" selection-end-line="102" selection-end-column="37" />
-          <folding>
-            <marker date="1519153492892" expanded="true" signature="2566:3056" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3636:3700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="3765:4080" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4112:4702" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4265:4700" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4300:4429" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4435:4650" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4514:4563" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4569:4640" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4822:5850" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4842:4910" ph="{&quot;class&quot;: &quot;footer&quot;...}" />
-            <marker date="1519153492892" expanded="true" signature="4961:5139" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="4979:5137" ph="{...}" />
-            <marker date="1519153492892" expanded="true" signature="5333:5450" ph="{&quot;href&quot;: route...}" />
-            <marker date="1519153492892" expanded="true" signature="5476:5564" ph="{&quot;content&quot;: label...}" />
-            <marker date="1519153492892" expanded="true" signature="5587:5805" ph="{&quot;class&quot;: &quot;clear-completed&quot;...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gettingStarted.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -774,10 +698,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="75" column="17" lean-forward="false" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/mxWeb.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="307" column="53" lean-forward="false" selection-start-line="307" selection-start-column="53" selection-end-line="307" selection-end-column="53" />
+        <state relative-caret-position="367">
+          <caret line="238" column="34" lean-forward="true" selection-start-line="238" selection-start-column="34" selection-end-line="238" selection-end-column="34" />
           <folding />
         </state>
       </provider>
