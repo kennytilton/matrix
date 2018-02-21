@@ -288,8 +288,8 @@ function tagAttrsBuild(md) {
                 case 'checked':
                     // booleans can stand alone. So weird.
                     if (md[prop]) {
-                     attrs += ` ${prop}`;
-                     }
+                       attrs += ` ${prop}`;
+                    }
                     break;
                 case 'value':
                     attrs += ` ${prop}="${md[prop]}"`;
@@ -302,8 +302,9 @@ function tagAttrsBuild(md) {
                     attrs += tagStyleBuild( md);
                     break;
 
-                case "class":
-                    attrs += isString( md[prop]) ? md[prop] : md[prop].join(" ");
+                case 'class':
+                    attrs += ` class="${isString( md[prop]) ? md[prop] : md[prop].join(' ')}"`;
+                    break;
 
                 default: {
 
