@@ -115,6 +115,8 @@ class Model {
 	}
     static cname() { return "Model"}
 
+    dbg() {return this.name || this.id}
+
 	awaken() {
 		if (this.state !== kNascent) return this;
 		this.state = kAwakening;

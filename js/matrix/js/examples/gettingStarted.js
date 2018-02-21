@@ -1,4 +1,5 @@
 function gettingStarted(n) {
+    clg("getsrarted version", n);
     switch (n) {
         case 0:
             // we can offer one node....
@@ -104,9 +105,9 @@ function gettingStarted(n) {
 
         case 13:
             let newonc = function (mx, e, prop) {
-                clg("new onclick", e, dom2mx(e.target)===mx)
+                clg("new onclick", e, mx.id, dom2mx(e.target)===mx)
             };
-            return [ h1({ onclick: newonc}, "new onclick 2!")];
+            return [ h1({ id: "himom", onclick: newonc}, "new onclick 2!")];
 
         default:
             return h1("Undefined gettingStarted case: " + n);
