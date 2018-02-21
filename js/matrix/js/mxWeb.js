@@ -134,10 +134,10 @@ class Tag extends Model {
 
 		this.sid = ++sid;
 
-		if (islots.id) {
-			/// console.warn(`Provided dom id ${islots.id} is your responsibility.`);
-			this.id = islots.id;
+		if (attrs.id) {
+			this.id = attrs.id;
 		} else {
+		    attrs.id = this.sid;
 			this.id = this.sid;
 		}
 
@@ -146,7 +146,7 @@ class Tag extends Model {
         this.attrKeys = [];
         for ( let k in attrs)
             this.attrKeys.push( k);
-        clg('attrkeys', this.attrKeys, );
+        // clg('attrkeys', this.attrKeys, );
 
 		// --- binding mxDom with dom -----------------
 
@@ -242,7 +242,8 @@ var isTag = x => x instanceof Tag;
 
 /* global Tag TagEvents */
 const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class','contenteditable'
-	,'contextmenu','dir','draggable','dropzone','hidden','href','id','itemid','itemprop','itemref','itemscope'
+	,'contextmenu','dir','draggable','dropzone','for','hidden','href'
+    ,'id','itemid','itemprop','itemref','itemscope'
 	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type']);
 
 const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','onblur','oncancel'
@@ -275,9 +276,6 @@ function tagAttrsBuild(md) {
             attrs += ` ${prop}="tagEventHandler(event, '${prop}')"`;
         } else {
             switch (prop) {
-                case 'id':
-                    //clg('skipping id!!!!!!!!!!!');
-                    break;
                 case 'disabled':
                 case 'autofocus':
                 case 'hidden':
@@ -410,7 +408,6 @@ function tagStyleBuild(md) {
         //clg(' model style!!!!');
         style = style( md);
     }
-    clg('doing style', style);
 
     if ( isString( style)) {
         ss = style;

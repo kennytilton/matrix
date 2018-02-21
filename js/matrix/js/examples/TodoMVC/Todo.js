@@ -34,8 +34,9 @@ class Todo extends MXStorable {
 
 const todoRoute = cFI( c=> {let r = window.localStorage.getObject("todo-matrix.route");
                             return r === null ? "All" : r;},
-                    { observer: (n, md, newv ) =>
-                        window.localStorage.setObject("todo-matrix.route", newv)});
+                    { name: 'route',
+                        observer: (n, md, newv ) =>
+                            window.localStorage.setObject("todo-matrix.route", newv)});
 
 const Todos = Todo.mxLoad();
 

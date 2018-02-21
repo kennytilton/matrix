@@ -575,6 +575,7 @@ class Cell {
 		}
 	}
 	callerEnsure(caller) {
+		clg('addcaller', this.name, this.md? this.md.dbg():'nomd', caller.name, caller.md? caller.md.dbg():'nomd');
 		this.callers.add(caller);
 	}
 	callerDrop(caller) {
