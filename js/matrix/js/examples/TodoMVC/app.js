@@ -41,11 +41,8 @@ function todoMVC() {
             ['Double-click the text of a todo to change it',
              'Created by <a href="http://tiltontec.com">Kenneth Tilton',
              'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
-                .map( s => p({},s)))
-    ];
+                .map( s => p({},s)))];
 }
-
-
 
 window['todoMVC'] = todoMVC;
 
@@ -69,11 +66,14 @@ function toggleAllCompletion () {
                 .map( td => td.completed = newCompleted);
 }
 
-//--- the do-list item beef ----------------------------------------------------------
+//-------------------------------------------------------------------------------
+//--- the do-list item ----------------------------------------------------------
 
 function todoListItem( c, todo) {
-    return li({ class: cF(c => (todo.completed ? "completed" : ""))},
-                {todo: todo},
+    return li({ class: cF(c => [(todo.completed ? "completed" : ""),
+                                (c.md.editing ? "editing" : "")])},
+                {todo: todo,
+                editing: cI( false)},
 
             div({class: "view"},
                 input({class: "toggle",
@@ -84,7 +84,7 @@ function todoListItem( c, todo) {
                     {todo: todo})
 
                 , label({ ondblclick: todoStartEditing},
-                    {content: cF( c=> todo.title)})
+                        { content: cF( c=> todo.title)})
 
                 , button({ class: "destroy",
                          onclick: mx => mx.todo.delete()},
@@ -100,25 +100,25 @@ function todoListItem( c, todo) {
     );
 }
 
+// ------------------------------------------------------------------------------
+// --- to-do list item callbackse -----------------------------------------------
+
 function todoToggleCompleted (mx,e) {
     let todo = mx.todo;
     todo.completed = !todo.completed;
 }
 
-//--- item editing callbacks
-
 function todoStartEditing (mx,e) {
-    let li = mx.fmTag('li', 'myLi') // find overarching li, then...
+    let li = mx.fmTag('li') // find overarching li, then...
         , edt = li.fmDown('myEditor');
-    edt.dom.li = li; // avoid a little navigation later
-    li.dom.classList.add("editing");
+    li.editing = true;
     edt.dom.focus();
     edt.dom.setSelectionRange(0, edt.dom.value.length); // the correct UX starting an edit
 }
 
 function todoEdit ( edtmx, e) {
-    let li = edtmx.dom.li;
-    if ( !li.dom.classList.contains("editing")) return;
+    let li = edtmx.fmTag('li');
+    if ( !li.editing) return;
 
     if (e.type === 'blur' || ['Escape', 'Enter'].includes( e.key)) {
         if ( e.key === 'Escape') {
@@ -132,10 +132,11 @@ function todoEdit ( edtmx, e) {
                 li.todo.title = e.target.value = title;
             }
         }
-        li.dom.classList.remove('editing');
+        li.editing = false;
     }
 }
 
+//----------------------------------------------------------------------------------------
 //--- the dashboard of controls/readouts below the list of to-dos ------------------------
 
 function todoDashboard () {

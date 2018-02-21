@@ -67,9 +67,14 @@ function obsKids (slot, md, newv, oldv, c) {
 }
 
 function obsDisabled (slot, md, newv, oldv, c) {
-	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
-	md.dom.disabled = !!newv;
+    if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    md.dom.disabled = !!newv;
 }
+function obsClass (slot, md, newv, oldv, c) {
+    if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    md.dom.className  = isString( newv) ? newv : newv.join(" ");
+}
+
 
 function obsStyleProperty (mxprop, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
@@ -217,7 +222,9 @@ class Tag extends Model {
 			} else if (slot === 'kids') {
 				obs = obsKids;
 			} else if (slot === 'disabled') {
-				obs = obsDisabled;
+                obs = obsDisabled;
+            } else if (slot === 'class') {
+                obs = obsClass;
 			} else if (TagEvents.has(slot)) {
 				obs = obsTagEventHandler;
 			} else if (TagAttributesGlobal.has(slot)) {
@@ -297,6 +304,9 @@ function tagAttrsBuild(md) {
                 case 'style':
                     attrs += tagStyleBuild( md);
                     break;
+
+                case "class":
+                    attrs += isString( md[prop]) ? md[prop] : md[prop].join(" ");
 
                 default: {
 

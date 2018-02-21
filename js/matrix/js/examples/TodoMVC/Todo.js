@@ -16,7 +16,7 @@ class Todo extends MXStorable {
         return ["title", "completed"].concat(super.storableProperties());
     }
 
-    static mxLoad() {
+    static loadFromStorage() {
         return mkm( null, 'TodoGroup',
             { itemsRaw: cI( MXStorable.loadAllItems( Todo, TODO_LS_PREFIX)
                                         .sort( (a,b) => a.created < b.created ? -1 : 1) || []),
@@ -37,5 +37,5 @@ const todoRoute = cFI( c=> {let r = window.localStorage.getObject("todo-matrix.r
                     { observer: (n, md, newv ) =>
                         window.localStorage.setObject("todo-matrix.route", newv)});
 
-const Todos = Todo.mxLoad();
+const Todos = Todo.loadFromStorage();
 

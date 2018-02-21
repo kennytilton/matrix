@@ -34,11 +34,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mxWeb.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="mxWeb.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/mxWeb.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="238" column="34" lean-forward="true" selection-start-line="238" selection-start-column="34" selection-end-line="238" selection-end-column="34" />
+            <state relative-caret-position="450">
+              <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -47,18 +47,18 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="27">
-              <caret line="75" column="17" lean-forward="false" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+            <state relative-caret-position="-1465">
+              <caret line="43" column="36" lean-forward="false" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Todo.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Todo.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/Todo.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="480">
+              <caret line="32" column="1" lean-forward="true" selection-start-line="32" selection-start-column="1" selection-end-line="32" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -96,9 +96,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>kid sess</find>
-      <find>expanding</find>
-      <find>toHtml</find>
       <find>tagStyleBuild</find>
       <find />
       <find>slotObserverResolve</find>
@@ -126,13 +123,16 @@
       <find>not t</find>
       <find>doing sty</find>
       <find>attrkeys</find>
+      <find>classList</find>
+      <find>obsDisabled</find>
+      <find>myLi</find>
     </findStrings>
     <replaceStrings>
       <replace>MVC</replace>
       <replace>tagToHTML</replace>
       <replace>islots, content</replace>
-      <replace>', '</replace>
       <replace>mxDom</replace>
+      <replace>', '</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -153,11 +153,11 @@
         <option value="$PROJECT_DIR$/js/Matrix/Cells.js" />
         <option value="$PROJECT_DIR$/index-es6.html" />
         <option value="$PROJECT_DIR$/js/Matrix/Model.js" />
-        <option value="$PROJECT_DIR$/js/examples/TodoMVC/Todo.js" />
         <option value="$PROJECT_DIR$/js/examples/gettingStarted.js" />
         <option value="$PROJECT_DIR$/gettingStarted.html" />
-        <option value="$PROJECT_DIR$/js/examples/TodoMVC/app.js" />
         <option value="$PROJECT_DIR$/js/mxWeb.js" />
+        <option value="$PROJECT_DIR$/js/examples/TodoMVC/app.js" />
+        <option value="$PROJECT_DIR$/js/examples/TodoMVC/Todo.js" />
       </list>
     </option>
   </component>
@@ -298,7 +298,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62624000" />
+    <option name="totallyTimeSpent" value="66001000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="116" y="109" width="1422" height="907" extended-state="0" />
@@ -658,14 +658,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/Todo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/Matrix/Cells.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -698,18 +690,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
+    <entry file="file://$PROJECT_DIR$/js/mxWeb.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="27">
-          <caret line="75" column="17" lean-forward="false" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+        <state relative-caret-position="450">
+          <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/mxWeb.js">
+    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="238" column="34" lean-forward="true" selection-start-line="238" selection-start-column="34" selection-end-line="238" selection-end-column="34" />
+        <state relative-caret-position="-1465">
+          <caret line="43" column="36" lean-forward="false" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/examples/TodoMVC/Todo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="1" lean-forward="true" selection-start-line="32" selection-start-column="1" selection-end-line="32" selection-end-column="1" />
           <folding />
         </state>
       </provider>
