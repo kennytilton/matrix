@@ -5,6 +5,7 @@ java -jar compiler.jar                         \
 	--language_out ECMASCRIPT5                 \
 	--js js/Matrix/Cells.js                    \
 	--js js/Matrix/Model.js                    \
+	--js js/mxWeb.js                           \
 	--externs js/extRouter.js                  \
 	--compilation_level SIMPLE_OPTIMIZATIONS   \
-	--js_output_file public/matrix.smp.js
+	--js_output_file public/mxweb.smp.js
