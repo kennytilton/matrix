@@ -146,7 +146,7 @@ class Tag extends Model {
 			this.id = this.sid;
 		}
 
-		this.slotObservers = [];
+		// handled in Model now (?) this.slotObservers = [];
 		this.callbacks = new Map;
         this.attrKeys = [];
         for ( let k in attrs)

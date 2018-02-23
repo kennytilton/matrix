@@ -916,8 +916,7 @@ function mdSlotValueStore( me, slotName, value) {
 
 function cF(formula, options) {
 	// make a conventional formula cell
-	return Object.assign( new Cell(null, formula, false, false, null)
-		, options);
+	return Object.assign( new Cell(null, formula, false, false, null), options);
 }
 window['cF'] = cF;
 
@@ -928,7 +927,7 @@ function cF1(formula, options) {
 	return Object.assign( new Cell(null
 			, (c)=>{
 			return withoutCDependency(formula)(c);
-}
+        }
 , false, false, null)
 , options);
 }
@@ -951,8 +950,7 @@ function cFI(formula, options) {
 	 as an input cell.
 	 */
 	//return new Cell(null, formula, true, false, null);
-    return Object.assign(new Cell(null, formula, true, false, null)
-        , options);
+    return Object.assign(new Cell(null, formula, true, false, null), options);
 }
 window['cFI'] = cFI;
 function cI(value, options) {
@@ -963,8 +961,7 @@ function cI(value, options) {
 window['cI'] = cI;
 function cIe(value, options) {
 	// ephemeral input cell
-	return Object.assign(new Cell(value, null, true, true, null)
-		, options);
+	return Object.assign(new Cell(value, null, true, true, null), options);
 }
 function obsDbg (name, me, newv, priorv, c) {
 	console.log(`obsDbg! ${name} ${me? me.name||me.id : 'noMd'} new=${newv} prior=${priorv===kUnbound?'unbound':priorv}`);

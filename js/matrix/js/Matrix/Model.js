@@ -3,17 +3,6 @@
 /* global kNascent, kUntilAsked, kAlways, kAwake, qAwaken,  Cell */
 //@formatter:off
 
-/*
-Object.defineProperty(Array.prototype,'packedFlat'
-    ,{ value: function(r=[]) {
-        for (let a=this, i=0; i < a.length; ++i)
-            if ( a[i] != null)
-                a[i] instanceof Array ? a[i].packedFlat(r) : r.push(a[i]);
-        return r}});
-
-Array.prototype['packedFlat'] = Array.prototype.packedFlat;
-*/
-
 function allArgs(args) {
     // expects a special arguments instance, array-like but not really
     return Array.apply(null, args).slice(0)
@@ -42,42 +31,32 @@ var sid = 0; // aka "serial ID"
 window['sid'] = sid;
 
 class Model {
-	// todo: maybe forget constructors ever working like CLOS and standardize on "make" as preferred over "new"
+	// to-do?: maybe forget constructors ever working like CLOS and standardize on "make" as preferred over "new"
 	constructor(parent, name, islots, awakenp=true) {
-		/*
-		 * Note that we begin by initializing some slots
-		 * but next will be processing islots
-		 * and those may well overwrite what we see next.
-		 *
-		 * eg, we set id to next sequential value, but may overwrite that
-		 * with an icell. Mind you, that may be daft. We have the separate
-		 * name property for search by name (where dups are cool) so why am
-		 * I messing with the sid?
-		 *
-		 * OK, I'll stop that, but this warning stands in re other initializations.
-		 *
-		 */
 		// clg("Model entry name=" + name + ", par= "+ parent + ', gPar=' + gPar);
 		this.par = parent || gPar; // we build models as parent<->>kids
 		// clg("Model this " + islots.name + " gets par " + this.par + " named " + (this.par? this.par.name : "unnamed"));
-		this.id = undefined;
+		this.sid = ++sid;
 		this.name = name;
 		this.mdType = null; // eg, "selMgr" for list items to seek out
         this.kids = null;
 		this.cells = {};
+        this.slotObservers = []; // cache for observer function once resolved
 		this.others = {}; // cache here other models tracked down by formulas
 		// so we have them handy if the rule runs again
 		// todo not-to-be has to lose these references
 
 		this.state = kNascent;
 		this.doomed = false; // aka in mid-notToBe
-		// this.fnz = false; // sth to do with finalization. not in play
 		this.awakenOnInitp = false; // ie, bypass qAwaken
 		this.adoptCt = 0; // how often adopted (by host), for (very) rare non-child but "hosted"
 
 		for (let slot in islots) {
-			if (!islots.hasOwnProperty(slot))
-				continue;
+
+			if (!islots.hasOwnProperty(slot)) {
+			    clg('DBG: yep, islot not hasown ', slot);
+			    continue;
+            }
 
 			//console.log(slot + " -> " + islots[slot]);
 			let value = islots[slot];
@@ -86,21 +65,19 @@ class Model {
 				value.name = slot;
 				value.md = this; // md aka model
 				this.cells[slot] = value;
-				Object.defineProperty(this
-					, slot, {
-						enumerable: true
+				Object.defineProperty( this
+					, slot
+                    , { enumerable: true
 						, get: () =>  value.slotValue()
-					, set: (newv) => value.slotValueSet(newv)
-			});
+					, set: (newv) => value.slotValueSet( newv)});
 			} else {
-				Object.defineProperty(this
+				Object.defineProperty( this
 					, slot
 					, { enumerable: true
 						, get: () =>  value
 						, set: (newv) => {
 					    debugger;
-							throw `Slot ${slot} of ${name} cannot be set to ${newv} because it is not mediated by an input Cell`;
-					}});
+							throw `Slot ${slot} of ${name} cannot be set to ${newv} because it is not mediated by an input Cell`;}});
 			}
 		}
 
@@ -115,19 +92,19 @@ class Model {
 	}
     static cname() { return "Model"}
 
-    dbg() {return this.name || this.id}
+    dbg() {return `MD ${this.mdType}:${this.name || this.sid}`}
 
 	awaken() {
 		if (this.state !== kNascent) return this;
 		this.state = kAwakening;
-		//clg(`md awaken ${this.name}`);
+		//clg(`md awaken ${this.dbg()}`);
 		for (let slot in this.cells) {
 			let c = this.cells[slot];
 			console.assert(c.md,`No md for cell ${c.name} at md awaken`);
 			//clg(`md wakes ${c.name} st=${c.state.toString()}`);
 			let lz = find(c.lazy, [true, kAlways, kUntilAsked]);
 			if (lz) {
-				; //clg('lazy!!!!', c.lazy, lz);
+				continue; //clg('lazy!!!!', c.lazy, lz);
 			} else {
 				c.awaken();
 			}
@@ -135,7 +112,7 @@ class Model {
 		this.state = kAwake;
 	}
 	slotObserverResolve (slot) {
-		// see how Tag in ciWeb overrides this
+		// see how Tag class in mxWeb overrides this
 		return null;
 	}
 	fmd (what, key, how) {
