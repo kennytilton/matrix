@@ -242,6 +242,12 @@ class Tag extends Model {
 }
 window['Tag'] = Tag;
 
+function tag2html(x) {
+    return Tag.toHTML(x);
+}
+
+window['tag2html'] = tag2html;
+
 var isTag = x => x instanceof Tag;
 
 // ---- formerly tags.js ------------------------------------------

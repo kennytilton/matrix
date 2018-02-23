@@ -7,7 +7,7 @@ function todoMVC() {
 
     todoSession.init();
 
-    return Tag.toHTML( [
+    return tag2html( [
         section({ class: "todoapp"},
             header({class: "header"},
                 h1("todos"),
