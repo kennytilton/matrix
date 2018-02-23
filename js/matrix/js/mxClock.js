@@ -6,16 +6,17 @@
 //
 class mxTimer extends Model {
     constructor( owner, islots) {
-        ast( islots.func, "mxTimer requires func parameter");
         ast( islots.delay, "mxTimer requires delay parameter");
 
         super( owner, islots.name || "anonTimer",
             Object.assign(
                 {
                     onp: true,
+                    time: cI( Date.now()),
+                    func: cF( c=> ()=> c.md.time = Date.now()),
                     intervalID: cF( c=> c.md.onp ? setInterval( c.md.func, c.md.delay, c) : null,
                         {observer: function( n, md, newv, priorv, c) {
-                            //console.log('intervalID Obs :'+newv );
+                            console.log('intervalID Obs :'+newv );
                             if ( priorv !== kUnbound) {
                                 clg('nailing old interval', priorv, md.delay);
                                 clearInterval( priorv);
@@ -34,13 +35,24 @@ class mxTimer extends Model {
 // obs(this.name, this.md, this.pv, vPrior, this);
 
 function mkTimer( owner, delay, func, onp = true, extras) {
-    return new mxTimer( owner,
-        Object.assign( { delay: cI( delay), func: func, onp: onp}, extras));
+    let opts =  Object.assign( { delay: delay, onp: onp}, extras);
+
+    if (func)
+        opts.func = func;
+
+    return new mxTimer( owner, opts);
 }
 
 /*
-var t1 = mkTimer( null, 2000, c=> clg('slave 1', c.sid, Date.now()), cI( true));
+var t1 = mkTimer( null, 2000);
 
+var tb = cF( c=> `The time is now ${t1.time}`,
+            { observer: (c, m, nv) => clg(`tb sees ${nv}`)});
+
+console.log('tb '+ tb.v);
+*/
+
+/*
 var t2 = mkTimer( null, 2000, function(c) {
     //clg('master boom', c.md.ctr);
     t1.onp = ( t1.delay > 0);
@@ -80,5 +92,5 @@ function mkTimeout( owner, delay, func, onp = true, extras) {
         Object.assign( { delay: cI( delay), func: func, onp: onp}, extras));
 }
 
-var to1 = mkTimeout( null, 2000, c=> clg('timeout 1', c.sid, Date.now()));
+// var to1 = mkTimeout( null, 2000, c=> clg('timeout 1', c.sid, Date.now()));
 
