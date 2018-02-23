@@ -7,7 +7,7 @@ function todoMVC() {
 
     todoSession.init();
 
-    return [
+    return Tag.toHTML( [
         section({ class: "todoapp"},
             header({class: "header"},
                 h1("todos"),
@@ -41,7 +41,7 @@ function todoMVC() {
             ['Double-click the text of a todo to change it',
              'Created by <a href="http://tiltontec.com">Kenneth Tilton',
              'Inspired by <a href="http://todomvc.com">TodoMVC</a>']
-                .map( s => p({},s)))];
+                .map( s => p({},s)))]);
 }
 
 window['todoMVC'] = todoMVC;

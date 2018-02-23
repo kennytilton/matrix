@@ -6,8 +6,8 @@ java -jar compiler.jar                         \
 	--js js/Matrix/Cells.js                    \
 	--js js/Matrix/Model.js                    \
 	--js js/mxWeb.js                             \
-	--js js/TodoMVC/Todo.js                    \
-	--js js/TodoMVC/app.js                     \
+	--js js/examples/TodoMVC/Todo.js                    \
+	--js js/examples/TodoMVC/app.js                     \
 	--externs js/extRouter.js                  \
 	--compilation_level SIMPLE_OPTIMIZATIONS   \
 	--js_output_file public/TodoMVC.app.smp.js

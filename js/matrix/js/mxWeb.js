@@ -288,7 +288,7 @@ function tagAttrsBuild(md) {
                 case 'checked':
                     // booleans can stand alone. So weird.
                     if (md[prop]) {
-                       attrs += ` ${prop}`;
+                        attrs += ` ${prop}`;
                     }
                     break;
                 case 'value':
@@ -386,7 +386,7 @@ function genTagEx(tagName) {
 // ---------------- in-line Style ----------------------------------------------
 //
 
-class CSS extends Model {
+class mxCSS extends Model {
     constructor(tag, islots) {
 
         let superSlots = Object.assign({}, islots); // todo do we need a copy?
@@ -406,9 +406,9 @@ class CSS extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
 
-    dbg() { return `CSS ${this.tag.tag} tagnm=${this.tag.name}`}
+    dbg() { return `mxCSS ${this.tag.tag} tagnm=${this.tag.name}`}
 
-    static cname() { return "CSS"}
+    static cname() { return "mxCSS"}
 
     slotObserverResolve(slot) {
         return obsStyleProperty;
@@ -417,7 +417,7 @@ class CSS extends Model {
 
 function mkCSS( props) {
     return function (tag) {
-        return new CSS( tag, props)
+        return new mxCSS( tag, props)
     }
 }
 
@@ -432,7 +432,7 @@ function tagStyleBuild(md) {
 
     if ( isString( style)) {
         ss = style;
-    } else if ( style instanceof CSS ) {
+    } else if ( style instanceof mxCSS ) {
         style.cssProps.forEach( function (mxprop) {
             let cssProp = mxprop.replace('_', '-')
                 , cssValue = style[mxprop];
