@@ -20,7 +20,7 @@ class mxTimer extends Model {
                                 clg('nailing old interval', priorv, md.delay);
                                 clearInterval( priorv);
                             }
-        }})
+                        }})
                 }, islots));
 
         withIntegrity(qAwaken, this, x => this.awaken());
@@ -38,6 +38,7 @@ function mkTimer( owner, delay, func, onp = true, extras) {
         Object.assign( { delay: cI( delay), func: func, onp: onp}, extras));
 }
 
+/*
 var t1 = mkTimer( null, 2000, c=> clg('slave 1', c.sid, Date.now()), cI( true));
 
 var t2 = mkTimer( null, 2000, function(c) {
@@ -46,3 +47,38 @@ var t2 = mkTimer( null, 2000, function(c) {
     t1.delay = t1.delay - 100;
     c.md.ctr = (c.md.ctr===kUnbound || isNaN(c.md.ctr))? 0 : c.md.ctr  + 1;
 }, {ctr: cI(0)});
+*/
+
+class mxTimeout extends Model {
+    constructor( owner, islots) {
+        ast( islots.func, "mxTimeout requires func parameter");
+        clg('building timeout');
+        super( owner, islots.name || "anonTimer",
+            Object.assign(
+                {
+                    cancel: false,
+                    intervalID: cF( c=> c.md.cancel ? null : setTimeout( c.md.func, c.md.delay || 0, c),
+                        { observer: function( n, md, newv, priorv, c) {
+                            //console.log('intervalID Obs :'+newv );
+                            if ( priorv !== kUnbound) {
+                                clg('nailing timeout', priorv, md.delay);
+                                clearInterval( priorv);
+                            }
+                        }})
+                }, islots));
+
+        withIntegrity(qAwaken, this, x => this.awaken());
+    }
+
+    dbg() { return `mxTimeout ${this.name}`}
+
+    static cname() { return "mxTimeout"}
+}
+
+function mkTimeout( owner, delay, func, onp = true, extras) {
+    return new mxTimeout( owner,
+        Object.assign( { delay: cI( delay), func: func, onp: onp}, extras));
+}
+
+var to1 = mkTimeout( null, 2000, c=> clg('timeout 1', c.sid, Date.now()));
+
