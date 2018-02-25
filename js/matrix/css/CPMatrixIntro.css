@@ -1,0 +1,15 @@
+.caution {
+    background: #ff0;
+    padding: 4px;
+    border: 1px dashed #c5c5c5;
+}
+
+code {
+    background: beige;
+    padding: 1em;
+}
+
+.cody {
+    background: beige;
+    padding: 1em;
+}
