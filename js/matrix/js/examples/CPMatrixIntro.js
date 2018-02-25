@@ -104,30 +104,69 @@ handler that runs on the DOM event. Which is nice.")
 );
 
 bits.push(() => [
-    h2("Enter Data Flow"),
-    p("Well, just a bit of data flow. The observer callback, which\n\
-is vital to Matrix programming."),
-    button({class: "pure-button",
-            onclick: me => ++me.clicks},
+        h2("Enter Data Flow"),
+        pre("Well, just a bit of data flow: the observer callback, which\n\
+is vital to Matrix programming. The observer\n\
+is on a custom property 'clicks', a so-called 'input cell'\n\
+to which we are free to assign values from imperative code.\n\n\
+Input cells are inputs to the Matrix data flow graph; it cannot\n\
+be formulae all the way down&trade;."),
+    pre({class: 'cody'}, "button({onclick: me => ++me.clicks},\n\
+      {name: 'plus-1',\n\
+       clicks: cI(0, {observer: (slot, me, newv) => console.log(`Button ${me.name} clicked ${newv} times.`)})},\n\
+       '++Plus')"),
+        button({class: "pure-button",
+                onclick: me => ++me.clicks},
             {name: "plus-1",
-            clicks: cI(0, {observer: (slot, me, newv) => console.log(`Button ${me.name} clicked ${newv} times.`)})},
+                clicks: cI(0, {observer: (slot, me, newv) => console.log(`Button ${me.name} clicked ${newv} times.`)})},
             "++Plus"),
         pre("Please check the console to see button working.")
     ]
-    );
+);
+
+bits.push(() => [
+        h2("Intra-object Data Flow"),
+    pre("Intra-object means we can defer navigation for a moment.\n\n\
+Click the button to see its color and content\n\
+derived from the number of clicks, which again\n\
+we track in a custom 'input' cell."),
+
+    pre({class: 'cody'},
+        "button({style: cF( c=> 'background:' + (c.md.clicks % 2 == 0? 'cyan':'yellow')),\n\
+        onclick: me => ++me.clicks,\n\
+        content: cF( c=> '++Plus '+c.md.clicks)},\n\
+    {clicks: cI(0)})"),
+    button({class: "pure-button",
+            style: cF( c=> "background:" + (c.md.clicks % 2 == 0? "cyan":"yellow")),
+            onclick: me => ++me.clicks,
+            content: cF( c=> "++Plus "+c.md.clicks)},
+        {name: "plus-1",
+            clicks: cI(0)})
+    ]
+);
 
 
 
-// --- the code that manages this pen -----------------------
+
+// ----------------------------------------------------------
+// ----------------------------------------------------------
+// --- below, the code that manages this pen ----------------
+// ----------------------------------------------------------
+// ----------------------------------------------------------
+
+
 const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixIntro.bit");
-        clg( 'bit in storage', r);
-        return r === null ? 0 : (r < 0? 0: (r >= bits.length? bit.length -1: r));},
-    { name: 'bitNo',
-        observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixIntro.bit", newv)
-    });
+                    return r === null ? 0 : (r < 0? 0: (r >= bits.length? bit.length -1: r));},
+    // we use an observer to persist the current "bit" number so page reloads pick up where we left off
+    { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixIntro.bit", newv)});
 
 function CPMatrixIntro () {
-    return [ div( {style: "background:#fdfdfd;display:flex;flex-direction: row;align-items: center;"}, controls),
+    return [
+        div({style: {background: "#fdfdfd",
+            display: "flex",
+            flex_direction: "row",
+            align_items: "center"}},
+            controls),
         div( c=> bits[bit.v])];
 }
 
@@ -144,14 +183,12 @@ function nTabs (n) {
     return tabs;
 }
 var controls = [
-    button({style: "font-size:2em;padding-left:9px",
-            class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
+    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
             disabled: cF( ()=> bit.v <= 0),
             onclick: c=> --bit.v},
         "Back"),
     div( {style: "margin:8px"}, nTabs( bits.length)),
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
-            style: "font-size:2em;padding-left:9px",
             disabled: cF( c=> bit.v >= bits.length - 1),
             onclick: c=> ++bit.v}
         , "Next")];
