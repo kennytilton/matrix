@@ -7,7 +7,7 @@ function dom2mx(dom, mustFind=true) {
 	let js = mxDom[dom.id];
 	if ( !js && mustFind) {
 
-	    debugger;
+	    //debugger;
 		throw `dom2mx cannot find mxDom for with dom.sid ${dom.sid}, dom.id ${dom.id}`;
 	}
 	return js;

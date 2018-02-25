@@ -76,8 +76,8 @@ class Model {
 					, { enumerable: true
 						, get: () =>  value
 						, set: (newv) => {
-					    debugger;
-							throw `Slot ${slot} of ${name} cannot be set to ${newv} because it is not mediated by an input Cell`;}});
+					    // debugger;
+					    throw `Slot ${slot} of ${name} cannot be set to ${newv} because it is not mediated by an input Cell`;}});
 			}
 		}
 
@@ -269,7 +269,7 @@ function kfExpand( c, kf) {
         return kfExpand( c, kf.map(k => kfExpand( c,k )));
     } else {
         clg('expand bad kf', kf, kf===null, typeof kf);
-        debugger;
+        //debugger;
         //throw 'kfexpand fell thru';
     }
 }
