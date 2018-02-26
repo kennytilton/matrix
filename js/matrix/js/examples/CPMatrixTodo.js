@@ -1,6 +1,6 @@
 var bits = new Array();
 
-var b1 = "\
+var b0 = "\
 section({class: 'todoapp'},\n\
    header({class: 'header'},\n\
       h1('todos'))),\n\
@@ -12,7 +12,13 @@ footer({class: 'info'},\n\
     .map( s => p({},s)))";
 
 bits.push(() => [
-    section({ class: "todoapp"},
+    b0,
+    ["mxWeb&trade; function signatures mirror HTML tag syntax.",
+    "Meaning a graphic designer could learn mxWeb.",
+    "JSX? Bah. We code straight JS.",
+    "Meaning 'No toolchain required'. Toolchains bite."],
+
+    [section({ class: "todoapp"},
         header({class: "header"},
             h1("todos"))),
 
@@ -21,30 +27,9 @@ bits.push(() => [
         ['Double-click the text of a todo to change it',
          'Created by <a href=\"http://tiltontec.com\">Kenneth Tilton',
          'Inspired by <a href=\"http://todomvc.com\">TodoMVC</a>']
-            .map( s => p({},s))),
-    pre({class: 'cody'}, b1),
-    h3("noteworthy"),
-    ul( li( "mxWeb&trade; function signatures mirror HTML tag syntax."),
-        li( "Meaning a graphic designer could learn mxWeb."),
-        li( "JSX? Bah. We code straight JS."),
-        li( "Meaning 'No toolchain required'. Toolchains bite."))
-    ]);
+            .map( s => p({},s)))]]);
 
-function todomvc_credits_x () {
-    return footer({class: "info"},
-        p( "Created by <a href='http://tiltontec.com'>Kenneth Tilton"),
-        p( "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"));
-}
-function todomvc_credits () {
-    return footer({class: "info"},
-        ["Double-click the text of a todo to change it",
-         "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-         "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"]
-            .map( s => p({},s)));
-}
-
-
-var b3 = "\
+var csCredits = "\
 function credits (attrs, ...content) {\n\
     return footer(Object.assign({}, {class: 'info'}, attrs),\n\
         // Look, Ma! No JSX! No toolchain! Standard JS....\n\
@@ -66,21 +51,19 @@ function credits (attrs, ...content) {
 }
 
 bits.push(() => [
-    section({ class: "todoapp"},
+    csCredits,
+    ["This is just JS, so we can write our own DOM functions aping HTML syntax...",
+    "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
+
+    [section({ class: "todoapp"},
         header({class: "header"},
             h1("todos"))),
 
     credits({style: "font-size:18px"},
         "Double-click the text of a todo to change it",
         "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"),
+        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]]);
 
-    pre({class: 'cody'}, b3),
-    h2("Noteworthy:"),
-    ul({style: "font-size:14px"},
-        li( "This is just JS, so we can write our own DOM functions aping HTML syntax..."),
-        li( "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."))
-]);
 // ----------------------------------------------------------
 // ----------------------------------------------------------
 // --- below, the code that manages this pen ----------------
@@ -93,6 +76,17 @@ const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixTodo.bit");
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
     { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
 
+function bitAssemble( bit) {
+    var codeString, notes, code;
+    [codeString, notes, code] = bit();
+    return [
+        pre({class: 'cody'}, codeString),
+        div( code),
+        h2("Nota bene:"),
+        ul( {style: "font-size:18px"},
+            notes.map( n=> li( n)))
+    ];
+}
 function CPMatrixTodo () {
     return [
         div({style: {background: "#fdfdfd",
@@ -100,7 +94,7 @@ function CPMatrixTodo () {
                 flex_direction: "row",
                 align_items: "center"}},
             controls),
-        div( c=> bits[bit.v])];
+        div( c=> bitAssemble( bits[bit.v]))];
 }
 
 window['CPMatrixTodo'] = CPMatrixTodo;
