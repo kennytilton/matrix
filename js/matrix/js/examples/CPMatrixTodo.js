@@ -42,66 +42,44 @@ function todomvc_credits () {
          "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"]
             .map( s => p({},s)));
 }
-var b2= "\
-function todomvc_credits () {\n\
-    return footer({class: 'info'},\n\
-        ['Double-click the text of a todo to change it',\n\
-            'Created by &lt;a href=\'http://tiltontec.com\'&gt;Kenneth Tilton',\n\
-            'Inspired by &lt;a href=\'http://todomvc.com\'&gt;TodoMVC&lt;/a&gt;']\n\
-            .map( s => p({},s)));\n\
-}\n\n\
-section({ class: 'todoapp'},\n\
-   header({class: 'header'},\n\
-     h1('todos'))),\n\
-todomvc_credits()";
 
-bits.push(() => [
-    section({ class: "todoapp"},
-        header({class: "header"},
-            h1("todos"))),
-
-    todomvc_credits(),
-
-    pre({class: 'cody'}, b2),
-    h2("Noteworthy:"),
-    ul( li( "Because this is just JS, we can write our own functions"),
-        li( "Meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."))
-]);
 
 var b3 = "\
-function credits (attrs, credits) {\n\
+function credits (attrs, ...content) {\n\
     return footer(Object.assign({}, {class: 'info'}, attrs),\n\
         // Look, Ma! No JSX! No toolchain! Standard JS....\n\
-        credits.map( s => p({},s)));\n\
+        content.map( s => p({},s)));\n\
 }\n\n\
 bits.push(() => [\n\
     section({ class: 'todoapp'},\n\
         header({class: 'header'},\n\
             h1('todos'))),\n\
     credits({style: 'font-size:18px'},\n\
-        ['Double-click the text of a todo to change it',\n\
-            'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton',\n\
-            'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC&lt;/a&gt;'])";
+        'Double-click the text of a todo to change it',\n\
+        'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton',\n\
+        'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC&lt;/a&gt;'])";
 
-function credits (attrs, credits) {
+function credits (attrs, ...content) {
     return footer(Object.assign({}, {class: "info"}, attrs),
         // Look, Ma! No JSX! No toolchain! Standard JS....
-        credits.map( s => p({},s)));
+        content.map( s => p({},s)));
 }
 
 bits.push(() => [
     section({ class: "todoapp"},
         header({class: "header"},
             h1("todos"))),
+
     credits({style: "font-size:18px"},
-        ["Double-click the text of a todo to change it",
-            "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-            "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"]),
+        "Double-click the text of a todo to change it",
+        "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"),
 
     pre({class: 'cody'}, b3),
     h2("Noteworthy:"),
-    ul( li( "Because this is just JS, we can write our own functions"),
-        li( "Meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."))
+    ul({style: "font-size:14px"},
+        li( "This is just JS, so we can write our own DOM functions aping HTML syntax..."),
+        li( "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."))
 ]);
 // ----------------------------------------------------------
 // ----------------------------------------------------------
