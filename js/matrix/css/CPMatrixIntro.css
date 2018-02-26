@@ -10,7 +10,24 @@ code {
 }
 
 .precode {
+    font-family: 'Source Code Pro', monospace;
     background: beige;
     padding: 1em;
     margin-right: 48px;
 }
+
+.techwrite {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/*
+ng font-family: 'Muli', sans-serif;
+!! font-family: 'Source Sans Pro', sans-serif;
+?? font-family: 'Roboto', sans-serif;
+font-family: 'Open Sans', sans-serif;
+font-family: 'Merriweather', serif;
+!! font-family: 'Nunito Sans', sans-serif;
+ok font-family: 'Lato', sans-serif;
+no font-family: 'Varela', sans-serif;
+no font-family: 'Montserrat', sans-serif;
+*/

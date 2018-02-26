@@ -92,14 +92,26 @@ function todoLiteAddNew (mx, e) {\n\
                                           completed: false});\n\
     }\n\
     e.target.value = null;\n\
-}\n\
-"
+}\n\n\
+section({ class: 'todoapp'},\n\
+        header({class: 'header'},\n\
+            h1('todos'),\n\
+            input({ class: 'new-todo',\n\
+                autofocus: true,\n\
+                placeholder: 'What needs doing?',\n\
+                onkeypress: todoLiteAddNew}))),\n\
+     section({ class: 'main',\n\
+                hidden: cF( c => TodosLite.v.length === 0)},\n\
+         ul({ class: 'todo-list'},\n\
+             c=> TodosLite.v.map( td => li( td.title))))";
 
 bits.push([
     enterTodos,
-    ["For a standalone input cell we have to use the property 'v' for gets and writes.",
+    ["New: changing data drives changing DOM population...",
+        "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
+        "For a standalone cell like TodosLite, we have to use the property 'v' for gets and writes.",
         "We use JS concat instead of push to force a new array so ...",
-        "... data flow internals will detect the change (unchanged test is ===)"],
+        "... data flow internals will detect the change (default unchanged test is ===)."],
 
     [section({ class: "todoapp"},
         header({class: "header"},
@@ -113,6 +125,40 @@ bits.push([
          ul({ class: "todo-list"},
              c=> TodosLite.v.map( td => li( td.title)))),
     todoCredits()]]);
+
+class Todo extends Model {
+    constructor( title ) {
+        super( { title: cI( title),
+                completed: cI( false)})
+    }
+}
+
+
+function todoBetterAddNew (mx, e) {
+    if (e.key !== 'Enter') return;
+    let title = e.target.value.trim();
+    if (title !== '') {
+        // concat forces new array so change detected
+        TodosLite.v = TodosLite.v.concat( new Todo( title));
+    }
+    e.target.value = null;
+}
+
+bits.push([
+    enterTodos,
+    ["We drop the credits to save real estate."],
+
+    [section({ class: "todoapp"},
+        header({class: "header"},
+            h1("todos"),
+            input({ class: "new-todo",
+                autofocus: true,
+                placeholder: "What needs doing?",
+                onkeypress: todoBetterAddNew}))),
+        section({ class: "main",
+                hidden: cF( c => TodosLite.v.length === 0)},
+            ul({ class: "todo-list"},
+                c=> TodosLite.v.map( td => li( td.title))))]]);
 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
@@ -130,17 +176,21 @@ function bitAssemble( bit) {
     var codeString, notes, code;
     [codeString, notes, code] = bit;
     return [
-        div( {style: { display: "flex",
+        div( {style: { margin_top: "36px",
+                        display: "flex",
                         flex_direction: "row"}},
-            pre({class: 'precode'}, codeString),
+            div( b("Code Highlights"), pre({class: 'precode'}, codeString)),
             div( code)),
         h2("Nota bene:"),
-        ul( {style: "font-size:18px"},
-            notes.map( n=> li( n)))
+        ul( {class: "techwrite",
+                style: "font-size:18px;list-style:square"},
+            notes.map( note=> li( {style: {margin_bottom: "6px"}},
+                note)))
     ];
 }
 function CPMatrixTodo () {
     return [
+        h1("Introducing Matrix&trade; and mxWeb&trade;"),
         div({style: {background: "#fdfdfd",
                 display: "flex",
                 flex_direction: "row",
@@ -157,7 +207,7 @@ function nTabs (n) {
         let ii = i;
         tabs.push( button( {onclick: ()=> bit.v = ii,
             style: cF( c=>"margin-left:8px;background-color:"
-                + (ii===bit.v? "cyan":"yellow"))}, ""+i));
+                + (ii===bit.v? "cyan":""))}, ""+i));
     }
     return tabs;
 }
