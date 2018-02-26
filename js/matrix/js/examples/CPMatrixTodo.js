@@ -24,9 +24,9 @@ bits.push(() => [
 
     footer({class: "info"},
         // Look, Ma! No JSX! No toolchain! Standard JS....
-        ['Double-click the text of a todo to change it',
-         'Created by <a href=\"http://tiltontec.com\">Kenneth Tilton',
-         'Inspired by <a href=\"http://todomvc.com\">TodoMVC</a>']
+        ["Double-click the text of a todo to change it",
+         "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+         "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"]
             .map( s => p({},s)))]]);
 
 var csCredits = "\
