@@ -11,7 +11,7 @@ footer({class: 'info'},\n\
     'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
     .map( s => p({},s)))";
 
-bits.push(() => [
+bits.push([
     b0,
     ["mxWeb&trade; function signatures mirror HTML tag syntax.",
     "Meaning a graphic designer could learn mxWeb.",
@@ -50,19 +50,69 @@ function credits (attrs, ...content) {
         content.map( s => p({},s)));
 }
 
-bits.push(() => [
+bits.push([
     csCredits,
     ["This is just JS, so we can write our own DOM functions aping HTML syntax...",
-    "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
+        "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
 
     [section({ class: "todoapp"},
         header({class: "header"},
             h1("todos"))),
 
-    credits({style: "font-size:18px"},
+        credits({style: "font-size:18px"},
+            "Double-click the text of a todo to change it",
+            "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+            "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]]);
+
+function todoCredits () {
+    return credits({style: "font-size:12px"},
         "Double-click the text of a todo to change it",
         "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]]);
+        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")
+}
+var TodosLite = cI([]);
+
+function todoLiteAddNew (mx, e) {
+    if (e.key !== 'Enter') return;
+    let title = e.target.value.trim();
+    if (title !== '') {
+        // concat forces new array so change detected
+        TodosLite.v = TodosLite.v.concat({title: title, completed: false});
+    }
+    e.target.value = null;
+}
+
+var enterTodos = "\
+var TodosLite = cI([]);\n\n\
+function todoLiteAddNew (mx, e) {\n\
+    if (e.key !== 'Enter') return;\n\n\
+    let title = e.target.value.trim();\n\
+    if (title !== '') {\n\
+        // concat forces new array so change detected\n\
+        TodosLite.v = TodosLite.v.concat({title: title, completed: false});\n\
+    }\n\
+    e.target.value = null;\n\
+}\n\
+"
+
+bits.push([
+    enterTodos,
+    ["For a standalone input cell we have to use the property 'v' for gets and writes.",
+        "We use JS concat instead of push to force a new array so ...",
+        "... data flow internals will detect the change (unchanged test is ===)"],
+
+    [section({ class: "todoapp"},
+        header({class: "header"},
+            h1("todos"),
+            input({ class: "new-todo",
+                autofocus: true,
+                placeholder: "What needs doing?",
+                onkeypress: todoLiteAddNew}))),
+     section({ class: "main",
+                hidden: cF( c => TodosLite.v.length === 0)},
+         ul({ class: "todo-list"},
+             c=> TodosLite.v.map( td => li( td.title)))),
+    todoCredits()]]);
 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
@@ -78,10 +128,10 @@ const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixTodo.bit");
 
 function bitAssemble( bit) {
     var codeString, notes, code;
-    [codeString, notes, code] = bit();
+    [codeString, notes, code] = bit;
     return [
-        pre({class: 'cody'}, codeString),
-        div( code),
+        div( pre({class: 'cody'}, codeString),
+        div( code)),
         h2("Nota bene:"),
         ul( {style: "font-size:18px"},
             notes.map( n=> li( n)))
