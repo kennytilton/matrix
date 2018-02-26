@@ -85,11 +85,11 @@ function todoLiteAddNew (mx, e) {
 var enterTodos = "\
 var TodosLite = cI([]);\n\n\
 function todoLiteAddNew (mx, e) {\n\
-    if (e.key !== 'Enter') return;\n\n\
+    if (e.key !== 'Enter') return;\n\
     let title = e.target.value.trim();\n\
     if (title !== '') {\n\
-        // concat forces new array so change detected\n\
-        TodosLite.v = TodosLite.v.concat({title: title, completed: false});\n\
+        TodosLite.v = TodosLite.v.concat({title: title,\n\
+                                          completed: false});\n\
     }\n\
     e.target.value = null;\n\
 }\n\
@@ -130,8 +130,10 @@ function bitAssemble( bit) {
     var codeString, notes, code;
     [codeString, notes, code] = bit;
     return [
-        div( pre({class: 'cody'}, codeString),
-        div( code)),
+        div( {style: { display: "flex",
+                        flex_direction: "row"}},
+            pre({class: 'precode'}, codeString),
+            div( code)),
         h2("Nota bene:"),
         ul( {style: "font-size:18px"},
             notes.map( n=> li( n)))
