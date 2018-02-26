@@ -253,7 +253,8 @@ var isTag = x => x instanceof Tag;
 // ---- formerly tags.js ------------------------------------------
 
 /* global Tag TagEvents */
-const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class','contenteditable'
+const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class'
+    ,'content', 'contenteditable'
 	,'contextmenu','dir','draggable','dropzone','for','hidden','href'
     ,'id','itemid','itemprop','itemref','itemscope'
 	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type']);
@@ -331,6 +332,11 @@ function tagAttrsBuild(md) {
 }
 
 function tag( tag, attrs, customs, kids) {
+    if ( kids.length === 1 && isString( kids[0])) {
+        if ( attrs.content ) throw( `tag ${tag}has one string child ${kids[0]} but also content ${attrs.content}`);
+        attrs.content = kids[0];
+        kids = null;
+    }
     if (customs)
         for ( let k in attrs || {})
         if (customs.hasOwnProperty( k)) {

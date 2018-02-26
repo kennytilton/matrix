@@ -184,6 +184,7 @@ class Model {
 			(how.insidep
 			&& this.kids
 			&& this.kids.somex((eltx, elt)=>{
+			    clg(`fmTv sees ${self} eltx ${eltx} elt ${elt}`);
 				//clg(`${self.name} kidchks ${elt.name}`);
 				// todo this bombed when undefined (via no-return bug) got into kids (they need packed-flat)
 				// clg(`somex passed eltx ${eltx} and elt ${elt}`)

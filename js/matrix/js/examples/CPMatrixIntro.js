@@ -1,10 +1,5 @@
-// --- ignore this implementation stuff -------------
-
 var bits = new Array();
 
-//--- the beef -----------------------------------------
-/*
- */
 bits.push(()=> [ h1( "Welcome to mxWeb and Matrix"),
     pre( "Matrix is a fine-grained data flow library where\n\
 any toplevel var or object property can be\n\
@@ -64,17 +59,20 @@ bits.push(() =>
 
 function hello_web_component (salut) {
     // enter Matrix DOM generation
-    return h1(`${salut}, world.`);
+    return h3(`${salut}, world.`);
 }
 
-bits.push(() => [pre("In effect, we now have web components*, aka custom tags:\n\
-write whatever function you like with any parameters you like.\n\
-As long as you eventually return strings or mxWeb components, it will work."),
+bits.push(() => [pre("In effect, we now have web components*, aka custom tags: we write\n\
+whatever function we like with any parameters we like. As long as \n\
+we eventually return strings or mxWeb components, we are good.\n\n\
+Note that we are also one up on JSX: we write standard JS to generate DOM."),
     pre({class:'cody'}, "function hello_web_component (salut) {\n\
-   return h1(`${salut}, world.`);\n\
+   return h3(`${salut}, world.`);\n\
 }\n\n\
-hello_web_component(\"Bonjour\")"),
-    hello_web_component("Bonjour"),
+['Bonjour', 'Aloha', 'Ciao', 'Howdy'].map(\n\
+        s=> hello_web_component(s))"),
+    ["Bonjour", "Aloha", "Ciao", "Howdy"].map(
+        s=> hello_web_component(s)),
     "* Some info on ",
     a({href: "https://developer.mozilla.org/en-US/docs/Web/Web_Components",
         target: "_blank"}, "Web components")]);
@@ -86,10 +84,10 @@ to any mxWeb&trade; tag. 'name' will come in handy later\n\
 in navigating the Matrix.\n\n\
 It may not jump out at us, but being able to extend Matrix objects\n\
 with custom attributes contibutes a lot to object reuse."),
-        p( pre({class:'cody'}, "button({ class: 'pure-button',\n\
+        pre({class:'cody'}, "button({ class: 'pure-button',\n\
          onclick: me => console.log(`Button ${me.name} handled ${e} at ${Date.now)}.`)},\n\
        {name: 'plus-1'},\n\
-       '++Plus')")),
+       '++Plus')"),
         button({ class: "pure-button",
                 onclick: (me, e) => console.log(`Button ${me.name} handled ${e} at ${Date.now()}.`)},
             {name: "plus-1"},
@@ -106,14 +104,15 @@ handler that runs on the DOM event. Which is nice.")
 bits.push(() => [
         h2("Enter Data Flow"),
         pre("Well, just a bit of data flow: the observer callback, which\n\
-is vital to Matrix programming. The observer\n\
-is on a custom property 'clicks', a so-called 'input cell'\n\
+is vital to Matrix programming. The observer sits on\n\
+a custom 'clicks' property, a so-called input cell (hence 'cI')\n\
 to which we are free to assign values from imperative code.\n\n\
 Input cells are inputs to the Matrix data flow graph; it cannot\n\
-be formulae all the way down&trade;."),
+be formulae All the Way Down&trade;."),
     pre({class: 'cody'}, "button({onclick: me => ++me.clicks},\n\
       {name: 'plus-1',\n\
-       clicks: cI(0, {observer: (slot, me, newv) => console.log(`Button ${me.name} clicked ${newv} times.`)})},\n\
+       clicks: cI(0, {observer: (slot, me, newv) =>\n\
+                         console.log(`Button ${me.name} clicked ${newv} times.`)})},\n\
        '++Plus')"),
         button({class: "pure-button",
                 onclick: me => ++me.clicks},
@@ -126,27 +125,54 @@ be formulae all the way down&trade;."),
 
 bits.push(() => [
         h2("Intra-object Data Flow"),
-    pre("Intra-object means we can defer navigation for a moment.\n\n\
+        pre("We start with simple intra-object data flow so we can\n\
+defer for a moment the complexity of navigating\n\
+the Matrix in search of other data.\n\n\
 Click the button to see its color and content\n\
 derived from the number of clicks, which again\n\
 we track in a custom 'input' cell."),
 
-    pre({class: 'cody'},
-        "button({style: cF( c=> 'background:' + (c.md.clicks % 2 == 0? 'cyan':'yellow')),\n\
+        pre({class: 'cody'},
+            "button({style: cF( c=> 'background:' + (c.md.clicks % 2 == 0? 'cyan':'yellow')),\n\
         onclick: me => ++me.clicks,\n\
         content: cF( c=> '++Plus '+c.md.clicks)},\n\
-    {clicks: cI(0)})"),
-    button({class: "pure-button",
-            style: cF( c=> "background:" + (c.md.clicks % 2 == 0? "cyan":"yellow")),
-            onclick: me => ++me.clicks,
-            content: cF( c=> "++Plus "+c.md.clicks)},
-        {name: "plus-1",
-            clicks: cI(0)})
+      {clicks: cI(0)})"),
+        button({class: "pure-button",
+                style: cF( c=> "background:" + (c.md.clicks % 2 == 0? "cyan":"yellow")),
+                onclick: me => ++me.clicks,
+                content: cF( c=> "++Plus "+c.md.clicks)},
+            {name: "plus-1",
+                clicks: cI(0)})
     ]
 );
 
 
+bits.push(() => section(
+        h2("Inter-object Data Flow"),
+        pre("The world is our data flow oyster.\n\n" +
+            "'fmUp' searchs up the family of Matrix objects to find 'plus-1'.\n" +
+            "There is quita lot of family search capability in the Matrix API,\n" +
+            "but in the end we are just traversing a simple tree of parent/kids\n" +
+            "with a matching function to find a desired other Matrix object\n" +
+            "bearing information we seek."),
 
+    pre({class: 'cody'}, "button({onclick: me => ++me.clicks},\n\
+    {name: 'plus-1',\n\
+     clicks: cI(0)}, '++Oysters'),\n\n\
+p({content: cF( c=> `We will have ${c.md.fmUp('plus-1').clicks} oysters, please.`)}))"),
+
+        button({onclick: me => ++me.clicks},
+            {name: "plus-1",
+                clicks: cI(0)}, "++Oysters"),
+
+        p({content: cF( c=> `We will have ${c.md.fmUp("plus-1").clicks} oysters, please.`)})));
+
+
+
+// button({onclick: me => ++me.clicks, "++Plus ")},
+//     {name: "plus-1",
+//         clicks: cI(0)}),
+//     h1({content: cF( c=> "Bam "+ c.md.fmUp("plus-1").clicks)}))
 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
