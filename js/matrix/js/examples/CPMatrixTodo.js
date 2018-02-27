@@ -26,7 +26,8 @@ section({class: 'todoapp'},\n\
 bits.push([
     "Preface", welcome,
     bz,
-    ["Pardon my CSS.",
+    ["The above is a sample of the frames to come.",
+        "Pardon my CSS. And even my Javascript. I am a native Lisper.",
     "We have a ClojureScript version as well."],
 
     [section({ class: "todoapp"},
@@ -49,10 +50,10 @@ footer({class: 'info'},\n\
 bits.push([
     "Title","blah",
     b0,
-    ["mxWeb&trade; function signatures mirror HTML tag syntax.",
+    ["mxWeb&trade; DOM generator signatures mirror HTML tag syntax.",
     "Meaning a graphic designer could learn mxWeb.",
     "JSX? Bah. We code straight JS.",
-    "Meaning 'No toolchain required'. Toolchains bite."],
+    "Meaning No Toolchain Required&trade;. Yeah."],
 
     [section({ class: "todoapp"},
         header({class: "header"},
@@ -199,11 +200,11 @@ bits.push([
             ul({ class: "todo-list"},
                 c=> TodosLite.v.map( td => li( td.title))))]]);
 
-// ----------------------------------------------------------
-// ----------------------------------------------------------
-// --- below, the code that manages this pen ----------------
-// ----------------------------------------------------------
-// ----------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// --- below, the application without the application within ---
+// -------------------------------------------------------------
+// -------------------------------------------------------------
 
 
 const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixTodo.bit");
@@ -211,38 +212,6 @@ const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixTodo.bit");
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
     { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
 
-function newsprint( text) {
-    let pgs = text.split("\n"),
-    brk = Math.ceil( pgs.length/2);
-    clg( "newsprint", pgs.length, brk);
-
-    return div( {style: {display: "flex",
-                        flex_direction: "row"},
-                class: "techwrite"},
-                div({style: {flex: "50%", padding: "10px"}},
-                    pgs.slice(0, brk).map( pgr => p(pgr))),
-                div({style: {flex: "50%", padding: "10px"}},
-                    pgs.slice(brk).map( pgr => p(pgr))));
-}
-
-function bitAssemble( bit) {
-    var codeString, notes, code;
-    [title, narrative, codeString, notes, code] = bit;
-    return [
-        h2(title),
-        newsprint(narrative),
-        div( {style: { margin_top: "36px",
-                        display: "flex",
-                        flex_direction: "row"}},
-            div( b("Code Highlights"), pre({class: 'precode'}, codeString)),
-            div( code)),
-        h2("Nota bene:"),
-        ul( {class: "techwrite",
-                style: "font-size:18px;list-style:square"},
-            notes.map( note=> li( {style: {margin_bottom: "6px"}},
-                note)))
-    ];
-}
 function CPMatrixTodo () {
     return [
         h1("Introducing Matrix&trade; and mxWeb&trade;"),
@@ -255,6 +224,54 @@ function CPMatrixTodo () {
 }
 
 window['CPMatrixTodo'] = CPMatrixTodo;
+
+function newsprint( text) {
+    /*
+    This is a great example of a custom Web component,
+    However lame the actual implementation, methinks
+    the potential clear.
+     */
+    let pgs = text.split("\n"),
+    brk = null;
+
+    for ( let n =0, chars = 0; n < pgs.length; ++n) {
+        chars += pgs[n].length;
+        clg('pg', chars, pgs[n].length);
+        if ( chars > text.length/2) {
+            clg('chars tot', n, chars, text.length/2);
+            brk = ++n;
+            break;
+        }
+    }
+    clg( "newsprint", pgs.length, brk);
+
+    return div( {style: {display: "flex",
+                        flex_direction: "row"},
+                class: "techwrite"},
+                div({class: "narrativecol"},
+                    pgs.slice(0, brk).map( pgr => p(pgr))),
+                div({class: "narrativecol"},
+                    pgs.slice(brk).map( pgr => p(pgr))));
+}
+
+function bitAssemble( bit) {
+    var codeString, notes, code;
+    [title, narrative, codeString, notes, code] = bit;
+    return [
+        h2(title),
+        newsprint(narrative),
+        div( {style: { margin_top: "36px",
+                        display: "flex",
+                        flex_direction: "row"}},
+            div( h3("Code Highlights"), pre({class: 'precode'}, codeString)),
+            div( code)),
+        h3("Nota bene:"),
+        ul( {class: "techwrite",
+                style: "list-style:square"},
+            notes.map( note=> li( {style: {margin_bottom: "6px"}},
+                note)))
+    ];
+}
 
 function nTabs (n) {
     tabs = [];
