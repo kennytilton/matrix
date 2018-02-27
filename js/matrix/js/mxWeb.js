@@ -55,6 +55,8 @@ function obsKids (slot, md, newv, oldv, c) {
         } else {
             let incubator = document.createElement('div');
 
+            console.log( 'building new tag ' + newk.tag);
+
             incubator.innerHTML = Tag.toHTML( newk);
 
             let newDom = newk.domCache = incubator.removeChild( incubator.firstChild);
@@ -139,6 +141,8 @@ class Tag extends Model {
 
 		this.sid = ++sid;
 
+		if (attrs===undefined) debugger;
+
 		if (attrs.id) {
 			this.id = attrs.id;
 		} else {
@@ -215,6 +219,8 @@ class Tag extends Model {
 	}
 	slotObserverResolve(slot) {
 		let obs = this.slotObservers[slot];
+		if (slot !== 'kids')
+		    console.log('observing slot '+slot);
 		if (!obs) {
 			if (slot === 'content') {
 				obs = obsContent;

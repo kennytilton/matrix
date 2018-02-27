@@ -121,7 +121,9 @@ followed by zero or more content elements) or we can throw convention aside \
 and create any signature we like.\
 \n\
 Our only obligation is to return one or an array of products of mxWeb DOM \
-generators.";
+generators.\
+\n\
+If you are wondering, no, we have not yet touched on data flow. Next.";
 
 bits.push(
     {
@@ -182,10 +184,18 @@ section({ class: 'todoapp'},\n\
          ul({ class: 'todo-list'},\n\
              c=> TodosLite.v.map( td => li( td.title))))";
 
+var enterFlow = "\
+At long last we get to experience data flow programming with Matrix, \
+and it is a doozey: we will add DOM (an LI) dynamically in response to the user \
+creating a new Todo item. We will also make a dashboard appear, one the TodoMVC \
+wants hidden if no Todos exist. That dashboard will have to show a count of the \
+items not yet completed (and quite a bit more later).\
+";
+
 bits.push(
     {
-        title: "Title",
-        chat: "blah",
+        title: "Enter Data Flow",
+        chat: enterFlow,
         code: enterTodos,
         notes: [
             "New: changing data drives changing DOM population...",
@@ -214,8 +224,9 @@ bits.push(
 
 class Todo extends Model {
     constructor( title ) {
-        super( { title: cI( title),
-                completed: cI( false)})
+        super( null, null,
+            { title: cI( title),
+            completed: cI( false)});
     }
 }
 
@@ -225,6 +236,7 @@ function todoBetterAddNew (mx, e) {
     let title = e.target.value.trim();
     if (title !== '') {
         // concat forces new array so change detected
+        clg('title is ', title)
         TodosLite.v = TodosLite.v.concat( new Todo( title));
     }
     e.target.value = null;
@@ -251,7 +263,7 @@ bits.push(
                     hidden: cF(c => TodosLite.v.length === 0)
                 },
                 ul({class: "todo-list"},
-                    c => TodosLite.v.map(td => li(td.title))))]
+                    c => TodosLite.v.map(td => li( td.title))))]
     });
 
 // -------------------------------------------------------------
@@ -286,18 +298,20 @@ window['CPMatrixTodo'] = CPMatrixTodo;
 
 function newsprint( text) {
     /*
-    This is a great example of a custom Web component,
-    However lame the actual implementation, methinks
-    the potential clear.
+    This is a great example of a custom Web component.
+    Not so much the quickly hacked implementation, but
+    the idea itself of filling a void in HTML (flowing
+    text into columns like a newspaper) with a function
+    which, once evolved, becomes a permanent asset. And
+    it just yields standard HTML/CSS. And no preprocessor
+    is required.
      */
     let pgs = text.split("\n"),
     brk = null;
 
     for ( let n =0, chars = 0; n < pgs.length; ++n) {
         chars += pgs[n].length;
-        clg('pg', chars, pgs[n].length);
         if ( chars > text.length/2) {
-            clg('chars tot', n, chars, text.length/2);
             brk = ++n;
             break;
         }

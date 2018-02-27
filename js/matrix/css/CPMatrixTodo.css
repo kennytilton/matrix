@@ -1,0 +1,50 @@
+.caution {
+    background: #ff0;
+    padding: 4px;
+    border: 1px dashed #c5c5c5;
+}
+
+code {
+    background: beige;
+    padding: 1em;
+}
+
+.precode {
+    font-family: 'Source Code Pro', monospace;
+    background: beige;
+    padding: 1em;
+    margin-right: 48px;
+}
+
+.techwrite {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.narrativecol {
+    flex: 30%;
+    max-width: 300px;
+    padding-left: 24px;
+}
+
+/*
+!! font-family: 'Mukta Malar', sans-serif;
+font-family: 'Noto Sans', sans-serif;
+font-family: 'Work Sans', sans-serif;
+font-family: 'Karla', sans-serif;
+font-family: 'Mukta Vaani', sans-serif;
+!! font-family: 'Nunito', sans-serif;
+font-family: 'Barlow', sans-serif;
+!!font-family: 'Signika', sans-serif;
+font-family: 'Yantramanav', sans-serif;
+!! font-family: 'Philosopher', sans-serif;
+
+ng font-family: 'Muli', sans-serif;
+!! font-family: 'Source Sans Pro', sans-serif;
+?? font-family: 'Roboto', sans-serif;
+font-family: 'Open Sans', sans-serif;
+font-family: 'Merriweather', serif;
+!! font-family: 'Nunito Sans', sans-serif;
+ok font-family: 'Lato', sans-serif;
+no font-family: 'Varela', sans-serif;
+no font-family: 'Montserrat', sans-serif;
+*/
