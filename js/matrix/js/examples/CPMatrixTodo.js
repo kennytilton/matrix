@@ -47,8 +47,28 @@ footer({class: 'info'},\n\
     'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
     .map( s => p({},s)))";
 
+var notVDom = "\
+The Prime Directive&trade; of mxWeb code is to work and look so much \
+like HTML and CSS that graphic designers will be able to write it.\
+\n\
+Where we come up short, please file an RFE.\
+\n\
+This is not VDOM, and there is no diffing, but DOM maintenance is \
+more efficient than those allow. Our proxy elements do map isomorphically to \
+the eventual DOM, but they stay around and are regenerated only \
+as the page in fact changes its structure as the user works. Hence \
+the effciency.\
+\n\
+The point granularity of the underlying data flow engine Matrix&trade; \
+means mxWeb always knows exactly what needs updating in the DOM; if a user \
+gesture requires no more than that a widget appear, it only removes the \
+hidden attribute from that widget. \
+\n\
+The developer drops into Javascript freely, because all mxWeb authoring \
+is just Javascript.";
+
 bits.push([
-    "Title","blah",
+    "An All-Javascript HTML Work-alike.",notVDom,
     b0,
     ["mxWeb&trade; DOM generator signatures mirror HTML tag syntax.",
     "Meaning a graphic designer could learn mxWeb.",
@@ -87,11 +107,22 @@ function credits (attrs, ...content) {
         content.map( s => p({},s)));
 }
 
+var webcoDone = "\
+One nice thing about everything HTML-ish Javascript is that \
+writing a custom tag is as easy as writing a function.\
+\n\
+We can treate a function that apes HTML syntax (a tag with optional attributes, \
+followed by zero or more content elements) or we can throw convention aside \
+and create any signature we like.\
+\n\
+Our only obligation is to return one or an array of products of mxWeb DOM \
+generators.";
+
 bits.push([
-    "Title","blah",
+    "Web Components? Done.", webcoDone,
     csCredits,
-    ["This is just JS, so we can write our own DOM functions aping HTML syntax...",
-        "...meaning the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
+    ["See the function 'credits'? We now can write our own DOM functions aping HTML syntax...",
+        "...and the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
 
     [section({ class: "todoapp"},
         header({class: "header"},
@@ -207,6 +238,9 @@ bits.push([
 // -------------------------------------------------------------
 
 
+// ------------------------------------------------------------------
+// --- Next we "lift" localStorage into the Matrix. To a degree. ----
+
 const bit = cFI( c=> {let r = window.localStorage.getObject("CPMatrixTodo.bit");
         return r === null ? 0 : (r < 0? 0: (r >= bits.length? bit.length -1: r));},
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
@@ -243,7 +277,6 @@ function newsprint( text) {
             break;
         }
     }
-    clg( "newsprint", pgs.length, brk);
 
     return div( {style: {display: "flex",
                         flex_direction: "row"},
