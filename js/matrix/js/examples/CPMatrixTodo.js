@@ -321,22 +321,22 @@ As you play, keep an eye on 'items remaining'.";
 
 var moFlowCode = "\
 function todoLILite( c, todo) {\n\
-    return li({ class: cF(c => (todo.completed ? 'completed' : ''))},\n\
+    return li({ <u>class: cF(c => (todo.completed ? 'completed' : ''))</u>},\n\
         {todo: todo},\n\
 \n\
         div({class: 'view'},\n\
             input({\n\
                     class: 'toggle',\n\
                     type: 'checkbox',\n\
-                    checked: cF( c=> todo.completed),\n\
-                    onclick: mx=> mx.todo.completed = !mx.todo.completed,\n\
-                    title: cF( c=> `Mark ${todo.completed? 'in' : ''}complete.`)},\n\
+                    <u>checked: cF( c=> todo.completed)</u>,\n\
+                    onclick: <b><i>mx=> mx.todo.completed = !mx.todo.completed</i></b>,\n\
+                    title: <u>cF( c=> `Mark ${todo.completed? 'in' : ''}complete.`)}</u>,\n\
                 {todo: todo})\n\
 \n\
-            , label({ content: cF( c=> todo.title)})\n\
+            , label({ content: todo.title})\n\
 \n\
             , button({ class: 'destroy',\n\
-                       onclick: mx => mx.todo.deleted = true},\n\
+                       <b><i>onclick: mx => mx.todo.deleted = true}</i></b>,\n\
                 {todo: todo})\n\
         )\n\
     );\n\
@@ -344,10 +344,10 @@ function todoLILite( c, todo) {\n\
 \n\
 function clearCompleted () {\n\
     return button({ class: 'clear-completed',\n\
-            hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0),\n\
+            <u>hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0)</u>,\n\
             onclick: mx => TodosLite.v\n\
                              .filter( td => td.completed )\n\
-                             .map( td => td.deleted = true)},\n\
+                             .map( <b><i>td => td.deleted = true</i></b>)},\n\
         'Clear completed');\n\
 }";
 
