@@ -26,7 +26,7 @@ body {
     background: #f5f5f5;
     color: #4d4d4d;
     min-width: 230px;
-    max-width: 1024px;
+    max-width: 768px;
     margin: 0 auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -144,6 +144,7 @@ body {
 .todo-list {
     margin: 0;
     padding: 0;
+    background: white;
     list-style: none;
 }
 

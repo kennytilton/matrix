@@ -30,7 +30,7 @@ bits.push(
             [section({ class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
-             p("The working app will appear here.")]
+             center("Coming soon, the app.")]
     });
 
 var b0 = "\
@@ -138,7 +138,11 @@ function todoAddNewEZ (mx, e) {
         if (title !== '') {
             // we start with a simple JS object as our to-do
             // concat forces new array so change detected
-            TodosLite.v = TodosLite.v.concat({title: title, completed: false});
+            TodosLite.v = TodosLite.v.concat({
+                title: title,
+                completed: false,
+                deleted: false
+            });
         }
     }
 }
@@ -148,7 +152,7 @@ Below:\n\
    - underscores highlight code involving data flow.\n\
    - 'cI' creates an 'input Cell'.\n\
    - 'cF' creates a 'formula Cell.\n\n\n\
-<u>var TodosLite = cI([]);</u> // <b>a rare standalone cell. Use TodosLite.v to read/write.</b>\n\
+<b>var TodosLite = cI([]);</u> // a rare standalone cell. Use TodosLite.v to read/write.</b>\n\
 \n\
 document.body.innerHTML =  tag2html(\n\
     todoAppHeader( todoAddNewEZ),\n\
@@ -164,7 +168,7 @@ function todoAddNewEZ (mx, e) {\n\
         if (title !== '') {\n\
             // we start with a simple JS object as our to-do\n\
             // concat forces new array so change gets detected by Matrix engine\n\
-            <u>TodosLite.v = TodosLite.v.concat({title: title, completed: false});</u>\n\
+            <i>TodosLite.v = TodosLite.v.concat({title: title, completed: false});</i>\n\
         }\n\
     }\n\
 }\n\n\
@@ -191,17 +195,20 @@ var enterFlow = "\
 Now to data flow. Our first use case is a doozey: we must \
 dynamically add DOM (an LI, in fact) when the user enters a new Todo.\
 \n\
+Go ahead, try it; the app within the app is live.\n\
+\n\
 We must also make appear a dashboard with a count of the \
 items not yet completed.\
 \n\
-To create a new to-do item, just type something and hit Return.\
-\n\
-Note the transparency. Simply reading TodosLite.v establishes the dependency, and \
-simply setting it triggers recalculation of dependent values. \
+Note the transparency of the data flow in the code below. Well, you \
+cannot, it is transparent, so we underscored (literally) the places \
+dependency is established and italicized where data propagation is triggered.\
 \n\
 Transparency is vital to the data flow paradigm. TodoMVC requires \
 just a dozen dependencies, but real-world applications \
-involve hundreds. Manual publish/subscribe scales poorly.";
+involve hundreds.\
+\n\
+Manual publish/subscribe works but gets old fast.";
 
 function todoAppHeader ( newTodoHandler ) {
     return section({class: "todoapp"},
@@ -210,21 +217,22 @@ function todoAppHeader ( newTodoHandler ) {
                 input({
                     class: "new-todo",
                     autofocus: true,
-                    placeholder: "What needs doing?",
+                    placeholder: "Type an item to do and hit Return.",
                     onkeypress: newTodoHandler
                 })));
 }
 
-function todoDashboardEZ () {
+function todoDashboardEZ ( ...plugins ) {
     return footer({
             class: "footer",
-            hidden: cF( c => TodosLite.v.length ===0)},
+            hidden: cF( c => TodosLite.v.filter( td=> !td.deleted).length ===0)},
         span({ class: "todo-count"},
             {content: cF(c => {
-                let remCt = TodosLite.v.filter(todo => !todo.completed).length;
+                let remCt = TodosLite.v.filter(todo => !(todo.completed || todo.deleted)).length;
                 // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);
                 return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;
-            })})
+            })}),
+        (plugins || []).map( p => p())
     );
 }
 
@@ -246,7 +254,9 @@ bits.push(
                     hidden: cF(c => TodosLite.v.length === 0)
                 },
                 ul({class: "todo-list"},
-                    c => TodosLite.v.map(td => li(td.title)))),
+                    c => TodosLite.v
+                            .map(td => li({style: {padding: "9px"}},
+                                td.title)))),
             todoDashboardEZ()]
     });
 
@@ -274,11 +284,84 @@ function todoAddNewBetter (mx, e) {
     }
     e.target.value = null;
 }
+
+function todoLILite( c, todo) {
+    return li({ class: cF(c => (todo.completed ? "completed" : ""))},
+        {todo: todo},
+
+        div({class: "view"},
+            input({
+                    class: "toggle",
+                    type: "checkbox",
+                    checked: cF( c=> todo.completed),
+                    onclick: mx=> mx.todo.completed = !mx.todo.completed,
+                    title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
+                {todo: todo})
+
+            , label({ content: cF( c=> todo.title)})
+
+            , button({ class: "destroy",
+                    onclick: mx => mx.todo.deleted = true},
+                {todo: todo})
+        )
+    );
+}
+
+var moFlowChat = "Add a to-do and check out the fancy new LI.\
+\n\
+The circle to the left is where you toggle whether a to-do has been completed. \
+If you click one, look for 'Clear completed' in the dashboard. That is a working button.\
+\n\
+Remember, the spec says to hide the dashboard if there are no items, completed or not. \
+Watch for the dashboard to disappear when you delete the last item.\n\
+\n\
+When you hover a to-do, a red 'X' appears to the far right. Click that to \
+permanently delete a to-do item.\n\
+As you play, keep an eye on 'items remaining'.";
+
+var moFlowCode = "\
+function todoLILite( c, todo) {\n\
+    return li({ class: cF(c => (todo.completed ? 'completed' : ''))},\n\
+        {todo: todo},\n\
+\n\
+        div({class: 'view'},\n\
+            input({\n\
+                    class: 'toggle',\n\
+                    type: 'checkbox',\n\
+                    checked: cF( c=> todo.completed),\n\
+                    onclick: mx=> mx.todo.completed = !mx.todo.completed,\n\
+                    title: cF( c=> `Mark ${todo.completed? 'in' : ''}complete.`)},\n\
+                {todo: todo})\n\
+\n\
+            , label({ content: cF( c=> todo.title)})\n\
+\n\
+            , button({ class: 'destroy',\n\
+                       onclick: mx => mx.todo.deleted = true},\n\
+                {todo: todo})\n\
+        )\n\
+    );\n\
+}\
+\n\
+function clearCompleted () {\n\
+    return button({ class: 'clear-completed',\n\
+            hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0),\n\
+            onclick: mx => TodosLite.v\n\
+                             .filter( td => td.completed )\n\
+                             .map( td => td.deleted = true)},\n\
+        'Clear completed');\n\
+}";
+
+function clearCompleted () {
+    return button({ class: "clear-completed",
+            hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0),
+            onclick: mx => TodosLite.v.filter( td => td.completed ).map( td => td.deleted = true)},
+        "Clear completed");
+}
 bits.push(
     {
-        title: "More Data Flow: To-dos get their own data flow",
-        chat: "blah",
-        code: "",
+        title: "To-Dos get their own data flow",
+        chat: moFlowChat,
+        code: moFlowCode,
         notes: [""],
         mxDom: [
             todoAppHeader(todoAddNewBetter),
@@ -287,8 +370,10 @@ bits.push(
                     hidden: cF(c => TodosLite.v.length === 0)
                 },
                 ul({class: "todo-list"},
-                    c => TodosLite.v.map(td => li( td.title)))),
-            todoDashboardEZ()]
+                    c => TodosLite.v
+                        .filter(todo => !todo.deleted)
+                        .map(td => todoLILite( c, td)))),
+            todoDashboardEZ(clearCompleted)]
     });
 
 // -------------------------------------------------------------
@@ -308,15 +393,21 @@ const bit = cFI( c=> {
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
     { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
 
+function toolbar () {
+    return div({
+            style: {background: "#fdfdfd",
+            display: "flex",
+            flex_direction: "row",
+            align_items: "center"}},
+        controls)
+}
 function CPMatrixTodo () {
     return [
         h1("Introducing Matrix&trade; and mxWeb&trade;"),
-        div({style: {background: "#fdfdfd",
-                display: "flex",
-                flex_direction: "row",
-                align_items: "center"}},
-            controls),
-        div( c=> bitAssemble( bits[bit.v]))];
+        toolbar(),
+        div( c=> bitAssemble( bits[bit.v])),
+        toolbar()
+    ];
 }
 
 window['CPMatrixTodo'] = CPMatrixTodo;
@@ -355,13 +446,12 @@ function bitAssemble( b) {
     var codeString, notes, code;
 
     return [
+        div( b.mxDom),
         h2( b.title),
         newsprint( b.chat),
-        div( {style: { margin_top: "36px",
-                        display: "flex",
-                        flex_direction: "row"}},
-            div( h3("Code Highlights"), pre({class: 'precode'}, b.code)),
-            div( b.mxDom)),
+        div( h3("Code Highlights"),
+            pre({class: 'precode'}, b.code)),
+
         h3("Nota bene:"),
         ul( {class: "techwrite",
                 style: "list-style:square"},
