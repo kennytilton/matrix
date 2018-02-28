@@ -1,21 +1,14 @@
 var bits = new Array();
 
-var welcome = "Does the Web Framework Emperor have no clothes? Do we really \
-need tool chains as long as our arm? Must we explicitly publish and \
-subscribe to be reactive?\
+var welcome = "Welcome to the development of an application within an application built \
+on nothing more than HTML, CSS, and a fine-grained data flow library.\
 \n\
-Welcome to the development of an application within an application built \
-on nothing more than HTML, CSS, and a fine-grained, glitch-free, transparent, \
-dynamic data flow library.\
+Impossible, you say? Sixty-four submissions to TodoMVC cannot be in vain! Read on.\
 \n\
-Impossible? Sixty-four submissions to TodoMVC cannot be in vain!\
-\n\
-Speaking of which, TodoMVC is the application we will be developing within \
+Speaking of TodoMVC, that is the application we will be developing within \
 this Matrix/mxWeb&trade; driver application.\
 \n\
-(See the end of this source for the code to the driver application.)\
-\n\
-Now please check the notes below, then hit 'Next' above to get started.";
+Please check the notes below then hit 'Next' to get started.";
 
 
 var bz = "\
@@ -55,24 +48,18 @@ var notVDom = "\
 The Prime Directive&trade; of mxWeb code is to work and look so much \
 like HTML and CSS that graphic designers will be able to write it.\
 \n\
-Where we come up short, please file an RFE.\
+Where we come up short, please file an RFE.\n\
 \n\
-This is not VDOM, and there is no diffing, but DOM maintenance is \
-more efficient than those allow. Our <i>proxy</i> elements do map isomorphically to \
-the eventual DOM, but they persist as the user works. Hence \
-the effciency.\
+mxWeb is developer firendly, too; we code JS freely because <i>all</i> mxWeb authoring \
+is just JS.\
 \n\
-The point granularity of the underlying data flow engine Matrix&trade; \
-means mxWeb always knows exactly what needs updating in the DOM; if a user \
-gesture requires no more than that a widget appear, it only removes the \
-hidden attribute from that widget. \
-\n\
-The developer drops into Javascript freely, because all mxWeb authoring \
-is just Javascript.";
+As for speed, this is not VDOM and there is no diffing, yet DOM maintenance is \
+more efficient than those allow. The point granularity of the data flow engine \
+tells mxWeb the exact minimum of DOM updates needed at every turn.";
 
 bits.push(
     {
-        title: "An All-Javascript HTML Work-alike.",
+        title: "An All-Javascript HTML Work-alike. And fast.",
         chat: notVDom,
         code: b0,
         notes: [
@@ -113,7 +100,7 @@ function credits (attrs, ...content) {
 }
 
 var webcoDone = "\
-One nice thing about everything HTML-ish Javascript is that \
+One nice thing about everything being just Javascript is that \
 writing a custom tag is as easy as writing a function.\
 \n\
 We can treate a function that apes HTML syntax (a tag with optional attributes, \
@@ -121,9 +108,7 @@ followed by zero or more content elements) or we can throw convention aside \
 and create any signature we like.\
 \n\
 Our only obligation is to return one or an array of products of mxWeb DOM \
-generators.\
-\n\
-If you are wondering, no, we have not yet touched on data flow. Next.";
+generators.";
 
 bits.push(
     {
@@ -160,10 +145,16 @@ function todoAddNewEZ (mx, e) {
 
 var enterTodos = "\
 Below:\n\
-   underscores highlight code involving data flow.\n\
-   'cI' creates an 'input Cell'.\n\
-   'cF' creates a 'formula Cell.\n\n\n\
+   - underscores highlight code involving data flow.\n\
+   - 'cI' creates an 'input Cell'.\n\
+   - 'cF' creates a 'formula Cell.\n\n\n\
 <u>var TodosLite = cI([]);</u> // <b>a rare standalone cell. Use TodosLite.v to read/write.</b>\n\
+\n\
+document.body.innerHTML =  tag2html(\n\
+    todoAppHeader( todoAddNewEZ),\n\
+    section({ <u>hidden: cF( c => TodosLite.v.length === 0)},</u>\n\
+      ul( c=> <u>TodosLite.v.map( td => li( td.title))))</u>,\n\
+    todoDashboardEZ());\n\
 \n\
 function todoAddNewEZ (mx, e) {\n\
     if (e.key === 'Enter') {\n\
@@ -184,12 +175,6 @@ function todoDashboardEZ () {\n\
                    return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
             })}));}\n\
 \n\
-document.body.innerHTML =  tag2html(\n\
-    todoAppHeader( todoAddNewEZ),\n\
-    section({ <u>hidden: cF( c => TodosLite.v.length === 0)},</u>\n\
-             ul( c=> <u>TodosLite.v.map( td => li( td.title))))</u>,\n\
-    todoDashboardEZ())\n\
-\n\
 function todoAppHeader ( newTodoHandler ) {\n\
     return section({class: 'todoapp'},\n\
             header({class: 'header'},\n\
@@ -203,21 +188,20 @@ function todoAppHeader ( newTodoHandler ) {\n\
 }";
 
 var enterFlow = "\
-Now we get to experience data flow, and our first use case \
-is a doozey: we will dynamically add DOM (an LI, in fact) when the user \
-enters a new Todo.\
+Now to data flow. Our first use case is a doozey: we must \
+dynamically add DOM (an LI, in fact) when the user enters a new Todo.\
 \n\
-We will also make appear a dashboard with a count of the \
+We must also make appear a dashboard with a count of the \
 items not yet completed.\
 \n\
 To create a new to-do item, just type something and hit Return.\
 \n\
 Note the transparency. Simply reading TodosLite.v establishes the dependency, and \
-simply setting it triggers recalculation of any dependent values. \
+simply setting it triggers recalculation of dependent values. \
 \n\
 Transparency is vital to the data flow paradigm. TodoMVC requires \
 just a dozen dependencies, but real-world applications \
-can involve hundreds. Manually coded publish/subscribe scales poorly.";
+involve hundreds. Manual publish/subscribe scales poorly.";
 
 function todoAppHeader ( newTodoHandler ) {
     return section({class: "todoapp"},
