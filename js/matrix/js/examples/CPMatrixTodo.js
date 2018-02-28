@@ -143,12 +143,6 @@ bits.push(
                 "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
     });
 
-function todoCredits () {
-    return credits({style: "font-size:12px"},
-        "Double-click the text of a todo to change it",
-        "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")
-}
 var TodosLite = cI([]);
 
 function todoAddNewEZ (mx, e) {
@@ -165,7 +159,12 @@ function todoAddNewEZ (mx, e) {
 }
 
 var enterTodos = "\
-var TodosLite = cI([]); // <b>'cI' creates a standalone 'input Cell'</b>\n\n\
+Below:\n\
+   underscores highlight code involving data flow.\n\
+   'cI' creates an 'input Cell'.\n\
+   'cF' creates a 'formula Cell.\n\n\n\
+<u>var TodosLite = cI([]);</u> // <b>a rare standalone cell. Use TodosLite.v to read/write.</b>\n\
+\n\
 function todoAddNewEZ (mx, e) {\n\
     if (e.key === 'Enter') {\n\
         let title = e.target.value.trim();\n\
@@ -173,54 +172,52 @@ function todoAddNewEZ (mx, e) {\n\
 \n\
         if (title !== '') {\n\
             // we start with a simple JS object as our to-do\n\
-            // <b>values of standalone Cells (a rarity) are accessed via the property 'v'\n\
-            // concat forces new array so change gets detected by Matrix engine</b>\n\
-            TodosLite.v = TodosLite.v.concat({title: title, completed: false});\n\
+            // concat forces new array so change gets detected by Matrix engine\n\
+            <u>TodosLite.v = TodosLite.v.concat({title: title, completed: false});</u>\n\
         }\n\
     }\n\
 }\n\n\
 function todoDashboardEZ () {\n\
-    return footer({\n\
-            class: 'footer',\n\
-            hidden: cF( c => TodosLite.v.length ===0)},\n\
-        span({ class: 'todo-count'},\n\
-            {content: cF(c => {\n\
-                let remCt = TodosLite.v.filter(todo => !todo.completed).length;\n\
-                return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
+    return footer({ <u>hidden: cF( c => TodosLite.v.length ===0)}</u>,\n\
+        span({} {content: cF(c => {\n\
+                   <u>let remCt = TodosLite.v.filter(todo => !todo.completed).length;</u>\n\
+                   return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
             })}));}\n\
 \n\
-section({ class: 'todoapp'},\n\
-   header({class: 'header'},\n\
-      h1('todos'),\n\
-      input({ class: 'new-todo',\n\
-              autofocus: true,\n\
-              placeholder: 'What needs doing?',\n\
-              onkeypress: todoAddNewEZ}))),\n\
-section({ class: 'main',\n\
-          hidden: cF( c => TodosLite.v.length === 0)},\n\
-         ul({ class: 'todo-list'},\n\
-             c=> TodosLite.v.map( td => li( td.title)))),\n\
-todoDashboardEZ()";
+document.body.innerHTML =  tag2html(\n\
+    todoAppHeader( todoAddNewEZ),\n\
+    section({ <u>hidden: cF( c => TodosLite.v.length === 0)},</u>\n\
+             ul( c=> <u>TodosLite.v.map( td => li( td.title))))</u>,\n\
+    todoDashboardEZ())\n\
+\n\
+function todoAppHeader ( newTodoHandler ) {\n\
+    return section({class: 'todoapp'},\n\
+            header({class: 'header'},\n\
+                h1('todos'),\n\
+                input({\n\
+                    class: 'new-todo',\n\
+                    autofocus: true,\n\
+                    placeholder: 'What needs doing?',\n\
+                    onkeypress: newTodoHandler\n\
+                })));\n\
+}";
 
 var enterFlow = "\
-Now we get to experience data flow programming, and the use case \
+Now we get to experience data flow, and our first use case \
 is a doozey: we will dynamically add DOM (an LI, in fact) when the user \
-enters a new Todo item.\
+enters a new Todo.\
 \n\
-We will also make a dashboard appear; the TodoMVC spec says it should be \
-hidden if no Todos exist. The dashboard show a count of the \
+We will also make appear a dashboard with a count of the \
 items not yet completed.\
 \n\
-To create a new to-do item, just type something non-blank and hit Return. The \
-dashboard should appear with a count will increase with each new to-do.\
+To create a new to-do item, just type something and hit Return.\
 \n\
-Note the transparency. Reading TodosLite.v establishes the dependency, and \
-setting it triggers recalculation of any dependent value.\
+Note the transparency. Simply reading TodosLite.v establishes the dependency, and \
+simply setting it triggers recalculation of any dependent values. \
 \n\
-Transparency is vital to the success of the data flow paradigm. The TodoMVC requires \
-just a dozen dependencies on just a few variables, but real-world applications \
-can involve hundreds. Without automatic dependency \
-detection, publish/subscribe does not scale.";
+Transparency is vital to the data flow paradigm. TodoMVC requires \
+just a dozen dependencies, but real-world applications \
+can involve hundreds. Manually coded publish/subscribe scales poorly.";
 
 function todoAppHeader ( newTodoHandler ) {
     return section({class: "todoapp"},
@@ -241,6 +238,7 @@ function todoDashboardEZ () {
         span({ class: "todo-count"},
             {content: cF(c => {
                 let remCt = TodosLite.v.filter(todo => !todo.completed).length;
+                // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);
                 return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;
             })})
     );
@@ -252,13 +250,10 @@ bits.push(
         chat: enterFlow,
         code: enterTodos,
         notes: [
-            "We break the header out as a custom web component...",
             "New: changing data drives changing DOM population...",
             "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
-            "For a standalone cell like TodosLite, we have to use the property 'v' for gets and writes.",
-            "We use JS concat instead of push to force a new array so ...",
-            "... data flow internals will detect the change (default unchanged test is ===).",
-            "A new Web component will provide our first cut at a dashboard."
+            "A new Web component will provide our first cut at a dashboard.",
+            "Another component lets us hide the header."
         ],
         mxDom: [
             todoAppHeader( todoAddNewEZ),
@@ -357,7 +352,7 @@ function newsprint( text) {
 
     for ( let n =0, chars = 0; n < pgs.length; ++n) {
         chars += pgs[n].length;
-        if ( chars > text.length/2) {
+        if ( chars > text.length * .40) {
             brk = ++n;
             break;
         }
