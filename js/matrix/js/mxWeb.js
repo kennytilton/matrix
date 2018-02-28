@@ -74,7 +74,7 @@ function obsDisabled (slot, md, newv, oldv, c) {
 }
 function obsClass (slot, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
-    md.dom.className  = isString( newv) ? newv : newv.join(" ");
+    md.dom.className  = !newv ? "" : (isString( newv) ? newv : newv.join(" "));
 }
 
 
@@ -316,7 +316,11 @@ function tagAttrsBuild(md) {
                     break;
 
                 case 'class':
-                    attrs += ` class="${isString( md[prop]) ? md[prop] : md[prop].join(' ')}"`;
+                    if ( md[prop]) {
+                        attrs += ` class="${isString(md[prop]) ? md[prop] : md[prop]
+                            .filter(c => (c !== null && c !== undefined))
+                            .join(' ')}"`;
+                    }
                     break;
 
                 default: {

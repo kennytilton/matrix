@@ -286,7 +286,7 @@ function todoAddNewBetter (mx, e) {
 }
 
 function todoLILite( c, todo) {
-    return li({ class: cF(c => (todo.completed ? "completed" : ""))},
+    return li({ class: cF(c => (todo.completed ? "completed" : null))},
         {todo: todo},
 
         div({class: "view"},
