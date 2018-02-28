@@ -58,7 +58,7 @@ like HTML and CSS that graphic designers will be able to write it.\
 Where we come up short, please file an RFE.\
 \n\
 This is not VDOM, and there is no diffing, but DOM maintenance is \
-more efficient than those allow. Our <i>proxy</i>i> elements do map isomorphically to \
+more efficient than those allow. Our <i>proxy</i> elements do map isomorphically to \
 the eventual DOM, but they persist as the user works. Hence \
 the effciency.\
 \n\
@@ -151,46 +151,100 @@ function todoCredits () {
 }
 var TodosLite = cI([]);
 
-function todoLiteAddNew (mx, e) {
-    if (e.key !== 'Enter') return;
-    let title = e.target.value.trim();
-    if (title !== '') {
-        // concat forces new array so change detected
-        TodosLite.v = TodosLite.v.concat({title: title, completed: false});
+function todoAddNewEZ (mx, e) {
+    if (e.key === 'Enter') {
+        let title = e.target.value.trim();
+        e.target.value = null; // clear input either way
+
+        if (title !== '') {
+            // we start with a simple JS object as our to-do
+            // concat forces new array so change detected
+            TodosLite.v = TodosLite.v.concat({title: title, completed: false});
+        }
     }
-    e.target.value = null;
 }
 
 var enterTodos = "\
-var TodosLite = cI([]);\n\n\
-function todoLiteAddNew (mx, e) {\n\
-    if (e.key !== 'Enter') return;\n\
-    let title = e.target.value.trim();\n\
-    if (title !== '') {\n\
-        TodosLite.v = TodosLite.v.concat({title: title,\n\
-                                          completed: false});\n\
+var TodosLite = cI([]); // <b>'cI' creates a standalone 'input Cell'</b>\n\n\
+function todoAddNewEZ (mx, e) {\n\
+    if (e.key === 'Enter') {\n\
+        let title = e.target.value.trim();\n\
+        e.target.value = null; // clear input either way\n\
+\n\
+        if (title !== '') {\n\
+            // we start with a simple JS object as our to-do\n\
+            // <b>values of standalone Cells (a rarity) are accessed via the property 'v'\n\
+            // concat forces new array so change gets detected by Matrix engine</b>\n\
+            TodosLite.v = TodosLite.v.concat({title: title, completed: false});\n\
+        }\n\
     }\n\
-    e.target.value = null;\n\
 }\n\n\
+function todoDashboardEZ () {\n\
+    return footer({\n\
+            class: 'footer',\n\
+            hidden: cF( c => TodosLite.v.length ===0)},\n\
+        span({ class: 'todo-count'},\n\
+            {content: cF(c => {\n\
+                let remCt = TodosLite.v.filter(todo => !todo.completed).length;\n\
+                return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
+            })}));}\n\
+\n\
 section({ class: 'todoapp'},\n\
-        header({class: 'header'},\n\
-            h1('todos'),\n\
-            input({ class: 'new-todo',\n\
-                autofocus: true,\n\
-                placeholder: 'What needs doing?',\n\
-                onkeypress: todoLiteAddNew}))),\n\
-     section({ class: 'main',\n\
-                hidden: cF( c => TodosLite.v.length === 0)},\n\
+   header({class: 'header'},\n\
+      h1('todos'),\n\
+      input({ class: 'new-todo',\n\
+              autofocus: true,\n\
+              placeholder: 'What needs doing?',\n\
+              onkeypress: todoAddNewEZ}))),\n\
+section({ class: 'main',\n\
+          hidden: cF( c => TodosLite.v.length === 0)},\n\
          ul({ class: 'todo-list'},\n\
-             c=> TodosLite.v.map( td => li( td.title))))";
+             c=> TodosLite.v.map( td => li( td.title)))),\n\
+todoDashboardEZ()";
 
 var enterFlow = "\
-At long last we get to experience data flow programming with Matrix, \
-and it is a doozey: we will add DOM (an LI) dynamically in response to the user \
-creating a new Todo item. We will also make a dashboard appear, one the TodoMVC \
-wants hidden if no Todos exist. That dashboard will have to show a count of the \
-items not yet completed (and quite a bit more later).\
-";
+Now we get to experience data flow programming, and the use case \
+is a doozey: we will dynamically add DOM (an LI, in fact) when the user \
+enters a new Todo item.\
+\n\
+We will also make a dashboard appear; the TodoMVC spec says it should be \
+hidden if no Todos exist. The dashboard show a count of the \
+items not yet completed.\
+\n\
+To create a new to-do item, just type something non-blank and hit Return. The \
+dashboard should appear with a count will increase with each new to-do.\
+\n\
+Note the transparency. Reading TodosLite.v establishes the dependency, and \
+setting it triggers recalculation of any dependent value.\
+\n\
+Transparency is vital to the success of the data flow paradigm. The TodoMVC requires \
+just a dozen dependencies on just a few variables, but real-world applications \
+can involve hundreds. Without automatic dependency \
+detection, publish/subscribe does not scale.";
+
+function todoAppHeader ( newTodoHandler ) {
+    return section({class: "todoapp"},
+            header({class: "header"},
+                h1("todos"),
+                input({
+                    class: "new-todo",
+                    autofocus: true,
+                    placeholder: "What needs doing?",
+                    onkeypress: newTodoHandler
+                })));
+}
+
+function todoDashboardEZ () {
+    return footer({
+            class: "footer",
+            hidden: cF( c => TodosLite.v.length ===0)},
+        span({ class: "todo-count"},
+            {content: cF(c => {
+                let remCt = TodosLite.v.filter(todo => !todo.completed).length;
+                return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;
+            })})
+    );
+}
 
 bits.push(
     {
@@ -198,40 +252,40 @@ bits.push(
         chat: enterFlow,
         code: enterTodos,
         notes: [
+            "We break the header out as a custom web component...",
             "New: changing data drives changing DOM population...",
             "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
             "For a standalone cell like TodosLite, we have to use the property 'v' for gets and writes.",
             "We use JS concat instead of push to force a new array so ...",
-            "... data flow internals will detect the change (default unchanged test is ===)."],
+            "... data flow internals will detect the change (default unchanged test is ===).",
+            "A new Web component will provide our first cut at a dashboard."
+        ],
         mxDom: [
-            section({class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"),
-                    input({
-                        class: "new-todo",
-                        autofocus: true,
-                        placeholder: "What needs doing?",
-                        onkeypress: todoLiteAddNew
-                    }))),
+            todoAppHeader( todoAddNewEZ),
             section({
                     class: "main",
                     hidden: cF(c => TodosLite.v.length === 0)
                 },
                 ul({class: "todo-list"},
                     c => TodosLite.v.map(td => li(td.title)))),
-            todoCredits()]
+            todoDashboardEZ()]
     });
+
+// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 
 class Todo extends Model {
     constructor( title ) {
         super( null, null,
-            { title: cI( title),
-            completed: cI( false)});
+            {
+                title: cI( title),
+                completed: cI( false),
+                deleted: cI( false)
+            });
     }
 }
 
-
-function todoBetterAddNew (mx, e) {
+function todoAddNewBetter (mx, e) {
     if (e.key !== 'Enter') return;
     let title = e.target.value.trim();
     if (title !== '') {
@@ -241,29 +295,21 @@ function todoBetterAddNew (mx, e) {
     }
     e.target.value = null;
 }
-
 bits.push(
     {
-        title: "Title",
+        title: "More Data Flow: To-dos get their own data flow",
         chat: "blah",
-        code: enterTodos,
-        notes: ["We drop the credits to save real estate."],
+        code: "",
+        notes: [""],
         mxDom: [
-            section({class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"),
-                    input({
-                        class: "new-todo",
-                        autofocus: true,
-                        placeholder: "What needs doing?",
-                        onkeypress: todoBetterAddNew
-                    }))),
+            todoAppHeader(todoAddNewBetter),
             section({
                     class: "main",
                     hidden: cF(c => TodosLite.v.length === 0)
                 },
                 ul({class: "todo-list"},
-                    c => TodosLite.v.map(td => li( td.title))))]
+                    c => TodosLite.v.map(td => li( td.title)))),
+            todoDashboardEZ()]
     });
 
 // -------------------------------------------------------------
