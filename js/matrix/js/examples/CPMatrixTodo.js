@@ -279,72 +279,73 @@ function todoAddNewBetter (mx, e) {
     let title = e.target.value.trim();
     if (title !== '') {
         // concat forces new array so change detected
-        clg('title is ', title)
         TodosLite.v = TodosLite.v.concat( new Todo( title));
     }
     e.target.value = null;
 }
 
-function todoLILite( c, todo) {
+function todoLI( c, todo) {
     return li({ class: cF(c => (todo.completed ? "completed" : null))},
-        {todo: todo},
+                div({class: "view"},
+                    input({
+                            class: "toggle",
+                            type: "checkbox",
+                            checked: cF( c=> todo.completed),
+                            onclick: ()=> todo.completed = !todo.completed})
 
-        div({class: "view"},
-            input({
-                    class: "toggle",
-                    type: "checkbox",
-                    checked: cF( c=> todo.completed),
-                    onclick: mx=> mx.todo.completed = !mx.todo.completed,
-                    title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
-                {todo: todo})
+                    , label({ content: todo.title })
 
-            , label({ content: cF( c=> todo.title)})
-
-            , button({ class: "destroy",
-                    onclick: mx => mx.todo.deleted = true},
-                {todo: todo})
-        )
-    );
+                    , button({ class: "destroy",
+                               onclick: ()=> todo.deleted = true})));
 }
 
-var moFlowChat = "Add a to-do and check out the fancy new LI.\
+var moFlowChat = "To-dos now have their own JS class along with individual Cell-powered properties, \
+and a fancier LI where those properties can be manipulated.\
 \n\
-The circle to the left is where you toggle whether a to-do has been completed. \
-If you click one, look for 'Clear completed' in the dashboard. That is a working button.\
+Add a to-do now and examine the LI.\
+\n\
+The faint circle to the left is where you toggle whether a to-do has been completed. \
+If you toggle one, look for 'Clear completed' in the dashboard. That is a working button. \
+Give it a go, if you like.\
 \n\
 Remember, the spec says to hide the dashboard if there are no items, completed or not. \
-Watch for the dashboard to disappear when you delete the last item.\n\
+Watch for the dashboard to disappear when you delete the last remaining item.\n\
 \n\
-When you hover a to-do, a red 'X' appears to the far right. Click that to \
-permanently delete a to-do item.\n\
+When you hover over a to-do, a red 'X' appears to the far right. Click that to \
+permanently delete a to-do item.\
+\n\
 As you play, keep an eye on 'items remaining'.";
 
 var moFlowCode = "\
-function todoLILite( c, todo) {\n\
-    return li({ <u>class: cF(c => (todo.completed ? 'completed' : ''))</u>},\n\
-        {todo: todo},\n\
+class Todo extends Model {\n\
+    constructor( title ) {\n\
+        super( null, null,\n\
+            {\n\
+                title: title,\n\
+                completed: cI( false),\n\
+                deleted: cI( false)\n\
+            });\n\
+    }\n\
+}\n\
 \n\
-        div({class: 'view'},\n\
-            input({\n\
-                    class: 'toggle',\n\
-                    type: 'checkbox',\n\
-                    <u>checked: cF( c=> todo.completed)</u>,\n\
-                    onclick: <b><i>mx=> mx.todo.completed = !mx.todo.completed</i></b>,\n\
-                    title: <u>cF( c=> `Mark ${todo.completed? 'in' : ''}complete.`)}</u>,\n\
-                {todo: todo})\n\
+function todoLI( c, todo) {\n\
+  return li({ <u>class: cF(c => (todo.completed ? 'completed' : null))}</u>,\n\
+    div({class: 'view'},\n\
+        input({\n\
+            class: 'toggle',\n\
+            type: 'checkbox',\n\
+            <u>checked: cF( c=> todo.completed),</u>\n\
+            <b><i>onclick: ()=> todo.completed = !todo.completed}</i></b>)\n\
 \n\
-            , label({ content: todo.title})\n\
+        , label({ content: todo.title})\n\
 \n\
-            , button({ class: 'destroy',\n\
-                       <b><i>onclick: mx => mx.todo.deleted = true}</i></b>,\n\
-                {todo: todo})\n\
-        )\n\
-    );\n\
-}\
+        , button({ class: 'destroy',\n\
+                   <b><i>onclick: ()=> todo.deleted = true</i></b>})));\n\
+}\n\
 \n\
 function clearCompleted () {\n\
     return button({ class: 'clear-completed',\n\
-            <u>hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0)</u>,\n\
+                    <u>hidden: cF(c => !TodosLite.v.filter(td => td.completed).length)</u>,\n\
             onclick: mx => TodosLite.v\n\
                              .filter( td => td.completed )\n\
                              .map( <b><i>td => td.deleted = true</i></b>)},\n\
@@ -353,13 +354,14 @@ function clearCompleted () {\n\
 
 function clearCompleted () {
     return button({ class: "clear-completed",
-            hidden: cF(c => TodosLite.v.filter(td => td.completed).length === 0),
+            hidden: cF(c => !TodosLite.v.filter(td => td.completed).length),
             onclick: mx => TodosLite.v.filter( td => td.completed ).map( td => td.deleted = true)},
         "Clear completed");
 }
+
 bits.push(
     {
-        title: "To-Dos get their own data flow",
+        title: "To-Do properties join the data flow",
         chat: moFlowChat,
         code: moFlowCode,
         notes: [""],
@@ -372,7 +374,7 @@ bits.push(
                 ul({class: "todo-list"},
                     c => TodosLite.v
                         .filter(todo => !todo.deleted)
-                        .map(td => todoLILite( c, td)))),
+                        .map(td => todoLI( c, td)))),
             todoDashboardEZ(clearCompleted)]
     });
 
@@ -479,7 +481,18 @@ var controls = [
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
             disabled: cF( c=> bit.v >= bits.length - 1),
             onclick: c=> ++bit.v}
-        , "Next")];
+        , "Next"),
+    input({
+        id: "logToggle",
+        type: "checkbox",
+        value: true,
+        onchange: (mx,e) => domLogging = e.target.checked,
+        style: "margin-left:24px;margin-right:9px"
+    }),
+    label(
+        { for: "logToggle",
+        title: "open the JS console to see logging of all DOM manipulation."},
+        "DOM logging")];
 
 // document.body.innerHTML =  tag2html( page());
 

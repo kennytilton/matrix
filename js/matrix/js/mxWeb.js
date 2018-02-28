@@ -2,6 +2,8 @@
 
 const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
 
+var domLogging = false;
+
 function dom2mx(dom, mustFind=true) {
     //clg('dom2mx dom id',dom.id);
 	let js = mxDom[dom.id];
@@ -55,7 +57,7 @@ function obsKids (slot, md, newv, oldv, c) {
         } else {
             let incubator = document.createElement('div');
 
-            console.log( 'building new tag ' + newk.tag);
+            if ( domLogging) console.log( 'building new tag ' + newk.tag);
 
             incubator.innerHTML = Tag.toHTML( newk);
 
@@ -219,8 +221,9 @@ class Tag extends Model {
 	}
 	slotObserverResolve(slot) {
 		let obs = this.slotObservers[slot];
-		if (slot !== 'kids')
-		    console.log('observing slot '+slot);
+		if (domLogging && slot !== 'kids')
+            console.log('observing slot '+slot);
+
 		if (!obs) {
 			if (slot === 'content') {
 				obs = obsContent;
