@@ -2,7 +2,12 @@
 
 const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
 
-var domLogging = false;
+var domLogging = true;
+
+function domlog(...args) {
+    if ( domLogging)
+        console.log('domlog> ', Array.from(args).join(","));
+}
 
 function dom2mx(dom, mustFind=true) {
     //clg('dom2mx dom id',dom.id);
@@ -19,6 +24,7 @@ function obsContent (slot, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
 	// clg(`obsContent of ${md.name || md.id} setting ihtml!!! to ${newv} from ${oldv}`);
 	ast( md.dom, "Tag obs Content");
+    domlog( 'content', newv, oldv);
 	md.dom.innerHTML = newv;
 }
 
@@ -48,6 +54,7 @@ function obsKids (slot, md, newv, oldv, c) {
 
     for (let oldk of oldv)
         if (!find(oldk,newv)) {
+            domlog('dropping DOM', oldk.tag);
             notToBe(oldk);
         }
 
@@ -57,7 +64,7 @@ function obsKids (slot, md, newv, oldv, c) {
         } else {
             let incubator = document.createElement('div');
 
-            if ( domLogging) console.log( 'building new tag ' + newk.tag);
+            domlog( 'building new DOM', newk.tag);
 
             incubator.innerHTML = Tag.toHTML( newk);
 
@@ -72,10 +79,12 @@ function obsKids (slot, md, newv, oldv, c) {
 
 function obsDisabled (slot, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    domlog( 'disabled', newv, oldv);
     md.dom.disabled = !!newv;
 }
 function obsClass (slot, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    domlog( 'className', newv, oldv);
     md.dom.className  = !newv ? "" : (isString( newv) ? newv : newv.join(" "));
 }
 
@@ -83,7 +92,7 @@ function obsClass (slot, md, newv, oldv, c) {
 function obsStyleProperty (mxprop, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
     let cssProp = mxprop.replace('_', '-')
-	clg(`setting ${cssProp}!!! `+ newv);
+	domlog( 'attr global', cssProp, newv, oldv);
 	md.tag.dom.style[cssProp] = newv;
 }
 
@@ -99,6 +108,7 @@ var AttrAliases = new Map([['class','className']]);
 function obsAttrGlobal (property, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
 	let trueAttr = AttrAliases.get(property) || property;
+    domlog( 'attr global', property, newv, oldv);
 	md.dom[trueAttr] = newv;
 }
 
@@ -220,9 +230,8 @@ class Tag extends Model {
 		return this.kids? this.kids.reduce((pv, kid)=>{ return pv + Tag.toHTML( kid);},''):'';
 	}
 	slotObserverResolve(slot) {
+
 		let obs = this.slotObservers[slot];
-		if (domLogging && slot !== 'kids')
-            console.log('observing slot '+slot);
 
 		if (!obs) {
 			if (slot === 'content') {

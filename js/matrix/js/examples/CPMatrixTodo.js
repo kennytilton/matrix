@@ -485,7 +485,7 @@ var controls = [
     input({
         id: "logToggle",
         type: "checkbox",
-        value: true,
+        checked: domLogging,
         onchange: (mx,e) => domLogging = e.target.checked,
         style: "margin-left:24px;margin-right:9px"
     }),
