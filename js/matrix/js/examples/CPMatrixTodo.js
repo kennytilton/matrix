@@ -295,18 +295,19 @@ function todoAddNewBetter (mx, e) {
 }
 
 function todoLI( c, todo, extras) {
-    return li({ class: cF(c => (todo.completed ? "completed" : null))},
-                div({class: "view"},
-                    input({
-                            class: "toggle",
-                            type: "checkbox",
-                            checked: cF( c=> todo.completed),
-                            onclick: ()=> todo.completed = !todo.completed})
-
-                    , label({ content: todo.title })
-                    , extras? extras( c, todo) : null
-                    , button({ class: "destroy",
-                               onclick: ()=> todo.deleted = true})));
+    return li({
+            class: cF(c => (todo.completed ? "completed" : null))},
+        { todo: todo},
+        div({class: "view"},
+            input({
+                class: "toggle",
+                type: "checkbox",
+                checked: cF( c=> todo.completed),
+                onclick: ()=> todo.completed = !todo.completed})
+            , label({ content: todo.title })
+            , extras? extras( c, todo) : null
+            , button({ class: "destroy",
+                onclick: ()=> todo.deleted = true})));
 }
 
 var moFlowChat = "To-dos now have their own JS class along with individual Cell-powered properties, \
@@ -396,33 +397,58 @@ bits.push(
         }
     });
 
-var xhrChat = "Callback Hell? In the imperative paradigm, yes. \
-But the data flow paradigm is all about managing application state \
-gracefully after asynchronous inputs. SO...\
+var xhrCode = "\
+section({class: 'todoapp'},\n\
+   todoAppHeader( todoAddNewBetter),\n\
+   section({ class: 'main',\n\
+             hidden: cF(c => Todos.empty)},\n\
+      ul({ class: 'todo-list'},\n\
+         { kidValues: cF(c => Todos.items),\n\
+           kidKey: k => k.todo,\n\
+           kidFactory: (c,td) => todoLI(c, td, aeAlertGI)},\n\
+        c => c.kidValuesKids())),\n\
+      todoDashboardEZ(clearCompleted))\n\
+      \n\
+function aeAlertGI ( c, todo ) {\n\
+    return i( { class: 'aes material-icons md-36',\n\
+                style: 'font-size:36px;color:red;background:white',\n\
+                hidden: cF( c=> !c.md.aeInfo),\n\
+                onclick: mx => alert( mx.aeInfo)},\n\
+              { lookup: cF( c=> new mxXHR( aeBrandURI( todo.title),\n\
+                                           { send: true,\n\
+                                             delay: 500 + Math.random(5)*1000})),\n\
+    \n\
+                aeInfo: cF( function (c) {\n\
+                    let xhr = c.md.lookup.xhr;\n\
+                    if ( xhr) {\n\
+                        if ( xhr.isSuccess() ) {\n\
+                            let obj = xhr.getResponseJson();\n\
+                            return obj.meta.results.total + ' Adverse Events found on FDA.gov';\n\
+                        } else {\n\
+                            return null;\n\
+                        }\n\
+                    }\n\
+                })},\n\
+           'warning')\n\
+}\n\
 \n\
-XHR is right in the data flow wheelhouse.\
-\n\
-We drive this home by forcing a fake delay of two seconds: whenever, the\
-request is answered, the DOM will dynamically pick up the result.\
-\n\
-Here we pointlessly take the to-do item and look it up in the\
-FDA.gov adverse events database. If you see the warning icon, give \
-it a click.\
-\n\
-FDA.gov is aggressive about matching, so 'Wash car' will find results. \
-And all drugs have adverse events, so do not be concerned by <i>any</i> results.";
+function aeBrandURI (brand) {\n\
+    return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`\n\
+}\n\
+";
 
 bits.push(
     function () {
         return {
             title: "XHR joins the data flow",
             chat: xhrChat,
-            code: "",
+            code: xhrCode,
             notes: [
                 "Reactive data flow now includes XHR as well as view.",
-                "The mxXHR 'lift' was hacked just enough to support this panel. More to come."],
+                "The mxXHR 'lift' was hacked just enough to support this panel. More to come.",
+                "'kidValues' mechanism avoids even rebuilding existing proxies."],
             initFn: ()=> Todos = mkm( null, "Todos", {
-                items: cI( [new Todo( "adderall"), new Todo("Yankees tickets")]),
+                items: cI( ["adderall", "Yankees", "water", "aspirin"].map(td=> new Todo( td))),
                 empty: cF( c=> c.md.items.length===0)}),
             mxDom: [
                 section({class: "todoapp"},
@@ -432,9 +458,12 @@ bits.push(
                             hidden: cF(c => Todos.empty)
                         },
                         ul({class: "todo-list"},
-                            c => Todos.items
-                                .filter(todo => !todo.deleted)
-                                .map(td => todoLI( c, td, aeAlertGI )))),
+                            {
+                                kidValues: cF(c => Todos.items),
+                                kidKey: k => k.todo,
+                                kidFactory: (c,td) => todoLI(c, td, aeAlertGI)
+                            },
+                            c => c.kidValuesKids())),
                     todoDashboardEZ(clearCompleted))]
         }
     });
@@ -451,11 +480,9 @@ function aeAlertGI ( c, todo ) {
                 style: "font-size:36px;color:red;background:white"
                 },
         {
-            lookup: cF( function (c) {
-                let mxx = new mxXHR( aeBrandURI( todo.title));
-                setTimeout( ()=> mxx.send(), 2000);
-                return mxx;
-            }),
+            lookup: cF( c=> new mxXHR( aeBrandURI( todo.title), {
+                send: true,
+                delay: 500 + Math.random(5)*1000})),
 
             aeInfo: cF( function (c) {
                 let xhr = c.md.lookup.xhr;
@@ -481,81 +508,24 @@ function aeAlertSVG () {
             fill: "#000000",
             d: "M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"}))
 }
-function aeAlert ( c, todo ) {
-    return span(
-        {
-            class: "aes",
-            hidden: cF( c=> !c.md.content),
-            onclick: mx => alert( mx.aeInfo)
-        },
-        {
-            lookup: cF( c=> (new mxXHR( aeBrandURI( todo.title))).send()),
-
-            aeInfo: cF( function (c) {
-                let xhr = c.md.lookup.xhr;
-                if ( xhr) {
-                    if ( xhr.isSuccess() ) {
-                        let obj = xhr.getResponseJson();
-                        clg('total AEs!!!!!!', obj.meta.results.total);
-                        return obj.meta.results.total+ " AEs found";
-                    } else {
-                        clg('xhr last error', xhr.getLastError());
-                        return null;
-                    }
-                }
-            }),
-            content: cF( c=> c.md.aeInfo ? "!!!":null)
-        })
-}
-
-function testXHR() {
-    let it = mkm( null, "testX", {
-        lookup: cF( function (c) {
-            let mxx = new mxXHR( "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:adderall&limit=3");
-            return mxx;
-        }),
-        result: cF( function (c) {
-            let look = c.md.lookup;
-            clg("result sees lookup", look, look.hunh, look.xhr);
-            return look.xhr;
-        }),
-        stuff: cF( function (c) {
-            let xhr = c.md.result;
-            if ( xhr) {
-                if ( xhr.isSuccess() ) {
-                    let obj = xhr.getResponseJson();
-                    clg('total AEs!!!!!!', obj.meta.results.total);
-                    return obj.meta.results.total+ "AEs found";
-                } else {
-                    clg('xhr last error', xhr.getLastError());
-                    return "Error " + xhr.getLastError();
-                }
-            } else {
-                clg('No result!!!');
-            }
-        })
-    });
-    clg('sending!!!!!!!!!!!!', it.lookup.result);
-
-    it.lookup.send();
-    console.log('test result '+it.lookup.result);
-}
-
-function getabm () {
-    let mxx = new mxXHR("https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:adderall&limit=3"),
-        bam = cF + ({slot: "bam", observer: (slot, me, newv) => clg("bam", newv)},
-            c => clg('bam rule sees', mxx.xhr));
-    mxx.send();
-}
-
-// getabm();
-
-//getXHR_JSON( "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:chevy&limit=3");
+// -------------------------------------------------------------
+var xhrChat = "Callback Hell? In the imperative paradigm, yes. \
+But the data flow paradigm is all about managing application state \
+gracefully after asynchronous inputs. So...XHR is right in the data flow wheelhouse:\
+\n\
+We drive this home by forcing a fake delay of two seconds. Whenever the \
+request returns, the response handler simply assigns the response to the \
+appropriate input Cell. Matrix internals then propagate the change as \
+with any other input.\
+\n\
+Here we pointlessly take the to-do item and look it up in the \
+FDA.gov adverse events database. If you see the warning icon, give \
+it a click.\
+\n\
+FDA.gov is aggressive about matching, so 'Wash car' will find results. \
+And all drugs have adverse events, so do not be concerned by <i>any</i> results.";
 
 
-/*
-, ()=> span({class: "aes"}, "AEs2")
- */
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 // --- below, the application without the application within ---
