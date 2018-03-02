@@ -5,8 +5,7 @@ class mxXHR extends Model {
         super( null, "mxXhr",
             {
                 uri: cI( uri),
-                hunh: cI('hunh'),
-                xhroo: cI( null, {observer: (slot, me, newv) => clg('bambam', newv, newv===null)}) // returned by XhrIO.send
+                xhr: cI( null) // returned by XhrIO.send
             });
     }
 
@@ -20,11 +19,10 @@ class mxXHR extends Model {
                 var obj = xhr.getResponseJson();
             }
             withChg("xhrResult",
-                function() {
-                    mxx.xhroo = xhr;
-                    // clg('xhr post bam', mxx.xhroo.getStatus());
-                });
+                ()=> mxx.xhr = xhr);
+
         });
+        return mxx;
     }
 }
 

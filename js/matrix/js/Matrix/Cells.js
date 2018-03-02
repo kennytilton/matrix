@@ -554,8 +554,7 @@ class Cell {
 		return rv;
 	}
 	slotValueSet(newv) {
-	    console.log('svset '+this.name+newv);
-		if (deferChanges) {
+	    if (deferChanges) {
 			throw `Assign to ${this.name} must be deferred by wrapping it in WITH-INTEGRITY`;
 		} else if (find(this.lazy, [kOnceAsked, kAlways, true])) {
 			this.valueAssume(newv, null);
@@ -695,37 +694,36 @@ class Cell {
 	// --- state changes, from external assign or recalculation
 	valueAssume( newValue, propCode) {
 		let self = this;
-		if ( this.name !== 'kids')
-		    clg('val ass etry', this.name, newValue);
+
 		withoutCDependency(()=>{
-			//clg('valass entry');
 			let priorValue = self.pv
 			, priorState = self.valueState();
-		self.pv = newValue;
-		self.state = kAwake;
-		if (self.md && !self.synapticp) {
-			mdSlotValueStore( self.md, self.name, newValue);
-		}
-		self.pulseUpdate('sv-assume');
-		if (propCode==='propagate'
-			|| [kValid,kUncurrent].indexOf(priorState) === -1
-			|| self.valueChangedp( newValue, priorValue)) {
-			let optimize = self.rule ? self.optimize : null;
-			if (optimize === kOptimizeWhenValued) {
-				if (self.pv) {
-					self.unlinkFromUsed('opti-when');
-					this.optimizeAwayMaybe(priorValue);
-				}
-			} else if (optimize) {
-				self.optimizeAwayMaybe(priorValue);
-			}
 
-			if (!(propCode === 'no-propagate'
-				|| self.optimizedAwayp())) {
-				self.propagate(priorValue, self.callers);
-			}
-		}
-	})();
+            self.pv = newValue;
+            self.state = kAwake;
+            if (self.md && !self.synapticp) {
+                mdSlotValueStore( self.md, self.name, newValue);
+            }
+            self.pulseUpdate('sv-assume');
+            if (propCode==='propagate'
+                || [kValid,kUncurrent].indexOf(priorState) === -1
+                || self.valueChangedp( newValue, priorValue)) {
+                let optimize = self.rule ? self.optimize : null;
+                if (optimize === kOptimizeWhenValued) {
+                    if (self.pv) {
+                        self.unlinkFromUsed('opti-when');
+                        this.optimizeAwayMaybe(priorValue);
+                    }
+                } else if (optimize) {
+                    self.optimizeAwayMaybe(priorValue);
+                }
+
+                if (!(propCode === 'no-propagate'
+                    || self.optimizedAwayp())) {
+                    self.propagate(priorValue, self.callers);
+                }
+            }
+	    })();
 		return newValue;
 	}
 	propagate(vPrior, callers) {

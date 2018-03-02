@@ -237,10 +237,6 @@ function todoDashboardEZ ( ...plugins ) {
         span({ class: "todo-count"},
             {content: cF(c => {
                 let remCt = Todos.items.filter(todo => !(todo.completed || todo.deleted)).length;
-                clg('dbez', remCt, Todos
-                    .items
-                    .filter(todo => !(todo.completed || todo.deleted))
-                    .map( td=> td.title));
                 // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);
                 return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;
             })}),
@@ -400,15 +396,33 @@ bits.push(
         }
     });
 
+var xhrChat = "Callback Hell? In the imperative paradigm, yes. \
+But the data flow paradigm is all about managing application state \
+gracefully after asynchronous inputs. SO...\
+\n\
+XHR is right in the data flow wheelhouse.\
+\n\
+We drive this home by forcing a fake delay of two seconds: whenever, the\
+request is answered, the DOM will dynamically pick up the result.\
+\n\
+Here we pointlessly take the to-do item and look it up in the\
+FDA.gov adverse events database. If you see the warning icon, give \
+it a click.\
+\n\
+FDA.gov is aggressive about matching, so 'Wash car' will find results. \
+And all drugs have adverse events, so do not be concerned by <i>any</i> results.";
+
 bits.push(
     function () {
         return {
             title: "XHR joins the data flow",
-            chat: "",
+            chat: xhrChat,
             code: "",
-            notes: ["Reactive data flow now includes XHR as well as view."],
+            notes: [
+                "Reactive data flow now includes XHR as well as view.",
+                "The mxXHR 'lift' was hacked just enough to support this panel. More to come."],
             initFn: ()=> Todos = mkm( null, "Todos", {
-                items: cI( [new Todo( "Wash car")]),
+                items: cI( [new Todo( "adderall"), new Todo("Yankees tickets")]),
                 empty: cF( c=> c.md.items.length===0)}),
             mxDom: [
                 section({class: "todoapp"},
@@ -420,7 +434,7 @@ bits.push(
                         ul({class: "todo-list"},
                             c => Todos.items
                                 .filter(todo => !todo.deleted)
-                                .map(td => todoLI( c, td, aeAlert )))),
+                                .map(td => todoLI( c, td, aeAlertGI )))),
                     todoDashboardEZ(clearCompleted))]
         }
     });
@@ -428,35 +442,69 @@ bits.push(
 function aeBrandURI (brand) {
     return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`
 }
-function aeAlert ( c, todo ) {
-    return span({class: "aes"},
+
+function aeAlertGI ( c, todo ) {
+    return i( {
+                class: "aes material-icons md-36",
+                hidden: cF( c=> !c.md.aeInfo),
+                onclick: mx => alert( mx.aeInfo),
+                style: "font-size:36px;color:red;background:white"
+                },
         {
             lookup: cF( function (c) {
                 let mxx = new mxXHR( aeBrandURI( todo.title));
-                clg('sending!!!!!!!!!!!!');
-                mxx.send();
+                setTimeout( ()=> mxx.send(), 2000);
                 return mxx;
             }),
-            result: cF( function (c) {
-                let look = c.md.lookup;
-                clg("result sees lookup", look, look.hunh, look.xhroo);
-                return look.xhroo;
-            }),
-            content: cF( function (c) {
-                let xhr = c.md.result;
+
+            aeInfo: cF( function (c) {
+                let xhr = c.md.lookup.xhr;
+                if ( xhr) {
+                    if ( xhr.isSuccess() ) {
+                        let obj = xhr.getResponseJson();
+                        return obj.meta.results.total+ " Adverse Events found on FDA.gov";
+                    } else {
+                        return null;
+                    }
+                }
+            })
+        },
+        "warning")
+}
+function aeAlertSVG () {
+    return svg({
+            class: "aes",
+            style: "width:24px;height:24px",
+            viewBox: "0 0 24 24"
+        },
+        path({
+            fill: "#000000",
+            d: "M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"}))
+}
+function aeAlert ( c, todo ) {
+    return span(
+        {
+            class: "aes",
+            hidden: cF( c=> !c.md.content),
+            onclick: mx => alert( mx.aeInfo)
+        },
+        {
+            lookup: cF( c=> (new mxXHR( aeBrandURI( todo.title))).send()),
+
+            aeInfo: cF( function (c) {
+                let xhr = c.md.lookup.xhr;
                 if ( xhr) {
                     if ( xhr.isSuccess() ) {
                         let obj = xhr.getResponseJson();
                         clg('total AEs!!!!!!', obj.meta.results.total);
-                        return obj.meta.results.total+ "AEs found";
+                        return obj.meta.results.total+ " AEs found";
                     } else {
                         clg('xhr last error', xhr.getLastError());
-                        return "Error " + xhr.getLastError();
+                        return null;
                     }
-                } else {
-                    clg('No result!!!');
                 }
-            })
+            }),
+            content: cF( c=> c.md.aeInfo ? "!!!":null)
         })
 }
 
@@ -468,8 +516,8 @@ function testXHR() {
         }),
         result: cF( function (c) {
             let look = c.md.lookup;
-            clg("result sees lookup", look, look.hunh, look.xhroo);
-            return look.xhroo;
+            clg("result sees lookup", look, look.hunh, look.xhr);
+            return look.xhr;
         }),
         stuff: cF( function (c) {
             let xhr = c.md.result;

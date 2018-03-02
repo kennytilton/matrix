@@ -275,7 +275,8 @@ const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class'
     ,'content', 'contenteditable'
 	,'contextmenu','dir','draggable','dropzone','for','hidden','href'
     ,'id','itemid','itemprop','itemref','itemscope'
-	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type']);
+	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type'
+    ,'viewBox','fill','d']);
 
 const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','onblur','oncancel'
 	,'oncanplay','oncanplaythrough','onchange','onclick','onclose','oncontextmenu','oncuechange'
@@ -410,9 +411,9 @@ function genTagEx(tagName) {
     'i', 'iframe', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen',
     'label', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'multicol',
     'nav', 'nextid', 'nobr', 'noembed', 'noframes', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output',
-    'p', 'param', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby',
+    'p', 'param', 'path', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby',
     's', 'samp', 'script', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span',
-    'strike', 'strong', 'style', 'sub', 'summary', 'sup',
+    'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'svg',
     'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title',
     'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp'].map( tg => genTagEx( tg));
 
