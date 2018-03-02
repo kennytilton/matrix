@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Matrix • An Introduction</title>
 
+    <script src="js/closure-library/closure/goog/base.js"></script>
+
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
           integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w"
           crossorigin="anonymous">
@@ -20,9 +22,9 @@
     <script src="js/Matrix/Cells.js"></script>
     <script src="js/Matrix/Model.js"></script>
     <script src="js/mxWeb.js"></script>
-    <script src="js/mxClock.js"></script>
-    <!-- script src="js/examples/TodoMVC/Todo.js"></script>
-    <script src="js/examples/TodoMVC/app.js"></script -->
+    <script src="js/mxXHR.js"></script>
+    <!-- script src="js/mxClock.js"></script -->
+
     <script src="js/examples/CPMatrixTodo.js"></script>
 
 </head>
@@ -31,6 +33,7 @@
     <p>Was the google closure compilation clean? If so...</p>
     <p>Please check the browser console for diagnostics.</p>
     <script>
+        //window.testXHR();
         document.body.innerHTML = tag2html( window.CPMatrixTodo());
     </script>
 </body>

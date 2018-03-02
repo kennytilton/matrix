@@ -219,6 +219,18 @@ body {
     text-decoration: line-through;
 }
 
+.todo-list li .aes {
+    position: absolute;
+    top: 20px;
+    right: 60px;
+    bottom: 0;
+    width: 40px;
+    background: red;
+    height: 40px;
+    margin: auto 0;
+    font-size: 20px;
+}
+
 .todo-list li .destroy {
     display: none;
     position: absolute;

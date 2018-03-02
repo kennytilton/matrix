@@ -19,18 +19,20 @@ section({class: 'todoapp'},\n\
    p('The working app will appear here.')";
 
 bits.push(
-    {
-        title: "Preface",
-        chat: welcome,
-        code: bz,
-        notes: ["The above is a sample of the frames to come.",
-            "Pardon my CSS. And even my Javascript. I am a native Lisper.",
-            "We have a ClojureScript version as well."],
-        mxDom:
-            [section({ class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"))),
-             center("Coming soon, the app.")]
+    function () {
+        return {
+            title: "Preface",
+            chat: welcome,
+            code: bz,
+            notes: ["The above is a sample of the frames to come.",
+                "Pardon my CSS. And even my Javascript. I am a native Lisper.",
+                "We have a ClojureScript version as well."],
+            mxDom:
+                [section({ class: "todoapp"},
+                    header({class: "header"},
+                        h1("todos"))),
+                    center("Coming soon, the app.")]
+        }
     });
 
 var b0 = "\
@@ -55,19 +57,21 @@ is just JS.\
 \n\
 As for speed, this is not VDOM and there is no diffing, yet DOM maintenance is \
 more efficient than those allow. The point granularity of the data flow engine \
-tells mxWeb the exact minimum of DOM updates needed at every turn.";
+tells mxWeb the exact minimum of DOM updates needed at every turn. When we get to dynamic\
+DOM in a couple of panels, turn on 'DOM Logging' in our toolbar to see the action.";
 
 bits.push(
-    {
-        title: "An All-Javascript HTML Work-alike. And fast.",
-        chat: notVDom,
-        code: b0,
-        notes: [
+    function () {
+        return {
+            title: "An All-Javascript HTML Work-alike. And fast.",
+                chat: notVDom,
+            code: b0,
+            notes: [
             "mxWeb&trade; DOM generator signatures mirror HTML tag syntax.",
             "Meaning a graphic designer could learn mxWeb.",
             "JSX? Bah. We code straight JS.",
             "Meaning No Toolchain Required&trade;. Yeah."],
-        mxDom: [
+            mxDom: [
             section({class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
@@ -77,6 +81,7 @@ bits.push(
                     "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
                     "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
                 ].map(s => p({}, s)))]
+        }
     });
 
 var csCredits = "\
@@ -111,14 +116,15 @@ Our only obligation is to return one or an array of products of mxWeb DOM \
 generators.";
 
 bits.push(
-    {
-        title: "Web Components? Done.",
-        chat: webcoDone,
-        code: csCredits,
-        notes: [
+    function () {
+        return {
+            title: "Web Components? Done.",
+                chat: webcoDone,
+            code: csCredits,
+            notes: [
             "See the function 'credits'? We now can write our own DOM functions aping HTML syntax...",
             "...and the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
-        mxDom: [
+            mxDom: [
             section({ class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
@@ -126,9 +132,11 @@ bits.push(
                 "Double-click the text of a todo to change it",
                 "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
                 "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
+        }
     });
 
-var TodosLite = cI([]);
+
+var Todos = cI([]);
 
 function todoAddNewEZ (mx, e) {
     if (e.key === 'Enter') {
@@ -138,7 +146,8 @@ function todoAddNewEZ (mx, e) {
         if (title !== '') {
             // we start with a simple JS object as our to-do
             // concat forces new array so change detected
-            TodosLite.v = TodosLite.v.concat({
+            clg('new todo', title);
+            Todos.items = Todos.items.concat({
                 title: title,
                 completed: false,
                 deleted: false
@@ -152,12 +161,12 @@ Below:\n\
    - underscores highlight code involving data flow.\n\
    - 'cI' creates an 'input Cell'.\n\
    - 'cF' creates a 'formula Cell.\n\n\n\
-<b>var TodosLite = cI([]);</u> // a rare standalone cell. Use TodosLite.v to read/write.</b>\n\
+<b>var TodosLite = cI([]);</u> // a rare standalone cell. Use Todos.items to read/write.</b>\n\
 \n\
 document.body.innerHTML =  tag2html(\n\
     todoAppHeader( todoAddNewEZ),\n\
-    section({ <u>hidden: cF( c => TodosLite.v.length === 0)},</u>\n\
-      ul( c=> <u>TodosLite.v.map( td => li( td.title))))</u>,\n\
+    section({ <u>hidden: cF( c => Todos.items.length === 0)},</u>\n\
+      ul( c=> <u>Todos.items.map( td => li( td.title))))</u>,\n\
     todoDashboardEZ());\n\
 \n\
 function todoAddNewEZ (mx, e) {\n\
@@ -168,14 +177,14 @@ function todoAddNewEZ (mx, e) {\n\
         if (title !== '') {\n\
             // we start with a simple JS object as our to-do\n\
             // concat forces new array so change gets detected by Matrix engine\n\
-            <i>TodosLite.v = TodosLite.v.concat({title: title, completed: false});</i>\n\
+            <i>Todos.items = Todos.items.concat({title: title, completed: false});</i>\n\
         }\n\
     }\n\
 }\n\n\
 function todoDashboardEZ () {\n\
-    return footer({ <u>hidden: cF( c => TodosLite.v.length ===0)}</u>,\n\
+    return footer({ <u>hidden: cF( c => Todos.items.length ===0)}</u>,\n\
         span({} {content: cF(c => {\n\
-                   <u>let remCt = TodosLite.v.filter(todo => !todo.completed).length;</u>\n\
+                   <u>let remCt = Todos.items.filter(todo => !todo.completed).length;</u>\n\
                    return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
             })}));}\n\
 \n\
@@ -211,24 +220,27 @@ involve hundreds.\
 Manual publish/subscribe works but gets old fast.";
 
 function todoAppHeader ( newTodoHandler ) {
-    return section({class: "todoapp"},
-            header({class: "header"},
+    return header({class: "header"},
                 h1("todos"),
                 input({
                     class: "new-todo",
                     autofocus: true,
                     placeholder: "Type an item to do and hit Return.",
                     onkeypress: newTodoHandler
-                })));
+                }));
 }
 
 function todoDashboardEZ ( ...plugins ) {
     return footer({
             class: "footer",
-            hidden: cF( c => TodosLite.v.filter( td=> !td.deleted).length ===0)},
+            hidden: cF( c => Todos.items.filter( td=> !td.deleted).length ===0)},
         span({ class: "todo-count"},
             {content: cF(c => {
-                let remCt = TodosLite.v.filter(todo => !(todo.completed || todo.deleted)).length;
+                let remCt = Todos.items.filter(todo => !(todo.completed || todo.deleted)).length;
+                clg('dbez', remCt, Todos
+                    .items
+                    .filter(todo => !(todo.completed || todo.deleted))
+                    .map( td=> td.title));
                 // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);
                 return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;
             })}),
@@ -237,27 +249,29 @@ function todoDashboardEZ ( ...plugins ) {
 }
 
 bits.push(
-    {
-        title: "Enter Data Flow",
-        chat: enterFlow,
-        code: enterTodos,
-        notes: [
-            "New: changing data drives changing DOM population...",
-            "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
-            "A new Web component will provide our first cut at a dashboard.",
-            "Another component lets us hide the header."
-        ],
-        mxDom: [
-            todoAppHeader( todoAddNewEZ),
-            section({
-                    class: "main",
-                    hidden: cF(c => TodosLite.v.length === 0)
-                },
-                ul({class: "todo-list"},
-                    c => TodosLite.v
-                            .map(td => li({style: {padding: "9px"}},
-                                td.title)))),
-            todoDashboardEZ()]
+    function () {
+        return {
+            title: "Enter Data Flow",
+                chat: enterFlow,
+            code: enterTodos,
+            notes: ["New: changing data drives changing DOM population...",
+                "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
+                "A new Web component will provide our first cut at a dashboard.",
+                "Another component lets us hide the header."],
+            initFn: ()=> Todos = mkm( null, "Todos", { items: cI( [])}),
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader( todoAddNewEZ),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.items.length === 0)
+                        },
+                        ul({class: "todo-list"},
+                                c => Todos.items
+                                    .map(td => li({style: {padding: "9px"}},
+                                        td.title)))),
+                    todoDashboardEZ())]
+        }
     });
 
 // ---------------------------------------------------------------------------------
@@ -279,12 +293,12 @@ function todoAddNewBetter (mx, e) {
     let title = e.target.value.trim();
     if (title !== '') {
         // concat forces new array so change detected
-        TodosLite.v = TodosLite.v.concat( new Todo( title));
+        Todos.items = Todos.items.concat( new Todo( title));
     }
     e.target.value = null;
 }
 
-function todoLI( c, todo) {
+function todoLI( c, todo, extras) {
     return li({ class: cF(c => (todo.completed ? "completed" : null))},
                 div({class: "view"},
                     input({
@@ -294,7 +308,7 @@ function todoLI( c, todo) {
                             onclick: ()=> todo.completed = !todo.completed})
 
                     , label({ content: todo.title })
-
+                    , extras? extras( c, todo) : null
                     , button({ class: "destroy",
                                onclick: ()=> todo.deleted = true})));
 }
@@ -345,8 +359,8 @@ function todoLI( c, todo) {\n\
 \n\
 function clearCompleted () {\n\
     return button({ class: 'clear-completed',\n\
-                    <u>hidden: cF(c => !TodosLite.v.filter(td => td.completed).length)</u>,\n\
-            onclick: mx => TodosLite.v\n\
+                    <u>hidden: cF(c => !Todos.items.filter(td => td.completed).length)</u>,\n\
+            onclick: mx => Todos.items\n\
                              .filter( td => td.completed )\n\
                              .map( <b><i>td => td.deleted = true</i></b>)},\n\
         'Clear completed');\n\
@@ -354,30 +368,146 @@ function clearCompleted () {\n\
 
 function clearCompleted () {
     return button({ class: "clear-completed",
-            hidden: cF(c => !TodosLite.v.filter(td => td.completed).length),
-            onclick: mx => TodosLite.v.filter( td => td.completed ).map( td => td.deleted = true)},
+            hidden: cF(c => !Todos.items.filter(td => td.completed).length),
+            onclick: mx => Todos.items.filter( td => td.completed ).map( td => td.deleted = true)},
         "Clear completed");
 }
 
 bits.push(
-    {
-        title: "To-Do properties join the data flow",
-        chat: moFlowChat,
-        code: moFlowCode,
-        notes: [""],
-        mxDom: [
-            todoAppHeader(todoAddNewBetter),
-            section({
-                    class: "main",
-                    hidden: cF(c => TodosLite.v.length === 0)
-                },
-                ul({class: "todo-list"},
-                    c => TodosLite.v
-                        .filter(todo => !todo.deleted)
-                        .map(td => todoLI( c, td)))),
-            todoDashboardEZ(clearCompleted)]
+    function () {
+        return {
+            title: "To-Do properties join the data flow",
+            chat: moFlowChat,
+            code: moFlowCode,
+            notes: ["Reactive data flow now includes model as well as view.",
+                "Data flow connects the separate concerns of model and view.",
+                "A simple derived 'empty' property keeps us DRY."],
+            initFn: ()=> Todos = mkm( null, "Todos", {
+                items: cI( [new Todo( "Wash car")]),
+                empty: cF( c=> c.md.items.length===0)}),
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader( todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
+                            c => Todos.items
+                                .filter(todo => !todo.deleted)
+                                .map(td => todoLI( c, td )))),
+                    todoDashboardEZ(clearCompleted))]
+        }
     });
 
+bits.push(
+    function () {
+        return {
+            title: "XHR joins the data flow",
+            chat: "",
+            code: "",
+            notes: ["Reactive data flow now includes XHR as well as view."],
+            initFn: ()=> Todos = mkm( null, "Todos", {
+                items: cI( [new Todo( "Wash car")]),
+                empty: cF( c=> c.md.items.length===0)}),
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader( todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
+                            c => Todos.items
+                                .filter(todo => !todo.deleted)
+                                .map(td => todoLI( c, td, aeAlert )))),
+                    todoDashboardEZ(clearCompleted))]
+        }
+    });
+
+function aeBrandURI (brand) {
+    return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`
+}
+function aeAlert ( c, todo ) {
+    return span({class: "aes"},
+        {
+            lookup: cF( function (c) {
+                let mxx = new mxXHR( aeBrandURI( todo.title));
+                clg('sending!!!!!!!!!!!!');
+                mxx.send();
+                return mxx;
+            }),
+            result: cF( function (c) {
+                let look = c.md.lookup;
+                clg("result sees lookup", look, look.hunh, look.xhroo);
+                return look.xhroo;
+            }),
+            content: cF( function (c) {
+                let xhr = c.md.result;
+                if ( xhr) {
+                    if ( xhr.isSuccess() ) {
+                        let obj = xhr.getResponseJson();
+                        clg('total AEs!!!!!!', obj.meta.results.total);
+                        return obj.meta.results.total+ "AEs found";
+                    } else {
+                        clg('xhr last error', xhr.getLastError());
+                        return "Error " + xhr.getLastError();
+                    }
+                } else {
+                    clg('No result!!!');
+                }
+            })
+        })
+}
+
+function testXHR() {
+    let it = mkm( null, "testX", {
+        lookup: cF( function (c) {
+            let mxx = new mxXHR( "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:adderall&limit=3");
+            return mxx;
+        }),
+        result: cF( function (c) {
+            let look = c.md.lookup;
+            clg("result sees lookup", look, look.hunh, look.xhroo);
+            return look.xhroo;
+        }),
+        stuff: cF( function (c) {
+            let xhr = c.md.result;
+            if ( xhr) {
+                if ( xhr.isSuccess() ) {
+                    let obj = xhr.getResponseJson();
+                    clg('total AEs!!!!!!', obj.meta.results.total);
+                    return obj.meta.results.total+ "AEs found";
+                } else {
+                    clg('xhr last error', xhr.getLastError());
+                    return "Error " + xhr.getLastError();
+                }
+            } else {
+                clg('No result!!!');
+            }
+        })
+    });
+    clg('sending!!!!!!!!!!!!', it.lookup.result);
+
+    it.lookup.send();
+    console.log('test result '+it.lookup.result);
+}
+
+function getabm () {
+    let mxx = new mxXHR("https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:adderall&limit=3"),
+        bam = cF + ({slot: "bam", observer: (slot, me, newv) => clg("bam", newv)},
+            c => clg('bam rule sees', mxx.xhr));
+    mxx.send();
+}
+
+// getabm();
+
+//getXHR_JSON( "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:chevy&limit=3");
+
+
+/*
+, ()=> span({class: "aes"}, "AEs2")
+ */
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 // --- below, the application without the application within ---
@@ -407,7 +537,7 @@ function CPMatrixTodo () {
     return [
         h1("Introducing Matrix&trade; and mxWeb&trade;"),
         toolbar(),
-        div( c=> bitAssemble( bits[bit.v])),
+        div( c=> bitAssemble( bits[bit.v]())),
         toolbar()
     ];
 }
@@ -446,19 +576,20 @@ function newsprint( text) {
 
 function bitAssemble( b) {
     var codeString, notes, code;
+    if ( b.initFn)
+        b.initFn();
 
     return [
         div( b.mxDom),
         h2( b.title),
         newsprint( b.chat),
-        div( h3("Code Highlights"),
-            pre({class: 'precode'}, b.code)),
-
         h3("Nota bene:"),
         ul( {class: "techwrite",
                 style: "list-style:square"},
             b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
-                note)))
+                note))),
+        div( h3("Code Highlights"),
+            pre({class: 'precode'}, b.code))
     ];
 }
 

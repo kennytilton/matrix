@@ -554,6 +554,7 @@ class Cell {
 		return rv;
 	}
 	slotValueSet(newv) {
+	    console.log('svset '+this.name+newv);
 		if (deferChanges) {
 			throw `Assign to ${this.name} must be deferred by wrapping it in WITH-INTEGRITY`;
 		} else if (find(this.lazy, [kOnceAsked, kAlways, true])) {
@@ -694,7 +695,8 @@ class Cell {
 	// --- state changes, from external assign or recalculation
 	valueAssume( newValue, propCode) {
 		let self = this;
-		//clg('val ass etry', this.name, newValue);
+		if ( this.name !== 'kids')
+		    clg('val ass etry', this.name, newValue);
 		withoutCDependency(()=>{
 			//clg('valass entry');
 			let priorValue = self.pv

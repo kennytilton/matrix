@@ -65,6 +65,7 @@ class Model {
 				value.name = slot;
 				value.md = this; // md aka model
 				this.cells[slot] = value;
+
 				Object.defineProperty( this
 					, slot
                     , { enumerable: true
