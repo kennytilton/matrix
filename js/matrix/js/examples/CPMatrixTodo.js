@@ -1,52 +1,207 @@
-var bits = new Array();
+// -------------------------------------------------------------
+// --- first, the application without the application within ---
 
-var welcome = "Welcome to the development of an application within an application, both built \
+var categories = ['chat', 'code', 'bulk'];
+var nubits = {};
+categories.map( c=> nubits[c] = {});
+
+var chats = {};
+var sources = {};
+var bitIds = ['preface'];
+
+var bits = new Array;
+
+function defit (category, id, b) {
+    if (!categories.includes(category))
+        throw 'defbit> undefined category '+category;
+    if (!bitIds.includes(id))
+        throw 'defbit> undefined bit '+id;
+    clg('hunh', category, id, nubits.category);
+    nubits[category][id] = ()=>b;
+}
+
+function getit (category, id, b) {
+    if (!categories.includes(category))
+        throw 'getit> undefined category ' + category;
+    if (!bitIds.includes(id))
+        throw 'getit> undefined bit ' + id;
+    return nubits[category][id]();
+}
+
+function defbit (id, b) { defit( 'bulk', id, b)}
+function getbit( id) { return getit('bulk', id)}
+
+function defchat (id, b) { defit( 'chat', id, b);}
+function getchat( id) { return getit('chat', id)}
+
+function defcode (id, b) { defit( 'code', id, b);}
+function getcode( id) { return getit('code', id)}
+
+
+// ------------------------------------------------------------------
+// --- we "lift" localStorage into the Matrix. To a degree. ----
+
+const bit = cFI( c=> {
+        let r = window.localStorage.getObject("CPMatrixTodo.bit");
+        return r === null ? 0 : (r < 0? 0: (r >= bitIds.length? bit.length -1: r));
+    },
+    // we use an observer to persist the current "bit" number so page reloads pick up where we left off
+    { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
+
+// --- main ------------------------------------------
+function CPMatrixTodo () {
+    return [
+        h1("Introducing Matrix&trade; and mxWeb&trade;"),
+        toolbar(),
+        div( c=> bitAssemble( bitIds[bit.v])),
+        toolbar()
+        //, h4("Cool")
+    ];
+}
+
+window['CPMatrixTodo'] = CPMatrixTodo;
+
+function bitAssemble( bid) {
+    let codeString = getcode( bid),
+        chat = getchat( bid),
+        b = getbit( bid);
+
+    if ( b.initFn)
+        b.initFn();
+    
+    return [
+        div( b.mxDom),
+        h2( b.title),
+        newsprint( chat),
+        b.notes? div( h3("Nota bene:"),
+            ul( {class: "techwrite",
+                    style: "list-style:square"},
+                b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
+                    note)))): null,
+        div( h3("Code Highlights"),
+            pre({class: 'precode'}, codeString))
+    ];
+}
+
+function newsprint( text) {
+    /*
+    This is a great example of a custom Web component.
+    Not so much the quickly hacked implementation, but
+    the idea itself of filling a void in HTML (flowing
+    text into columns like a newspaper) with a function
+    which, once evolved, becomes a permanent asset. And
+    it just yields standard HTML/CSS. And no preprocessor
+    is required.
+     */
+    let pgs = text.split("\n"),
+        brk = null;
+
+    for ( let n =0, chars = 0; n < pgs.length; ++n) {
+        chars += pgs[n].length;
+        if ( chars > text.length * .40) {
+            brk = ++n;
+            break;
+        }
+    }
+
+    return div( {style: {display: "flex",
+            flex_direction: "row"},
+            class: "techwrite"},
+        div({class: "narrativecol"},
+            pgs.slice(0, brk).map( pgr => p(pgr))),
+        div({class: "narrativecol",
+                style: "border-left: 1px solid #aaa;"},
+            pgs.slice(brk).map( pgr => p(pgr))));
+}
+
+function toolbar () {
+    return div({
+            style: {background: "#fdfdfd",
+                //margin_left: "96px",
+                width: "380px",
+                display: "flex",
+                flex_direction: "row",
+                align_items: "center"}},
+        controls)
+}
+
+var controls = [
+    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
+            style: "margin-left:18px",
+            disabled: cF( ()=> bit.v <= 0),
+            onclick: c=> --bit.v},
+        "Back"),
+    div( {style: "margin:8px"}, nTabs( bitIds.length)),
+    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
+            disabled: cF( c=> bit.v >= bitIds.length - 1),
+            onclick: c=> ++bit.v}
+        , "Next"),
+    input({
+        id: "logToggle",
+        type: "checkbox",
+        checked: domLogging,
+        onchange: (mx,e) => domLogging = e.target.checked,
+        style: "margin-left:24px;margin-right:9px"
+    }),
+    label(
+        { for: "logToggle",
+            title: "open the JS console to see logging of all DOM manipulation."},
+        "DOM logging")];
+
+
+function nTabs (n) {
+    tabs = [];
+    for( let i=0; i < n; ++i) {
+        let ii = i;
+        tabs.push( button( {onclick: ()=> bit.v = ii,
+            style: cF( c=>"margin-left:8px;background-color:"
+                + (ii===bit.v? "cyan":""))}, ""+i));
+    }
+    return tabs;
+}
+
+// ---------------------------------------------
+// -------- The bits ---------------------------
+// ---------------------------------------------
+
+defchat( 'preface',
+    "Welcome to the development of an application within an application, each built \
 on just HTML, CSS, and a fine-grained data flow system we call Matrix.\
 \n\
 The application developed will cover half the classic \
 <a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
 appear live above. Code highlights from the pen will appear below.\
 \n\
-See the last hundred lines or so of this 'pen' to see the host application, which also illustrates \
-mxWeb and Matrix data flow.\
+The first hundred lines of the source comprise the host application.\
 \n\
-Please check the notes below, then hit 'Next' to get started.";
+Please check the notes below, then hit 'Next' to get started.");
 
 
-var prefCode = "\
-All tag functions have the signature:\n\
+defcode( 'preface',
+    "All tag functions have the signature:\n\
   <i>tag</i>([<i>HTML attributes</i>, [<i>custom properties</i>,]] <i>children*</i>)\n\
 \n\n\
 section({class: 'todoapp'},\n\
    header({class: 'header'},\n\
       h1('todos'))),\n\
 \n\
-   p('The working app will appear here.')";
-
-function defbit (id, b) {
-    bits.id = ()=>b;
-}
+   p('The working app will appear here.')");
 
 defbit('preface',
     {
         title: "Preface",
-        chat: welcome,
-        code: prefCode,
-        notes: ["Here is a complete <a target='_blank' href='https://github.com/kennytilton/webmx/tree/master/js'>" +
-        "TodoMVC</a> implementation.",
+        notes: [
+            "Here is a complete <a target='_blank' href='https://github.com/kennytilton/webmx/tree/master/js'>" +
+                        "TodoMVC</a> implementation.",
             "Pardon my CSS. And even my Javascript. I am a native Lisper.",
             "We have a ClojureScript version as well."],
         mxDom:
             [section({ class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
-                center("Coming soon, the app.")]
+                center( "Coming soon, the app.")]
     });
 
-bits.push(
-    function () {
-        return
-    });
 
 var b0 = "\
 section({class: 'todoapp'},\n\
@@ -514,127 +669,6 @@ FDA.gov is aggressive about matching, so 'Wash car' will find results. \
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.";
 
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// --- below, the application without the application within ---
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
-
-// ------------------------------------------------------------------
-// --- Next we "lift" localStorage into the Matrix. To a degree. ----
-
-const bit = cFI( c=> {
-    let r = window.localStorage.getObject("CPMatrixTodo.bit");
-    return r === null ? 0 : (r < 0? 0: (r >= bits.length? bit.length -1: r));
-    },
-    // we use an observer to persist the current "bit" number so page reloads pick up where we left off
-    { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
-
-function toolbar () {
-    return div({
-            style: {background: "#fdfdfd",
-                margin_left: "96px",
-                width: "380px",
-            display: "flex",
-            flex_direction: "row",
-            align_items: "center"}},
-        controls)
-}
-
-function CPMatrixTodo () {
-    return [
-        h1("Introducing Matrix&trade; and mxWeb&trade;"),
-        toolbar(),
-        div( c=> bitAssemble( bits[bit.v]())),
-        toolbar()
-    ];
-}
-
-window['CPMatrixTodo'] = CPMatrixTodo;
-
-function newsprint( text) {
-    /*
-    This is a great example of a custom Web component.
-    Not so much the quickly hacked implementation, but
-    the idea itself of filling a void in HTML (flowing
-    text into columns like a newspaper) with a function
-    which, once evolved, becomes a permanent asset. And
-    it just yields standard HTML/CSS. And no preprocessor
-    is required.
-     */
-    let pgs = text.split("\n"),
-    brk = null;
-
-    for ( let n =0, chars = 0; n < pgs.length; ++n) {
-        chars += pgs[n].length;
-        if ( chars > text.length * .40) {
-            brk = ++n;
-            break;
-        }
-    }
-
-    return div( {style: {display: "flex",
-                        flex_direction: "row"},
-                class: "techwrite"},
-                div({class: "narrativecol"},
-                    pgs.slice(0, brk).map( pgr => p(pgr))),
-                div({class: "narrativecol",
-                    style: "border-left: 1px solid #aaa;"},
-                    pgs.slice(brk).map( pgr => p(pgr))));
-}
-
-function bitAssemble( b) {
-    var codeString, notes, code;
-    if ( b.initFn)
-        b.initFn();
-
-    return [
-        div( b.mxDom),
-        h2( b.title),
-        newsprint( b.chat),
-        b.notes? div( h3("Nota bene:"),
-            ul( {class: "techwrite",
-                style: "list-style:square"},
-            b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
-                note)))): null,
-        div( h3("Code Highlights"),
-            pre({class: 'precode'}, b.code))
-    ];
-}
-
-function nTabs (n) {
-    tabs = [];
-    for( let i=0; i < n; ++i) {
-        let ii = i;
-        tabs.push( button( {onclick: ()=> bit.v = ii,
-            style: cF( c=>"margin-left:8px;background-color:"
-                + (ii===bit.v? "cyan":""))}, ""+i));
-    }
-    return tabs;
-}
-var controls = [
-    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
-        style: "margin-left:18px",
-            disabled: cF( ()=> bit.v <= 0),
-            onclick: c=> --bit.v},
-        "Back"),
-    div( {style: "margin:8px"}, nTabs( bits.length)),
-    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
-            disabled: cF( c=> bit.v >= bits.length - 1),
-            onclick: c=> ++bit.v}
-        , "Next"),
-    input({
-        id: "logToggle",
-        type: "checkbox",
-        checked: domLogging,
-        onchange: (mx,e) => domLogging = e.target.checked,
-        style: "margin-left:24px;margin-right:9px"
-    }),
-    label(
-        { for: "logToggle",
-        title: "open the JS console to see logging of all DOM manipulation."},
-        "DOM logging")];
 
 // document.body.innerHTML =  tag2html( page());
 

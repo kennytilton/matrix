@@ -651,8 +651,9 @@ class Cell {
 			/*elts.forEach(c=>{
 			 clg(`stack c ${c.name} of md ${c.md.name}`);
 			 });
-			 console.trace();*/
-			throw 'cyclic dependency detected. see console for deets';
+			 console.trace();
+			throw 'cyclic dependency detected. see console for deets';*/
+			debugger;
 		}
 		let rawValue = this.calcNLink();
 		//T.clg('rawval', rawValue);
