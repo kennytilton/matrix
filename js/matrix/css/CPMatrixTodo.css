@@ -16,6 +16,13 @@ code {
     margin-right: 48px;
 }
 
+.precode i {
+    background-color:yellow;
+}
+.precode b {
+    background:cyan;
+}
+
 .techwrite {
     font-family: 'Source Sans Pro', sans-serif;
 }

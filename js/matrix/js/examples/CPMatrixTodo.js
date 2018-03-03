@@ -7,7 +7,7 @@ categories.map( c=> nubits[c] = {});
 
 var chats = {};
 var sources = {};
-var bitIds = ['preface'];
+var bitIds = ['preface', 'justhtml', 'webco', 'dynodom'];
 
 var bits = new Array;
 
@@ -39,7 +39,7 @@ function getcode( id) { return getit('code', id)}
 
 
 // ------------------------------------------------------------------
-// --- we "lift" localStorage into the Matrix. To a degree. ----
+// --- we "lift" localStorage into the Matrix. To a degree. ---------
 
 const bit = cFI( c=> {
         let r = window.localStorage.getObject("CPMatrixTodo.bit");
@@ -68,7 +68,7 @@ function bitAssemble( bid) {
 
     if ( b.initFn)
         b.initFn();
-    
+
     return [
         div( b.mxDom),
         h2( b.title),
@@ -160,32 +160,9 @@ function nTabs (n) {
     return tabs;
 }
 
-// ---------------------------------------------
-// -------- The bits ---------------------------
-// ---------------------------------------------
-
-defchat( 'preface',
-    "Welcome to the development of an application within an application, each built \
-on just HTML, CSS, and a fine-grained data flow system we call Matrix.\
-\n\
-The application developed will cover half the classic \
-<a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
-appear live above. Code highlights from the pen will appear below.\
-\n\
-The first hundred lines of the source comprise the host application.\
-\n\
-Please check the notes below, then hit 'Next' to get started.");
-
-
-defcode( 'preface',
-    "All tag functions have the signature:\n\
-  <i>tag</i>([<i>HTML attributes</i>, [<i>custom properties</i>,]] <i>children*</i>)\n\
-\n\n\
-section({class: 'todoapp'},\n\
-   header({class: 'header'},\n\
-      h1('todos'))),\n\
-\n\
-   p('The working app will appear here.')");
+// -----------------------------------------------------------------------------------------------------
+// -------- The bits -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------
 
 defbit('preface',
     {
@@ -202,94 +179,34 @@ defbit('preface',
                 center( "Coming soon, the app.")]
     });
 
-
-var b0 = "\
-section({class: 'todoapp'},\n\
-   header({class: 'header'},\n\
-      h1('todos'))),\n\
-\n\
-footer({class: 'info'},\n\
-   ['Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton', \n\
-    'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
-    .map( s => p({},s)))";
-
-var notVDom = "\
-A design imperative of mxWeb is to work so much \
-like HTML that graphic designers can write it.\
-\n\
-Where we come up short, please file an RFE.\n\
-\n\
-mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
-is just JS.\
-\n\
-As for speed, the point granularity of the data flow tells mxWeb \
-precisely the DOM updates needed, avoiding VDOM diffing.\
-\n\
-Turn on 'DOM Logging' in our toolbar and open the JS console to track the action.";
-
-bits.push(
-    function () {
-        return {
-            title: "An All-Javascript HTML Work-alike. And fast.",
-                chat: notVDom,
-            code: b0,
-            notes: null,
-            mxDom: [
-            section({class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"))),
-            footer({class: "info"},
-                [
-                    "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-                    "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
-                ].map(s => p({}, s)))]
-        }
-    });
-
-var csCredits = "\
-function credits (attrs, ...content) {\n\
-    return footer(Object.assign({}, {class: 'info'}, attrs),\n\
-        content.map( s => p({},s)));\n\
-}\n\n\
-section({ class: 'todoapp'},\n\
-   header({class: 'header'},\n\
-      h1('todos'))),\n\
-credits({style: 'font-size:18px'},\n\
-   'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton',\n\
-   'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC&lt;/a&gt;'])";
-
-function credits (attrs, ...content) {
-    return footer(Object.assign({}, {class: "info"}, attrs),
-        // Look, Ma! No JSX! No toolchain! Standard JS....
-        content.map( s => p({},s)));
-}
-
-var webcoDone = "\
-One nice thing about everything being just Javascript is that \
-developing a custom, reusable tag is as easy as writing a function with whatever \
-parameters we need.\
-\n\
-<a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a> look \
-promising, but JS functions will be hard to top. The function 'credits' in the code below is a trivial example.";
-
-bits.push(
-    function () {
-        return {
-            title: "Web Components? Done.",
-                chat: webcoDone,
-            code: csCredits,
-            mxDom: [
-            section({ class: "todoapp"},
-                header({class: "header"},
-                    h1("todos"))),
-            credits({style: "font-size:18px"},
+defbit('justhtml',
+    {
+        title: "An All-Javascript HTML Work-alike. And fast.",
+        notes: null,
+        mxDom: [
+        section({class: "todoapp"},
+            header({class: "header"},
+                h1("todos"))),
+        footer({class: "info"},
+            [
                 "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-                "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
-        }
+                "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
+            ].map(s => p({}, s)))]
     });
 
+defbit( "webco",
+     {
+        title: "Web Components? Done.",
+        mxDom: [
+        section({ class: "todoapp"},
+            header({class: "header"},
+                h1("todos"))),
+        credits({style: "font-size:18px"},
+            "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+            "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
+    });
 
-var Todos = cI([]);
+var Todos;
 
 function todoAddNewEZ (mx, e) {
     if (e.key === 'Enter') {
@@ -297,8 +214,7 @@ function todoAddNewEZ (mx, e) {
         e.target.value = null; // clear input either way
 
         if (title !== '') {
-            // concat forces new array so change detected
-            clg('new todo', title);
+            // concat forces new array so Matrix detects change
             Todos.items = Todos.items.concat({
                 title: title,
                 completed: false,
@@ -307,60 +223,6 @@ function todoAddNewEZ (mx, e) {
         }
     }
 }
-
-var enterTodos = "\
-Glossary:\n\
-   - 'cI' creates an 'input' Cell.\n\
-   - 'cF' creates a 'formula' Cell.\n\n\n\
-<b>var TodosLite = cI([]);</u> // a rare standalone cell. Use Todos.items to read/write.</b>\n\
-\n\
-document.body.innerHTML =  tag2html(\n\
-    todoAppHeader( todoAddNewEZ),\n\
-    section({ <u>hidden: cF( c => Todos.items.length === 0)},</u>\n\
-      ul( c=> <u>Todos.items.map( td => li( td.title))))</u>,\n\
-    todoDashboardEZ());\n\
-\n\
-function todoAddNewEZ (mx, e) {\n\
-    if (e.key === 'Enter') {\n\
-        let title = e.target.value.trim();\n\
-        e.target.value = null; // clear input either way\n\
-\n\
-        if (title !== '') {\n\
-            // we start with a simple JS object as our to-do\n\
-            // concat forces new array so change gets detected by Matrix engine\n\
-            <i>Todos.items = Todos.items.concat({title: title, completed: false});</i>\n\
-        }\n\
-    }\n\
-}\n\n\
-function todoDashboardEZ () {\n\
-    return footer({ <u>hidden: cF( c => Todos.items.length ===0)}</u>,\n\
-        span({} {content: cF(c => {\n\
-                   <u>let remCt = Todos.items.filter(todo => !todo.completed).length;</u>\n\
-                   return `&lt;strong>${remCt}&lt;/strong> item${remCt === 1 ? '' : 's'} remaining`;\n\
-            })}));}\n\
-\n\
-function todoAppHeader ( newTodoHandler ) {\n\
-    return section({class: 'todoapp'},\n\
-            header({class: 'header'},\n\
-                h1('todos'),\n\
-                input({\n\
-                    class: 'new-todo',\n\
-                    autofocus: true,\n\
-                    placeholder: 'What needs doing?',\n\
-                    onkeypress: newTodoAddNewEZ\n\
-                })));\n\
-}";
-
-var enterFlow = "\
-Now to data flow. Our first use case is a doozy: data flow \
-triggering dynamic new DOM (an LI, in fact) when the user adds a new Todo to the model data. \
-We must also un-hide a dashboard view showing a count of the items not yet completed.\n\
-\n\
-Try it, if you like; the app within the app is live.\n\
-\n\
-Note the transparency of the data flow in the code below. Well, you \
-cannot, it is transparent, so we underscored (literally) the transparent \
-subscriptions and italicized where state change triggers data flow.";
 
 function todoAppHeader ( newTodoHandler ) {
     return header({class: "header"},
@@ -376,7 +238,7 @@ function todoAppHeader ( newTodoHandler ) {
 function todoDashboardEZ ( ...plugins ) {
     return footer({
             class: "footer",
-            hidden: cF( c => Todos.items.filter( td=> !td.deleted).length ===0)},
+            hidden: cF( c => Todos.empty)},
         span({ class: "todo-count"},
             {content: cF(c => {
                 let remCt = Todos.items.filter(todo => !(todo.completed || todo.deleted)).length;
@@ -387,30 +249,29 @@ function todoDashboardEZ ( ...plugins ) {
     );
 }
 
-bits.push(
-    function () {
-        return {
-            title: "Enter Data Flow",
-                chat: enterFlow,
-            code: enterTodos,
-            notes: ["New: changing data drives changing DOM population...",
-                "...rather inefficiently for now, regenerating all LIs each time. We can fix that.",
-                "A new Web component will provide our first cut at a dashboard.",
-                "Another component lets us hide the header."],
-            initFn: ()=> Todos = mkm( null, "Todos", { items: cI( [])}),
-            mxDom: [
-                section({class: "todoapp"},
-                    todoAppHeader( todoAddNewEZ),
-                    section({
-                            class: "main",
-                            hidden: cF(c => Todos.items.length === 0)
-                        },
-                        ul({class: "todo-list"},
-                                c => Todos.items
-                                    .map(td => li({style: {padding: "9px"}},
-                                        td.title)))),
-                    todoDashboardEZ())]
-        }
+defbit("dynodom",
+    {
+        title: "Enter Data Flow",
+        notes: ["New: changing data drives changing DOM population...",
+            "...rather inefficiently for now, regenerating all LIs each time. We fix that shortly.",
+            "A new Web component provides a modest first dashboard.",
+            "Another component handles the header."],
+        initFn: ()=> Todos = mkm( null, "Todos", {
+            items: cI( []),
+            empty: cF( c=> c.md.items.filter( td=> !td.deleted).length ===0)
+        }),
+        mxDom: [
+            section({class: "todoapp"},
+                todoAppHeader( todoAddNewEZ),
+                section({
+                        class: "main",
+                        hidden: cF(c => Todos.items.empty)
+                    },
+                    ul({class: "todo-list"},
+                            c => Todos.items
+                                .map(td => li({style: {padding: "9px"}},
+                                    td.title)))),
+                todoDashboardEZ())]
     });
 
 // ---------------------------------------------------------------------------------
@@ -668,6 +529,160 @@ it a click.\
 FDA.gov is aggressive about matching, so 'Wash car' will find results. \
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.";
 
+// --------------------------------------------------------------------
+// ----- Text Content -------------------------------------------------
+defchat( 'preface',
+    "Welcome to the development of an application within an application, each built \
+on just HTML, CSS, and a fine-grained data flow system we call Matrix.\
+\n\
+The application developed will cover half the classic \
+<a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
+appear live above. Code highlights from the pen will appear below.\
+\n\
+The first hundred lines of the source comprise the host application.\
+\n\
+Please check the notes below, then hit 'Next' to get started.");
+
+defcode( 'preface',
+    "All tag functions have the signature:\n\
+  <i>tag</i>([<i>HTML attributes</i>, [<i>custom properties</i>,]] <i>children*</i>)\n\
+\n\n\
+section({class: 'todoapp'},\n\
+   header({class: 'header'},\n\
+      h1('todos'))),\n\
+\n\
+   p('The working app will appear here.')");
+
+/// --- justhtml ----------------------------------------------------------------------
+
+defcode('justhtml',
+    "section({class: 'todoapp'},\n\
+       header({class: 'header'},\n\
+          h1('todos'))),\n\
+    \n\
+    footer({class: 'info'},\n\
+       ['Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton', \n\
+        'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
+        .map( s => p({},s)))");
+
+defchat('justhtml',
+    "A design imperative of mxWeb is to work so much \
+like HTML that graphic designers can write it.\
+\n\
+Where we come up short, please file an RFE.\n\
+\n\
+mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
+is just JS.\
+\n\
+As for speed, the point granularity of the data flow tells mxWeb \
+precisely the DOM updates needed, avoiding VDOM diffing.\
+\n\
+Turn on 'DOM Logging' in our toolbar and open the JS console to track the action.");
+
+/// --- webco - web components -------------------------------------------------------
+
+defcode("webco", "\
+function credits (attrs, ...content) {\n\
+    return footer(Object.assign({}, {class: 'info'}, attrs),\n\
+        content.map( s => p({},s)));\n\
+}\n\n\
+section({ class: 'todoapp'},\n\
+   header({class: 'header'},\n\
+      h1('todos'))),\n\
+credits({style: 'font-size:18px'},\n\
+   'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton',\n\
+   'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC&lt;/a&gt;'])");
+
+function credits (attrs, ...content) {
+    return footer(Object.assign({}, {class: "info"}, attrs),
+        // Look, Ma! No JSX! No toolchain! Standard JS....
+        content.map( s => p({},s)));
+}
+
+defchat("webco",
+    "Since we just code JS, developing a custom HTML element is as easy as writing a function. \
+That function can take whatever parameters we like to make it as reusable as we like. \
+\n\
+With the same reuse objective, <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a> look \
+promising, but JS functions will be hard to top. \
+\n\
+The function 'credits' in the code below is a trivial example.");
+
+defcode('dynodom', "\
+Glossary:\n\
+   - 'cI' creates an 'input' Cell.\n\
+   - 'cF' creates a 'formula' Cell.\n\
+   - 'mkm' makes a model (object with cells for properties)\n\
+\n\
+Todos = mkm( null, 'Todos', {\n\
+            items: cI( []),\n\
+            <b>empty: cF( c=> <i>c.md.items</i>.filter( td=> !<i>td.deleted</i>).length ===0)</b>\n\
+        })\n\
+\n\
+section({class: 'todoapp'},\n\
+  todoAppHeader( todoAddNewEZ),\n\
+    section({\n\
+            class: 'main',\n\
+            <b>hidden: cF(c => <i>Todos.empty</i></b> )\n\
+        },\n\
+        ul({class: 'todo-list'},\n\
+            c => Todos.items\n\
+                .map(td => li({style: {padding: '9px'}},\n\
+                              td.title)))),\n\
+    todoDashboardEZ())\n\
+\n\
+function todoAddNewEZ (mx, e) {\n\
+    if (e.key === 'Enter') {\n\
+        let title = e.target.value.trim();\n\
+        e.target.value = null; // clear input either way\n\
+\n\
+        if (title !== '') {\n\
+            // concat forces new array so Matrix detects change \n\
+            <b>Todos.items = Todos.items.concat({\n\
+                title: title,\n\
+                completed: false,\n\
+                deleted: false\n\
+            })</b>;\n\
+        }\n\
+    }\n\
+}\n\
+\n\
+function todoAppHeader ( newTodoHandler ) {\n\
+    return header({class: 'header'},\n\
+                h1('todos'),\n\
+                input({\n\
+                    class: 'new-todo',\n\
+                    autofocus: true,\n\
+                    placeholder: 'Type an item to do and hit Return.',\n\
+                    onkeypress: newTodoHandler\n\
+                }));\n\
+}\n\
+\n\
+function todoDashboardEZ ( ...plugins ) {\n\
+    return footer({\n\
+            class: 'footer',\n\
+            <b>hidden: cF( c => <i>Todos.empty</i>)</b>},\n\
+        span({ class: 'todo-count'},\n\
+            {<b>content: cF(c => {\n\
+                let remCt = <i>Todos.items</i>.filter(todo => !(<i>todo.completed</i> || <i>todo.deleted</i>)).length;\n\
+                // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);\n\
+                return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;</b>\n\
+            })}),\n\
+        (plugins || []).map( p => p())\n\
+    );\n\
+}");
+
+defchat( "dynodom", "\
+Now to data flow: a change to the model triggers \
+changed view content, including new DOM elements. \
+\n\
+A new to-do requires a new LI element. The first to-do requires a dashboard \
+be unhidden. The dashboard shows a count of the items.\
+\n\
+Try it, if you like; the app within the app is live.\n\
+\n\
+Note the transparency of the data flow in the code below. Well, you \
+cannot, it is transparent, so we highlighted the implicit pub/sub.");
 
 
 // document.body.innerHTML =  tag2html( page());
