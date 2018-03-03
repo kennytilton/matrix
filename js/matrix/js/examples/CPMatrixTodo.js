@@ -1,38 +1,51 @@
 var bits = new Array();
 
-var welcome = "Welcome to the development of an application within an application built \
-on nothing more than HTML, CSS, and a fine-grained data flow library.\
+var welcome = "Welcome to the development of an application within an application, both built \
+on just HTML, CSS, and a fine-grained data flow system we call Matrix.\
 \n\
-Impossible, you say? Sixty-four submissions to TodoMVC cannot be in vain! Read on.\
+The application developed will cover half the classic \
+<a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
+appear live above. Code highlights from the pen will appear below.\
 \n\
-Speaking of TodoMVC, that is the application we will be developing within \
-this Matrix/mxWeb&trade; driver application.\
+See the last hundred lines or so of this 'pen' to see the host application, which also illustrates \
+mxWeb and Matrix data flow.\
 \n\
-Please check the notes below then hit 'Next' to get started.";
+Please check the notes below, then hit 'Next' to get started.";
 
 
-var bz = "\
+var prefCode = "\
+All tag functions have the signature:\n\
+  <i>tag</i>([<i>HTML attributes</i>, [<i>custom properties</i>,]] <i>children*</i>)\n\
+\n\n\
 section({class: 'todoapp'},\n\
    header({class: 'header'},\n\
       h1('todos'))),\n\
 \n\
    p('The working app will appear here.')";
 
+function defbit (id, b) {
+    bits.id = ()=>b;
+}
+
+defbit('preface',
+    {
+        title: "Preface",
+        chat: welcome,
+        code: prefCode,
+        notes: ["Here is a complete <a target='_blank' href='https://github.com/kennytilton/webmx/tree/master/js'>" +
+        "TodoMVC</a> implementation.",
+            "Pardon my CSS. And even my Javascript. I am a native Lisper.",
+            "We have a ClojureScript version as well."],
+        mxDom:
+            [section({ class: "todoapp"},
+                header({class: "header"},
+                    h1("todos"))),
+                center("Coming soon, the app.")]
+    });
+
 bits.push(
     function () {
-        return {
-            title: "Preface",
-            chat: welcome,
-            code: bz,
-            notes: ["The above is a sample of the frames to come.",
-                "Pardon my CSS. And even my Javascript. I am a native Lisper.",
-                "We have a ClojureScript version as well."],
-            mxDom:
-                [section({ class: "todoapp"},
-                    header({class: "header"},
-                        h1("todos"))),
-                    center("Coming soon, the app.")]
-        }
+        return
     });
 
 var b0 = "\
@@ -41,24 +54,23 @@ section({class: 'todoapp'},\n\
       h1('todos'))),\n\
 \n\
 footer({class: 'info'},\n\
-   ['Double-click the text of a todo to change it',\n\
-    'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton', \n\
+   ['Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton', \n\
     'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
     .map( s => p({},s)))";
 
 var notVDom = "\
-The Prime Directive&trade; of mxWeb code is to work and look so much \
-like HTML and CSS that graphic designers will be able to write it.\
+A design imperative of mxWeb is to work so much \
+like HTML that graphic designers can write it.\
 \n\
 Where we come up short, please file an RFE.\n\
 \n\
-mxWeb is developer firendly, too; we code JS freely because <i>all</i> mxWeb authoring \
+mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
 is just JS.\
 \n\
-As for speed, this is not VDOM and there is no diffing, yet DOM maintenance is \
-more efficient than those allow. The point granularity of the data flow engine \
-tells mxWeb the exact minimum of DOM updates needed at every turn. When we get to dynamic\
-DOM in a couple of panels, turn on 'DOM Logging' in our toolbar to see the action.";
+As for speed, the point granularity of the data flow tells mxWeb \
+precisely the DOM updates needed, avoiding VDOM diffing.\
+\n\
+Turn on 'DOM Logging' in our toolbar and open the JS console to track the action.";
 
 bits.push(
     function () {
@@ -66,18 +78,13 @@ bits.push(
             title: "An All-Javascript HTML Work-alike. And fast.",
                 chat: notVDom,
             code: b0,
-            notes: [
-            "mxWeb&trade; DOM generator signatures mirror HTML tag syntax.",
-            "Meaning a graphic designer could learn mxWeb.",
-            "JSX? Bah. We code straight JS.",
-            "Meaning No Toolchain Required&trade;. Yeah."],
+            notes: null,
             mxDom: [
             section({class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
             footer({class: "info"},
                 [
-                    "Double-click the text of a todo to change it",
                     "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
                     "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
                 ].map(s => p({}, s)))]
@@ -87,14 +94,12 @@ bits.push(
 var csCredits = "\
 function credits (attrs, ...content) {\n\
     return footer(Object.assign({}, {class: 'info'}, attrs),\n\
-        // Look, Ma! No JSX! No toolchain! Standard JS....\n\
         content.map( s => p({},s)));\n\
 }\n\n\
 section({ class: 'todoapp'},\n\
    header({class: 'header'},\n\
       h1('todos'))),\n\
 credits({style: 'font-size:18px'},\n\
-   'Double-click the text of a todo to change it',\n\
    'Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton',\n\
    'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC&lt;/a&gt;'])";
 
@@ -106,14 +111,11 @@ function credits (attrs, ...content) {
 
 var webcoDone = "\
 One nice thing about everything being just Javascript is that \
-writing a custom tag is as easy as writing a function.\
+developing a custom, reusable tag is as easy as writing a function with whatever \
+parameters we need.\
 \n\
-We can treate a function that apes HTML syntax (a tag with optional attributes, \
-followed by zero or more content elements) or we can throw convention aside \
-and create any signature we like.\
-\n\
-Our only obligation is to return one or an array of products of mxWeb DOM \
-generators.";
+<a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a> look \
+promising, but JS functions will be hard to top. The function 'credits' in the code below is a trivial example.";
 
 bits.push(
     function () {
@@ -121,15 +123,11 @@ bits.push(
             title: "Web Components? Done.",
                 chat: webcoDone,
             code: csCredits,
-            notes: [
-            "See the function 'credits'? We now can write our own DOM functions aping HTML syntax...",
-            "...and the W3C can stop working on <a href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a>."],
             mxDom: [
             section({ class: "todoapp"},
                 header({class: "header"},
                     h1("todos"))),
             credits({style: "font-size:18px"},
-                "Double-click the text of a todo to change it",
                 "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
                 "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
         }
@@ -144,7 +142,6 @@ function todoAddNewEZ (mx, e) {
         e.target.value = null; // clear input either way
 
         if (title !== '') {
-            // we start with a simple JS object as our to-do
             // concat forces new array so change detected
             clg('new todo', title);
             Todos.items = Todos.items.concat({
@@ -157,10 +154,9 @@ function todoAddNewEZ (mx, e) {
 }
 
 var enterTodos = "\
-Below:\n\
-   - underscores highlight code involving data flow.\n\
-   - 'cI' creates an 'input Cell'.\n\
-   - 'cF' creates a 'formula Cell.\n\n\n\
+Glossary:\n\
+   - 'cI' creates an 'input' Cell.\n\
+   - 'cF' creates a 'formula' Cell.\n\n\n\
 <b>var TodosLite = cI([]);</u> // a rare standalone cell. Use Todos.items to read/write.</b>\n\
 \n\
 document.body.innerHTML =  tag2html(\n\
@@ -196,28 +192,20 @@ function todoAppHeader ( newTodoHandler ) {\n\
                     class: 'new-todo',\n\
                     autofocus: true,\n\
                     placeholder: 'What needs doing?',\n\
-                    onkeypress: newTodoHandler\n\
+                    onkeypress: newTodoAddNewEZ\n\
                 })));\n\
 }";
 
 var enterFlow = "\
-Now to data flow. Our first use case is a doozey: we must \
-dynamically add DOM (an LI, in fact) when the user enters a new Todo.\
+Now to data flow. Our first use case is a doozy: data flow \
+triggering dynamic new DOM (an LI, in fact) when the user adds a new Todo to the model data. \
+We must also un-hide a dashboard view showing a count of the items not yet completed.\n\
 \n\
-Go ahead, try it; the app within the app is live.\n\
-\n\
-We must also make appear a dashboard with a count of the \
-items not yet completed.\
+Try it, if you like; the app within the app is live.\n\
 \n\
 Note the transparency of the data flow in the code below. Well, you \
-cannot, it is transparent, so we underscored (literally) the places \
-dependency is established and italicized where data propagation is triggered.\
-\n\
-Transparency is vital to the data flow paradigm. TodoMVC requires \
-just a dozen dependencies, but real-world applications \
-involve hundreds.\
-\n\
-Manual publish/subscribe works but gets old fast.";
+cannot, it is transparent, so we underscored (literally) the transparent \
+subscriptions and italicized where state change triggers data flow.";
 
 function todoAppHeader ( newTodoHandler ) {
     return header({class: "header"},
@@ -546,11 +534,14 @@ const bit = cFI( c=> {
 function toolbar () {
     return div({
             style: {background: "#fdfdfd",
+                margin_left: "96px",
+                width: "380px",
             display: "flex",
             flex_direction: "row",
             align_items: "center"}},
         controls)
 }
+
 function CPMatrixTodo () {
     return [
         h1("Introducing Matrix&trade; and mxWeb&trade;"),
@@ -588,7 +579,8 @@ function newsprint( text) {
                 class: "techwrite"},
                 div({class: "narrativecol"},
                     pgs.slice(0, brk).map( pgr => p(pgr))),
-                div({class: "narrativecol"},
+                div({class: "narrativecol",
+                    style: "border-left: 1px solid #aaa;"},
                     pgs.slice(brk).map( pgr => p(pgr))));
 }
 
@@ -601,11 +593,11 @@ function bitAssemble( b) {
         div( b.mxDom),
         h2( b.title),
         newsprint( b.chat),
-        h3("Nota bene:"),
-        ul( {class: "techwrite",
+        b.notes? div( h3("Nota bene:"),
+            ul( {class: "techwrite",
                 style: "list-style:square"},
             b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
-                note))),
+                note)))): null,
         div( h3("Code Highlights"),
             pre({class: 'precode'}, b.code))
     ];
@@ -623,6 +615,7 @@ function nTabs (n) {
 }
 var controls = [
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
+        style: "margin-left:18px",
             disabled: cF( ()=> bit.v <= 0),
             onclick: c=> --bit.v},
         "Back"),
