@@ -21,6 +21,7 @@ code {
 }
 .precode b {
     background:cyan;
+    padding: 2px;
 }
 
 .techwrite {
@@ -32,6 +33,31 @@ code {
     max-width: 300px;
     padding-left: 12px;
     padding-right: 12px;
+}
+
+.techtitular {
+    /*font-family: 'Cabin', sans-serif;*/
+
+    font-family: 'Lora', serif;
+
+}
+.techtitle {
+    /*text-align:center;*/
+    font-size:40px;
+}
+
+.techsubtitle {
+    text-align:left;
+    font-size:24px;
+}
+
+.techheader {
+    text-align:left;
+    font-size:16px;
+
+    /*font-family: 'Cabin', sans-serif;*/
+    font-family: 'Source Sans Pro', sans-serif;
+    /*font-family: 'Lora', serif;*/
 }
 
 /*
