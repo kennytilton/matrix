@@ -50,18 +50,30 @@ const bit = cFI( c=> {
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
     { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
 
-// --- main ------------------------------------------
+// -------------------------------------------------------------------------------------
+// --- Main ----------------------------------------------------------------------------
+
 function CPMatrixTodo () {
     return [
         p({class: 'techtitular techtitle'}, "Introducing Matrix and mxWeb"),
         toolbar(),
-        div( c=> bitAssemble( bitIds[bit.v])),
-        toolbar()
-        //, h4("Cool")
+        div( c=> bitAssemble( bitIds[bit.v]))
+        //toolbar()
     ];
 }
 
 window['CPMatrixTodo'] = CPMatrixTodo;
+
+function codeGlossary() {
+    return div( {style: "padding-left:12px;background:#fafafa"},
+            ul( {class: "precode", style: "border:none"},
+            [span("'cI' creates an input Cell"),
+            span("'cF' creates a formulaic Cell"),
+            span("'mkm' makes a model (object with cells for properties)"),
+            i("Code that 'subscribes' to other data"),
+            b("Code that computes derived data"),
+            strong("Code that feeds external data into the flow")].map( g=> li(g))))
+}
 
 function bitAssemble( bid) {
     let codeString = getcode( bid),
@@ -80,8 +92,11 @@ function bitAssemble( bid) {
                     style: "list-style:square"},
                 b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
                     note)))): null,
-        div( p({class: 'techheader'}, "Code Highlights"),
-            pre({class: 'precode'}, codeString))
+
+        div( p({class: 'techheader'}, "Code Highlights (glossary below)"),
+            pre({class: 'precode'}, codeString)),
+        div( p({class: 'techheader'}, "Code Glossary"),
+            codeGlossary())
     ];
 }
 
@@ -188,12 +203,13 @@ defbit('justhtml',
         mxDom: [
         section({class: "todoapp"},
             header({class: "header"},
-                h1("todos"))),
+                 h1("todos"))),
         footer({class: "info"},
             [
                 "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
                 "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
-            ].map(s => p({}, s)))]
+            ].map(s => p({}, s)))
+        ]
     });
 
 /// --- webco - Web Components -------------------------------
@@ -267,8 +283,7 @@ defbit("dynodom",
         title: "Enter Data Flow",
         notes: ["New: changing data drives changing DOM population...",
             "...rather inefficiently for now, regenerating all LIs each time. We fix that shortly.",
-            "A new Web component provides a modest first dashboard.",
-            "Another component handles the header."],
+            "Two component functions break up the code."],
         initFn: ()=> Todos = mkm( null, "Todos", {
             items: cI( []),
             empty: cF( c=> c.md.items.filter( td=> !td.deleted).length ===0)
@@ -339,9 +354,6 @@ function clearCompleted () {
 defbit('ktodo',
     {
         title: "To-Do properties join the data flow",
-        notes: ["Reactive data flow now includes model as well as view.",
-            "Data flow connects the separate concerns of model and view.",
-            "A simple derived 'empty' property keeps us DRY."],
         initFn: ()=> Todos = mkm( null, "Todos", {
             items: cI( [new Todo( "Wash car")]),
             empty: cF( c=> c.md.items.length===0)}),
@@ -365,9 +377,8 @@ defbit('xhr',
     {
         title: "XHR joins the data flow",
         notes: [
-            "Reactive data flow now includes XHR as well as view.",
-            "The mxXHR 'lift' was hacked just enough to support this panel. More to come.",
-            "'kidValues' mechanism avoids even rebuilding existing proxies."],
+            "The JS mxXHR lift into the Matrix was hacked just enough to support this panel.",
+            "The 'kidValues' mechanism avoids rebuilding existing DOM and even proxies."],
         initFn: ()=> Todos = mkm( null, "Todos", {
             items: cI( ["adderall", "Yankees", "water", "aspirin"].map(td=> new Todo( td))),
             empty: cF( c=> c.md.items.length===0)}),
@@ -435,13 +446,13 @@ function aeAlertSVG () {
 
 defchat( 'preface',
     "Welcome to the development of an application within an application, each built \
-on just HTML, CSS, and a fine-grained data flow system we call Matrix.\
+with just HTML and CSS running within a fine-grained data flow system we call Matrix.\
 \n\
 The application developed will cover half the classic \
 <a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
 appear live above. Code highlights from the pen will appear below.\
 \n\
-The first hundred lines of the source comprise the host application, itself a nice demonstration of mxWeb.\
+The first hundred lines of the source comprise the host application, itself a demonstration of mxWeb.\
 \n\
 Please check the notes below, then hit 'Next' to get started.");
 
@@ -465,7 +476,8 @@ defcode('justhtml',
     footer({class: 'info'},\n\
        ['Created by &lt;a href='http://tiltontec.com'&gt;Kenneth Tilton', \n\
         'Inspired by &lt;a href='http://todomvc.com'&gt;TodoMVC</a>']\n\
-        .map( s => p({},s)))");
+        .map( s => p({},s)))"
+);
 
 defchat('justhtml',
     "A design imperative of mxWeb is to work so much \
@@ -476,10 +488,10 @@ Where we come up short, please file an RFE.\n\
 mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
 is just JS.\
 \n\
-As for speed, the point granularity of the data flow tells mxWeb \
-precisely the DOM updates needed, avoiding VDOM diffing.\
+As for speed, the point granularity of the data flow point DOM updates, avoiding VDOM generation and diffing.\
 \n\
-Turn on 'DOM Logging' in our toolbar and open the JS console to track the action.");
+Turn on 'DOM Logging' in our toolbar and open the JS console to track the action once we get into dynamic DOM."
+);
 
 /// --- webco - web components -------------------------------------------------------
 
@@ -509,13 +521,6 @@ The function 'credits' in the code below is a trivial example.");
 // -------------  dynodom --------------------------------------------------------------
 
 defcode('dynodom', "\
-Glossary:\n\
-   - 'cI' creates an 'input' Cell.\n\
-   - 'cF' creates a 'formula' Cell.\n\
-   - 'mkm' makes a model (object with cells for properties)\n\
-<i>where we compute from other data</i>\n\
-<b>where we compute or set data</b>\n\
-\n\n\
 Todos = mkm( null, 'Todos', {\n\
             items: cI( []),\n\
             <b>empty: cF( c=> <i>c.md.items</i>.filter( td=> !<i>td.deleted</i>).length ===0)</b>\n\
@@ -568,20 +573,20 @@ function todoDashboardEZ ( ...plugins ) {\n\
             {<b>content: cF(c => {\n\
                 let remCt = <i>Todos.items</i>.filter(todo => !(<i>todo.completed</i> || <i>todo.deleted</i>)).length;\n\
                 // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);\n\
-                return `<strong>${remCt}</strong> item${remCt === 1 ? '' : 's'} remaining`;</b>\n\
+                return `${remCt} item${remCt === 1 ? '' : 's'} remaining`;</b>\n\
             })}),\n\
         (plugins || []).map( p => p())\n\
     );\n\
 }");
 
 defchat( "dynodom", "\
-Now to data flow: a change to the model triggers \
+And now data flow: a change to the model triggers \
 changed view content, including new DOM elements. \
 \n\
 A new to-do requires a new LI element. The first to-do requires a dashboard \
 be unhidden. The dashboard shows a count of the items.\
 \n\
-Try it, if you like; the app within the app is live.\n\
+Try adding a to-do, if you like; the app within the app is live.\n\
 \n\
 Note the transparency of the data flow in the code below. Well, you \
 cannot, it is transparent, so we highlighted the implicit pub/sub.");
@@ -604,9 +609,6 @@ permanently delete a to-do item.\
 As you play, keep an eye on 'items remaining'.");
 
 defcode('ktodo', "\
-<i>where we compute from other data</i>\n\
-<b>where we compute or set data</b>\n\
-\n\
 class Todo extends Model {\n\
     constructor( title ) {\n\
         super( null, null,\n\
@@ -625,12 +627,12 @@ function todoLI( c, todo) {\n\
             class: 'toggle',\n\
             type: 'checkbox',\n\
             <b>checked: cF( c=> <i>todo.completed</i>),</b>\n\
-            <b>onclick: ()=> todo.completed = !todo.completed}</b>)\n\
+            <strong>onclick: ()=> todo.completed = !todo.completed}</strong>)\n\
 \n\
         , label({ content: todo.title})\n\
 \n\
         , button({ class: 'destroy',\n\
-                   <b>onclick: ()=> todo.deleted = true</b>})));\n\
+                   <strong>onclick: ()=> todo.deleted = true</strong>})));\n\
 }\n\
 \n\
 function clearCompleted () {\n\
@@ -638,15 +640,16 @@ function clearCompleted () {\n\
                     <b>hidden: cF(c => !<i>Todos.items</i>.filter(td => <i>td.completed</i>).length)</b>,\n\
             onclick: mx => Todos.items\n\
                              .filter( td => td.completed )\n\
-                             .map( <b>td => td.deleted = true</b>)},\n\
+                             .map( <strong>td => td.deleted = true</strong>)},\n\
         'Clear completed');\n\
 }");
 
-defchat('xhr', "Callback Hell? In the imperative paradigm, yes. \
-But the data flow paradigm is all about managing application state \
-gracefully after asynchronous inputs. So...XHR is right in the data flow wheelhouse:\
+defchat('xhr', "Callback Hell? In the imperative paradigm, yes.\n\
 \n\
-We drive this home by forcing a fake delay of two seconds. Whenever the \
+The data flow paradigm is all about managing application state \
+gracefully after asynchronous inputs, so XHR completion handlers fit right in.\
+\n\
+We evince this with a random fake delay of several seconds. Whenever the \
 request returns, the response handler simply assigns the response to the \
 appropriate input Cell. Matrix internals then propagate the change as \
 with any other input.\
@@ -659,15 +662,27 @@ FDA.gov is aggressive about matching, so 'Wash car' will find results. \
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.\
 \n\
 This is a trivial callback scenario, but the data flow solution does scale \
-to complex scenarios. Here is my <a target=''_blank' href='https://github.com/kennytilton/xhr/blob/master/cljs/xhr/XHR.md'>\
+to complex scenarios. Here is my <a target='_blank' href='https://github.com/kennytilton/xhr/blob/master/cljs/xhr/XHR.md'>\
 original investigation</a> into XHR via data flow.");
 
 
 // --- xhr --------------------------------------------------------
 defcode('xhr', "\
-<i>where we compute from other data</i>\n\
-<b>where we compute or set data</b>\n\
-\n\n\n\
+class mxXHR extends Model {\n\
+    constructor( uri , options) {\n\
+        super( null, 'mxXhr',\n\
+            { uri: cI( uri),\n\
+              xhr: cI( null)});\n\
+    }\n\
+\n\
+    send( delay) {\n\
+        let mxx = this;\n\
+        goog.net.XhrIo.send( mxx.uri, function(e) {\n\
+            withChg('xhrResult', ()=> <strong>mxx.xhr = e.target</strong>);\n\
+        });\n\
+        return mxx;\n\
+    }\n\
+}\n\n\
 section({class: 'todoapp'},\n\
    todoAppHeader( todoAddNewBetter),\n\
    section({ class: 'main',\n\
@@ -678,17 +693,17 @@ section({class: 'todoapp'},\n\
            kidFactory: (c,td) => todoLI(c, td, aeAlertGI)},\n\
         <b>c => <i>c.kidValuesKids()</i>)</b>),\n\
       todoDashboardEZ(clearCompleted))\n\
-      \n\
+\n\
 function aeAlertGI ( c, todo ) {\n\
     return i( { class: 'aes material-icons md-36',\n\
                 style: 'font-size:36px;color:red;background:white',\n\
-                hidden: cF( c=> !c.md.aeInfo),\n\
+                <b>hidden: cF( c=> !<i>c.md.aeInfo</i>)</b>,\n\
                 onclick: mx => alert( mx.aeInfo)},\n\
-              { lookup: cF( c=> new mxXHR( aeBrandURI( todo.title),\n\
+              { <b>lookup: cF( c=> new mxXHR( aeBrandURI( <i>todo.title</i>),\n\
                                            { send: true,\n\
                                              delay: 500 + Math.random(5)*1000})),\n\
     \n\
-                aeInfo: cF( function (c) {\n\
+                <b>aeInfo: cF( function (c) {\n\
                     let <i>xhr = c.md.lookup.xhr</i>;\n\
                     if ( xhr) {\n\
                         if ( xhr.isSuccess() ) {\n\
@@ -698,7 +713,7 @@ function aeAlertGI ( c, todo ) {\n\
                             return null;\n\
                         }\n\
                     }\n\
-                })},\n\
+                })</b>},\n\
            'warning')\n\
 }\n\
 \n\

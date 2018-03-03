@@ -11,16 +11,24 @@ code {
 
 .precode {
     font-family: 'Source Code Pro', monospace;
-    background: beige;
+    background: #fcfcfc; /*#F5F5DC;*/
+    border: thick inset #32a1ce;
     padding: 1em;
     margin-right: 48px;
 }
 
 .precode i {
-    background-color:yellow;
+    /*background:#FaFaDd;*/
+    color:blue;
 }
 .precode b {
-    background:cyan;
+    /*background:#FaFaDd;*/
+    color:#003300;
+    padding: 2px;
+}
+.precode strong {
+    /*background:#FaFaDd;*/
+    color:red;
     padding: 2px;
 }
 
@@ -34,6 +42,9 @@ code {
     padding-left: 12px;
     padding-right: 12px;
 }
+
+/*html { overflow-y: scroll; }*/
+html { margin-left: calc(100vw - 100%); }
 
 .techtitular {
     /*font-family: 'Cabin', sans-serif;*/
