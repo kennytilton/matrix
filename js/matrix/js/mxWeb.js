@@ -4,6 +4,8 @@ const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their nu
 
 var domLogging = true;
 
+window['domLogging'] = domLogging;
+
 function domlog(...args) {
     if ( domLogging)
         console.log('domlog> ', Array.from(args).join(","));
