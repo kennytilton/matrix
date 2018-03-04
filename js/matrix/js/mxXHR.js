@@ -21,8 +21,8 @@ class mxXHR extends Model {
                 /* if ( xhr.isSuccess()) {
                     var obj = xhr.getResponseJson();
                 }*/
-                withChg("xhrResult",
-                    ()=> mxx.xhr = xhr);
+            mxx.xhr = xhr;
+            // withChg("xhrResult", ()=> mxx.xhr = xhr);
 
             });
 

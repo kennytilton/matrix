@@ -8,7 +8,7 @@ categories.map( c=> nubits[c] = {});
 var chats = {};
 var sources = {};
 var bitIds = ['preface', 'justhtml', 'webco', 'dynodom', 'ktodo',
-                'xhr'];
+                'xhr', 'summary'];
 
 var bits = new Array;
 
@@ -26,7 +26,9 @@ function getit (category, id, b) {
         throw 'getit> undefined category ' + category;
     if (!bitIds.includes(id))
         throw 'getit> undefined bit ' + id;
-    return nubits[category][id]();
+    clg('ugh', category, id);
+    let genner = nubits[category][id];
+    return genner ? genner():null;
 }
 
 function defbit (id, b) { defit( 'bulk', id, b)}
@@ -65,14 +67,14 @@ function CPMatrixTodo () {
 window['CPMatrixTodo'] = CPMatrixTodo;
 
 function codeGlossary() {
-    return div( {style: "padding-left:12px;background:#fafafa"},
-            ul( {class: "precode", style: "border:none"},
+    return div( {style: "padding-left:12px;background:#f5f5f5"},
+            ul( {class: "precode", style: "border:none;list-style:square;background:none"},
             [span("'cI' creates an input Cell"),
             span("'cF' creates a formulaic Cell"),
             span("'mkm' makes a model (object with cells for properties)"),
             i("Code that 'subscribes' to other data"),
             b("Code that computes derived data"),
-            strong("Code that feeds external data into the flow")].map( g=> li(g))))
+            strong("Event code that feeds outside data into the Matrix flow")].map( g=> li(g))))
 }
 
 function bitAssemble( bid) {
@@ -93,10 +95,10 @@ function bitAssemble( bid) {
                 b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
                     note)))): null,
 
-        div( p({class: 'techheader'}, "Code Highlights (glossary below)"),
-            pre({class: 'precode'}, codeString)),
-        div( p({class: 'techheader'}, "Code Glossary"),
-            codeGlossary())
+        codeString? [ div( p({class: 'techheader'}, "Code Highlights (glossary below)"),
+                        pre({class: 'precode'}, codeString)),
+                      div( p({class: 'techheader'}, "Code Glossary"),
+                        codeGlossary())] : null
     ];
 }
 
@@ -115,7 +117,7 @@ function newsprint( text) {
 
     for ( let n =0, chars = 0; n < pgs.length; ++n) {
         chars += pgs[n].length;
-        if ( chars > text.length * .40) {
+        if ( chars > text.length * 0.40) {
             brk = ++n;
             break;
         }
@@ -134,7 +136,7 @@ function newsprint( text) {
 function toolbar () {
     return div({
             style: {background: "#fdfdfd",
-                //margin_left: "96px",
+                margin_left: "48px",
                 width: "380px",
                 display: "flex",
                 flex_direction: "row",
@@ -198,7 +200,7 @@ defbit('preface',
 
 defbit('justhtml',
     {
-        title: "An All-Javascript HTML Work-alike. And fast.",
+        title: "An All-JS, HTML Work-alike. And fast.",
         notes: null,
         mxDom: [
         section({class: "todoapp"},
@@ -283,7 +285,7 @@ defbit("dynodom",
         title: "Enter Data Flow",
         notes: ["New: changing data drives changing DOM population...",
             "...rather inefficiently for now, regenerating all LIs each time. We fix that shortly.",
-            "Two component functions break up the code."],
+            "Component functions break up the code."],
         initFn: ()=> Todos = mkm( null, "Todos", {
             items: cI( []),
             empty: cF( c=> c.md.items.filter( td=> !td.deleted).length ===0)
@@ -439,6 +441,21 @@ function aeAlertSVG () {
             fill: "#000000",
             d: "M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"}))
 }
+// ---------------------------------------------
+// --- Summary ---------------------------------
+
+defbit('summary',
+    {
+        title: "Summary",
+        notes: null,
+        code: null,
+        mxDom:
+            [section({ class: "todoapp"},
+                header({class: "header"},
+                    h1("todos"))),
+                center( "Coming soon, the app.")]
+    });
+
 
 
 // --------------------------------------------------------------------
@@ -450,7 +467,7 @@ with just HTML and CSS running within a fine-grained data flow system we call Ma
 \n\
 The application developed will cover half the classic \
 <a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
-appear live above. Code highlights from the pen will appear below.\
+appear live above.\
 \n\
 The first hundred lines of the source comprise the host application, itself a demonstration of mxWeb.\
 \n\
@@ -488,9 +505,9 @@ Where we come up short, please file an RFE.\n\
 mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
 is just JS.\
 \n\
-As for speed, the point granularity of the data flow point DOM updates, avoiding VDOM generation and diffing.\
+As for speed, the point granularity of the data flow means we make point DOM updates, avoiding VDOM and diffing.\
 \n\
-Turn on 'DOM Logging' in our toolbar and open the JS console to track the action once we get into dynamic DOM."
+Turn on 'DOM Logging' in our toolbar and open the JS console to track the action."
 );
 
 /// --- webco - web components -------------------------------------------------------
@@ -509,7 +526,7 @@ credits({style: 'font-size:18px'},\n\
 
 defchat("webco",
     "Since we just code JS, developing a custom HTML element is as easy as writing a function. \
-That function can take whatever parameters we like to make it as reusable as we like. \
+That function can take as many parameters as needed to support reuse. \
 \n\
 With the same reuse objective, <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a> look \
 promising, but JS functions will be hard to top. \
@@ -526,6 +543,8 @@ Todos = mkm( null, 'Todos', {\n\
             <b>empty: cF( c=> <i>c.md.items</i>.filter( td=> !<i>td.deleted</i>).length ===0)</b>\n\
         })\n\
 \n\
+// the 'main' for this panel....\n\
+    \n\
 section({class: 'todoapp'},\n\
   todoAppHeader( todoAddNewEZ),\n\
     section({\n\
@@ -545,11 +564,11 @@ function todoAddNewEZ (mx, e) {\n\
 \n\
         if (title !== '') {\n\
             // concat forces new array so Matrix detects change \n\
-            <b>Todos.items = Todos.items.concat({\n\
+            <strong>Todos.items = Todos.items.concat({\n\
                 title: title,\n\
                 completed: false,\n\
                 deleted: false\n\
-            })</b>;\n\
+            })</strong>;\n\
         }\n\
     }\n\
 }\n\
@@ -586,7 +605,7 @@ changed view content, including new DOM elements. \
 A new to-do requires a new LI element. The first to-do requires a dashboard \
 be unhidden. The dashboard shows a count of the items.\
 \n\
-Try adding a to-do, if you like; the app within the app is live.\n\
+The app within the app is live. Try adding a to-do, if you like. \n\
 \n\
 Note the transparency of the data flow in the code below. Well, you \
 cannot, it is transparent, so we highlighted the implicit pub/sub.");
@@ -594,9 +613,9 @@ cannot, it is transparent, so we highlighted the implicit pub/sub.");
 defchat('ktodo', "To-dos now have their own JS class along with individual Cell-powered properties, \
 and a fancier LI where those properties can be manipulated.\
 \n\
-Add a to-do now and examine the LI.\
+We pre-loaded a to-do for you, but feel free to add more.\
 \n\
-The faint circle to the left is where you toggle whether a to-do has been completed. \
+The faint circle to the left in the LI lets you toggle whether a to-do has been completed. \
 If you toggle one, look for 'Clear completed' in the dashboard. That is a working button. \
 Give it a go, if you like.\
 \n\
@@ -661,9 +680,9 @@ it a click.\
 FDA.gov is aggressive about matching, so 'Wash car' will find results. \
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.\
 \n\
-This is a trivial callback scenario, but the data flow solution does scale \
-to complex scenarios. Here is my <a target='_blank' href='https://github.com/kennytilton/xhr/blob/master/cljs/xhr/XHR.md'>\
-original investigation</a> into XHR via data flow.");
+This is a trivial callback scenario, but the data flow solution does scale. \
+Here is my <a target='_blank' href='https://github.com/kennytilton/xhr/blob/master/cljs/xhr/XHR.md'>\
+original investigation</a> into complex XHR via data flow.");
 
 
 // --- xhr --------------------------------------------------------
@@ -701,7 +720,7 @@ function aeAlertGI ( c, todo ) {\n\
                 onclick: mx => alert( mx.aeInfo)},\n\
               { <b>lookup: cF( c=> new mxXHR( aeBrandURI( <i>todo.title</i>),\n\
                                            { send: true,\n\
-                                             delay: 500 + Math.random(5)*1000})),\n\
+                                             delay: 500 + Math.random(5)*1000}))</b>,\n\
     \n\
                 <b>aeInfo: cF( function (c) {\n\
                     let <i>xhr = c.md.lookup.xhr</i>;\n\
@@ -721,6 +740,28 @@ function aeBrandURI (brand) {\n\
     return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`\n\
 }");
 
+/// -----------------------------------------------------------------------------
+/// --- Summary -----------------------------------------------------------------
+
+defchat( 'summary',
+    "The functionality seen means nothing: all submissions \
+to TodoMVC.org offer the same. But consider the developer experience.\
+\n\
+Any JS programmer can program mxWeb. There is no framework to learn. We use HTML and CSS, thinly wrapped. \
+<a target='_blank' href='https://developer.mozilla.org/en-US/'>MDN</a> is the reference.\
+\n\
+In-line code is plain JS. No limits on expressiveness, no toolchain. Rapid iteration.\
+\n\
+Reactive data flows transparently, without hand-wired publish and subscribe. Complex UIs decompose naturally into \
+declarative, functional code formulas, easy to compose, read, and debug.\
+\n\
+Inputs to these formulas are retrieved freely from view, model, local storage, or the web. \
+The developer never struggles against artifificial isolation.\
+\n\
+And it scales. This 70KLOC Common Lisp <a target='_blank' href='https://tiltonsalgebra.com/#'>Algebra expert system</a> \
+involves over twelve hundred distinct formulas.\n\
+\n\
+If interested, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note");
 
 // document.body.innerHTML =  tag2html( page());
 

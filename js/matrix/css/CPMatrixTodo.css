@@ -11,8 +11,8 @@ code {
 
 .precode {
     font-family: 'Source Code Pro', monospace;
-    background: #fcfcfc; /*#F5F5DC;*/
-    border: thick inset #32a1ce;
+    background: #fcfcfc;
+    border: 2px inset #aaa;
     padding: 1em;
     margin-right: 48px;
 }
