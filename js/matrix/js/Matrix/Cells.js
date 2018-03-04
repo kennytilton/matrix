@@ -510,7 +510,7 @@ class Cell {
 		}
 	}
 	awaken() {
-		if (this.rule) {
+	    if (this.rule) {
 			if (!this.currentp()) {
 				//clg(`calcnset ${this.name} of ${this.md.name}`);
 				this.calcNSet('c-awaken');
@@ -559,6 +559,7 @@ class Cell {
 		} else if (find(this.lazy, [kOnceAsked, kAlways, true])) {
 			this.valueAssume(newv, null);
 		} else {
+	        //clg('svset', this.name, newv);
 			withChg(this.name, ()=>{
 				this.valueAssume( newv, null);
 			});
@@ -656,7 +657,7 @@ class Cell {
 			debugger;
 		}
 		let rawValue = this.calcNLink();
-		//T.clg('rawval', rawValue);
+		clbug(this,'rawval', rawValue);
 
 		if (!this.optimizedAwayp()) {
 			/*
@@ -665,7 +666,7 @@ class Cell {
 			 re-exit will be of an optimized away cell, which will have been assumed
 			 as part of the opti-away processing.
 			 */
-			//clg('assuming ', rawValue.toString())
+			clbug(this,'assuming ', rawValue, this.useds.size);
 			return this.valueAssume(rawValue, null);
 		}
 	}
@@ -911,7 +912,11 @@ function mdSlotValueStore( me, slotName, value) {
 	// me[slotName] = value; vestigial? todo clean up if so
 }
 
-
+function clbug( c, ...args) {
+    if ( c.bug ) {
+        console.log("clbug> "+c.name+":"+c.useds.size+":"+Array.from(args).join(","));
+    }
+}
 
 // --- some handy cell factories -------------------
 
@@ -965,7 +970,7 @@ function cIe(value, options) {
 	return Object.assign(new Cell(value, null, true, true, null), options);
 }
 function obsDbg (name, me, newv, priorv, c) {
-	console.log(`obsDbg! ${name} ${me? me.name||me.id : 'noMd'} new=${newv} prior=${priorv===kUnbound?'unbound':priorv}`);
+	console.log(`obsDbg! ${name} ${me? me.name||me.id : 'noMd'} useds=${c.useds.size} new=${newv} prior=${priorv===kUnbound?'unbound':priorv}`);
 //    console.log(`OBS: ${name} now ${newv} (was ${priorv})`);
 }
 function XobsDbg (name, me, newv, priorv, c) {

@@ -98,7 +98,7 @@ class Model {
 	awaken() {
 		if (this.state !== kNascent) return this;
 		this.state = kAwakening;
-		//clg(`md awaken ${this.dbg()}`);
+		// clg(`md awaken ${this.dbg()}`);
 		for (let slot in this.cells) {
 			let c = this.cells[slot];
 			console.assert(c.md,`No md for cell ${c.name} at md awaken`);

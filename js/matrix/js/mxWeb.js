@@ -2,7 +2,7 @@
 
 const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
 
-var domLogging = true;
+var domLogging = false;
 
 window['domLogging'] = domLogging;
 
@@ -108,10 +108,17 @@ function obsTagEventHandler (property, md, newv, oldv, c) {
 var AttrAliases = new Map([['class','className']]);
 
 function obsAttrGlobal (property, md, newv, oldv, c) {
-	if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
-	let trueAttr = AttrAliases.get(property) || property;
+    if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    let trueAttr = AttrAliases.get(property) || property;
     domlog( 'attr global', property, newv, oldv);
-	md.dom[trueAttr] = newv;
+    md.dom[trueAttr] = newv;
+}
+
+function obsStyleAttr (property, md, newv, oldv, c) {
+    if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
+    let ss = tagStyleString(md);
+    if (ss !== '')
+        md.dom['style'] = ss;
 }
 
 class TagSession extends Model {
@@ -244,7 +251,9 @@ class Tag extends Model {
                 obs = obsDisabled;
             } else if (slot === 'class') {
                 obs = obsClass;
-			} else if (TagEvents.has(slot)) {
+            } else if (slot === 'style') {
+                obs = obsStyleAttr;
+            } else if (TagEvents.has(slot)) {
 				obs = obsTagEventHandler;
 			} else if (TagAttributesGlobal.has(slot)) {
 				obs = obsAttrGlobal;
@@ -486,6 +495,36 @@ function tagStyleBuild(md) {
     }
 
     return ss===''? '' : ` style="${ss}"`;
+}
+
+function tagStyleString(md) {
+    let ss = '',
+        style = md.style;
+
+    if ( style instanceof Function) {
+        //clg(' model style!!!!');
+        style = style( md);
+    }
+
+    if ( isString( style)) {
+        ss = style;
+    } else if ( style instanceof mxCSS ) {
+        style.cssProps.forEach( function (mxprop) {
+            let cssProp = mxprop.replace('_', '-')
+                , cssValue = style[mxprop];
+            //clg('bildstyle',mxprop, cssProp, cssValue);
+            ss += `${cssProp}:${cssValue};`;
+        })
+    } else { // raw map
+        for (let prop in style) {
+            let cssProp = prop.replace('_', '-')
+                , cssValue = style[prop];
+            //clg('bildstyle',cssProp, cssValue);
+            ss += `${cssProp}:${cssValue};`;
+        }
+    }
+
+    return ss;
 }
 
 
