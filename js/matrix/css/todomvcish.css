@@ -218,7 +218,7 @@ body {
     color: #d9d9d9;
     text-decoration: line-through;
 }
-
+/*
 .todo-list li .aes {
     position: absolute;
     top: 20px;
@@ -230,7 +230,7 @@ body {
     margin: auto 0;
     font-size: 20px;
 }
-
+*/
 .todo-list li .destroy {
     display: none;
     position: absolute;
