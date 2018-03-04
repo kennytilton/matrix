@@ -17,7 +17,7 @@ function defit (category, id, b) {
         throw 'defbit> undefined category '+category;
     if (!bitIds.includes(id))
         throw 'defbit> undefined bit '+id;
-    clg('hunh', category, id, nubits.category);
+
     nubits[category][id] = ()=>b;
 }
 
@@ -26,7 +26,7 @@ function getit (category, id, b) {
         throw 'getit> undefined category ' + category;
     if (!bitIds.includes(id))
         throw 'getit> undefined bit ' + id;
-    clg('ugh', category, id);
+
     let genner = nubits[category][id];
     return genner ? genner():null;
 }
@@ -46,7 +46,7 @@ function getcode( id) { return getit('code', id)}
 
 const currBitNo = cFI( c=> {
         let r = window.localStorage.getObject("CPMatrixTodo.bit");
-        clg('local bit no ', r);
+        //clg('local bit no ', r);
         return r === null ? 0 : (r < 0? 0: (r >= bitIds.length? (bitIds.length - 1): r));
     },
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
@@ -420,8 +420,9 @@ function aeAlertGI ( c, todo ) {
             aeInfo: cF( function (c) {
                 let xhr = c.md.lookup.xhr;
                 if ( xhr) {
-                    if ( xhr.isSuccess() ) {
-                        let obj = xhr.getResponseJson();
+                    clg('response!!!!', xhr.status);
+                    if ( xhr.status===200 ) {
+                        let obj = xhr.response;
                         return obj.meta.results.total+ " Adverse Events found on FDA.gov";
                     } else {
                         return null;
