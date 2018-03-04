@@ -44,10 +44,10 @@ function getcode( id) { return getit('code', id)}
 // ------------------------------------------------------------------
 // --- we "lift" localStorage into the Matrix. To a degree. ---------
 
-const bit = cFI( c=> {
+const currBitNo = cFI( c=> {
         let r = window.localStorage.getObject("CPMatrixTodo.bit");
         clg('local bit no ', r);
-        return r === null ? 0 : (r < 0? 0: (r >= bitIds.length? bit.length -1: r));
+        return r === null ? 0 : (r < 0? 0: (r >= bitIds.length? (bitIds.length - 1): r));
     },
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
     { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
@@ -59,7 +59,7 @@ function CPMatrixTodo () {
     return [
         p({class: 'techtitular techtitle'}, "Introducing Matrix and mxWeb"),
         toolbar(),
-        div( c=> bitAssemble( bitIds[bit.v]))
+        div( c=> bitAssemble( bitIds[currBitNo.v]))
         //toolbar()
     ];
 }
@@ -147,13 +147,13 @@ function toolbar () {
 var controls = [
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
             style: "margin-left:18px",
-            disabled: cF( ()=> bit.v <= 0),
-            onclick: c=> --bit.v},
+            disabled: cF( ()=> currBitNo.v <= 0),
+            onclick: c=> --currBitNo.v},
         "Back"),
     div( {style: "margin:8px"}, nTabs( bitIds.length)),
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
-            disabled: cF( c=> bit.v >= bitIds.length - 1),
-            onclick: c=> ++bit.v}
+            disabled: cF( c=> currBitNo.v >= bitIds.length - 1),
+            onclick: c=> ++currBitNo.v}
         , "Next"),
     input({
         id: "logToggle",
@@ -172,9 +172,9 @@ function nTabs (n) {
     tabs = [];
     for( let i=0; i < n; ++i) {
         let ii = i;
-        tabs.push( button( {onclick: ()=> bit.v = ii,
+        tabs.push( button( {onclick: ()=> currBitNo.v = ii,
             style: cF( c=>"margin-left:8px;background-color:"
-                + (ii===bit.v? "cyan":""))}, ""+i));
+                + (ii===currBitNo.v? "cyan":""))}, ""+i));
     }
     return tabs;
 }
