@@ -233,11 +233,12 @@ function todoLI( c, todo, extras) {
 
 function clearCompleted () {
     return button({ class: "clear-completed",
-                    style:  cF(c => {
-                            let s = styleHidden(Todos.done.length === 0, 'ccomp');
-                            return s;
-                        }),
-                    onclick: mx => Todos.done.map( td=> td.delete())},
+        hidden: cF(c=> Todos.done.length === 0)},
+                    // style:  cF(c => {
+                    //         let s = styleHidden(Todos.done.length === 0, 'ccomp');
+                    //         return s;
+                    //     }),
+                    // onclick: mx => Todos.done.map( td=> td.delete())},
             "Clear completed");
 }
 
