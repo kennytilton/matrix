@@ -142,11 +142,6 @@ function todoAddNewEZ (mx, e) {
     }
 }
 
-function styleHidden (h, tag) {
-    let r = { display: (h? "none":"block")};
-    return r;
-}
-
 function todoAppHeader ( newTodoHandler ) {
     return header({class: "header"},
                 h1("todos"),
@@ -160,7 +155,7 @@ function todoAppHeader ( newTodoHandler ) {
 
 function todoDashboardEZ ( ...plugins ) {
     return footer({ class: "footer",
-                    style: cF(  c => styleHidden( Todos.empty, 'tdfez'))},
+                    hidden: cF(  c => Todos.empty )},
             span({ class: "todo-count"},
                  { content: cF(c => {
                                 let remCt = Todos.undone.length;
@@ -183,7 +178,7 @@ defbit("dynodom",
                 todoAppHeader( todoAddNewEZ),
                 section({
                         class: "main",
-                        style: cF(c => styleHidden( Todos.empty))
+                        hidden: cF(c => Todos.empty)
                     },
                     ul({class: "todo-list"},
                             c => Todos.items
@@ -233,12 +228,8 @@ function todoLI( c, todo, extras) {
 
 function clearCompleted () {
     return button({ class: "clear-completed",
-        hidden: cF(c=> Todos.done.length === 0)},
-                    // style:  cF(c => {
-                    //         let s = styleHidden(Todos.done.length === 0, 'ccomp');
-                    //         return s;
-                    //     }),
-                    // onclick: mx => Todos.done.map( td=> td.delete())},
+                    hidden: cF(c=> Todos.done.length === 0),
+                    onclick: mx => Todos.done.map( td=> td.delete())},
             "Clear completed");
 }
 
@@ -251,10 +242,8 @@ defbit('ktodo',
         mxDom: [
             section({class: "todoapp"},
                 todoAppHeader( todoAddNewBetter),
-                section({
-                        class: "main",
-                        style: cF( c=> styleHidden( Todos.empty))
-                    },
+                section({ class: "main",
+                            hidden: cF( c=> Todos.empty)},
                     ul({class: "todo-list"},
                         c => Todos.items.map(td => todoLI( c, td )))),
                 todoDashboardEZ(clearCompleted))]
@@ -278,7 +267,7 @@ defbit('xhr',
                 todoAppHeader( todoAddNewBetter),
                 section({
                         class: "main",
-                        style: cF( c=> styleHidden( Todos.empty))
+                        hidden: cF( c=> Todos.empty)
                     },
                     ul({class: "todo-list"},
                         {
@@ -566,19 +555,18 @@ function clearCompleted () {\n\
 
 defchat('xhr', "Callback Hell? In the imperative paradigm, yes.\n\
 \n\
-The data flow paradigm is all about managing application state \
-gracefully after asynchronous inputs, so XHR completion handlers fit right in.\
+The data flow paradigm is all about propagating new inputs gracefully \
+ to dependent application state, so asynchronous XHR completion handlers fit right in.\
 \n\
-We evince this with a random fake delay of several seconds. Whenever the \
+We evince this with a random fake delay of up to several seconds. Whenever the \
 request returns, the response handler simply assigns the response to the \
-appropriate input Cell. Matrix internals then propagate the change as \
-with any other input.\
+appropriate input Cell. Matrix internals handle the rest.\
 \n\
-Here we pointlessly take the to-do item and look it up in the \
+In this example, we pointlessly look up each to-do title in the \
 FDA.gov adverse events database. If you see the warning icon, give \
 it a click.\
 \n\
-FDA.gov is aggressive about matching, so 'Wash car' will find results. \
+The FDA.gov search endpoint is aggressive about matching, so 'Wash car' will find results. \
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.\
 \n\
 This is a trivial callback scenario, but the data flow solution does scale. \
@@ -811,5 +799,5 @@ function nTabs (n) {
 }
 
 
-// document.body.innerHTML =  tag2html( page());
+// document.body.innerHTML =  tag2html( CPMatrixTodo());
 

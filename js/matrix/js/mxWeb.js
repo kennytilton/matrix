@@ -93,7 +93,7 @@ function obsHidden (slot, md, newv, oldv, c) {
         md.dom.setAttribute('hidden','');
     else
         md.dom.removeAttribute('hidden');
-    
+
 
 }
 function obsClass (slot, md, newv, oldv, c) {
