@@ -86,7 +86,7 @@ function credits (attrs, ...content) {
 
 defbit( "webco",
     ()=>{return {
-        title: "Web Components? Done.",
+        title: "Web Components Accompli",
         mxDom: [
         section({ class: "todoapp"},
             header({class: "header"},
@@ -108,21 +108,19 @@ class TodoList extends Model {
         this.awaken();
     }
     add (td) {
-        clg('adding td', td);
+        // if we mutate 'items', data flow internals will not see the change
         let newv = this.items.slice(0);
         newv.push( td);
         this.items = newv;
-        clg('new tds', this.items);
         return this;
     }
     delete (td) {
+        // if we mutate 'items', data flow internals will not see the change
         let tdx = this.items.indexOf( td);
-        clg('del sees old items', this.items, tdx, td.title)
         if (tdx === -1) return;
         let is = this.items.slice(0);
         is.splice( tdx, 1);
         this.items = is;
-        clg('new items', this.items)
         return this;
     }
 }
@@ -146,8 +144,6 @@ function todoAddNewEZ (mx, e) {
 
 function styleHidden (h, tag) {
     let r = { display: (h? "none":"block")};
-    //let r = "display:"+ (h? "none":"block");
-    clg('shidden', tag, h, r.display);
     return r;
 }
 
@@ -179,9 +175,8 @@ function todoDashboardEZ ( ...plugins ) {
 defbit("dynodom",
     ()=>{return {
         title: "Enter Data Flow",
-        notes: ["New: changing data drives changing DOM population...",
-            "...rather inefficiently for now, regenerating all LIs each time. We fix that shortly.",
-            "Component functions break up the code."],
+        notes: ["To-do LIs are all regenerated to accommodate one new to-do. We fix that shortly.",
+            "Component functions break up the code as well as offer re-use."],
         initFn: ()=> Todos = new TodoList,
         mxDom: [
             section({class: "todoapp"},
@@ -239,8 +234,7 @@ function todoLI( c, todo, extras) {
 function clearCompleted () {
     return button({ class: "clear-completed",
                     style:  cF(c => {
-                            let s = styleHidden(Todos.items.filter(td=>td.completed).length === 0, 'ccomp');
-                            clg('cc style', s);
+                            let s = styleHidden(Todos.done.length === 0, 'ccomp');
                             return s;
                         }),
                     onclick: mx => Todos.done.map( td=> td.delete())},
@@ -346,7 +340,7 @@ function aeAlertSVG () {
 
 defbit('summary',
     ()=>{return {
-        title: "Summary",
+        title: "Summary: The Developer Experience",
         notes: null,
         code: null,
         mxDom:
@@ -405,10 +399,10 @@ like HTML that graphic designers can write it.\
 \n\
 Where we come up short, please file an RFE.\n\
 \n\
-mxWeb is also developer-friendly; we just code JS because <i>all</i> mxWeb authoring \
-is just JS.\
+mxWeb is also developer-friendly: we just code JS.\
 \n\
-As for speed, the point granularity of the data flow means we make point DOM updates, avoiding VDOM and diffing.\
+As for speed, the point granularity of the data flow means \
+we can make point DOM updates, avoiding VDOM and diffing.\
 \n\
 Turn on 'DOM Logging' in our toolbar and open the JS console to track the action."
 );
@@ -434,7 +428,7 @@ That function can take as many parameters as needed to support reuse. \
 With the same reuse objective, <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/Web_Components'>Web Components</a> look \
 promising, but JS functions will be hard to top. \
 \n\
-The function 'credits' in the code below is a trivial example.");
+The function 'credits' in the code below is a trivial example. More interesting cases follow.");
 
 
 // -------------------------------------------------------------------------------------
@@ -494,10 +488,9 @@ function todoDashboardEZ ( ...plugins ) {\n\
         span({ class: 'todo-count'},\n\
             {<b>content: cF(c => {\n\
                 let remCt = <i>Todos.items</i>.filter(todo => !(<i>todo.completed</i> || <i>todo.deleted</i>)).length;\n\
-                // Todo: return strong( `${remCt}item${remCt === 1 ? '' : 's'} remaining`);\n\
                 return `${remCt} item${remCt === 1 ? '' : 's'} remaining`;</b>\n\
             })}),\n\
-        (plugins || []).map( p => p())\n\
+        (plugins || []).map( plug => plug())\n\
     );\n\
 }");
 
@@ -510,25 +503,29 @@ be unhidden. The dashboard shows a count of the items.\
 \n\
 The app within the app is live. Try adding a to-do, if you like. \n\
 \n\
-Note the transparency of the data flow in the code below. Well, you \
-cannot, it is transparent, so we highlighted the implicit pub/sub.");
+Note the transparency with which data flow is accomplished. Well, you \
+cannot. It is transparent. See the glossary for how we highlighted the implicit pub/sub.\
+\n\
+As promised, our components have gotten more interesting. One accepts a custom event\
+handler, and the dashboard accepts optional plugin widgets.");
 
-defchat('ktodo', "To-dos now have their own JS class along with individual Cell-powered properties, \
+defchat('ktodo', "To-dos now have individual data flow properties, \
 and a fancier LI where those properties can be manipulated.\
 \n\
-We pre-loaded a to-do for you, but feel free to add more.\
+We pre-loaded a to-do for you. Feel free to add more.\
 \n\
-The faint circle to the left in the LI lets you toggle whether a to-do has been completed. \
-If you toggle one, look for 'Clear completed' in the dashboard. That is a working button. \
+Toggle to-do completion with the faint circle to its left. \
+Look for its styling to change. Look for 'items remaining' to change \
+and for 'Clear completed' to come and go from the dashboard. That is a working button. \
 Give it a go, if you like.\
 \n\
-Remember, the spec says to hide the dashboard if there are no items, completed or not. \
+The spec says to hide the dashboard if there are no items. \
 Watch for the dashboard to disappear when you delete the last remaining item.\n\
 \n\
 When you hover over a to-do, a red 'X' appears to the far right. Click that to \
-permanently delete a to-do item.\
+permanently delete a to-do item. Keep an eye on 'items remaining'.\
 \n\
-As you play, keep an eye on 'items remaining'.");
+As an exercise, try to follow the declarative data flow chain of each behavior described.");
 
 defcode('ktodo', "\
 class Todo extends Model {\n\
@@ -647,29 +644,31 @@ function aeBrandURI (brand) {\n\
 /// --- Summary -----------------------------------------------------------------
 
 defchat( 'summary',
-    "The functionality demonstrated means nothing: all submissions \
-to TodoMVC.com offer the same.\
+    "All submissions to TodoMVC.com offer the same functionality, and most \
+involve some reactive mechanism.\
 \n\
-What matters is the developer experience. Any JS programmer can program mxWeb. \
-It is an un-framework. We use HTML and CSS, thinly wrapped. \
-<a target='_blank' href='https://developer.mozilla.org/en-US/'>MDN</a> is the reference.\
+The developer experience separates them.\
 \n\
-In-line code is plain JS. No limits on expressiveness, no toolchain, yes rapid iteration.\
+mxWeb requires only JS . No limits on expressiveness, no toolchain, yes rapid iteration.\
 \n\
-Reactive data flow emerges automatically from code written with only the application in mind. \
-Complex UIs decompose naturally into declarative, functional formulas, easy to write, read, and debug.\
+It is an un-framework, involving only thinly wrapped HTML and CSS. \
+<a target='_blank' href='https://developer.mozilla.org/en-US/'>MDN</a> provides the reference manual.\
 \n\
-Formulas refer freely to information found in view, model, local storage, or the web. \
-\n\
-UI/UX programming involves more refactoring than original coding. We never know if an interface works \
-until we try it. And then the requirements change, or the product succeeds and the requirements grow.\
-\n\
+The reactive element so essential to UI development is transparent; just read \
+and set properties normally and data flow emerges. \
 mxWeb's prime objective is that the developer not have to think much about mxWeb.\
 \n\
-And it scales. This 70KLOC Common Lisp <a target='_blank' href='https://tiltonsalgebra.com/#'>Algebra expert system</a> \
-involves over twelve hundred distinct formulas.\n\
+mxWeb draws us into building up that application in \
+small semantic chunks, naturally decomposing complex UIs into simple, declarative formulas. \
+Formulas refer freely to values from view, model, local storage, or the web. \
 \n\
-If interested, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note");
+Why does a seamless developer experience matter?\
+\n\
+UI/UX programming involves more refactoring than original coding. No one knows how an interface feels \
+until we try it. And then the requirements change, or the product succeeds and the requirements grow. \
+Easier development means more time and energy for refactoring, and that means better UXes.\
+\n\
+If interested in this or the CLJS version, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note");
 
 // --- The driver app -----------------------------------------------
 // ------------------------------------------------------------------
