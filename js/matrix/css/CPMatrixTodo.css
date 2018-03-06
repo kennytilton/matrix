@@ -64,32 +64,32 @@ html { margin-left: calc(100vw - 100%); }
 
 .techheader {
     text-align:left;
-    font-size:16px;
+    font-size:18px;
 
     /*font-family: 'Cabin', sans-serif;*/
     font-family: 'Source Sans Pro', sans-serif;
     /*font-family: 'Lora', serif;*/
 }
-
 /*
-!! font-family: 'Mukta Malar', sans-serif;
-font-family: 'Noto Sans', sans-serif;
-font-family: 'Work Sans', sans-serif;
-font-family: 'Karla', sans-serif;
-font-family: 'Mukta Vaani', sans-serif;
-!! font-family: 'Nunito', sans-serif;
-font-family: 'Barlow', sans-serif;
-!!font-family: 'Signika', sans-serif;
-font-family: 'Yantramanav', sans-serif;
-!! font-family: 'Philosopher', sans-serif;
+First, a utility:
+    function todoMatchesFilter( td, filter ) {
+        return filter==="All"
+            || (filter==="Active" && !td.completed)
+            || (filter==="Completed" && td.completed);
+    }
 
-ng font-family: 'Muli', sans-serif;
-!! font-family: 'Source Sans Pro', sans-serif;
-?? font-family: 'Roboto', sans-serif;
-font-family: 'Open Sans', sans-serif;
-font-family: 'Merriweather', serif;
-!! font-family: 'Nunito Sans', sans-serif;
-ok font-family: 'Lato', sans-serif;
-no font-family: 'Varela', sans-serif;
-no font-family: 'Montserrat', sans-serif;
-*/
+Now two solutions. The first selects which To-dos become LIs, so DOM actually
+comes and goes. Change the UL kidValues formula in the 'yourturn' bit to be this:
+
+        kidValues: cF(c => {
+                        let f = fmK(c.md, "filters").selection;
+                        return Todos.items.filter(td=>todoMatchesFilter(td, f));
+                    })
+
+
+The second solution adds/removes the hidden attribute selectively. Make this the first
+parameter to the function TodoLI (in the 'yourturn' bit):
+    {hidden: cF( c=> !todoMatchesFilter( td, fmK(c.md, "filters").selection))}
+
+
+ */

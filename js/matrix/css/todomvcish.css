@@ -311,7 +311,7 @@ body {
     display: inline;
 }
 
-.filters li a {
+.filters li b {
     color: inherit;
     margin: 3px;
     padding: 3px 7px;
@@ -320,11 +320,11 @@ body {
     border-radius: 3px;
 }
 
-.filters li a:hover {
+.filters li b:hover {
     border-color: rgba(175, 47, 47, 0.1);
 }
 
-.filters li a.selected {
+.filters li b.selected {
     border-color: rgba(175, 47, 47, 0.2);
 }
 

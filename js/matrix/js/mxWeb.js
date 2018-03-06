@@ -84,18 +84,16 @@ function obsDisabled (slot, md, newv, oldv, c) {
     domlog( 'disabled', newv, oldv);
     md.dom.disabled = !!newv;
 }
+
 function obsHidden (slot, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
-    domlog( 'hidden', newv, oldv);
-    clg('hidden->display', ( newv ? "none":"block"));
-    // md.dom.style['display'] = ( newv ? "none":"block");
+
     if (newv)
         md.dom.setAttribute('hidden','');
     else
         md.dom.removeAttribute('hidden');
-
-
 }
+
 function obsClass (slot, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
     domlog( 'className', newv, oldv);

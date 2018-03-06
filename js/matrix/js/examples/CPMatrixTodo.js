@@ -9,7 +9,7 @@ categories.map( c=> nubits[c] = {});
 var chats = {};
 var sources = {};
 var bitIds = ['preface', 'justhtml', 'webco', 'dynodom', 'ktodo',
-                'xhr', 'summary'];
+                'xhr', 'yourturn', 'summary'];
 
 var bits = new Array;
 
@@ -48,6 +48,7 @@ defbit('preface',
     ()=>{return {
             title: "Preface",
             notes: [
+                "The last hundred lines of the source comprise the host application, itself a demonstration of mxWeb.",
                 "Here is a complete <a target='_blank' href='https://github.com/kennytilton/webmx/tree/master/js'>" +
                             "TodoMVC</a> implementation.",
                 "Pardon my CSS. And even my Javascript. I am a native Lisper.",
@@ -212,9 +213,9 @@ function todoAddNewBetter (mx, e) {
     e.target.value = null;
 }
 
-function todoLI( c, todo, extras) {
-    return li({ class: cF(c => (todo.completed ? "completed" : null))},
-              { todo: todo},
+function todoLI( attrs, c, todo, extras) {
+    return li( Object.assign( { class: cF(c => (todo.completed ? "completed" : null))}, attrs),
+            { todo: todo},
             div({class: "view"},
                 input({ class: "toggle",
                         type: "checkbox",
@@ -245,7 +246,7 @@ defbit('ktodo',
                 section({ class: "main",
                             hidden: cF( c=> Todos.empty)},
                     ul({class: "todo-list"},
-                        c => Todos.items.map(td => todoLI( c, td )))),
+                        c => Todos.items.map(td => todoLI( {}, c, td )))),
                 todoDashboardEZ(clearCompleted))]
     }});
 
@@ -273,7 +274,7 @@ defbit('xhr',
                         {
                             kidValues: cF(c => Todos.items),
                             kidKey: k => k.todo,
-                            kidFactory: (c,td) => todoLI(c, td, aeAlertGI)
+                            kidFactory: (c,td) => todoLI({}, c, td, aeAlertGI)
                         },
                         c => c.kidValuesKids())),
                 todoDashboardEZ(clearCompleted))]
@@ -301,7 +302,6 @@ function aeAlertGI ( c, todo ) {
             aeInfo: cF( function (c) {
                 let xhr = c.md.lookup.xhr;
                 if ( xhr) {
-                    //clg('response!!!!', xhr.status);
                     if (xhr.status === 200) {
                         let obj = xhr.response;
                         return obj.meta.results.total + " Adverse Events found on FDA.gov";
@@ -315,15 +315,51 @@ function aeAlertGI ( c, todo ) {
         },
         "warning")
 }
-function aeAlertSVG () {
-    return svg({
-            class: "aes",
-            style: "width:24px;height:24px",
-            viewBox: "0 0 24 24"
+
+function todoMatchesFilter( td, filter ) {
+    return filter==="All"
+        || (filter==="Active" && !td.completed)
+        || (filter==="Completed" && td.completed);
+}
+
+function fmK( from, className, how) {
+    return from.fmUp( mx=>mx.class === className)
+}
+
+defbit('yourturn',
+    ()=>{return {
+        title: "Your turn!",
+        notes: null,
+        initFn: ()=> {
+            Todos = new TodoList(["adderall", "Yankees", "Visine", "probiotics", "echinacea"]);
         },
-        path({
-            fill: "#000000",
-            d: "M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"}))
+
+        mxDom: [
+            section({class: "todoapp"},
+                todoAppHeader( todoAddNewBetter),
+                section({ class: "main",
+                        hidden: cF( c=> Todos.empty)},
+                    ul({class: "todo-list"},
+                        c => {
+                            let f = fmK(c.md, "filters").selection;
+                            return Todos.items
+                                        .filter(td=>todoMatchesFilter(td, f))
+                                        .map( td=> todoLI( {}, c, td))
+                        })),
+                todoDashboardEZ( todoFilters, clearCompleted))]}});
+
+function todoFilters () {
+    return ul({class: "filters"},
+        {selection: cI("All")},
+        ['All', 'Active', 'Completed']
+            .map(state => li(b({
+                    class: cF(c => c.md.selected ? "selected" : ""),
+                    onclick: mx => fmK(mx, "filters").selection = state
+                },
+                {
+                    selected: cF(c => fmK(c.md, "filters").selection === state),
+                    content: state
+                }))))
 }
 // ---------------------------------------------
 // --- Summary ---------------------------------
@@ -344,19 +380,58 @@ defbit('summary',
     }});
 
 
-
 // --------------------------------------------------------------------
 // ----- Text Content -------------------------------------------------
 
+/// --- Your turn --------------------------
+
+
+defchat( 'yourturn', "Now it is your turn to try \
+programming with data flow. You will notice some additions to the dashboard: widgets \
+'All', 'Active', and 'Completed'. As you click them, they become highlighted in \
+radio group fashion. But nothing else happens.\
+\n\
+Your mission is to make something else happen, namely, change which to-dos appear as the filter \
+changes. The pen includes the 'matches' predicate shown below, as well as the code implementing \
+the radio group effect. That contains the clues you need to complete the task.\
+\n\
+Some help: First, FYI, 'fmK' searches the Matrix tree (family, hence 'fm') for an element with the given \
+class. That should just work for you.\
+\n\
+Second, hidden in the CSS of the pen are two solutions. One works via the hidden attribute on LIs, \
+the other works by filtering the to-dos before generating the LIs.\
+\n\
+Good luck! If you need help, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note.");
+
+defcode( 'yourturn', "\
+function todoMatchesFilter( td, filter ) {\n\
+    return filter==='All'\n\
+        || (filter==='Active' && !td.completed)\n\
+        || (filter==='Completed' && td.completed);\n\
+}\n\
+\n\
+function todoFilters () {\n\
+    return ul({class: 'filters'},\n\
+            ['All', 'Active', 'Completed'].map( \n\
+                state => li( b( { class: cF(c => c.md.selected ? 'selected' : ''),\n\
+                                  onclick: mx => { mx.fmK('filters').selection = state}},\n\
+                                { selected: cF(c => c.md.fmUp( 'app').selection === state),\n\
+                                  content: state}))))\n\
+}");
+
+
 defchat( 'preface',
     "Welcome to the development of an application within an application, each built \
-with just HTML and CSS running within a fine-grained data flow system we call Matrix.\
+with mxWeb, a Web framework consisting of just HTML and CSS running within a \
+fine-grained data flow system we call Matrix.\
 \n\
 The application developed will cover half the classic \
 <a target='_blank' href='https://github.com/tastejs/todomvc/blob/master/app-spec.md'>TodoMVC spec</a> and \
 appear live above.\
 \n\
-The first hundred lines of the source comprise the host application, itself a demonstration of mxWeb.\
+My focus will be the developer experience, but inquiring minds will wonder what is going on \
+behind the scenes. <a target='_blank' href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>\
+This will help.</a>\
 \n\
 Please check the notes below, then hit 'Next' to get started.");
 
@@ -598,7 +673,7 @@ section({class: 'todoapp'},\n\
       ul({ class: 'todo-list'},\n\
          { <b>kidValues: cF(c => <i>Todos.items</i>)</b>,\n\
            kidKey: k => k.todo,\n\
-           kidFactory: (c,td) => todoLI(c, td, aeAlertGI)},\n\
+           kidFactory: (c,td) => todoLI({}, c, td, aeAlertGI)},\n\
         <b>c => <i>c.kidValuesKids()</i>)</b>),\n\
       todoDashboardEZ(clearCompleted))\n\
 \n\
@@ -629,8 +704,9 @@ function aeBrandURI (brand) {\n\
     return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`\n\
 }");
 
-/// -----------------------------------------------------------------------------
-/// --- Summary -----------------------------------------------------------------
+
+/// ------------------------------------------
+/// --- Summary ------------------------------
 
 defchat( 'summary',
     "All submissions to TodoMVC.com offer the same functionality, and most \
@@ -731,6 +807,7 @@ function newsprint( text) {
     it just yields standard HTML/CSS. And no preprocessor
     is required.
      */
+    if (!text) return p("");
     let pgs = text.split("\n"),
         brk = null;
 
@@ -755,8 +832,8 @@ function newsprint( text) {
 function toolbar () {
     return div({
             style: {background: "#fdfdfd",
-                margin_left: "48px",
-                width: "380px",
+                margin_left: "24px",
+                width: "400px",
                 display: "flex",
                 flex_direction: "row",
                 align_items: "center"}},
