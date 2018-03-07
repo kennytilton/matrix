@@ -1,4 +1,8 @@
-// goog.require('goog.net.XhrIo');
+goog.require('goog.net.XhrIo');
+goog.provide('zoom.hunh');
+
+var zoom={};zoom.hunh={};
+
 
 class mxXHR extends Model {
     constructor( uri , options) {
@@ -13,37 +17,17 @@ class mxXHR extends Model {
         }
     }
 
-    send( delay) {
-        let mxx = this
-            , xhr = new XMLHttpRequest()
-            , go = function () {
-                    xhr.addEventListener("load", (e)=> mxx.xhr = e.target);
-                    xhr.addEventListener("abort", (e)=> mxx.xhr = e.target);
-                    xhr.addEventListener("error", (e)=> mxx.xhr = e.target);
-                    xhr.open('GET', mxx.uri);
-                    xhr.responseType = "json";
-                    xhr.send();
-                };
-
-        if (delay)
-            setTimeout( go, delay);
-        else
-            go();
-        return mxx;
-    }
-
     // send( delay) {
     //     let mxx = this
-    //         , go = ()=> goog.net.XhrIo.send( mxx.uri, function(e) {
-    //             let xhr = e.target;
-    //
-    //             /* if ( xhr.isSuccess()) {
-    //                 var obj = xhr.getResponseJson();
-    //             }*/
-    //         mxx.xhr = xhr;
-    //         // withChg("xhrResult", ()=> mxx.xhr = xhr);
-    //
-    //         });
+    //         , xhr = new XMLHttpRequest()
+    //         , go = function () {
+    //                 xhr.addEventListener("load", (e)=> mxx.xhr = e.target);
+    //                 xhr.addEventListener("abort", (e)=> mxx.xhr = e.target);
+    //                 xhr.addEventListener("error", (e)=> mxx.xhr = e.target);
+    //                 xhr.open('GET', mxx.uri);
+    //                 xhr.responseType = "json";
+    //                 xhr.send();
+    //             };
     //
     //     if (delay)
     //         setTimeout( go, delay);
@@ -51,6 +35,26 @@ class mxXHR extends Model {
     //         go();
     //     return mxx;
     // }
+
+    send( delay) {
+        let mxx = this
+            , go = ()=> goog.net.XhrIo.send( mxx.uri, function(e) {
+                let xhr = e.target;
+
+                /* if ( xhr.isSuccess()) {
+                    var obj = xhr.getResponseJson();
+                }*/
+            mxx.xhr = xhr;
+            // withChg("xhrResult", ()=> mxx.xhr = xhr);
+
+            });
+
+        if (delay)
+            setTimeout( go, delay);
+        else
+            go();
+        return mxx;
+    }
 }
 
 window['mxXHR'] = mxXHR;

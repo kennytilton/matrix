@@ -261,8 +261,6 @@ defbit('xhr',
         initFn: ()=> {
             Todos = new TodoList(["adderall", "Yankees"]);
         },
-
-
         mxDom: [
             section({class: "todoapp"},
                 todoAppHeader( todoAddNewBetter),
@@ -301,13 +299,23 @@ function aeAlertGI ( c, todo ) {
 
             aeInfo: cF( function (c) {
                 let xhr = c.md.lookup.xhr;
+                clg('xhr????', xhr)
                 if ( xhr) {
-                    if (xhr.status === 200) {
+                    clg('xhr!!!', xhr.status)
+                    if ( xhr.isSuccess() ) {
+                        let obj = xhr.getResponseJson();
+                        return obj.meta.results.total + ' Adverse Events found on FDA.gov';
+                    } else {
+                        return null;
+
+                    }
+
+                    /*if (xhr.status === 200) {
                         let obj = xhr.response;
                         return obj.meta.results.total + " Adverse Events found on FDA.gov";
                     } else {
                         return null;
-                    }
+                    }*/
                 } else {
                     return null;
                 }
@@ -343,8 +351,8 @@ defbit('yourturn',
                         c => {
                             let f = fmK(c.md, "filters").selection;
                             return Todos.items
-                                        .filter(td=>todoMatchesFilter(td, f))
-                                        .map( td=> todoLI( {}, c, td))
+                                        //.filter(td=>todoMatchesFilter(td, f))
+                                        .map( td=> todoLI( {hidden: cF( c=> !todoMatchesFilter( td, fmK(c.md, "filters").selection))}, c, td))
                         })),
                 todoDashboardEZ( todoFilters, clearCompleted))]}});
 
@@ -385,7 +393,7 @@ defbit('summary',
 
 /// --- Your turn --------------------------
 
-
+/*
 defchat( 'yourturn', "Now it is your turn to try \
 programming with data flow. You will notice some additions to the dashboard: widgets \
 'All', 'Active', and 'Completed'. As you click them, they become highlighted in \
@@ -402,6 +410,7 @@ Second, hidden in the CSS of the pen are two solutions. One works via the hidden
 the other works by filtering the to-dos before generating the LIs.\
 \n\
 Good luck! If you need help, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note.");
+*/
 
 defcode( 'yourturn', "\
 function todoMatchesFilter( td, filter ) {\n\

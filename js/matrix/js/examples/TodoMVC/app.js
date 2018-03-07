@@ -79,7 +79,7 @@ function todoListItem( c, todo) {
                 input({class: "toggle",
                         type: "checkbox",
                         checked: cF( c=> todo.completed),
-                        onclick: todoToggleCompleted,
+                        onclick: mx => mx.todo.completed = !mx.todo.completed,
                         title: cF( c=> `Mark ${todo.completed? "in" : ""}complete.`)},
                     {todo: todo})
 
@@ -103,10 +103,6 @@ function todoListItem( c, todo) {
 // ------------------------------------------------------------------------------
 // --- to-do list item callbackse -----------------------------------------------
 
-function todoToggleCompleted (mx,e) {
-    let todo = mx.todo;
-    todo.completed = !todo.completed;
-}
 
 function todoStartEditing (mx,e) {
     let li = mx.fmTag('li') // find overarching li, then...

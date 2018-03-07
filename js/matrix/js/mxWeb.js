@@ -394,6 +394,7 @@ function tag( tag, attrs, customs, kids) {
             clg(`WARNING: duplicate key ${k} in tag ${tag}`);
         }
 
+    clg('tag sees', tag, attrs, customs);
     return function (c) {
         //clg('tag ', typeof par, id, par === null, isModel(par), typeof par ==='undefined', factory.cname());
 
@@ -416,9 +417,10 @@ function genTagEx(tagName) {
             return tag( tagName, {}, {}, allArgs(arguments));
         } else {
             if ( Tag.isTagKid( arguments[1])) {
-                return tag( tagName, arguments[0], {}, cdrArgs(arguments));
+                return tag( tagName, arguments[0] || {}, {}, cdrArgs(arguments));
             } else {
-                return tag( tagName, arguments[0],  arguments[1], cddrArgs(arguments));
+                clg('last branch');
+                return tag( tagName, arguments[0] || {},  arguments[1] || {}, cddrArgs(arguments));
             }
         }
     }
