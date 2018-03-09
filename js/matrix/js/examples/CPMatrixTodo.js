@@ -234,6 +234,7 @@ function clearCompleted () {
             "Clear completed");
 }
 
+// --- ktodo -- Individual properties of To-dos are cells -------
 defbit('ktodo',
     ()=>{return {
         title: "To-Do properties join the data flow",
@@ -334,6 +335,8 @@ function fmK( from, className, how) {
     return from.fmUp( mx=>mx.class === className)
 }
 
+// --- yourturn: An exercise for you to try ---------------------
+
 defbit('yourturn',
     ()=>{return {
         title: "Your turn!",
@@ -369,6 +372,18 @@ function todoFilters () {
                     content: state
                 }))))
 }
+
+/* --- counter ---------------------------------
+var sillyCtr = cI(0);
+
+defbit('cntr',
+    ()=>{return {
+        title: "Silly counter",
+        mxDom: [
+            h1({content: cF(c=>`clicked ${sillyCtr.v} times`)}),
+            button({onclick: mx=> ++sillyCtr.v}, "click me!")]}});
+*/
+
 // ---------------------------------------------
 // --- Summary ---------------------------------
 
@@ -817,6 +832,7 @@ function newsprint( text) {
     is required.
      */
     if (!text) return p("");
+
     let pgs = text.split("\n"),
         brk = null;
 
@@ -848,14 +864,14 @@ function toolbar () {
                 align_items: "center"}},
         controls)
 }
-
+var nTabsStyle = "display:flex;flex-direction:row;margin:8px";
 var controls = [
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
             style: "margin-left:18px",
             disabled: cF( ()=> currBitNo.v <= 0),
             onclick: c=> --currBitNo.v},
         "Back"),
-    div( {style: "margin:8px"}, nTabs( bitIds.length)),
+    div( {style: nTabsStyle}, nTabs( bitIds.length)),
     button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
             disabled: cF( c=> currBitNo.v >= bitIds.length - 1),
             onclick: c=> ++currBitNo.v}
@@ -877,9 +893,13 @@ function nTabs (n) {
     tabs = [];
     for( let i=0; i < n; ++i) {
         let ii = i;
-        tabs.push( button( {onclick: ()=> currBitNo.v = ii,
-            style: cF( c=>"margin-left:8px;background-color:"
-                + (ii===currBitNo.v? "cyan":""))}, ""+i));
+        tabs.push( div( c=> (ii===currBitNo.v) ?
+            span( {style: "margin:6px"}, bitIds[ii] )
+            : button( { onclick: ()=> currBitNo.v = ii,
+                        title: cF( c=> getbit( bitIds[ii]).title),
+                        style: cF( c=>"margin-left:8px;background-color:"
+                                + (ii===currBitNo.v? "cyan":""))},
+                         ""+i)));
     }
     return tabs;
 }
