@@ -11,15 +11,6 @@
     [clojure.core.async :as a]
     [clojure.data.int-map :as i]))
 
-;(:require-macros [cljs.core.async.macros :refer [go go-loop]])
-#_
-    (ns async-test.timeout.core
-      (:require [cljs.core.async :refer [chan close!]])
-      (:require-macros
-        [cljs.core.async.macros :as m :refer [go]]))
-
-
-
 (defn pipe-segs [pipe]
   (<mget pipe :kids))
 
@@ -59,16 +50,14 @@
   (md/make ::md/family
     :in-data in-chan
     :out-data out-chan
-    :kids (cF+ [:slot :pline-kids]
-            (the-kids
+    :kids (cF (the-kids
                 (let [ida (atom -1)]
                   (doall
                     (for [proc processors
                       :let [id (swap! ida inc)]]
                     (make-pipe-seg me id proc))))))
 
-    :seg-id-map (cF+ [:slot :segidmap]
-                  (let [raw (for [seg (<mget me :kids)]
+    :seg-id-map (cF (let [raw (for [seg (<mget me :kids)]
                                 [(pseg-id seg) seg])]
                       (pln :rawsegs raw)
                       (into {} raw)))))
@@ -135,14 +124,8 @@
             (pln :pipe-got-data! d-in)
 
             (a/put! (pseg-in-rq ps0) true)
-            (pln :inrq-put!)
-            (pln :putting-indta-chan!!!! (pseg-in-data ps0))
 
             (when (a/put! (pseg-in-data ps0) d-in)
-              (pln :data-sent d-in)
-
               (let [ak (a/<!! (pseg-in-ak ps0))]
                 (pln :got-ak!!!! d-in)
-                (pln :pipe-not-recurring!!!!!!!)
-                ;;;(recur)
-                ))))))))
+                (recur)))))))))

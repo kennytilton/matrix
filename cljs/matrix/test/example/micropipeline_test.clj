@@ -14,7 +14,7 @@
                  (map #(* % 2) data))
 
                (fn [data]
-                   (map #(+ % 100) data))]
+                 (map #(+ % 100) data))]
         pipe-in (a/chan)
         pipe-out (a/chan)
         pipe (make-pipeline
@@ -29,16 +29,23 @@
 
     (pipe-start pipe)
 
-    (a/put! pipe-in [0 1 2])
+    (a/go
+      (a/put! pipe-in [0 1 2])
+      (a/put! pipe-in [1000 2000 3000]))
 
     (a/go
-      (let [tout (a/timeout 1000)
-            result (a/alt!
-                  tout :timeout
-                  pipe-out
-                  ([r] r))]
-        (pln :bam-out result)
-        ;(assert (not (nil? out)))
-        (is (= result [100 102 104]))
-        (a/close! pipe-in)
-        (a/close! pipe-out)))))
+      (loop []
+        (let [tout (a/timeout 1000)
+              result (a/alt!
+                       tout :timeout
+                       pipe-out
+                       ([r] r))]
+          (pln :bam-out result)
+          ;(assert (not (nil? out)))
+          (when (not= result :timeout)
+            (is (or (= [[100 102 104]
+                        [2100 4100 6100]])))
+            (recur))))
+      #_ (do
+           (a/close! pipe-in)
+           (a/close! pipe-out)))))
