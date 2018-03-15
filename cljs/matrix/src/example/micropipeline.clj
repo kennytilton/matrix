@@ -22,43 +22,9 @@
     :processor processor
     :in-rq (a/chan)
     :in-data (a/chan)
-    :result (cI nil)
+    :result (a/chan)
     :in-ak (a/chan)
-    :out-rq nil
-    :out-data (a/chan)
-    :out-ak nil))
-
-(defn pipe-seg-execute [stp]
-  ;; todo find and cache to-rq, to-indata, to-ak
-  (pln :go-seg!! @stp)
-  (a/go
-    (loop []
-      (when (a/<! (:in-rq @stp))
-        (pln :got-in-rq! (:id @stp))
-        (pln :reading (:in-data @stp))
-        ;; unlike h/w, rq goes out before data (or we would block on data and never see rq)
-        (let [d (a/<! (:in-data @stp))]
-          (when (nil? d)
-            (pln :indata-closed-after-inrq!))
-
-          (when d
-            (pln :inakking d)
-            (pln :akking-to (:in-ak @stp))
-            (a/>! (:in-ak @stp) true) ;; make async put, or can we rely on them being waiting?
-            (pln :computing (:processor @stp))
-
-            (let [d-out ((:processor @stp) d)]
-              (pln :computed-dout d-out)
-              (pln :sending-to (:out-data @stp))
-              (a/>! (:out-data @stp) d-out)
-              (pln :dout-sent d-out)
-              (recur))))))
-
-    (pln :closing-seg!!! (:id @stp))
-    (a/close! (:in-data @stp))
-    (a/close! (:in-ak @stp)))
-  ;; close out-rq to receiver if any
-  )
+    :out-data (a/chan)))
 
 #_ (data-ack)
 
@@ -67,50 +33,103 @@
     :segs (cF (for [id (range (count processors))]
                 (make-pipe-seg me id (nth processors id))))))
 
+(defn pipe-segs [pipe]
+  (:segs @pipe))
+
+(defn pipe-seg [pipe n]
+  (nth (pipe-segs pipe) n))
+
+(defn pseg-in-rq [seg]
+  (:in-rq @seg))
+
+(defn pseg-in-ak [seg]
+  (:in-ak @seg))
+
+(defn pseg-in-data [seg]
+  (:in-data @seg))
+
+(defn pseg-out-data [seg]
+  (:out-data @seg))
+
+(defn pseg-result [seg]
+  (<mget seg :result))
+
+(defn pseg-processor [seg]
+  (:processor @seg))
+
+(defn pipe-seg-execute [stp]
+  ;; todo find and cache to-rq, to-indata, to-ak
+  (pln :go-seg!! @stp)
+  (a/go
+    (loop []
+      (when (a/<! (pseg-in-rq stp))
+        (pln :got-in-rq! (:id @stp))
+        (pln :reading (pseg-in-data stp))
+        ;; unlike h/w, rq goes out before data (or we would block on data and never see rq)
+        (let [d (a/<! (pseg-in-data stp))]
+          (when (nil? d)
+            (pln :indata-closed-after-inrq!))
+
+          (when d
+            (pln :got-data!! d :aking!!!)
+            (a/>! (pseg-in-ak stp) true) ;; make async put, or can we rely on them being waiting?
+
+            (pln :ak-sent d :processing)
+
+            (let [d-out ((pseg-processor stp) d)]
+              (pln :computed-dout d-out)
+              ;;(swap! stp assoc :result dout)
+              (a/>! (pseg-result stp) d-out)
+              (pln :dout-sent d-out)
+              (recur))))))
+
+    (pln :closing-seg!!! (:id @stp))
+    (a/close! (pseg-in-data stp))
+    (a/close! (pseg-in-ak stp)))
+  ;; close out-rq to receiver if any
+  )
+
 (defn data-ack []
     (cells-init)
   (pln :cinit!)
     (let [pipe (make-pipeline
                  (fn [data]
                    (map #(* % 2) data))
-                 #_
-                 (fn [data]
-                   (map #(+ % 100) data)))]
-      (pln :pipe!! @pipe)
-      (pln :segs (:segs @pipe))
 
-      (assert (= 1 (count (:segs @pipe))))
+                 #_(fn [data]
+                   (map #(+ % 100) data)))
+          ps0 (pipe-seg pipe 0)
+          psn (pipe-seg pipe (dec (count (pipe-segs pipe))))]
 
-      (doseq [seg (:segs @pipe)]
+      (assert (= 1 (count (pipe-segs pipe))))
+
+      (doseq [seg (pipe-segs pipe)]
         (pipe-seg-execute seg))
 
-
-      (pln :go!!!! (:in-rq @(first (:segs @pipe))))
-
-      (a/put! (:in-rq @(first (:segs @pipe))) true)
+      (a/put! (pseg-in-rq ps0) true)
       (pln :inrq-put!)
-      (pln :indta-chan!!!! (:in-data @(first (:segs @pipe))))
-      (when (a/put! (:in-data @(first (:segs @pipe))) [0 1 2])
-          (pln :piped!)
-          (pln :reading-ack (:in-ak @(first (:segs @pipe))))
+      (pln :putting-indta-chan!!!! (pseg-in-data ps0))
 
-          (let [ak (a/<!! (:in-ak @(first (:segs @pipe))))]
-            (pln :got-ack!!! ak)
-            (pln :get-result (last (:segs @pipe))
-              (:out-data @(last (:segs @pipe))))
+      (when (a/put! (pseg-in-data ps0) [0 1 2])
+        (pln :data-sent)
 
+        (let [ak (a/<!! (pseg-in-ak ps0))]
+          (pln :got-ak!!!!)
 
-            (a/go
-              (let [tout (a/timeout 1000)
+          (a/go
+            (let [tout (a/timeout 1000)
                   bam (a/alt!
                         tout :timeout
-                        (:out-data @(last (:segs @pipe)))
+                        (pseg-result psn)
                         ([r] r))]
               (pln :bam-out bam)
               ;(assert (not (nil? out)))
               ;(assert (= out [1 3 5]))
-              (a/close! (:in-rq @(first (:segs @pipe))))
+              (a/close! (pseg-in-rq ps0))
               (pln :booya!!!!!!!!!! bam)))))))
+
+
+
 #_
   (data-ack)
 
