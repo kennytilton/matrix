@@ -9,12 +9,16 @@
 
 (deftest data-ack-test
   (cells-init)
-  (pln :cinit!)
+
   (let [procs [(fn [data]
                  (map #(* % 2) data))
 
                (fn [data]
-                 (map #(+ % 100) data))]
+                 (map #(+ % 100) data))
+
+               (fn [data]
+                 (map #(- %) data))]
+
         pipe-in (a/chan)
         pipe-out (a/chan)
         pipe (make-pipeline
@@ -31,7 +35,9 @@
 
     (a/go
       (a/put! pipe-in [0 1 2])
-      (a/put! pipe-in [1000 2000 3000]))
+      (a/put! pipe-in [1000 2000 3000])
+      (a/put! pipe-in [-1 -10 -100])
+      (a/put! pipe-in [10 -20 30]))
 
     (a/go
       (loop []
@@ -42,6 +48,7 @@
                        ([r] r))]
           (pln :bam-out result)
           ;(assert (not (nil? out)))
+          #_
           (when (not= result :timeout)
             (is (or (= [[100 102 104]
                         [2100 4100 6100]])))

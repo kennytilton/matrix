@@ -76,34 +76,31 @@
 
 (defn pipe-seg-start [seg]
   ;; todo find and cache to-rq, to-indata, to-ak
-  (pln :go-seg!! @seg)
+
   (a/go
     (loop []
       (when (a/<! (pseg-in-rq seg))
         (pln :got-in-rq! (pseg-id seg))
-        (pln :reading (pseg-in-data seg))
+
         ;; unlike h/w, rq goes out before data (or we would block on data and never see rq)
         (when-let [d (a/<! (pseg-in-data seg))]
           (pln :got-data!! (pseg-id seg) d :aking!!!)
           (a/>! (pseg-in-ak seg) true) ;; make async put, or can we rely on them being waiting?
 
-          (pln :ak-sent d :processing)
+
 
           (let [d-out ((pseg-processor seg) d)]
             (pln :computed-dout d-out)
 
             (if-let [nxt (pseg-next-seg seg)]
               (do ;; coordination required....
-                (pln :relaying!!! nxt)
                 (a/put! (pseg-in-rq nxt) true)
                 (when (a/put! (pseg-in-data nxt) d-out)
-                  (pln :data-relayed!!!)
-
                   (let [ak (a/<!! (pseg-in-ak nxt))]
                     (pln :got-relay-ak!!!! ak d-out))))
               ;; ...just do it, the pipe is waiting
               (a/>! (pseg-pipe-out-data seg) d-out))
-            ;; either way...
+
             (recur)))))
 
     (pln :closing-seg!!! (:id @seg))
