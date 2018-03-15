@@ -7,6 +7,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/clojurescript "1.7.228"]
+                 [org.clojure/data.int-map "0.2.4"]
                  [com.cognitect/transit-cljs "0.8.243"]
                  [com.taoensso/tufte "1.1.2"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]

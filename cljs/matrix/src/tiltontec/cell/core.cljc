@@ -46,7 +46,7 @@
 (defn make-cell [& kvs]
   (let [options (apply hash-map kvs)]
     (#?(:clj ref :cljs atom) (merge {:value unbound
-                                     :state :nascent
+                                     ::cty/state :nascent
                                      :pulse 0
                                      :pulse-last-changed 0
                                      :pulse-observed 0
@@ -69,7 +69,7 @@
 
 
     (#?(:clj ref :cljs atom) (merge {:value unbound
-                                     :state :nascent        ;; s/b :unbound?
+                                     ::cty/state :nascent        ;; s/b :unbound?
                                      :pulse 0
                                      :pulse-last-changed 0
                                      :pulse-observed 0

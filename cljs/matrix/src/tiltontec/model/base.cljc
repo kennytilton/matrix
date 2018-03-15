@@ -100,8 +100,9 @@
                )
              (observe slot me (slot @me) unbound nil))
          :else (do
-                 ;;(pme :md-awaken-awks-cell slot)
-                 (c-awaken c)) ))))
+                 (pme :md-awaken-awks-cell slot)
+                 (c-awaken c)
+                 (pme :md-awakened-awks-cell slot)) ))))
   (rmap-meta-setf [:state me] :awake)
   me)
 

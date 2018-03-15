@@ -152,7 +152,7 @@
                      (when (and (nil? (c-model c))
                                 (= (c-state c) :nascent)
                                 (> @+pulse+ (c-pulse-observed c)))
-                       (rmap-setf [:state c] :awake)
+                       (rmap-setf [::cty/state c] :awake)
                        (c-observe c prior-value :cget)
                        (ephemeral-reset c)))))
                 (when *depender*
@@ -179,6 +179,7 @@
         ;; can be re-entered unnoticed since that clears *call-stack*. If re-entered, a subsequent
         ;; re-exit will be of an optimized away cell, which will have been assumed
         ;; as part of the opti-away processing.
+        (trx :calc-n-set->assume raw-value)
         (c-value-assume c raw-value propagation-code)))))
 
 (declare unlink-from-used)
@@ -281,7 +282,7 @@
                   ;; least honor the reset!
                   ;;
                   (rmap-setf [:value c] new-value)
-                  (rmap-setf [:state c] :awake)
+                  (rmap-setf [::cty/state c] :awake)
                   #_ (trx :new-vlue-installed (c-slot c) 
                        new-value
                        (:value c))
@@ -290,7 +291,7 @@
                   (when (and (c-model c)
                              (not (c-synaptic? c)))
                     (md-slot-value-store (c-model c) (c-slot c) new-value))
-                  
+                  (trx :val-stored new-value)
                   (c-pulse-update c :slotv-assume)
                   #_(println :maybe-propping  (c-slot c) new-value
                            :priorstate prior-state
@@ -305,10 +306,11 @@
                     ;;
                     ;; we may be overridden by a :no-propagate below, but anyway
                     ;; we now can look to see if we can be optimized away
+                    (trx :sth-happened)
                     (let [callers (c-callers c)]            ;; get a copy before we might optimize away
                       (when-let [optimize (and (c-formula? c)
                                                (c-optimize c))]
-                        (trx nil :wtf optimize)
+                        (trx :optimize optimize)
                         (case optimize
                           :when-value-t (when (c-value c)
                                           (trx nil :when-value-t (c-slot c))
@@ -316,10 +318,11 @@
                           true (optimize-away?! c prior-value)))
 
                       ;; --- data flow propagation -----------
+                      (trx :past-opti propagation-code (c-optimized-away? c))
                       (when-not (or (= propagation-code :no-propagate)
                                     (c-optimized-away? c))
                         (assert (map? @c))
-                        #_ (println :propping!!!! (c-slot c) new-value prior-value
+                        (println :propping!!!! (c-slot c) new-value prior-value
                                  :to-caller-ct (count callers))
                         (propagate c prior-value callers)))))))))
 
@@ -361,8 +364,8 @@ then clear our record of them."
              (not (c-synaptic? c))                          ;; no slot to cache invariant result, so they have to stay around)
              (not (c-input? c)))                            ;; yes, dependent cells can be inputp
 
-    ;; (println :optimizng-away!!!! (c-slot c)(c-useds c))
-    (rmap-setf [:state c] :optimized-away)                  ;; leaving this for now, but we toss
+    (println :optimizing-away!!!! (c-slot c)(c-useds c))
+    (rmap-setf [::cty/state c] :optimized-away)                  ;; leaving this for now, but we toss
                                         ; the cell below. hhack
     (c-observe c prior-value :opti-away)
 
@@ -399,7 +402,7 @@ then clear our record of them."
     (when c                                                 ;; not if optimized away
       (c-quiesce c)))
   (#?(:clj ref-set :cljs reset!) me nil)
-  (rmap-meta-setf [:state me] :dead))
+  (rmap-meta-setf [::cty/state me] :dead))
 
 (defmulti not-to-be (fn [me]
                       (assert (md-ref? me))
@@ -449,53 +452,56 @@ then clear our record of them."
   ;; (trx :propagate (:slot @c))
 
   (cond
-   *one-pulse?* (when *custom-propagater*
-                  (*custom-propagater* c prior-value))
-   ;; ----------------------------------
-   :else
-   (do
-     ;;(println :upd-pulse-last-chg-to @+pulse+ c)
-     (rmap-setf [:pulse-last-changed c] @+pulse+)
-     
-     (binding [*depender* nil
-               *call-stack* nil
-               *c-prop-depth*  (inc *c-prop-depth*)
-               *defer-changes* true]
-       ;; --- manifest new value as needed ---
-       ;;
-       ;; 20061030 Trying not.to.be first because doomed instances may be interested in callers
-       ;; who will decide to propagate. If a family instance kids slot is changing, a doomed kid
-       ;; will be out of the kids but not yet quiesced. If the propagation to this rule asks the kid
-       ;; to look at its siblings (say a view instance being deleted from a stack who looks to the psib
-       ;; pb to decide its own pt), the doomed kid will still have a parent but not be in its kids slot
-       ;; when it goes looking for a sibling relative to its position.
-       (when (and prior-value
-                  (c-model c)
-                  (md-slot-owning? (type (c-model c)) (c-slot c)))
-         (when-let [ownees (difference (set-ify prior-value) (set-ify (c-value c)))]
-           (doseq [ownee ownees]
-             (not-to-be ownee))))
+    *one-pulse?* (when *custom-propagater*
+                   (*custom-propagater* c prior-value))
+    ;; ----------------------------------
+    :else
+    (do
+      (println :upd-pulse-last-chg-to @+pulse+ c)
+      (rmap-setf [:pulse-last-changed c] @+pulse+)
 
-       (propagate-to-callers c callers)
-       ;(trx :obs-chkpulse!!!!!!!! @+pulse+ (c-pulse-observed c))
-       (when (or (> @+pulse+ (c-pulse-observed c))
-                 (some #{(c-lazy c)}
-                       [:once-asked :always true]))         ;; messy: these can get setfed/propagated twice in one pulse+
-          ;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
-         (c-observe c prior-value :propagate))
-       
-       ;;
-       ;; with propagation done, ephemerals can be reset. we also do this in c-awaken, so
-       ;; let the fn decide if C really is ephemeral. Note that it might be possible to leave
-       ;; this out and use the pulse to identify obsolete ephemerals and clear them
-       ;; when read. That would avoid ever making again bug I had in which I had the reset 
-       ;; inside slot-value-observe,
-       ;; thinking that that always followed propagation to callers. It would also make
-       ;; debugging easier in that I could find the last ephemeral value in the inspector.
-       ;; would this be bad for persistent CLOS, in which a DB would think there was still a link
-       ;; between two records until the value actually got cleared?
-       ;;
-       (ephemeral-reset c)))))
+      (binding [*depender* nil
+                *call-stack* nil
+                *c-prop-depth*  (inc *c-prop-depth*)
+                *defer-changes* true]
+        ;; --- manifest new value as needed ---
+        ;;
+        ;; 20061030 Trying not.to.be first because doomed instances may be interested in callers
+        ;; who will decide to propagate. If a family instance kids slot is changing, a doomed kid
+        ;; will be out of the kids but not yet quiesced. If the propagation to this rule asks the kid
+        ;; to look at its siblings (say a view instance being deleted from a stack who looks to the psib
+        ;; pb to decide its own pt), the doomed kid will still have a parent but not be in its kids slot
+        ;; when it goes looking for a sibling relative to its position.
+        (when (and prior-value
+                   (c-model c)
+                   (md-slot-owning? (type (c-model c)) (c-slot c)))
+          (when-let [ownees (difference (set-ify prior-value) (set-ify (c-value c)))]
+            (doseq [ownee ownees]
+              (not-to-be ownee))))
+
+        (propagate-to-callers c callers)
+        ;;(trx :obs-chkpulse!!!!!!!! @+pulse+ (c-pulse-observed c))
+
+        (when-not (c-optimized-away? c) ;; they get observed at the time
+          (trx :not-opti!!!! @c)
+          (when (or (> @+pulse+ (c-pulse-observed c))
+                  (some #{(c-lazy c)}
+                    [:once-asked :always true]))         ;; messy: these can get setfed/propagated twice in one pulse+
+            (println :observing!!!!!!!!!!! (c-slot c) (c-value c))
+            (c-observe c prior-value :propagate)))
+
+        ;;
+        ;; with propagation done, ephemerals can be reset. we also do this in c-awaken, so
+        ;; let the fn decide if C really is ephemeral. Note that it might be possible to leave
+        ;; this out and use the pulse to identify obsolete ephemerals and clear them
+        ;; when read. That would avoid ever making again bug I had in which I had the reset
+        ;; inside slot-value-observe,
+        ;; thinking that that always followed propagation to callers. It would also make
+        ;; debugging easier in that I could find the last ephemeral value in the inspector.
+        ;; would this be bad for persistent CLOS, in which a DB would think there was still a link
+        ;; between two records until the value actually got cleared?
+        ;;
+        (ephemeral-reset c)))))
 
 (defn propagate-to-callers [c callers]
   ;;

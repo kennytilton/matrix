@@ -70,6 +70,7 @@ call parameters: slot, me, new, old, and c."
   ([c prior-value why]
    ;; (trx :cobs-3 (c-slot c) why)
    (assert (c-ref? c))
+   (assert (integer? @+pulse+))
    (rmap-setf [:pulse-observed c] @+pulse+)
    #_
    (if-let [me (c-model c)]
