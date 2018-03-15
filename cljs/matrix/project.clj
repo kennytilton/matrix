@@ -5,7 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.671"]
+                 [org.clojure/core.async "0.2.374"]
+                 [org.clojure/clojurescript "1.7.228"]
                  [com.cognitect/transit-cljs "0.8.243"]
                  [com.taoensso/tufte "1.1.2"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
