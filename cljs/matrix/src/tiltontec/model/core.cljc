@@ -108,6 +108,7 @@
   (rmap-setf [slot me] new-value))
 
 (defn make [& arg-list]
+  (println :live-make-wow!!!!)
   (cond
     (odd? (count arg-list)) (apply make :type arg-list)
     :else

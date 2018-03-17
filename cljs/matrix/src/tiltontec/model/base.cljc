@@ -93,16 +93,13 @@
        (cond
          (= c :not-found)
          ;; these need at least an initial observe
-         (do (when (and (= slot :kids)(slot @me))
+         (do #_(when (and (= slot :kids)(slot @me))
                (pme :md-awaken-kids-nocz-nonnil-obs slot
                  (keys (md-cz me))
                  (:kids (md-cz me) :hunh))
                )
              (observe slot me (slot @me) unbound nil))
-         :else (do
-                 (pme :md-awaken-awks-cell slot)
-                 (c-awaken c)
-                 (pme :md-awakened-awks-cell slot)) ))))
+         :else (c-awaken c)))))
   (rmap-meta-setf [:state me] :awake)
   me)
 

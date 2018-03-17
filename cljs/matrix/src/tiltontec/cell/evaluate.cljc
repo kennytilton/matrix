@@ -291,7 +291,7 @@
                   (when (and (c-model c)
                              (not (c-synaptic? c)))
                     (md-slot-value-store (c-model c) (c-slot c) new-value))
-                  (trx :val-stored new-value)
+                  ;;(trx :val-stored new-value)
                   (c-pulse-update c :slotv-assume)
                   #_(println :maybe-propping  (c-slot c) new-value
                            :priorstate prior-state
@@ -306,11 +306,11 @@
                     ;;
                     ;; we may be overridden by a :no-propagate below, but anyway
                     ;; we now can look to see if we can be optimized away
-                    (trx :sth-happened)
+                    ;;(trx :sth-happened)
                     (let [callers (c-callers c)]            ;; get a copy before we might optimize away
                       (when-let [optimize (and (c-formula? c)
                                                (c-optimize c))]
-                        (trx :optimize optimize)
+
                         (case optimize
                           :when-value-t (when (c-value c)
                                           (trx nil :when-value-t (c-slot c))
@@ -318,11 +318,11 @@
                           true (optimize-away?! c prior-value)))
 
                       ;; --- data flow propagation -----------
-                      (trx :past-opti propagation-code (c-optimized-away? c))
+
                       (when-not (or (= propagation-code :no-propagate)
                                     (c-optimized-away? c))
                         (assert (map? @c))
-                        (println :propping!!!! (c-slot c) new-value prior-value
+                        #_(println :propping!!!! (c-slot c) new-value prior-value
                                  :to-caller-ct (count callers))
                         (propagate c prior-value callers)))))))))
 
@@ -364,7 +364,7 @@ then clear our record of them."
              (not (c-synaptic? c))                          ;; no slot to cache invariant result, so they have to stay around)
              (not (c-input? c)))                            ;; yes, dependent cells can be inputp
 
-    (println :optimizing-away!!!! (c-slot c)(c-useds c))
+    ;;(println :optimizing-away!!!! (c-slot c)(c-useds c))
     (rmap-setf [::cty/state c] :optimized-away)                  ;; leaving this for now, but we toss
                                         ; the cell below. hhack
     (c-observe c prior-value :opti-away)

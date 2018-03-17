@@ -229,11 +229,4 @@ rule to get once behavior or just when fm-traversing to find someone"
   ;; hhack
   false)
 
-(defn c-debug [c tag]
-  (when-not (integer? (c-pulse-observed c))
-    (trx :c-ref? (c-ref? c))
-    (trx :c-bebug-bad-pulse-obs tag (c-slot c)
-      (ia-type c) @c)
-    (trx :state (::state @c) :val (:value @c))
-    (trx :slot-pulse (:slot @c) (:pulse @c) (keys @c))
-    (assert false)))
+(defn c-debug [c tag])
