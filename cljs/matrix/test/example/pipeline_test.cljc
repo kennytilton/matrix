@@ -8,13 +8,16 @@
     [tiltontec.util.core :refer :all]
     [tiltontec.cell.base :refer [cells-init]]
     [example.pipeline :refer :all]
-    #?(:clj [clojure.core.async :refer [put! go chan alt! ]]
+    #?(:clj [clojure.core.async :refer [put! timeout go chan alt! <!! <! >! >!!]]
        :cljs [cljs.core.async :refer
               [buffer dropping-buffer sliding-buffer put! take! chan promise-chan
                close! take partition-by offer! poll! <! >! alts!] :as async])))
 
+(def gclock (atom 0))
+
 (deftest data-ack-test
   (cells-init)
+  (reset! gclock 0)
 
   (let [procs [(fn [data]
                  (map #(* % 2) data))
@@ -32,6 +35,7 @@
                procs)]
 
     (pln :gotpipe!!! pipe)
+
     (is (= (count procs)
           (count (pipe-segs pipe))))
 
@@ -39,27 +43,45 @@
 
     (pipe-start pipe)
 
-    (go
-      (put! pipe-in [0 1 2])
-      (put! pipe-in [1000 2000 3000])
-      (put! pipe-in [-1 -10 -100])
-      (put! pipe-in [10 -20 30]))
+    (let [data [[1]
+                [0 1 2]
+                [1000 2000 3000]
+                [-1 -10 -100]
+                [10 -20 30]
+                ]
+          top-chan (chan)]
+      (go
+        (doseq [datum data]
+          (loop []
+            (when-let [beat (<! top-chan)]
+              (if (<  beat @gclock)
+                (do
+                  (pln :missed-beat!!! beat)
+                  (recur))
+                (do
+                  (pln :drvr-putting-top beat datum)
+                  (put! pipe-in datum)))))))
 
-    (go
-      (loop []
-        (let [tout (timeout 1000)
-              result (alt!
-                       tout :timeout
-                       pipe-out
-                       ([r] r))]
-          (pln :bam-out result)
-          ;(assert (not (nil? out)))
-          #_
-              (when (not= result :timeout)
-                (is (or (= [[100 102 104]
-                            [2100 4100 6100]])))
-                (recur))))
-      #_ (do
-           (close! pipe-in)
-           (close! pipe-out)))))
+      (go
+        (loop []
+          (let [tout (timeout 1000)
+                result (alt!
+                         tout :timeout
+                         pipe-out
+                         ([r] r))]
+            (pln :drvr-bam-out result)
+            (when (not= result :timeout)
+              (recur)))))
+
+      (dotimes [n (count data)]
+        (let [base (inc @gclock)
+              step 1]
+          (swap! gclock + step)
+
+          (dotimes [n step]
+            (>!! top-chan (+ base n)))))
+
+      (<!! (timeout 2000))
+
+      (pln :driver-exiting))))
 

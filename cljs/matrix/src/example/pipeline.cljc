@@ -19,7 +19,7 @@
 
     [tiltontec.util.core :as util :refer [pln now ]]
     #?(:clj [clojure.core.async :refer [timeout buffer dropping-buffer sliding-buffer put! take! chan promise-chan
-                                        close!   offer! poll! <! >! alts!]]
+                                        close! go  offer! poll! <! >! alts!]]
        :cljs [cljs.core.async
               :refer [timeout buffer dropping-buffer sliding-buffer put! take! chan promise-chan
                close! take partition-by offer! poll! <! >! alts!] :as async])
@@ -100,34 +100,69 @@
 
 (defn pipe-seg-start [seg]
   (go
-    (loop []
-      (when (<! (pseg-in-rq seg))
-        (pln :got-in-rq! (pseg-id seg))
+    (let [seg-next (pseg-next-seg seg)]
+      (loop [fst :init
+             data nil]
 
-        ;; unlike h/w, rq goes out before data (or we would block on data and never see rq)
-        (when-let [d (<! (pseg-in-data seg))]
-          (pln :got-data!! (pseg-id seg) d :aking!!!)
-          (>! (pseg-in-ak seg) true) ;; make async put, or can we rely on them being waiting?
+        (case fst
+          :exit
+          (do
+            (pln :closing-seg!!! (:id @seg))
+            (close! (pseg-in-rq seg))
+            (close! (pseg-in-data seg))
+            (close! (pseg-in-ak seg)))
 
+          :init (if (<! (pseg-in-rq seg))
+                  (do
+                    ;(pln :got-incoming-rq! (pseg-id seg))
+                    (recur :copy-data nil))
+                  (do
+                    (pln :seg-out-on-rq)
+                    (recur :exit nil)))
 
+          :copy-data
+          (if-let [d (<! (pseg-in-data seg))]
+            (do
+              ;(pln :seg-got-data!! (pseg-id seg) d :aking!!!)
+              (recur :ak-data d))
+            (pln :seg-got-nil-data))
 
-          (let [d-out ((pseg-processor seg) d)]
-            (pln :computed-dout d-out)
+          :ak-data
+          (do
+            (>! (pseg-in-ak seg) true)
+            (recur :process-data data))
 
-            (if-let [nxt (pseg-next-seg seg)]
-              (do ;; coordination required....
-                (put! (pseg-in-rq nxt) true)
-                (when (put! (pseg-in-data nxt) d-out)
-                  (let [ak (go (<! (pseg-in-ak nxt)))]
-                    #_ (pln :got-relay-ak!!!! ak d-out))))
-              ;; ...just do it, the pipe is waiting
-              (>! (pseg-pipe-out-data seg) d-out))
+          :process-data
+          (let [d-out ((pseg-processor seg) data)]
+            ;(pln :computed-dout d-out)
 
-            (recur)))))
+            (if seg-next
+              (recur :relay-next d-out)
+              (recur :pipe-out d-out)))
 
-    (pln :closing-seg!!! (:id @seg))
-    (close! (pseg-in-data seg))
-    (close! (pseg-in-ak seg))))
+          :relay-next
+          (do
+            (put! (pseg-in-rq seg-next) true)
+
+            (if (put! (pseg-in-data seg-next) data)
+              (do
+                ;(pln :seg-put-processed-data-next data)
+                (recur :get-ak-from-next-seg nil))
+              (pln :nil-putting-data-next)))
+
+          :pipe-out
+          ;; ...just do it, the pipe is waiting
+          (do
+            ;(pln :piping-out!!!! data)
+            (>! (pseg-pipe-out-data seg) data)
+            (recur :init nil))
+
+          :get-ak-from-next-seg
+          (if (<! (pseg-in-ak seg-next))
+            (do
+              ;(pln :got-next-ak)
+              (recur :init nil))
+            (pln :nil-off-get-next-ak)))))))
 
 (defn pipe-start [pipe]
   (let [segs (pipe-segs pipe)]
@@ -146,22 +181,24 @@
 
             :init
             (let [d (<! (:in-data @pipe))]
-              (pln :pipt-got! d)
+              (pln :pipe-got! d)
               (recur (if d :toggle-rq-first :exit) d))
 
             :toggle-rq-first
             (do
               (put! (pseg-in-rq ps0) true)
+              ;(pln :putting-data-to-seg-0 data)
               (put! (pseg-in-data ps0) data)
               (recur :get-rq-ak data))
 
             :get-rq-ak
             (do
-              (pln :waiting-ak data)
+              ;(pln :waiting-ak data)
               (if (<! (pseg-in-ak ps0))
                 (recur :init nil)
                 (recur :exit nil)))))))))
 
+#_
 (defn pipe-go []
   (cells-init)
 
@@ -188,17 +225,19 @@
 
     (pipe-start pipe)
 
-    (go
-      (put! pipe-in [0 1 2])
-      (put! pipe-in [1000 2000 3000])
-      (put! pipe-in [-1 -10 -100])
-      (put! pipe-in [10 -20 30]))
+    (let [data [[0 1 2]
+                [1000 2000 3000]
+                [-1 -10 -100]
+                [10 -20 30]]]
+      (go
+        (doseq [datum data]
+          (put! pipe-in datum)))
 
-    (go
-      (loop []
-        (let [tout (timeout 1000)
-              result (alt!
-                       tout :timeout
-                       pipe-out
-                       ([r] r))]
-          (pln :bam-out result))))))
+      (go
+        (loop []
+          (let [tout (timeout 1000)
+                result (alt!
+                         tout :timeout
+                         pipe-out
+                         ([r] r))]
+            (pln :bam-out result)))))))

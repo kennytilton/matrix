@@ -179,7 +179,7 @@
         ;; can be re-entered unnoticed since that clears *call-stack*. If re-entered, a subsequent
         ;; re-exit will be of an optimized away cell, which will have been assumed
         ;; as part of the opti-away processing.
-        (trx :calc-n-set->assume raw-value)
+        ;;(trx :calc-n-set->assume raw-value)
         (c-value-assume c raw-value propagation-code)))))
 
 (declare unlink-from-used)
