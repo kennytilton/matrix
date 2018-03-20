@@ -8,14 +8,17 @@
     [tiltontec.util.core :refer :all]
     [tiltontec.cell.base :refer [cells-init]]
     [example.pipeline :refer :all]
-    #?(:clj [clojure.core.async :refer [put! timeout go chan alt! <!! <! >! >!!]]
-       :cljs [cljs.core.async :refer
-              [buffer dropping-buffer sliding-buffer put! take! chan promise-chan
-               close! take partition-by offer! poll! <! >! alts!] :as async])))
+
+    #?(:clj [clojure.core.async
+             :refer [put! timeout go chan alt! alt!! <!! <! >! >!!]]
+       :cljs [cljs.core.async
+              :refer [buffer dropping-buffer sliding-buffer put! take!
+                      chan promise-chan close! take partition-by offer!
+                      poll! <! >! alts!] :as async])))
 
 (def gclock (atom 0))
 
-(deftest data-ack-test
+(deftest pipe-clocked-outside
   (cells-init)
   (reset! gclock 0)
 
@@ -47,8 +50,7 @@
                 [0 1 2]
                 [1000 2000 3000]
                 [-1 -10 -100]
-                [10 -20 30]
-                ]
+                [10 -20 30]]
           top-chan (chan)]
       (go
         (doseq [datum data]
@@ -82,6 +84,49 @@
             (>!! top-chan (+ base n)))))
 
       (<!! (timeout 2000))
+
+      (pln :driver-exiting))))
+
+(deftest pipe-clocked-inside
+  (cells-init)
+  (reset! gclock 0)
+
+  (let [procs [(fn [data]
+                 (map #(* % 2) data))
+
+               (fn [data]
+                 (map #(+ % 100) data))
+
+               (fn [data]
+                 (map #(- %) data))]
+
+        pipe-in (chan)
+        pipe-out (chan)
+        pipe (make-pipeline
+               pipe-in pipe-out
+               procs)]
+
+    (pipe-start pipe)
+
+    (let [data [[42]
+                [0 1 2]
+                [1000 2000 3000]
+                [-1 -10 -100]
+                [10 -20 30]]]
+      (go
+        (doseq [datum data]
+          (pln :drvr-putting-top  datum)
+          (put! pipe-in datum)))
+
+      (loop []
+        (let [tout (timeout 1000)
+              result (alt!!
+                       tout :timeout
+                       pipe-out
+                       ([r] r))]
+          (pln :drvr-bam-out result)
+          (when (not= result :timeout)
+            (recur))))
 
       (pln :driver-exiting))))
 

@@ -25,20 +25,6 @@
                close! take partition-by offer! poll! <! >! alts!] :as async])
     #?(:clj [clojure.data.int-map :as i])))
 
-#_ (ns cljs.core.async.tests
-     (:require-macros
-       [cljs.core.async.macros :as m :refer [go alt!]])
-     (:require
-       [cljs.core.async :refer
-        [buffer dropping-buffer sliding-buffer put! take! chan promise-chan
-         close! take partition-by offer! poll! <! >! alts!] :as async]
-       [cljs.core.async.impl.dispatch :as dispatch]
-       [cljs.core.async.impl.buffers :as buff]
-       [cljs.core.async.impl.timers :as timers :refer [timeout]]
-       [cljs.core.async.impl.protocols :refer [full? add! remove!]]
-       [cljs.core.async.test-helpers :refer [latch inc!]]
-       [cljs.test :as test :refer-macros [deftest is run-tests async testing]]))
-
 (defn pipe-segs [pipe]
   (<mget pipe :kids))
 
@@ -198,46 +184,3 @@
                 (recur :init nil)
                 (recur :exit nil)))))))))
 
-#_
-(defn pipe-go []
-  (cells-init)
-
-  (let [procs [(fn [data]
-                 (map #(* % 2) data))
-
-               (fn [data]
-                 (map #(+ % 100) data))
-
-               (fn [data]
-                 (map #(- %) data))]
-
-        pipe-in (chan)
-        pipe-out (chan)
-        pipe (make-pipeline
-               pipe-in pipe-out
-               procs)]
-
-    (pln :gotpipe!!! pipe)
-    (assert (= (count procs)
-          (count (pipe-segs pipe))))
-
-    (pln :strt-pipe pipe)
-
-    (pipe-start pipe)
-
-    (let [data [[0 1 2]
-                [1000 2000 3000]
-                [-1 -10 -100]
-                [10 -20 30]]]
-      (go
-        (doseq [datum data]
-          (put! pipe-in datum)))
-
-      (go
-        (loop []
-          (let [tout (timeout 1000)
-                result (alt!
-                         tout :timeout
-                         pipe-out
-                         ([r] r))]
-            (pln :bam-out result)))))))

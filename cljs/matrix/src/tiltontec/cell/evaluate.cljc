@@ -457,7 +457,7 @@ then clear our record of them."
     ;; ----------------------------------
     :else
     (do
-      (println :upd-pulse-last-chg-to @+pulse+ c)
+      ;;(println :upd-pulse-last-chg-to @+pulse+ c)
       (rmap-setf [:pulse-last-changed c] @+pulse+)
 
       (binding [*depender* nil
@@ -483,11 +483,11 @@ then clear our record of them."
         ;;(trx :obs-chkpulse!!!!!!!! @+pulse+ (c-pulse-observed c))
 
         (when-not (c-optimized-away? c) ;; they get observed at the time
-          (trx :not-opti!!!! @c)
+          ;;(trx :not-opti!!!! @c)
           (when (or (> @+pulse+ (c-pulse-observed c))
                   (some #{(c-lazy c)}
                     [:once-asked :always true]))         ;; messy: these can get setfed/propagated twice in one pulse+
-            (println :observing!!!!!!!!!!! (c-slot c) (c-value c))
+            ;;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
             (c-observe c prior-value :propagate)))
 
         ;;
