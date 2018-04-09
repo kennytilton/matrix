@@ -31,15 +31,15 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell make-c-formula]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell make-c-formula]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
    [tiltontec.model.base :refer [md-cz md-cell]]
    #?(:clj [tiltontec.model.core :refer :all :as md]
       :cljs [tiltontec.model.core
-             :refer-macros [c?kids the-kids mdv!]
+             :refer-macros [cFkids the-kids mdv!]
              :refer [md-get md-name fget fm! make md-reset! md-getx]
              :as md])
    ))
@@ -51,14 +51,14 @@
 (deftest fm-0
   (cells-init)
   (let [u (md/make
-           :kon (c-in false :slot :kon)
-           :kids (c? ;;(trx :kids-run! *depender*)
+           :kon (cI false :slot :kon)
+           :kids (cF ;;(trx :kids-run! *depender*)
                      (when (md-get me :kon)
                        (vector
                         (md/make
                          :par me
                          :name :konzo
-                         :kzo (c-in 3))))))]
+                         :kzo (cI 3))))))]
     (is (nil? (:kids @u)))
     (let [kc (md-cell u :kids)
           kon (md-cell u :kon)]
@@ -70,14 +70,14 @@
 (deftest fm-2
   (let [u (md/make
            :name :uni
-           :kids (c? (vector
+           :kids (cF (vector
                       (md/make
                        :par me
                        :name :aa)
                       (md/make
                        :par me
                        :name :bb
-                       :kids (c? (vector
+                       :kids (cF (vector
                                   (md/make
                                    :par me
                                    :name :bba)
@@ -101,25 +101,25 @@
 
 (deftest fm-3
   (let [u (md/make
-           :u63 (c? (+ (mdv! :aa :aa42)
+           :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))
-           :kon (c-in false)
-           :kids (c? (remove nil?
+           :kon (cI false)
+           :kids (cF (remove nil?
                              (vector
                               (md/make
                                :par me
                                :name :aa
-                               :aa42 (c? (* 2 (mdv! :bb :bb21)))
-                               :aa3 (c-in 3))
+                               :aa42 (cF (* 2 (mdv! :bb :bb21)))
+                               :aa3 (cI 3))
                               (when (md-get me :kon)
                                 (md/make
                                  :par me
                                  :name :konzo
-                                 :kzo (c-in 3)))
+                                 :kzo (cI 3)))
                               (md/make
                                :par me
                                :name :bb
-                               :bb21 (c? (* 7 (mdv! :aa :aa3))))))))]
+                               :bb21 (cF (* 7 (mdv! :aa :aa3))))))))]
     (is (= 63 (md-get u :u63)))
     (is (= 42 (mdv! :aa :aa42 u)))
     (is (= 21 (mdv! :bb :bb21 u)))
@@ -133,21 +133,21 @@
     
 (deftest fm-3x
   (let [u (md/make
-           :u63 (c? (+ (mdv! :aa :aa42)
+           :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))
-           :kon (c-in false)
-           :kids (c? (the-kids
+           :kon (cI false)
+           :kids (cF (the-kids
                       (md/make
                        :name :aa
-                       :aa42 (c? (* 2 (mdv! :bb :bb21)))
-                       :aa3 (c-in 3))
+                       :aa42 (cF (* 2 (mdv! :bb :bb21)))
+                       :aa3 (cI 3))
                       (when (md-get me :kon)
                         (md/make
                          :name :konzo
-                         :kzo (c-in 3))) 
+                         :kzo (cI 3)))
                       (md/make
                        :name :bb
-                       :bb21 (c? (* 7 (mdv! :aa :aa3)))))))]
+                       :bb21 (cF (* 7 (mdv! :aa :aa3)))))))]
     (is (= 63 (md-get u :u63)))
     (is (= 42 (mdv! :aa :aa42 u)))
     (is (= 21 (mdv! :bb :bb21 u)))
@@ -162,16 +162,16 @@
     
 (deftest fm-picker
   (let [u (md/make
-            :kids (c? (the-kids
+            :kids (cF (the-kids
                         (md/make :name :picker
-                          :value (c-in 42)
-                          :kids (c? (the-kids
+                          :value (cI 42)
+                          :kids (cF (the-kids
                                       (md/make
                                         :name :aax)
                                       (md/make
                                         :name :bbx))))
                         (md/make :name :dd
-                         :kzo (c? (let [p (fget :picker me)]
+                         :kzo (cF (let [p (fget :picker me)]
                                     (println :bingo p)
                                     (md-get p :value)))))))]
     (is (= 42 (mdv! :picker :value u)))
@@ -182,8 +182,8 @@
 (deftest mm-typed
   (let [me (md/make
             :type ::typetest
-            :x2 (c-in 2)
-            :age (c? (* (md-get me :x2)
+            :x2 (cI 2)
+            :age (cF (* (md-get me :x2)
                         21)))]
     (is (= 42 (md-get me :age)))
     (is (ia-type? me ::typetest))))
@@ -191,7 +191,7 @@
 (deftest mm-opti-1
    (let [me (md/make
               :x2 2
-              :age (c? (* 21 (md-get me :x2)))
+              :age (cF (* 21 (md-get me :x2)))
               )]
      (println :meta (meta me))
      (is (= 2 (md-get me :x2)))
@@ -204,16 +204,16 @@
          res (do ;; sync
               (md/make
                :name "Bob"
-               :action (c-in nil
+               :action (cI nil
                              :ephemeral? true)
-               :bogus (c? (if-let [be (md-get me :bogus-e)]
+               :bogus (cF (if-let [be (md-get me :bogus-e)]
                             (do
                               (trx :bingo-e!!!!!!!! be @bct)
                               (swap! bct inc)
                               (* 2 be))
                             (trx :bogus-no-e (:bogus-e @me))))
-               :bogus-e (c-in 21 :ephemeral? true)
-               :loc (c? (case (md-get me :action)
+               :bogus-e (cI 21 :ephemeral? true)
+               :loc (cF (case (md-get me :action)
                             :leave :away
                             :return :home
                             :missing))))]
@@ -244,23 +244,23 @@
 (deftest hello-model
   (let [uni (md/make
              ::md/family
-             :kids (c? (the-kids
+             :kids (cF (the-kids
                         (md/make
                          :name :visitor
                          :moniker "World"
-                         :action (c-in nil 
+                         :action (cI nil
                                        :ephemeral? true
                                        :obs (fn [slot me new old c]
                                               (when new (trx visitor-did new)))))
                         (md/make
                          :name :resident
-                         :action (c-in nil :ephemeral? true)
-                         :location (c?+ [:obs (fn-obs (when new (trx :honey-im new)))]
+                         :action (cI nil :ephemeral? true)
+                         :location (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
                                         (case (md-get me :action)
                                           :leave :away
                                           :return :home
                                           :missing))
-                         :response (c?+ [:obs (fn-obs (when new
+                         :response (cF+ [:obs (fn-obs (when new
                                                         (trx :r-response new)))
                                          :ephemeral? true]
                                         (when (= :home (md-get me :location))
@@ -269,10 +269,10 @@
                                               :knock-knock "hello, world")))))
                         (md/make
                          :name :alarm
-                         :on-off (c?+ [:obs (fn-obs
+                         :on-off (cF+ [:obs (fn-obs
                                              (trx :telling-alarm-api new))]
                                       (if (= :home (mdv! :resident :location)) :off :on))
-                         :activity (c?+ [:obs (fn-obs
+                         :activity (cF+ [:obs (fn-obs
                                                (case new
                                                  :call-police (trx :auto-dialing-911)
                                                  nil))]

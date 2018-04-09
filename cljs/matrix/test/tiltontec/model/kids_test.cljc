@@ -32,8 +32,8 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell make-c-formula]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell make-c-formula]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
@@ -47,12 +47,12 @@
 
 (deftest k-notq2be
   (let [f (md/make ::md/family
-            :ee (c-in 2)
-            :kids (c? (the-kids
+            :ee (cI 2)
+            :kids (cF (the-kids
                         (when (odd? (md-get me :ee))
                           (md/make
                             :name :yep
-                            :value (c? (do
+                            :value (cF (do
                                          (let [par (:par @me)]
                                            (let [ee (md-get par :ee)]
                                              (* 14 ee))))))))))]

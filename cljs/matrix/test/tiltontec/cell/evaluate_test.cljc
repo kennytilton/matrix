@@ -32,8 +32,8 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next!]
-             :refer [c-in c-reset!]]
+             :refer-macros [cF cF+ c-reset-next!]
+             :refer [cI c-reset!]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get]]
@@ -43,7 +43,7 @@
 #?(:cljs (set! *print-level* 3))
 
 (deftest test-input
-  (let [c (c-in 42 :slot :bingo)]
+  (let [c (cI 42 :slot :bingo)]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value-state c) :valid))
     (is (= #{} (c-callers c)))
@@ -55,7 +55,7 @@
     ))
 
 (deftest t-formula
-  (let [c (c? (+ 40 2))]
+  (let [c (cF (+ 40 2))]
     (is (isa? ::cty/c-formula ::cty/cell))
     (is (ia-type? c ::cty/cell))
     (is (ia-type? c ::cty/c-formula))
@@ -72,12 +72,12 @@
 
 
 (deftest t-formula-2
-  (let [b (c-in 2)
+  (let [b (cI 2)
         cct (atom 0)
         dct (atom 0)
-        c (c? (swap! cct inc)
+        c (cF (swap! cct inc)
               (+ 40 (c-get b)))
-        d (c? (swap! dct inc)
+        d (cF (swap! dct inc)
               (+ (c-get c)
                  (c-get b)))]
     (is (= (c-get d) 44))
@@ -100,7 +100,7 @@
 (deftest t-in-reset
   (reset! yowza 0)
   (is (= @yowza 0))
-  (let [b (c-in 2 :slot :yowza
+  (let [b (cI 2 :slot :yowza
                 :obs (fn-obs (reset! yowza new)))]
     (is (= 2 (c-get b)))
     (is (= 2 @yowza))
@@ -111,13 +111,13 @@
 (deftest t-formula-22
   (cells-init)
   
-  (let [b (c-in 2 :slot :bb)
+  (let [b (cI 2 :slot :bb)
         cct (atom 0)
         dct (atom 0)
-        c (c?+ [:slot :cc]
+        c (cF+ [:slot :cc]
                (swap! cct inc)
                (+ 40 (c-get b)))
-        d (c?+ [:slot :dd]
+        d (cF+ [:slot :dd]
                (swap! dct inc)
                (+ (c-get c)
                   (c-get b)))]
@@ -186,23 +186,23 @@
                  (swap! obs assoc slot
                         (inc (slot @obs 0))))
 
-        aa (c-in 1 :slot :aa :obs podobs)
-        a7 (c-in 7 :slot :a7 :obs podobs)
-        a70 (c?+ [:slot :a70 :obs podobs]
+        aa (cI 1 :slot :aa :obs podobs)
+        a7 (cI 7 :slot :a7 :obs podobs)
+        a70 (cF+ [:slot :a70 :obs podobs]
                  (logrun :a70)
                  (* 10 (cr a7)))
-        bb (c?+ [:slot :bb :obs podobs]
+        bb (cF+ [:slot :bb :obs podobs]
                 (logrun :bb)
                 (cr aa))
-        cc (c?+ [:slot :cc :obs podobs]
+        cc (cF+ [:slot :cc :obs podobs]
                 (logrun :cc)
                 (* 10 (cr aa)))
-        dd (c?+ [:slot :dd :obs podobs]
+        dd (cF+ [:slot :dd :obs podobs]
                 (logrun :dd)
                 (if (even? (cr bb))
                   (* 10 (cr cc))
                   42))
-        ee (c?+ [:slot :ee :obs podobs]
+        ee (cF+ [:slot :ee :obs podobs]
                 (logrun :ee)
                 (+ (cr a70) (cr bb) (* 10000 (cr dd))))
         verify-p-current (fn []
@@ -295,7 +295,7 @@
   (cells-init)
  
   (let [ob (atom 0)
-        b (c-in 2 :slot :bb
+        b (cI 2 :slot :bb
                 :obs (fn-obs (trx nil :obs-bb!! new old)
                              (swap! ob inc))
                 :unchanged-if (fn [n p]
@@ -305,7 +305,7 @@
                                      (or (and (even? n)(even? p))
                                          (and (odd? n)(odd? p))))))
         cct (atom 0)
-        c (c?+ [:slot :cc]
+        c (cF+ [:slot :cc]
                (swap! cct inc)
                (+ 40 (c-get b)))]
     (is (= (c-get c) 42))
@@ -327,7 +327,7 @@
     (is (= 2 @cct))))
     
 (deftest opti-away
-  (let [aa (c? 42)]
+  (let [aa (cF 42)]
     (is (= 42 (c-get aa)))
     (println :aa @aa)
     (is (c-optimized-away? aa))

@@ -31,8 +31,8 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c_? c?_]
-             :refer [c-in c-reset!]]
+             :refer-macros [cF cF+ c_F cF_]
+             :refer [cI c-reset!]]
       :clj [tiltontec.cell.core :refer :all])
    ))
 
@@ -40,8 +40,8 @@
 (deftest solid-lazy
   (cells-init)
   (let [xo (atom 0)
-        a (c-in 0)
-        x (c?_ [:obs (fn-obs (swap! xo inc))]
+        a (cI 0)
+        x (cF_ [:obs (fn-obs (swap! xo inc))]
                (+ (c-get a) 40))]
     (is (= unbound (:value @x)))
     (is (= 0 @xo))
@@ -58,8 +58,8 @@
   (cells-init)
   (let [xo (atom 0)
         xr (atom 0)
-        a (c-in 0)
-        x (c_? [:obs (fn-obs (swap! xo inc))]
+        a (cI 0)
+        x (c_F [:obs (fn-obs (swap! xo inc))]
                (swap! xr inc)
                (+ (c-get a) 40))]
     (is (= unbound (:value @x)))
@@ -81,8 +81,8 @@
   (cells-init)
   (let [xo (atom 0)
         xr (atom 0)
-        a (c-in 0 :slot :aaa)
-        x (c?+ [:slot :xxx
+        a (cI 0 :slot :aaa)
+        x (cF+ [:slot :xxx
                :obs (fn-obs (swap! xo inc))
                :optimize :when-value-t]
               (swap! xr inc)

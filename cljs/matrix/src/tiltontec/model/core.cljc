@@ -279,7 +279,13 @@
   "Search up the matrix from node 'where' looking for element with given name"
   [where name]
   (fget #(= name (md-get % :name))
-        where :me? false :up? true))
+        where :me? false :up? true :inside? false))
+
+(defn mxu-find-id
+  "Search up the matrix from node 'where' looking for element with given id"
+  [where id]
+  (fget #(= id (md-get % :id))
+    where :me? false :up? true :inside? false))
 
 (defn mxu-find-type
   "Search matrix ascendants only from node 'me' for first with given tag"
@@ -299,6 +305,20 @@
   (fget #(when (any-ref? %)
                (= value (md-get % property)))
         where :inside? true :up? false))
+
+(defn fmo [me id-name]
+  (or (mxu-find-name me id-name)
+    (mxu-find-id me id-name)
+    (throw (str "fmo> not id or name " id-name))))
+
+(defn fmov
+  ([me id-name]
+   (fmov me id-name :value))
+  ([me id-name slot-name]
+   (when-let [mx (fmo me id-name)]
+     (if (contains? @mx slot-name)
+       (<mget mx slot-name)
+       (throw (str "fmov> " id-name " lacks " slot-name " property"))))))
 
 (defmacro the-kids [& tree]
   `(binding [*par* ~'me]

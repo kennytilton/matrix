@@ -39,6 +39,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 
 (defonce unbound (gensym "unbound-cell-value"))
+(defn when-bound [x]
+  (when (not= x unbound) x))
+
 (defonce uncurrent (gensym "uncurrent-formulaic-value"))
 
 (def ^:dynamic *not-to-be* false)

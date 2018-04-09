@@ -17,7 +17,7 @@
                      *call-stack* *defer-changes*
                      c-rule c-me c-value-state c-callers caller-ensure
                      unlink-from-callers *causation*
-                     c-slot-name c-synaptic? caller-drop
+                     c-slot-name c-synapticF caller-drop
                      c-pulse c-pulse-last-changed c-ephemeral? c-slot
                      *depender* *not-to-be* 
                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
@@ -31,7 +31,7 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+]
+             :refer-macros [cF cF+]
              :refer [c-in]]
       :clj [tiltontec.cell.core :refer :all])
    ))
@@ -42,7 +42,7 @@
 
 (deftest t-formula
   (let [bingo (atom false)
-        c (c?+ [:slot :bingo
+        c (cF+ [:slot :bingo
                 :obs (fn-obs
                       (reset! bingo true))]
                (+ 40 2))]
@@ -62,7 +62,7 @@
 (def bingo2 (atom false))
 
 (deftest test-input
-  (let [c (c-in 42 :slot :bingo2
+  (let [c (cI 42 :slot :bingo2
                 :obs (fn-obs (reset! bingo2 true)))]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value-state c) :valid))
@@ -78,12 +78,14 @@
 
 (deftest t-custom-obs
   (let [bobs (atom nil)
-        b (c-in 2 :slot :bb
+        b (
+
+        cI 2 :slot :bb
                 :obs (fn-obs
                        (trx nil slot me new old)
                        (reset! bobs new)))
         cobs (atom nil)
-        c (c?+ [:obs (fn-obs [slot me new old c]
+        c (cF+ [:obs (fn-obs [slot me new old c]
                        (trx slot me new old)
                        (reset! cobs new))]
                (* 10 (c-get b)))]

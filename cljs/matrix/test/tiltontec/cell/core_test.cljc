@@ -33,8 +33,8 @@
    [tiltontec.cell.evaluate :refer [c-get]]
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell]]
       :clj [tiltontec.cell.core :refer :all])
 
    ))
@@ -56,7 +56,7 @@
     ))
 
 (deftest test-c-in
-  (let [c (c-in 42)] 
+  (let [c (cI 42)]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value c) 42))
     (is (= (c-value-state c) :valid))
@@ -67,7 +67,7 @@
     ))
 
 (deftest test-c-in+
-  (let [c (c-in 42 :slot :cool)] 
+  (let [c (cI 42 :slot :cool)]
     (is (c-ref? c))
     (is (= (c-value c) 42))
     (is (= (c-value-state c) :valid))
@@ -78,7 +78,7 @@
     ))
 
 (deftest test-c-formula
-  (let [c (c? (+ 40 2))] 
+  (let [c (cF (+ 40 2))]
     (is (ia-type? c ::cty/c-formula))
     (is (fn? (c-rule c)))
     (is (= (c-value c) unbound))
@@ -89,8 +89,8 @@
     (is (nil? (c-model c)))
     ))
 
-(deftest t-c?+
-  (let [c (c?+ (:optimize false :slot :bingo)
+(deftest t-cF+
+  (let [c (cF+ (:optimize false :slot :bingo)
                (trx nil :cool)
                (+ 40 2))]
     (is (c-ref? c))
@@ -108,13 +108,13 @@
 (deftest t-eph-1
   (cells-init)
   (let [boct (atom 0)
-        b (c-in nil
+        b (cI nil
                 :slot :b
                 :obs (fn-obs (swap! boct inc))
                 :ephemeral? true)
         crun (atom 0)
         cobs (atom 0)
-        c (c?+ [:slot :c 
+        c (cF+ [:slot :c
                 :obs (fn-obs (swap! cobs inc))]
                (trx nil :bingo)
                (swap! crun inc)
@@ -153,20 +153,20 @@
     ))
 
 
-(deftest t-c?n
-  (let [a (c-in 42 :slot :aa)
-        b (c?n [:slot :bb]
+(deftest t-cFn
+  (let [a (cI 42 :slot :aa)
+        b (cFn [:slot :bb]
               (/ (c-get a) 2))
-        c (c? (+ 1 (c-get b)))]
+        c (cF (+ 1 (c-get b)))]
     (is (= 21 (c-get b)))
     (is (= 22 (c-get c)))
     (c-reset! b 42)
     (is (= 42 (c-get b)))
     (is (= 43 (c-get c)))))
 
-(deftest t-c?once
-  (let [a (c-in 42 :slot :aa)
-        b (c?once [:slot :bb]
+(deftest t-cFonce
+  (let [a (cI 42 :slot :aa)
+        b (cFonce [:slot :bb]
               (/ (c-get a) 2))]
     (is (= 21 (c-get b)))
 

@@ -41,18 +41,10 @@
        :cljs [tiltontec.cell.synapse :refer-macros [with-synapse]])
 
     #?(:cljs [tiltontec.cell.core
-              :refer-macros [c? c?+ c_? c?_]
-              :refer [c-in c-reset! make-c-formula]]
+              :refer-macros [cF cF+ c_F cF_]
+              :refer [cI c-reset! make-c-formula]]
        :clj
             [tiltontec.cell.core :refer :all])
-
-    #?(:clj
-            [cheshire.core :as json])
-    #?(:clj
-            [stub-http.core :refer :all])
-
-    #?(:clj
-            [clj-http.client :as client])
 
             [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]))
 
@@ -61,14 +53,14 @@
   ; support, just by having the rule close over some state.
   (cells-init)
   (let [max 10
-        x (c-in nil)
+        x (cI nil)
         y (let [prior (atom nil)]
-            (c? (when-let [x (c-get x)]
+            (cF (when-let [x (c-get x)]
                   (if (even? x)
                     (reset! prior x)
                     @prior))))
         z-runs (atom 0)
-        z (c?
+        z (cF
             (when-let [y (c-get y)]
               (swap! z-runs inc)
               (assert (even? y)))
@@ -83,10 +75,10 @@
   ; can achieve the same filtering.
   (cells-init)
   (let [max 10
-        x (c-in nil)
+        x (cI nil)
         syn-runs (atom 0)
         z-runs (atom 0)
-        z (c? (when-let [x (with-synapse (:even-x)
+        z (cF (when-let [x (with-synapse (:even-x)
                              (when-let [x (c-get x)]
                                (swap! syn-runs inc)
                                (if (even? x)
@@ -110,8 +102,8 @@
         reset-runs (fn []
                      (reset! syn-runs 0)
                      (reset! alarm-runs 0))
-        x (c-in nil)
-        alarm (c? (when-let [d (with-synapse (:delta-x [prior (atom nil)])
+        x (cI nil)
+        alarm (cF (when-let [d (with-synapse (:delta-x [prior (atom nil)])
                                  (when-let [x (c-get x)]
                                    (swap! syn-runs inc)
                                    (let [delta (Math/abs (if @prior
@@ -158,15 +150,15 @@
         reset-runs (fn []
                      (reset! syn-runs 0)
                      (reset! alarm-runs 0))
-        x (c-in 0)
-        alarm (c? (when-let [changed-x (with-synapse (:sensitivity-x [sensitivity 3
+        x (cI 0)
+        alarm (cF (when-let [changed-x (with-synapse (:sensitivity-x [sensitivity 3
                                                                       reported (atom nil)])
                                          (when-let [x (c-get x)]
                                            (swap! syn-runs inc)
                                            (cond
                                              (or (nil? @reported)
-                                                 (>= (Math/abs (- x @reported))
-                                                     sensitivity))
+                                               (>= (Math/abs (- x @reported))
+                                                 sensitivity))
                                              (do (reset! reported x)
                                                  ^{:propagate true} [x])
 
@@ -202,8 +194,8 @@
 
 (deftest synaptic-grouping
   (cells-init)
-  (let [x (c-in nil)
-        y (c? (when-let [g (with-synapse (:grouper [buffer (atom [])])
+  (let [x (cI nil)
+        y (cF (when-let [g (with-synapse (:grouper [buffer (atom [])])
                              (when-let [myx (c-get x)]
                                (swap! buffer conj myx)
                                (let [buffer-val @buffer]

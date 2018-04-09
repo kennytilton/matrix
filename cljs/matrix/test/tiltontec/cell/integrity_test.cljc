@@ -32,8 +32,8 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next!]
-             :refer [c-in c-reset! cset!>]]
+             :refer-macros [cF cF+ c-reset-next!]
+             :refer [cI c-reset! cset!>]]
       :clj [tiltontec.cell.core :refer :all])
    ))
 
@@ -46,9 +46,9 @@
   (cells-init)
   (is (zero? @+pulse+))
   (do ;;binding [*dp-log* true]
-    (let [alarm (c-in :undefined :obs (obsdbg))
-          act (c-in nil :obs (obsdbg))
-          loc (c?+ [:obs (fn-obs                                 
+    (let [alarm (cI :undefined :obs (obsdbg))
+          act (cI nil :obs (obsdbg))
+          loc (cF+ [:obs (fn-obs
                           (when-not (= new :missing)
                             (assert (= @+pulse+ 2))
                             (c-reset-next! alarm
@@ -60,7 +60,7 @@
                      :leave :away
                      :return :home
                      :missing))
-          alarm-speak (c?+ [:obs (fn-obs 
+          alarm-speak (cF+ [:obs (fn-obs
                                   (is (= (c-get alarm) (case (c-get act)
                                                          :return :off
                                                          :leave :on
@@ -85,9 +85,9 @@
 (deftest obs-setf-bad-caught
   (cells-init)
 
-  (let [alarm (c-in :undefined :obs (obsdbg))
-        act (c-in nil :obs (obsdbg))
-        loc (c?+ [:obs (fn-obs
+  (let [alarm (cI :undefined :obs (obsdbg))
+        act (cI nil :obs (obsdbg))
+        loc (cF+ [:obs (fn-obs
                         #_  ;; fails on empty str or sth
                             (is (thrown-with-msg?
                              #?(:clj Exception :cljs js/Error)
@@ -102,7 +102,7 @@
                    :leave :away
                    :return :home
                    :missing))
-        alarm-speak (c?+ [:obs (fn-obs 
+        alarm-speak (cF+ [:obs (fn-obs
                                 (trx :alarm-speak (c-get act) :sees (c-get alarm) (c-get loc))
                                 (is (= (c-get alarm) (case (c-get act)
                                                        :return :off
@@ -124,12 +124,12 @@
 ;; --------------------------------------------------------
 
 (deftest see-into-fn 
-  (let [sia (c-in 0)
+  (let [sia (cI 0)
         rsic (atom false)
-        sic (c? (reset! rsic true)
+        sic (cF (reset! rsic true)
                 (+ 42 (c-get sia)))
         fsia #(c-get sia)
-        sib (c? (or (+ 1 (fsia))
+        sib (cF (or (+ 1 (fsia))
                     (c-get sic)))]
     (is (= (c-get sib) 1))
     (is (= (:useds @sib) #{sia}))
@@ -154,14 +154,14 @@
                          (swap! obsd update-in [(<cget (:a @obs))] conj o)
                          (println :tag tag :a (<cget (:a @obs)))
                          (println :tag tag :sees o))))
-        a (c-in 0 :obs (fn-obs (println :a-now new)))
-        b (c?+ [:obs (obsr :b)]
+        a (cI 0 :obs (fn-obs (println :a-now new)))
+        b (cF+ [:obs (obsr :b)]
             (* 10 (<cget a)))
-        c (c?+ [:obs (obsr :c)]
+        c (cF+ [:obs (obsr :c)]
             (* 100 (<cget a)))
-        d (c?+ [:obs (fn-obs (println :d-now new))]
+        d (cF+ [:obs (fn-obs (println :d-now new))]
             (+ (<cget b) (<cget c)(<cget a)))
-        e (c?+ [:obs (fn-obs (println :e-now new))]
+        e (cF+ [:obs (fn-obs (println :e-now new))]
             (+ (<cget c)(<cget b)(<cget a)))
         ]
     (reset! obs {:a a :b b :c c})
@@ -178,15 +178,15 @@
       (is (apply = v)))))
 
 (deftest no-prop-no-obs
-  (let [sia (c-in 0)
+  (let [sia (cI 0)
 
         obs (atom false)
-        sib (c?+ [:obs (fn-obs (reset! obs true))]
+        sib (cF+ [:obs (fn-obs (reset! obs true))]
                  (if (even? (c-get sia))
                    42
                    10))
         run (atom false)
-        sic (c? (reset! run true)
+        sic (cF (reset! run true)
                 (/ (c-get sib) 2))]
     (is (= (c-get sib) 42))
     (is (= (c-get sic) 21))

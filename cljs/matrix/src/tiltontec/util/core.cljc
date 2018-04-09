@@ -67,9 +67,6 @@
   (throw (#?(:cljs js/Error. :clj Exception.)
            ($/join " " (cons "jz/err>" bits)))))
 
-;; (defn upabc [a b c]
-;;   (tiltontec.util.base/pabc2 a))
-
 (defn flz [x]
   (if (isa? (type x) #?(:cljs cljs.core.LazySeq
                         :clj clojure.lang.LazySeq))
@@ -128,8 +125,15 @@
 (defn ensure-vec [x]
   (if (coll? x) (vec x) [x]))
 
-(defn pln [& r]
-  (println (pr-str r)))
+(defn pln [& args]
+  (locking *out*
+    (println ($/join " " args))))
+
+(defn xpln [& args])
+
+(defn eko [key value]
+  (pln :eko!!! key value)
+  value)
 
 (def ^:dynamic *plnk-keys* [])
 
@@ -152,8 +156,6 @@
 #?(:cljs
   (defn json-to-map [json]
     (trx/read (trx/reader :json) json)))
-
-
 
 ;;; --- counting ----------------
 

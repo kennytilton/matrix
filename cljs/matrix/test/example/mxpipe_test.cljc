@@ -15,7 +15,7 @@
              :refer [the-kids make <mget mset!> mswap!>]]
        :cljs [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [fget <mget fasc fm! make mset!> backdoor-reset!]
+              :refer [fget <mget fasc fm! make mswap! mset!> backdoor-reset!]
               :as md])
 
     #?(:clj
@@ -26,6 +26,7 @@
                       chan promise-chan close! take partition-by offer!
                       poll! <! >! alts!] :as async])))
 
+#_
 (deftest pipe-clocked-outside
   (pln :go)
   (cells-init)
@@ -50,10 +51,11 @@
     (assert (and pipe pipe-in pipe-out))
 
     (let [data [[14]
-                [0 1 2]
-                [1000 2000 3000]
-                [-1 -10 -100]
-                [10 -20 30]]]
+                ;[0 1 2]
+                ;[1000 2000 3000]
+                ;[-1 -10 -100]
+                ;[10 -20 30]
+                ]]
       #_
       (go
         (loop []
@@ -67,6 +69,7 @@
           (dosync
             (put! pipe-in datum))))
 
+      #_
       (go
         (dotimes [n 30]
           (when @running
@@ -74,6 +77,13 @@
             (dosync
               (mswap!> pipe :clock inc)))))
 
+      (let [psn (last (pipe-segs pipe))]
+        (go
+          (loop []
+            (when (pseg)))))
+      (go
+        (loop []
+          ))
       (loop [n 2]
         (pln :looping!!! n)
         (when (pos? n)

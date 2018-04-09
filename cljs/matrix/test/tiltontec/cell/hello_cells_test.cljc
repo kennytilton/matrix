@@ -31,8 +31,8 @@
              :refer-macros [defobserver fn-obs]])
 
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [c? c?+ c-reset-next! c?once c?n]
-             :refer [c-in c-reset! make-cell make-c-formula]]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer [cI c-reset! make-cell make-c-formula]]
       :clj [tiltontec.cell.core :refer :all])
 
    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
@@ -55,7 +55,7 @@
   (let [obs-action (atom nil)
         v ;;"visitor"
         {:name "World"
-         :action (c-in "knocks"
+         :action (cI "knocks"
                        :slot :v-action
                        :obs ;; short for observer
                        (fn [slot me new old c]
@@ -71,7 +71,7 @@
                      (reset! action new)
                      (println :observing slot new old))
         v {:name "World"
-           :action (c-in nil :slot :v-action
+           :action (cI nil :slot :v-action
                          :obs obs-action)}]
 
     (is (nil? (c-get (:action v))))
@@ -86,7 +86,7 @@
   (println :gobs> slot new old))
 
 (deftest hw-04
-  (let [r-action (c-in nil
+  (let [r-action (cI nil
                        :slot :r-action
                        :obs gobs)
         r-loc (make-c-formula
@@ -109,15 +109,15 @@
   (let [obs-action (fn [slot me new old c]
                      (println slot new old))
         v {:name "World"
-           :action (c-in nil :slot :v-action
+           :action (cI nil :slot :v-action
                          :obs obs-action)}
-        r-action (c-in nil)
-        r-loc (c?+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-action (cI nil)
+        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (c?+ [:obs (fn-obs (trx :r-resp new))]
+        r-response (cF+ [:obs (fn-obs (trx :r-resp new))]
                         (when (= :home (c-get r-loc))
                           (when-let [act (c-get (:action v))]
                             (case act
@@ -132,17 +132,17 @@
   (let [obs-action (fn [slot me new old c]
                      (println slot new old))
         v {:name "World"
-           :action (c-in nil
+           :action (cI nil
                          :slot :v-action
                          :ephemeral? true
                          :obs obs-action)}
-        r-action (c-in nil)
-        r-loc (c?+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-action (cI nil)
+        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (c?+ [:obs (fn-obs (trx :r-response new))
+        r-response (cF+ [:obs (fn-obs (trx :r-response new))
                          :ephemeral? true]
                         (when (= :home (c-get r-loc))
                           (when-let [act (c-get (:action v))]
@@ -159,17 +159,17 @@
   (let [obs-action (fn [slot me new old c]
                      (when new (trx visitor-did new)))
         v {:name "World"
-           :action (c-in nil
+           :action (cI nil
                          :slot :v-action
                          :ephemeral? true
                          :obs obs-action)}
-        r-action (c-in nil)
-        r-loc (c?+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-action (cI nil)
+        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (c?+ [:obs (fn-obs (when new
+        r-response (cF+ [:obs (fn-obs (when new
                                         (trx :r-response new)))
                          :ephemeral? true
                          ]
@@ -177,10 +177,10 @@
                               (when-let [act (c-get (:action v))]
                                 (case act
                                   :knock-knock "hello, world"))))
-        alarm (c?+ [:obs (fn-obs
+        alarm (cF+ [:obs (fn-obs
                           (trx :telling-alarm-api new))]
                    (if (= :home (c-get r-loc)) :off :on))
-        alarm-do (c?+ [:obs (fn-obs
+        alarm-do (cF+ [:obs (fn-obs
                             (case new
                               :call-police (trx :auto-dialing-911)
                               nil))]
