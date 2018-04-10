@@ -3,8 +3,8 @@ function clg(...args) {
 }
 window['clg'] = clg;
 
-function ast (test, msg="anon") {
-    console.assert(test,msg);
+function ast (test, msg="anon", ...mas) {
+    console.assert(test, msg, ...mas);
 }
 window['ast'] = ast;
 
