@@ -1,110 +1,3 @@
-cellsReset();
-
-class FSM {
-    constructor( id, context, handler ) {
-        this.id = id;
-        this.ctx = context;
-        this.state = 'init';
-        this.handler = handler;
-    }
-    tick () {
-        let newv = this.handler( this.ctx, this.state);
-        if (newv) {
-            this.state = newv;
-        } else {
-            // clg('fsm state unchanged', this.id, this.state);
-        }
-        clg('tick!', mTick, this.id, this.state, newv);
-
-    }
-}
-
-function testFsm () {
-    mTick = 42;
-    let f = new FSM('myFsm', null, function (ctx, s) {
-        if (s === null) {
-            return 'go';
-        } if (s === 'go') {
-            return 'boom';
-        } if ( s === 'boom') {
-
-        }
-    });
-
-    f.tick();
-    f.tick();
-    f.tick();
-}
-
-// testFsm();
-
-// --- Handshaking -----------------------------------------------------------
-
-class HandShake extends Model {
-    constructor( owner, islots = {}) {
-
-        super( owner, islots.name || "anonShake",
-            Object.assign(
-                {
-                    rq: cI(0),
-                    ak: cI(0),
-                    val: cF( c=> {
-                        if (c.md.rq === 0) {
-                            return 'idle';
-                        } else if (c.md.rq > c.md.ak) {
-                            return 'shaken';
-                        } else if (c.md.rq === c.md.ak) {
-                            return 'shook';
-                        } else {
-                            return 'illogical';
-                        }
-                    })
-                }, islots));
-
-        withIntegrity(qAwaken, this, x => this.awaken());
-    }
-    req () {
-        console.assert( this.ak === this.rq, "%s cannot be toggled when idle r=%d, a=%d"
-        , this.name, this.rq, this.ak);
-        console.assert( mTick > this.rq, "%s cannot be toggled until mTick advances r=%d, t=%d"
-            , this.name, this.rq, mTick);
-        clg('handshake rq advances to', this.rq, this.name);
-        this.rq = mTick;
-    }
-    reqd () {
-        return ( this.rq > this.ak);
-    }
-    ack () {
-        ast( this.rq > this.ak, "%s cannot be acked unless shaken r=%d, a=%d"
-            , this.name, this.rq, this.ak);
-        this.ak = this.rq;
-    }
-    ackd () {
-        return( this.ak > 0 && this.ak === this.rq )
-    }
-}
-
-function testHandShake () {
-
-    let w = new HandShake( null, { name: 'hstest'});
-
-    mTick = 0;
-    clg('go', w.rq, w.ak, w.val);
-
-    ++mTick;
-    w.req();
-    clg('rqd', w.rq, w.ak, w.val);
-    w.ack();
-
-    clg('akd', w.rq, w.ak, w.val);
-    //w.ack();
-
-    ++mTick;
-    w.req();
-}
-
-// testHandShake();
-
 class Pipe extends Model {
     constructor( owner, islots={} ) {
         super( null, islots.name || "anonPipe",
@@ -138,12 +31,14 @@ class Pipe extends Model {
     }
 }
 
+
+
 // test that pipe does not accept new data until old out of the way
 
 function pipeInHandler( pipe, is) {
-    clg('pipein entry', is);
+    //clg('pipein entry', is);
     if (is === 'init') {
-        clg('pipeIn init', pipe.feeder.rq, pipe.feeder.ak,mTick);
+        //clg('pipeIn init', pipe.feeder.rq, pipe.feeder.ak,mTick);
         if ( pipe.feeder.reqd()) {
             clg('pipe in fed!', pipe.dIn);
             ast( pipe.dIn, 'pipe req sees no dIn; you have to populate that before reqing');
@@ -182,7 +77,7 @@ function pipeTest () {
     let fed = null
         , p = new Pipe()
         , piper = new FSM( 'piper', null, function(ctx, is) {
-            clg('piper FSM state/mtick at entry', is, mTick);
+            //clg('piper FSM state/mtick at entry', is, mTick);
             if ( is === 'init') {
                 clg('piper starting pipe');
                 p.feed('himom');
@@ -191,7 +86,7 @@ function pipeTest () {
             } else if (is === 'getack') {
                 clg('piper seeks out');
                 if (p.out.rq > fed) {
-                    clg('Bam!!!! pipe out', p.dOut);
+                    //clg('Bam!!!! pipe out', p.dOut);
                     clg('taking', p.take());
                     return 'fini';
                 }
@@ -210,7 +105,7 @@ function pipeTest () {
     //ast( p.out.ak === p.out.rq);
 }
 
-// pipeTest();
+pipeTest();
 
 function plus1 (x) {
     return x+1;
