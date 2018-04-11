@@ -25,7 +25,7 @@ function pipeTest () {
         });
 
     for (let t=0; ++t < 4; ) {
-        clg('driver tick', ++mTick);
+        clg('DRIVER TICK', ++mTick);
         p.fsmIn.tick();
         p.fsmOut.tick();
         piper.tick();
@@ -34,7 +34,6 @@ function pipeTest () {
     //ast( p.out.ak === p.out.rq);
 }
 
-//pipeTest();
 
 function plus1 (x) {
     return x+1;
