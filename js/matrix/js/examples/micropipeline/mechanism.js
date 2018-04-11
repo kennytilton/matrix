@@ -63,7 +63,7 @@ class HandShake extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     req () {
-        ast( this.payload, "wire payload must be loaded before req");
+        ast( this.payload !== null, "wire payload must be loaded before req", this.payload);
         ast( this.ak === this.rq, "%s cannot be toggled when idle r=%d, a=%d"
             , this.name, this.rq, this.ak);
         ast( mTick > this.rq, "%s cannot be toggled until mTick advances r=%d, t=%d"
@@ -80,7 +80,10 @@ class HandShake extends Model {
         this.ak = this.rq;
     }
     ackd () {
-        return( this.ak > 0 && this.ak === this.rq )
+        return( this.ak > 0 && this.ak === this.rq );
+    }
+    unackd () {
+        return( this.rq > 0 && this.rq > this.ak);
     }
 }
 

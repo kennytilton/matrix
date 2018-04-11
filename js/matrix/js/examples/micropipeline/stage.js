@@ -132,66 +132,58 @@ class StageLight extends Model {
                     dIn: cI( null),
                 }, islots), false);
 
-        this.dInCopy = null;
+        ast(this.feeder && this.out, "feeder or out missing", islots.name);
+
         this.fsmIn = new FSM( 'stagein', this, stageLightInHandler );
 
         this.relayOut = 0;
 
-        this.fsmOut = new FSM( 'stageout', this, stageLightOutHandler );
+        //this.fsmOut = new FSM( 'stageout', this, stageLightOutHandler );
 
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     tick () {
         this.fsmIn.tick();
-        this.fsmOut.tick();
+        //this.fsmOut.tick();
     }
 }
-
-
-/*
-Once we put a computation on the data wires and make an req
-on our receiver's wire, even before we get an ack we can
-capture new data to dIn but cannot process it unless we
-process to a dOut. If we do not have a dOut we must wait. But
-why have the extra dOut circuitry? Because that let's our sender
-continue. But with what? Just sending? Is that slow?
- */
 
 function stageLightInHandler( stage, is) {
     ast( stage.feeder);
     if (is === 'init') {
-        ast( stage.feeder);
-
         if ( stage.feeder.reqd()) {
-            ast( stage.feeder.payload, 'stage req sees no payload', stage.name);
+            ast( stage.feeder.payload !== null, 'stage req sees no payload', stage.name);
             stage.dIn = stage.feeder.payload;
             clg('stage-in> fed!', stage.name, stage.dIn);
             stage.feeder.ack();
             return 'process';
         }
-    } else if ( is === 'process') {
-        clg('stage-in> processing!!!', stage.dIn);
-        stage.out.payload = stage.process( stage.dIn);
-        clg('stage-in> computed!', stage.name, stage.dOut);
-        stage.relayOut = mTick;
+    } else if (is === 'process') {
+        if ( !stage.out.unackd()) {
+            stage.out.payload = stage.process(stage.dIn);
+            clg('stage-in> computed!', stage.name, stage.out.payload);
+            return 'relay';
+        } clg('stagein> waiting our outAck');
+
+    } else if (is === 'relay') {
+        stage.out.req();
         return 'init';
     }
 }
 
-function stageLightOutHandler( stage, is) {
-    ast( stage.out);
-    if (is === 'init') {
-        if ( stage.relayOut > stage.out.rq) {
-            clg('stage-out> relaying', stage.payload);
-            stage.out.req();
-            return 'getack';
-        }
-    } else if ( is === 'getack') {
-        if ( stage.out.ackd() ) {
-            return 'init';
-        }
-    }
-}
+// function stageLightOutHandler( stage, is) {
+//
+//     if ( stage.out.unackd()) {
+//             clg('stage-out> relaying', stage.payload);
+//             stage.out.req();
+//             return 'getack';
+//         }
+//     } else if ( is === 'getack') {
+//         if ( stage.out.ackd() ) {
+//             return 'init';
+//         }
+//     }
+// }
 
 function testStageLight () {
     cellsReset();
@@ -260,4 +252,4 @@ function testStageLight () {
 
 }
 
-testStageLight();
+// testStageLight();

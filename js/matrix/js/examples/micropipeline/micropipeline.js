@@ -3,36 +3,51 @@ function pipeTest () {
     cellsReset();
     mTick=0;
 
-    let fed = null
-        , p = new Pipe()
-        , piper = new FSM( 'piper', null, function(ctx, is) {
+    let pipe = new Pipe( null, {
+                name: "topipe"
+                , processes: [plus1]})
+        , piperIn = new FSM( 'piperIn', null, function(ctx, is) {
             //clg('piper FSM state/mtick at entry', is, mTick);
             if ( is === 'init') {
-                clg('piper starting pipe');
-                p.feed('himom');
-                fed = mTick;
+                clg('DRIVER> feeding pipe', 0);
+                pipe.feed(0);
+                clg('piperIN> fed pipe', pipe.feeder.payload);
                 return 'getack';
             } else if (is === 'getack') {
-                clg('piper seeks out');
-                if (p.out.rq > fed) {
-                    //clg('Bam!!!! pipe out', p.dOut);
-                    clg('taking', p.take());
+                if ( pipe.feeder.ackd()) {
+                    clg('DRIVER> got pipe ack');
                     return 'fini';
                 }
-            } else {
-                ast('tester sees is %s', is);
+            }
+        })
+        , piperOut = new FSM( 'piperOut', null, function(ctx, is) {
+            if (is === 'init') {
+                if ( pipe.out.unackd()) {
+                    clg('DRIVER> got result', pipe.out.payload);
+                    return 'fini';
+                }
             }
         });
 
-    for (let t=0; ++t < 4; ) {
-        clg('DRIVER TICK', ++mTick);
-        p.fsmIn.tick();
-        p.fsmOut.tick();
-        piper.tick();
-    }
-    //ast( p.out.ak > 0);
-    //ast( p.out.ak === p.out.rq);
+    let driver = function (tick) {
+        clg('DRIVER TICK', mTick = tick);
+        piperIn.tick()
+        pipe.tick();
+        piperOut.tick();
+        if ( tick < 5 && piperOut.state != 'fini') {
+            //clg('DRIVER not fini', mTick);
+            setTimeout( driver, 500, tick+1)
+        } else if (piperOut.state === 'fini') {
+            clg('BAM! result', pipe.out.payload);
+        }
+
+    };
+    driver(1);
+
+    clg('fini?', piperOut.state);
 }
+
+pipeTest();
 
 
 function plus1 (x) {
@@ -43,11 +58,9 @@ function squared (x) {
     return x * x;
 }
 
-function minus1 (x) {
-    return x-1;
+function negated (x) {
+    return -x;
 }
-
-var mTick = 0;
 
 function MicroPipe () {
     // let p = new Pipe([ plus1, squared, minus1])
