@@ -7,19 +7,37 @@ function tickBump (e) {
     //
     // e.target.value = null;
 }
-// document.onkeydown = function(evt) {
-//     evt = evt || window.event;
-//     clg('keydown', evt.keyCode);
-//     let app = dom2mx( document.getElementById('app'));
-//     clg('app', app, app.tag, app.tick);
-//     app.tick = ++mTick;
-//
-// };
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    //clg('keydown', evt.key, typeof evt.key, evt.keyCode);
+    let app = dom2mx( document.getElementById('app'));
+    //clg('app ticks to ',  app.tick+1);
+    app.tick = ++mTick;
+    if (!isNaN( parseInt( evt.key))) {
+        let fn = parseInt( evt.key);
+        let f = app.pipe.feed( fn);
+        if (f === fn) {
+            clg('fed', fn);
+        } else {
+            clg('unfed BP', fn);
+        }
+    } else if (evt.key=='t') {
+        let r = app.pipe.take();
+        clg('take took', r===undefined? 'UDF':r)
+    }
+    app.pipe.tick();
+
+};
 
 function MicroPipe () {
     return [
         div({ id: 'app'},
-            { tick: cI( mTick)},
+            {
+                tick: cI( mTick)
+                , pipe: new Pipe( null, {
+                    name: name
+                    , processes: [plus1, squared, negated]})
+            },
             h1({content: cF( c=> "Hello, MicroPipeline! "+ c.md.fmTag('div').tick )}))];
 
 }
@@ -60,5 +78,5 @@ function pipeTestIII ( ) {
 
 }
 
-pipeTestIII();
+// pipeTestIII();
 

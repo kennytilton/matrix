@@ -90,7 +90,7 @@ function pipeInHandler( pipe, is) {
 function pipeOutHandler( pipe, is) {
     if (is === 'init') {
         if (pipe.stgOut.unackd()) {
-            clg('pipeout> sees result', pipe.stgOut.payload);
+            clg('pipeout> loads last stage result', pipe.stgOut.payload);
             pipe.out.payload = pipe.stgOut.payload;
             pipe.stgOut.ack();
             return 'pipeout';
