@@ -19,7 +19,7 @@ class Pipe extends Model {
         this.stages = this.processes.map( proc => {
             let f = lastOut
                 , o = new HandShake( null, {name: "hs-"+stageN+"->"+(stageN+1)})
-                , s = new StageLight( null, {
+                , s = new Stage( null, {
                         name: "s-"+ stageN
                         , feeder: f
                         , process: proc
@@ -54,7 +54,6 @@ class Pipe extends Model {
 function pipeInHandler( pipe, is) {
     if (is === 'init') {
         if ( pipe.feeder.reqd()) {
-            ast( pipe.feeder.payload !== null, 'pipe req sees no payload; you have to populate that before reqing');
             clg('pipein> fed!', pipe.feeder.payload);
             pipe.dIn = pipe.feeder.payload;
             pipe.feeder.ack();

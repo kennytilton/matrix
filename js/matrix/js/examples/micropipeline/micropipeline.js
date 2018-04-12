@@ -68,32 +68,7 @@ function negated (x) {
 }
 
 function MicroPipe () {
-    // let p = new Pipe([ plus1, squared, minus1])
-    //     , s0 = p.stage[0]
-    //     , sn = p.stage[p.stage.length-1]
-    //     , ast = 'init';
-    //
-    // s0.dIn = 3;
-    // s0.fr.req();
-    // ast = 'getack';
-    //
-    // for ( t = mTick + 1; ++t < 10; ) {
-    //     clg('tick', t, ast);
-    //     fsmTick( pipe);
-    //     if (ast === 'getack') {
-    //         if (s0.fr.ak === s0.fr.req) {
-    //             clg('pipeacks!');
-    //             ast = 'getresult;'
-    //         }
-    //     } else if ( ast === 'getresult') {
-    //         if ( sn.to.req > sn.to.ak ) {
-    //             sn.to.ak = sn.to.req;
-    //             clg("Bingo result!", sn.dOut);
-    //             break;
-    //         }
-    //     }
-    //     mTick = t;
-    // }
+
 
     return [ h1("Hello, MicroPipeline!")];
     // return [

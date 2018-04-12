@@ -17,24 +17,6 @@ class FSM {
     }
 }
 
-function testFsm () {
-    mTick = 42;
-    let f = new FSM('myFsm', null, function (ctx, s) {
-        if (s === null) {
-            return 'go';
-        } if (s === 'go') {
-            return 'boom';
-        } if ( s === 'boom') {
-
-        }
-    });
-
-    f.tick();
-    f.tick();
-    f.tick();
-}
-
-// testFsm();
 
 // --- Handshaking -----------------------------------------------------------
 
@@ -63,7 +45,6 @@ class HandShake extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     req () {
-        ast( this.payload !== null, "wire payload must be loaded before req", this.payload);
         ast( this.ak === this.rq, "%s cannot be toggled when idle r=%d, a=%d"
             , this.name, this.rq, this.ak);
         ast( mTick > this.rq, "%s cannot be toggled until mTick advances r=%d, t=%d"
@@ -85,24 +66,5 @@ class HandShake extends Model {
     unackd () {
         return( this.rq > 0 && this.rq > this.ak);
     }
-}
-
-function testHandShake () {
-
-    let w = new HandShake( null, { name: 'hstest'});
-
-    mTick = 0;
-    clg('go', w.rq, w.ak, w.val);
-
-    ++mTick;
-    w.req();
-    clg('rqd', w.rq, w.ak, w.val);
-    w.ack();
-
-    clg('akd', w.rq, w.ak, w.val);
-    //w.ack();
-
-    ++mTick;
-    w.req();
 }
 
