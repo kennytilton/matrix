@@ -37,48 +37,73 @@ function MicroPipe () {
                     name: "Une pipe"
                     , processes: [plus1, squared, negated]})
             },
-            c => [h1({content: cF( c=> "Hello, MicroPipeline! "+ c.md.fmTag('div').tick )})
+            c => [h1({content: cF( c=> "MicroPipeline Simulator")})
+                , img({src: "public/micropipeline.jpg"})
                 , pipeView(c.md.pipe)]);
 }
 
 function pipeView( pipe) {
     return div(
         h2("Pipe " + pipe.name)
-        , feederView( "Feeder", pipe.feeder)
+        , feederView( "Pipe Feeder", pipe.feeder)
         , div( pipe.stages.map( stageView))
-        , feederView( "Out", pipe.out)
+        , feederView( "Pipe Out", pipe.out)
     );
 }
 
 function feederView( label, f) {
     return div(
         h3(label),
-        rqView(f),
-        payloadView(f),
-        akView(f)
+        div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
+            payloadView(f),
+            raImg(f, rqSignal),
+            raImg(f, akSignal))
     );
 }
 
-function rqView(hs) {
-    return div(
-        span("Req")
-        , span({content: cF( c=> hs.rq)}));
+function rqSignal( c, hs) {
+    let r = hs.rq;
+    if (r) {
+        return (c.pv==='up')? 'down':'up';
+    } else {
+        return 'zz';
+    }
 }
 
-function akView(hs) {
-    return div(
-        span("Ack"),
-        span({content: cF( c=> hs.ak)}));
+function akSignal( c, hs) {
+    let r = hs.ak;
+    if (r) {
+        return (c.pv==='up')? 'down':'up';
+    } else {
+        return 'zz';
+    }
 }
+
+function tnImgFormula(c) {
+    return "public/" + (c.md.signal === 'up'? "tnRise":
+        (c.md.signal === 'zz'? "tnNull":"tnFall")) + ".jpg";
+}
+
+function raImg(hs, signalFn) {
+    return div({style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
+        span(signalFn===akSignal?"A:":"R:")
+        , img({src: cF( c=> tnImgFormula(c))
+                , style: "min-width:100px"}
+            , {signal: cF( c=> signalFn( c, hs))}));
+}
+
 
 function payloadView( hs) {
     return div(
             span("Data"),
-            span({content: cF( c=> hs.payload)}));
+            span({class: "payload", content: cF( c=> hs.payload)}));
 }
 
 function stageView( stage) {
-    return h3( "Stage " + stage.name);
+    return div( {style: "display:flex;flex-direction:row;margin:8px"}
+            , b( "Stage " + stage.name)
+            , feederView( "Feeder", stage.feeder)
+            , feederView( "Out", stage.out));
 }
 
 window['MicroPipe'] = MicroPipe;

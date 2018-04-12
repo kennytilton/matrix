@@ -3,3 +3,7 @@
 /* this trick prevents jumping as vert scroll bar comes and goes */
 
 html { margin-left: calc(100vw - 100%); }
+
+.rqak { margin: 4px}
+
+.payload { margin: 4px}

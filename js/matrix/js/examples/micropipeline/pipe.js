@@ -36,9 +36,11 @@ class Pipe extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     tick () {
-        this.fsmIn.tick();
-        this.stages.map( s => s.tick());
         this.fsmOut.tick();
+        for (let sn = this.stages.length-1; sn >= 0; --sn) {
+            this.stages[sn].tick();
+        }
+        this.fsmIn.tick();
     }
     feed( data) {
         if ( this.feeder.unackd()) {
@@ -66,15 +68,22 @@ class Pipe extends Model {
 // test that pipe does not accept new data until old out of the way
 
 function pipeInHandler( pipe, is) {
+    clg('pipeinhandler!!!!', mTick);
     if (is === 'init') {
         if ( pipe.feeder.reqd()) {
             clg('pipein> fed!', pipe.feeder.payload);
             pipe.dIn = pipe.feeder.payload;
-            pipe.feeder.ack();
-            return 'process';
+            return 'ack';
         }
-    } else if (is === 'process') {
+    } else if (is==='ack') {
+        clg('pih!!!!!!!!acking', mTick);
+        pipe.feeder.ack();
+        return 'process';
+
+    } if (is === 'process') {
         pipe.stgIn.payload = pipe.dIn;
+        return 'reqstage';
+    } if (is === 'reqstage') {
         pipe.stgIn.req();
         //clg('pipein> staged', pipe.dIn);
         return 'getack';

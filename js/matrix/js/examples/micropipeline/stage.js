@@ -18,26 +18,23 @@ class Stage extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     tick () {
-        this.fsmIn.tick();
         this.fsmOut.tick();
+        this.fsmIn.tick();
     }
 }
 
 function stageInHandler( stage, is) {
-    ast( stage.feeder);
     if (is === 'init') {
         if ( stage.feeder.reqd()) {
             stage.dIn = stage.feeder.payload;
-            // clg('stage-in> fed!', stage.name, stage.dIn);
             stage.feeder.ack();
             return 'process';
         }
     } else if (is === 'process') {
         if ( stage.out.unackd()) {
-            clg('stagein> waiting for outAck', stage.name);
+            //clg('stagein> waiting for outAck', stage.name);
         } else {
             stage.out.payload = stage.process(stage.dIn);
-            clg('stage-in> computed!', stage.name, stage.out.payload);
             return 'relay';
         }
     } else if (is === 'relay') {
