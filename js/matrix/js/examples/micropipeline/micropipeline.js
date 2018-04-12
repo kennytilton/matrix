@@ -3,28 +3,33 @@ function pipeTest () {
     cellsReset();
     mTick=0;
 
-    let pipe = new Pipe( null, {
+    let vals = [42, 3, 17]
+        , pipe = new Pipe( null, {
                 name: "topipe"
-                , processes: [plus1]})
+                , processes: [plus1, squared, negated]})
         , piperIn = new FSM( 'piperIn', null, function(ctx, is) {
             //clg('piper FSM state/mtick at entry', is, mTick);
             if ( is === 'init') {
-                clg('DRIVER> feeding pipe', 0);
-                pipe.feed(0);
+                let v = vals.pop();
+                if ( v===undefined) {
+                    return 'fini';
+                }
+                pipe.feed( v );
                 clg('piperIN> fed pipe', pipe.feeder.payload);
                 return 'getack';
             } else if (is === 'getack') {
                 if ( pipe.feeder.ackd()) {
-                    clg('DRIVER> got pipe ack');
-                    return 'fini';
+                    //clg('DRIVER> got pipe ack');
+                    return 'init';
                 }
             }
         })
         , piperOut = new FSM( 'piperOut', null, function(ctx, is) {
             if (is === 'init') {
                 if ( pipe.out.unackd()) {
-                    clg('DRIVER> got result', pipe.out.payload);
-                    return 'fini';
+                    clg('DRIVER> RESULT!!!', pipe.out.payload);
+                    pipe.out.ack();
+                    return 'init';
                 }
             }
         });
@@ -34,17 +39,17 @@ function pipeTest () {
         piperIn.tick()
         pipe.tick();
         piperOut.tick();
-        if ( tick < 5 && piperOut.state != 'fini') {
-            //clg('DRIVER not fini', mTick);
-            setTimeout( driver, 500, tick+1)
-        } else if (piperOut.state === 'fini') {
-            clg('BAM! result', pipe.out.payload);
+        if ( tick > 20 ) { //|| (piperIn.state === 'fini' && pipe.out.ak > pipe.feeder.ak)) {
+            clg('BAM! result', tick, pipe.out.payload);
+        } else {
+            // clg('DRIVER not fini', tick, piperIn.state, piperOut.state);
+            setTimeout( driver, 500, tick+1);
         }
 
     };
     driver(1);
 
-    clg('fini?', piperOut.state);
+    //clg('fini?', piperOut.state==='fini');
 }
 
 pipeTest();

@@ -41,6 +41,8 @@ class Pipe extends Model {
         this.fsmOut.tick();
     }
     feed( data) {
+        clg('DRIVER> feeding pipe', data);
+
         this.feeder.payload = data;
         this.feeder.req();
         return data;
@@ -61,12 +63,12 @@ function pipeInHandler( pipe, is) {
     } else if (is === 'process') {
         pipe.stgIn.payload = pipe.dIn;
         pipe.stgIn.req();
-        clg('pipein> staged', pipe.dIn);
+        //clg('pipein> staged', pipe.dIn);
         return 'getack';
 
     } else if (is === 'getack') {
         if ( pipe.stgIn.ackd()) {
-            clg('pipein> ackd', pipe.dIn);
+            //clg('pipein> ackd', pipe.dIn);
             return 'init';
         }
     }

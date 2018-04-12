@@ -138,13 +138,13 @@ class StageLight extends Model {
 
         this.relayOut = 0;
 
-        //this.fsmOut = new FSM( 'stageout', this, stageLightOutHandler );
+        this.fsmOut = new FSM( 'stageout', this, stageLightOutHandler );
 
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     tick () {
         this.fsmIn.tick();
-        //this.fsmOut.tick();
+        this.fsmOut.tick();
     }
 }
 
@@ -152,38 +152,39 @@ function stageLightInHandler( stage, is) {
     ast( stage.feeder);
     if (is === 'init') {
         if ( stage.feeder.reqd()) {
+            // todo here and elsewhere allow falsey data thru pipeline
             ast( stage.feeder.payload !== null, 'stage req sees no payload', stage.name);
             stage.dIn = stage.feeder.payload;
-            clg('stage-in> fed!', stage.name, stage.dIn);
+            // clg('stage-in> fed!', stage.name, stage.dIn);
             stage.feeder.ack();
             return 'process';
         }
     } else if (is === 'process') {
-        if ( !stage.out.unackd()) {
+        if ( stage.out.unackd()) {
+            clg('stagein> waiting for outAck', stage.name);
+        } else {
             stage.out.payload = stage.process(stage.dIn);
             clg('stage-in> computed!', stage.name, stage.out.payload);
             return 'relay';
-        } clg('stagein> waiting our outAck');
-
+        }
     } else if (is === 'relay') {
         stage.out.req();
         return 'init';
     }
 }
 
-// function stageLightOutHandler( stage, is) {
-//
-//     if ( stage.out.unackd()) {
-//             clg('stage-out> relaying', stage.payload);
-//             stage.out.req();
-//             return 'getack';
-//         }
-//     } else if ( is === 'getack') {
-//         if ( stage.out.ackd() ) {
-//             return 'init';
-//         }
-//     }
-// }
+function stageLightOutHandler( stage, is) {
+    if ( is==='init') {
+        if (stage.out.unackd()) {
+            return 'getack';
+        }
+    } else if ( is === 'getack') {
+        if ( stage.out.ackd() ) {
+            return 'init';
+        }
+    }
+}
+
 
 function testStageLight () {
     cellsReset();
