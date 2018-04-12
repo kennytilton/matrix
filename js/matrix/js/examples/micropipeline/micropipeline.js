@@ -30,16 +30,55 @@ document.onkeydown = function(evt) {
 };
 
 function MicroPipe () {
-    return [
-        div({ id: 'app'},
+    return div({ id: 'app'},
             {
                 tick: cI( mTick)
                 , pipe: new Pipe( null, {
-                    name: name
+                    name: "Une pipe"
                     , processes: [plus1, squared, negated]})
             },
-            h1({content: cF( c=> "Hello, MicroPipeline! "+ c.md.fmTag('div').tick )}))];
+            c => [h1({content: cF( c=> "Hello, MicroPipeline! "+ c.md.fmTag('div').tick )})
+                , pipeView(c.md.pipe)]);
+}
 
+function pipeView( pipe) {
+    return div(
+        h2("Pipe " + pipe.name)
+        , feederView( "Feeder", pipe.feeder)
+        , div( pipe.stages.map( stageView))
+        , feederView( "Out", pipe.out)
+    );
+}
+
+function feederView( label, f) {
+    return div(
+        h3(label),
+        rqView(f),
+        payloadView(f),
+        akView(f)
+    );
+}
+
+function rqView(hs) {
+    return div(
+        span("Req")
+        , span({content: cF( c=> hs.rq)}));
+}
+
+function akView(hs) {
+    return div(
+        span("Ack"),
+        span({content: cF( c=> hs.ak)}));
+}
+
+function payloadView( hs) {
+    return div(
+            span("Data"),
+            span({content: cF( c=> hs.payload)}));
+}
+
+function stageView( stage) {
+    return h3( "Stage " + stage.name);
 }
 
 window['MicroPipe'] = MicroPipe;
