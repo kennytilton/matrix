@@ -41,11 +41,25 @@ class Pipe extends Model {
         this.fsmOut.tick();
     }
     feed( data) {
-        clg('DRIVER> feeding pipe', data);
-
-        this.feeder.payload = data;
-        this.feeder.req();
-        return data;
+        if ( this.feeder.unackd()) {
+            clg("DRIVER> Backpressure!", data);
+            return undefined;
+        } else {
+            clg('DRIVER> feeding pipe', data);
+            this.feeder.payload = data;
+            this.feeder.req();
+            return data;
+        }
+    }
+    take() {
+        if (this.out.unackd()) {
+            let result = this.out.payload;
+            clg('DRIVER> RESULT!!!', result);
+            this.out.ack();
+            return result;
+        } else {
+            return undefined;
+        }
     }
 }
 

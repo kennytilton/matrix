@@ -9,11 +9,7 @@ class FSM {
         let newv = this.handler( this.ctx, this.state);
         if (newv) {
             this.state = newv;
-        } else {
-            // clg('fsm state unchanged', this.id, this.state);
         }
-        //clg('tick!', mTick, this.id, this.state, newv);
-
     }
 }
 
@@ -56,7 +52,7 @@ class HandShake extends Model {
         return ( this.rq > this.ak);
     }
     ack () {
-        ast( this.rq > this.ak, "%s cannot be acked unless shaken r=%d, a=%d"
+        ast( this.rq > this.ak, "%s cannot be acked unless reqd r=%d, a=%d"
             , this.name, this.rq, this.ak);
         this.ak = this.rq;
     }
