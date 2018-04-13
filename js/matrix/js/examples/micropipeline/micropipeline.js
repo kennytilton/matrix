@@ -117,20 +117,23 @@ function payloadView( hs) {
 
 function stageView( stage, stageN) {
     return div( {style: "display:flex;flex-direction:column;margin:8px"}
-        , ( stageN>-201? feederView( "Feeder", stage.feeder, stageN):null)
+        , ( stageN===1? feederView( "Feeder", stage.feeder, stageN):null)
         , div( {style: "display:flex;flex-direction:row;margin:8px"}
-            , b({style: "margin-right:9px"}, stage.name)
+            , b({style: "margin-right:9px"}, "logic")
             , code( stage.process.toString().replace("function ", "")))
         , feederView( "Out", stage.out, stageN+1));
 }
 
 function feederView( label, f, stageN) {
-    return div(
+    return ( stageN % 2 === 1 )?
         div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
             raImg(f, rqSignal, stageN),
             payloadView(f),
             raImg(f, akSignal, stageN))
-    );
+        : div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
+            raImg(f, akSignal, stageN),
+            payloadView(f),
+            raImg(f, rqSignal, stageN));
 }
 
 function rqSignal( c, hs) {
