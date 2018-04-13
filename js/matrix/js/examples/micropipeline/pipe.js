@@ -13,7 +13,7 @@ class Pipe extends Model {
         this.feeder = new HandShake( null, { name: "pipeFeeder"});
         this.fsmIn = new FSM( 'pipein', this, pipeInHandler );
 
-        let stageN = 0
+        let stageN = 1
             , lastOut = this.stgIn = new HandShake( null, { name: "pipeStgIn"});
 
         this.stages = this.processes.map( proc => {
@@ -36,11 +36,14 @@ class Pipe extends Model {
         withIntegrity(qAwaken, this, x => this.awaken());
     }
     tick () {
-        this.fsmOut.tick();
-        for (let sn = this.stages.length-1; sn >= 0; --sn) {
-            this.stages[sn].tick();
-        }
+        // this.fsmOut.tick();
+        // for (let sn = this.stages.length-1; sn >= 0; --sn) {
+        //     this.stages[sn].tick();
+        // }
+        // this.fsmIn.tick();
         this.fsmIn.tick();
+        this.stages.map( s=> s.tick());
+        this.fsmOut.tick();
     }
     feed( data) {
         if ( this.feeder.unackd()) {
@@ -68,30 +71,34 @@ class Pipe extends Model {
 // test that pipe does not accept new data until old out of the way
 
 function pipeInHandler( pipe, is) {
+    let fdr = pipe.feeder
+        , stg = pipe.stgIn;
+
     if (is === 'init') {
-        if ( pipe.feeder.reqd()) {
-            clg('pipein> sees req!', pipe.feeder.payload);
-            pipe.dIn = pipe.feeder.payload;
-            return 'ack';
+        if ( fdr.reqd()) {
+            clg('pipein> sees req!', fdr.rq, mTick, 'data', fdr.payload);
+            return 'feedstage1';
         }
-    } else if (is==='ack') {
-        // clg('pipein> acking', mTick);
-        pipe.feeder.ack();
-        return 'process';
 
-    } if (is === 'process') {
-        pipe.stgIn.payload = pipe.dIn;
-        return 'reqstage';
-    } if (is === 'reqstage') {
-        pipe.stgIn.req();
-        //clg('pipein> staged', pipe.dIn);
-        return 'getack';
+    } if (is === 'feedstage1') {
+        clg('pipein> stage 1 loading', fdr.payload);
+        stg.payload = fdr.payload;
+        return 'reqstage1';
 
-    } else if (is === 'getack') {
-        if ( pipe.stgIn.ackd()) {
-            //clg('pipein> ackd', pipe.dIn);
-            return 'init';
+    } if (is === 'reqstage1') {
+        stg.req();
+        clg('pipein> stage 1 reqd', pipe.dIn);
+        return 'getackstage1';
+
+    } else if (is === 'getackstage1') {
+        if ( stg.ackd()) {
+            clg('pipein> stage 1 ackd', pipe.dIn);
+            return 'ackpipefeed';
         }
+    } else if (is==='ackpipefeed') {
+        clg('pipein> acking', mTick);
+        fdr.ack();
+        return 'init';
     }
 }
 

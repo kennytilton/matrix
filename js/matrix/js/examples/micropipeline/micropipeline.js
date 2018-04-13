@@ -38,10 +38,9 @@ function MicroPipe () {
                     , processes: [plus1, squared, negated]})
 
                 , piperIn: cF1( c=> new FSM( 'piperIn', c.md, function( app, is) {
+                    clg('piper state', is);
                     let feeder = app.pipe.feeder;
                     if ( is === 'init') {
-                        return 'checkpayload';
-                    } else if (is === 'checkpayload') {
                         let i = c.md.inputs.pop();
 
                         if (!i) {
@@ -49,19 +48,21 @@ function MicroPipe () {
                         } else {
                             clg('payload!!!!!=', i, !i);
                             feeder.payload = i;
-                            return 'inject';
+                            return 'reqpipe';
                         }
-                    } else if (is==='inject') {
+                    } else if (is==='reqpipe') {
                         if (!feeder.rq || feeder.ackd()) {
-                            clg('piperIn> injects pipe', mTick);
+                            clg('piperIn> reqs pipe', mTick);
                             feeder.req();
-                            return 'getack';
+                            return 'getpipeack';
                         }
-                    } else if (is === 'getack') {
+                    } else if (is === 'getpipeack') {
                         if ( feeder.ackd()) {
                             clg('DRIVER> got pipe ack');
-                            return 'checkpayload';
+                            return 'init';
                         }
+                    } else if (is === 'fini') {
+                        clg("Pipe nomas input");
                     }
                 }))
 
@@ -116,8 +117,10 @@ function payloadView( hs) {
 
 function stageView( stage, stageN) {
     return div( {style: "display:flex;flex-direction:column;margin:8px"}
-        , ( stageN===1? feederView( "Feeder", stage.feeder, stageN):null)
-        , b( "Stage " + stage.name)
+        , ( stageN>-201? feederView( "Feeder", stage.feeder, stageN):null)
+        , div( {style: "display:flex;flex-direction:row;margin:8px"}
+            , b({style: "margin-right:9px"}, stage.name)
+            , code( stage.process.toString().replace("function ", "")))
         , feederView( "Out", stage.out, stageN+1));
 }
 

@@ -25,11 +25,13 @@ class Stage extends Model {
 
 function stageInHandler( stage, is) {
     if (is === 'init') {
-        if ( stage.feeder.reqd()) {
+        if (stage.feeder.reqd()) {
             stage.dIn = stage.feeder.payload;
-            stage.feeder.ack();
-            return 'process';
+            return 'ack';
         }
+    } else if (is=== 'ack') {
+        stage.feeder.ack();
+        return 'process';
     } else if (is === 'process') {
         if ( stage.out.unackd()) {
             //clg('stagein> waiting for outAck', stage.name);
