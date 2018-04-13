@@ -36,17 +36,15 @@ function pipeTest () {
 
     let driver = function (tick) {
         clg('DRIVER TICK', mTick = tick);
-        piperIn.tick()
+        piperIn.tick();
         pipe.tick();
         piperOut.tick();
         if ( tick < 20 ) { //|| (piperIn.state === 'fini' && pipe.out.ak > pipe.feeder.ak)) {
             setTimeout( driver, 500, tick+1);
         }
-
     };
     driver(1);
 
-    //clg('fini?', piperOut.state==='fini');
 }
 
 // pipeTest();
@@ -63,3 +61,40 @@ function squared (x) {
 function negated (x) {
     return -x;
 }
+
+function pipeTestIII ( ) {
+    cellsReset();
+    mTick = 0;
+    let pipe = new Pipe( null, {
+        name: name
+        , processes: [plus1, squared, negated]});
+
+    ++mTick;
+    clg('sbok', pipe.feed(42));
+
+    let f7 = true;
+
+    for (let x = 0; ++x < 30; ) {
+        if (f7) {
+            let f = pipe.feed(7);
+
+            if (f === undefined) {
+                clg('tester sees backp!!!!!!!!!!!!!');
+            } else {
+                f7 = false;
+                clg("tester second feed ok", f);
+            }
+        }
+        ++mTick;
+        pipe.tick();
+
+        let r = pipe.take();
+        if ( r !== undefined) {
+            clg('bam', r);
+        }
+    }
+
+}
+
+// pipeTestIII();
+

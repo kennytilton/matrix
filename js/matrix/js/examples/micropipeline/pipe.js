@@ -68,15 +68,14 @@ class Pipe extends Model {
 // test that pipe does not accept new data until old out of the way
 
 function pipeInHandler( pipe, is) {
-    clg('pipeinhandler!!!!', mTick);
     if (is === 'init') {
         if ( pipe.feeder.reqd()) {
-            clg('pipein> fed!', pipe.feeder.payload);
+            clg('pipein> sees req!', pipe.feeder.payload);
             pipe.dIn = pipe.feeder.payload;
             return 'ack';
         }
     } else if (is==='ack') {
-        clg('pih!!!!!!!!acking', mTick);
+        // clg('pipein> acking', mTick);
         pipe.feeder.ack();
         return 'process';
 

@@ -33,6 +33,38 @@
     <script src="js/examples/micropipeline/tester.js"></script>
     <script src="js/examples/micropipeline/micropipeline.js"></script>
 
+    <STYLE type="text/css">
+        .bouncer {text-align: center;
+            animation-duration: 2s;
+            animation-name: bounceIn;}
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.1);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        @keyframes fazeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .fazer {
+            animation-duration: 2s;
+            animation-name: fazeIn;
+            animation-fill-mode: forwards;
+        }
+    </STYLE>
+
 </head>
 <body style="padding:24px">
     <h1>Script failed to load.</h1>
