@@ -91,17 +91,17 @@ function MicroPipe () {
 
 function pipeView( pipe) {
     let stageN = 1;
-    return div(
-        h2("Pipe " + pipe.name)
+    return div( {style: "padding:9px; border-width:1x; border-style:solid; border-color:black"}
+        , h2("Pipe")
         , div( c=> c.md.par.fmTag('div').inputs.map( i=> span(" v"+i)))
         , piperView( "Pipe Feeder", pipe.feeder, -1)
-        , div( pipe.stages.map( s=> stageView(s, stageN++)))
+        , div( {style: "padding:9px; border-width:1x; border-style:dotted; border-color:gray"}
+            , pipe.stages.map( s=> stageView(s, stageN++)))
         , piperView( "Pipe Out", pipe.out, -2)
     );
 }
 function piperView( label, f, stageN) {
     return div(
-        //h3(label),
         div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
             raImg(f, rqSignal, stageN),
             payloadView(f),
@@ -123,7 +123,6 @@ function stageView( stage, stageN) {
 
 function feederView( label, f, stageN) {
     return div(
-        //h3(label),
         div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
             raImg(f, rqSignal, stageN),
             payloadView(f),
