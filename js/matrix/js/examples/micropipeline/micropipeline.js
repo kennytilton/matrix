@@ -42,48 +42,57 @@ function MicroPipe () {
                 , backlog: cI( null)
                 , pipe: new Pipe( null, {
                     processes: [plus1, squared, negated]})
+                , results: cI([42,17])
 
                 , runTicks() {
                     this.piperIn.tick();
                     this.pipe.tick();
                     this.piperOut.tick();
                 }
+
                 , piperIn: cF(c=> new FSM( 'piperIn', c.md, function(ctx, is) {
-                    clg('this', this);
-                    clg('ctx', ctx, c.md===ctx);
                     let feeder = ctx.pipe.stgIn.feeder;
                     if ( is === 'init') {
                         if ( feeder.data ) {
                             if (feeder.unreqd()) {
-                                clg('feeder unreqd!', feeder.data.t)
-                                if ( !feeder.unackd()) {
-                                    clg('req!!!!!!');
+                                if ( feeder.unackd()) {
+                                    return 'getack';
+                                } else {
                                     feeder.req();
-                                } // else wait on ack
-                            } // else wait on data
-                        }
-                        return 'getack';
+                                }
+                            } // else wait on data being reqd
+                        } // else wait on data
+
                     } else if (is === 'getack') {
                         if ( feeder.ackd()) {
                             return 'init';
                         }
                     }
                 }))
+
                 , piperOut: cF( c=> new FSM( 'piperOut', c.md, function(ctx, is) {
                     out = ctx.pipe.stgOut.out;
                     if (is === 'init') {
                         if ( out.unackd()) {
-                            clg('DRIVER> RESULT!!!', out.data);
+
+                            clg('DRIVER> RESULT!!!', out.data, ctx.results);
                             out.ack();
+                            let newr = ctx.results.slice();
+                            newr.push( out.data.d);
+                            ctx.results = newr;
+                            clg('DRIVER> RESULT!!!', out.data, newr.results);
+
+
                             return 'init';
                         }
                     }
                 }))
             },
-            c => [h1({content: cF( c=> "MicroPipeline Simulator: " +
-                                 c.md.fmUp('div').tick)})
-
-                , pipeView(c.md.pipe)]);
+            c => { let app = c.md;
+                    clg('app bam', app.results);
+                    return [h1({content: cF( c=> "MicroPipeline Simulator: " + app.tick)})
+                            , pipeView(c.md.pipe)
+                            , div( c.md.results.map( r=>span( " R"+r)))]});
 }
 
 function pipeView( pipe) {
