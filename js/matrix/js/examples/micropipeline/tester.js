@@ -15,10 +15,10 @@ function pipeTest () {
                 return 'fini';
             }
             pipe.feed( v );
-            clg('piperIN> fed pipe', pipe.feeder.payload);
+            clg('piperIN> fed pipe', v);
             return 'getack';
         } else if (is === 'getack') {
-            if ( pipe.feeder.ackd()) {
+            if ( pipe.stgIn.feeder.ackd()) {
                 //clg('DRIVER> got pipe ack');
                 return 'init';
             }
@@ -26,8 +26,8 @@ function pipeTest () {
     })
         , piperOut = new FSM( 'piperOut', null, function(ctx, is) {
         if (is === 'init') {
-            if ( pipe.out.unackd()) {
-                clg('DRIVER> RESULT!!!', pipe.out.payload);
+            if ( pipe.stgOut.out.unackd()) {
+                clg('DRIVER> RESULT!!!', pipe.out.data);
                 pipe.out.ack();
                 return 'init';
             }
@@ -98,3 +98,31 @@ function pipeTestIII ( ) {
 
 // pipeTestIII();
 
+function blockEvent (mx, e) {
+    if (cmdKeys.indexOf(e.key)===-1) {
+        clg('blocking '+e.keyCode);
+        e.stopPropagation();
+    }
+}
+
+function loadPipe (mx, e) {
+    if (e.key !== 'Enter') return;
+
+    appdiv.backlog = toIntegers( e.target.value);
+    clg('vals', appdiv.backlog);
+
+    // e.target.value = null;
+}
+
+function toIntegers (s) {
+    return s.replace(/,/g," ")
+        .split(" ")
+        .filter( v=> v.length > 0)
+        .map( toInt)
+        .filter( v=> !!v);
+}
+
+function toInt (s) {
+    let i = parseInt( s);
+    return isNaN(i)? null : i;
+}

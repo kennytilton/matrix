@@ -16,7 +16,7 @@ class FSM {
 
 // --- Handshaking -----------------------------------------------------------
 
-class HandShake extends Model {
+class Bundle extends Model {
     constructor( owner, islots = {}) {
 
         super( owner, islots.name || "anonShake",
@@ -24,7 +24,7 @@ class HandShake extends Model {
                 {
                     rq: cI(0),
                     ak: cI(0),
-                    payload: cI(null),
+                    data: cI(null),
                     val: cF( c=> {
                         if (c.md.rq === 0) {
                             return 'idle';
@@ -51,6 +51,9 @@ class HandShake extends Model {
     reqd () {
         return ( this.rq > this.ak);
     }
+    unreqd () {
+        return ( this.data && ( this.rq <= this.data.t));
+    }
     ack () {
         ast( this.rq > this.ak, "%s cannot be acked unless reqd r=%d, a=%d"
             , this.name, this.rq, this.ak);
@@ -60,7 +63,7 @@ class HandShake extends Model {
         return( this.ak > 0 && this.ak === this.rq );
     }
     unackd () {
-        return( this.rq > 0 && this.rq > this.ak);
+        return( this.rq > this.ak);
     }
 }
 

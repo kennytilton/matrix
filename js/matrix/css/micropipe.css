@@ -35,3 +35,63 @@
 .rqak { margin: 4px}
 
 .payload { margin: 4px}
+
+.logicbox {
+    /*display: flex;*/
+    /*background: yellow;*/
+    margin-top: 12px;
+    /*margin-bottom: 18px;*/
+    display: inline-block;
+    text-align: center;
+}
+
+.pipe {
+    padding:9px;
+    /*background: pink;*/
+    border-width:1px;
+    border-style:dotted;
+    border-color:gray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.bundle {
+    /*background: cyan;*/
+    width: fit-content;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: row;
+    /*text-align: center;*/
+}
+
+/*.bundle {*/
+    /*width: fit-content;*/
+    /*display: flex;*/
+    /*flex-direction: row;*/
+    /*margin: 8px;*/
+    /*align-items: center;*/
+/*}*/
+.regsubbox {
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+.logic {
+    width: fit-content;
+    /*margin: 8px;*/
+    /*margin-top: 18px;*/
+    padding: 5px;
+    border: 2px solid cyan;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+
+}
+
+.data {
+    margin-left: 6px;
+    font-size: 2em;
+    font-family: 'Bodoni 72';
+}

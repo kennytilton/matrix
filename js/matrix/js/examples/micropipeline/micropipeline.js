@@ -1,139 +1,147 @@
 var mTick = 0;
 
-function tickBump (e) {
-    clg('bump', e.key, mx.tag);
+var appdiv = null;
 
-    // let title = e.target.value.trim();
-    //
-    // e.target.value = null;
-}
-document.onkeydown = function(evt) {
-    evt = evt || window.event;
+var dataTicks = [];
+
+document.onkeydown = function(e) {
+    e = e || window.event;
+    clg('dockeydown:',e.key+'-'+e.keyCode);
     let app = dom2mx( document.getElementById('app'));
-    app.tick = ++mTick;
 
-    if (!isNaN( parseInt( evt.key))) {
-        let fn = parseInt( evt.key);
-        let f = app.pipe.feeder.payload = fn;
-        if (f === fn) {
-            clg('fed', fn);
-        } else {
-            alert('Unable to pipe '+ fn + ' due to backpressure.');
+
+    let data = parseInt( e.key);
+
+    if (isNaN( data)) {
+        if (e.key=='t') {
+            let r = app.pipe.take();
+            clg('take took', r === undefined ? 'UDF' : r)
+        } else if (e.key==='ArrowRight') {
+            app.tick = ++mTick;
+            app.runTicks();
         }
-    } else if (evt.key=='t') {
-        let r = app.pipe.take();
-        clg('take took', r===undefined? 'UDF':r)
-    }
-    app.runTicks();
+    } else {
+        let feeder = app.pipe.stgIn.feeder;
 
+        if (feeder.unreqd() || feeder.unackd()) {
+            alert('Unable to pipe '+ data + ' due to backpressure.');
+        } else {
+            app.tick = ++mTick;
+            dataTicks.push( app.tick);
+            clg('dataticks', dataTicks);
+            feeder.data = {t: app.tick, d: data};
+        }
+    }
 };
+
 
 function MicroPipe () {
     return div({ id: 'app'},
             {
                 tick: cI( mTick)
-                , inputs: cI([7,42,3])
+                , backlog: cI( null)
                 , pipe: new Pipe( null, {
-                    name: "Une pipe"
-                    , processes: [plus1, squared, negated]})
+                    processes: [plus1, squared, negated]})
 
-                , piperIn: cF1( c=> new FSM( 'piperIn', c.md, function( app, is) {
-                    clg('piper state', is);
-                    let feeder = app.pipe.feeder;
+                , runTicks() {
+                    this.piperIn.tick();
+                    this.pipe.tick();
+                    this.piperOut.tick();
+                }
+                , piperIn: cF(c=> new FSM( 'piperIn', c.md, function(ctx, is) {
+                    clg('this', this);
+                    clg('ctx', ctx, c.md===ctx);
+                    let feeder = ctx.pipe.stgIn.feeder;
                     if ( is === 'init') {
-                        let i = c.md.inputs.pop();
-
-                        if (!i) {
-                            return 'fini';
-                        } else {
-                            clg('payload!!!!!=', i, !i);
-                            feeder.payload = i;
-                            return 'reqpipe';
+                        if ( feeder.data ) {
+                            if (feeder.unreqd()) {
+                                clg('feeder unreqd!', feeder.data.t)
+                                if ( !feeder.unackd()) {
+                                    clg('req!!!!!!');
+                                    feeder.req();
+                                } // else wait on ack
+                            } // else wait on data
                         }
-                    } else if (is==='reqpipe') {
-                        if (!feeder.rq || feeder.ackd()) {
-                            clg('piperIn> reqs pipe', mTick);
-                            feeder.req();
-                            return 'getpipeack';
-                        }
-                    } else if (is === 'getpipeack') {
+                        return 'getack';
+                    } else if (is === 'getack') {
                         if ( feeder.ackd()) {
-                            clg('DRIVER> got pipe ack');
                             return 'init';
                         }
-                    } else if (is === 'fini') {
-                        clg("Pipe nomas input");
                     }
                 }))
-
-                , piperOut: cF1( c=> new FSM( 'piperOut', c.md, function( app, is) {
-                    let out = app.pipe.out;
+                , piperOut: cF( c=> new FSM( 'piperOut', c.md, function(ctx, is) {
+                    out = ctx.pipe.stgOut.out;
                     if (is === 'init') {
                         if ( out.unackd()) {
-                            clg('DRIVER> RESULT!!!', out.payload);
+                            clg('DRIVER> RESULT!!!', out.data);
                             out.ack();
                             return 'init';
                         }
                     }
                 }))
-
-                , runTicks() {
-                    this.piperOut.tick();
-                    this.pipe.tick();
-                    this.piperIn.tick();
-
-                }
             },
             c => [h1({content: cF( c=> "MicroPipeline Simulator: " +
                                  c.md.fmUp('div').tick)})
-                //, img({src: "public/micropipeline.jpg"})
+
                 , pipeView(c.md.pipe)]);
 }
 
 function pipeView( pipe) {
     let stageN = 1;
-    return div( {style: "padding:9px; border-width:1x; border-style:solid; border-color:black"}
-        , h2("Pipe")
-        , div( c=> c.md.par.fmTag('div').inputs.map( i=> span(" v"+i)))
-        , piperView( "Pipe Feeder", pipe.feeder, -1)
-        , div( {style: "padding:9px; border-width:1x; border-style:dotted; border-color:gray"}
-            , pipe.stages.map( s=> stageView(s, stageN++)))
-        , piperView( "Pipe Out", pipe.out, -2)
-    );
-}
-function piperView( label, f, stageN) {
-    return div(
-        div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
-            raImg(f, rqSignal, stageN),
-            payloadView(f),
-            raImg(f, akSignal, stageN))
-    );
-}
-function payloadView( hs) {
-    return div(
-            b("REG"),
-            div( c=> span({class: "payload bouncer", content: hs.payload})));
+    return div( { class: "pipe"}
+            , pipe.stages.map( s=> stageView(s, stageN++)));
 }
 
 function stageView( stage, stageN) {
     return div( {style: "display:flex;flex-direction:column;margin:8px"}
         , ( stageN===1? feederView( "Feeder", stage.feeder, stageN):null)
-        , div( {style: "display:flex;flex-direction:row;margin:8px"}
+        , div( { class: "logicbox"}
+            , b({style: "margin-right:9px"}, "register")
+            , div( {class:"logic regsubbox", hidden: cF( c=> stage.data===null)}
+                    , c=> (stage.data? span( {class: "bouncer data"
+                                            , style: dataStyle(stage.data)
+                                            , content: stage.data.d}) : null)))
+        , div( {class: "logicbox"}
             , b({style: "margin-right:9px"}, "logic")
-            , code( stage.process.toString().replace("function ", "")))
+            , code( {class: "logic"}, stage.process.toString().replace("function ", "")))
         , feederView( "Out", stage.out, stageN+1));
 }
 
 function feederView( label, f, stageN) {
     return ( stageN % 2 === 1 )?
-        div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
+        div( {class: "bundle"},
             raImg(f, rqSignal, stageN),
-            payloadView(f),
+            payloadView(f, stageN),
             raImg(f, akSignal, stageN))
         : div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
             raImg(f, akSignal, stageN),
-            payloadView(f),
+            payloadView(f, stageN),
             raImg(f, rqSignal, stageN));
+}
+
+function raImg(hs, signalFn, stageN) {
+    return div({style: "display:flex;flex-direction:row;margin:8px;align-items:center;"},
+        span( {style: cF( c=> dataStyle(hs.data,'ramig'))
+            }
+            , (signalFn===akSignal?"A":"R")
+                + inParens(stageN > 0 ? stageN : ["","In","Out"][-stageN]))
+        , img({ src: cF( c=> tnImgFormula(c))}
+            , {signal: cF( c=> signalFn( c, hs))}));
+}
+
+function dataStyle (d, tag) {
+    let ds =  d? "background:" +
+                ['#fdd','#dfd','#ddf','#ffd','#fdf','#dff'][dataTicks.indexOf(d.t) % 6] : "";
+    if (d && tag) clg('dstyle', tag, ds, d.t, d.k, dataTicks.indexOf(d.t));
+    return ds;
+}
+
+function payloadView( hs, stageN) {
+    return div({style: "display:flex;flex-direction:row;margin:8px;align-items:center"}
+            , span("D" + inParens(stageN > 0 ? stageN : ["","In","Out"][-stageN]))
+            , div( c=> span({class: "data bouncer"
+                            , content: hs.data? hs.data.d:''
+                            , style: dataStyle( hs.data)})));
 }
 
 function rqSignal( c, hs) {
@@ -159,12 +167,11 @@ function tnImgFormula(c) {
         (c.md.signal === 'zz'? "tnNull":"tnFall")) + ".jpg";
 }
 
-function raImg(hs, signalFn, stageN) {
-    return div({style: "display:flex;flex-direction:row;margin:8px;align-items:center"},
-        span((signalFn===akSignal?"A":"R")+"("+
-            (stageN > 0 ? stageN : ["","In","Out"][-stageN])+")")
-        , img({src: cF( c=> tnImgFormula(c))}
-            , {signal: cF( c=> signalFn( c, hs))}));
-}
+
+
 window['MicroPipe'] = MicroPipe;
+
+function inParens (x) {
+    return "(" + x +")";
+}
 

@@ -4,14 +4,12 @@ class Stage extends Model {
         super( null, islots.name || "anonStage",
             Object.assign(
                 {
-                    dIn: cI( null),
+                    data: cI( null),
                 }, islots), false);
 
         ast(this.feeder && this.out, "feeder or out missing", islots.name);
 
         this.fsmIn = new FSM( 'stagein', this, stageInHandler );
-
-        this.relayOut = 0;
 
         this.fsmOut = new FSM( 'stageout', this, stageOutHandler );
 
@@ -26,17 +24,24 @@ class Stage extends Model {
 function stageInHandler( stage, is) {
     if (is === 'init') {
         if (stage.feeder.reqd()) {
-            stage.dIn = stage.feeder.payload;
+            if (stage.feeder.rq === mTick) {
+                return 'capture';
+            }
+            clg('capturing with', stage.feeder.rq, mTick);
+            stage.data = stage.feeder.data;
             return 'ack';
         }
-    } else if (is=== 'ack') {
+    } else if (is === 'capture') {
+        stage.data = stage.feeder.data;
+        return 'ack';
+    } else if (is === 'ack') {
         stage.feeder.ack();
         return 'process';
     } else if (is === 'process') {
         if ( stage.out.unackd()) {
             //clg('stagein> waiting for outAck', stage.name);
         } else {
-            stage.out.payload = stage.process(stage.dIn);
+            stage.out.data = {t: stage.data.t, d: stage.process(stage.data.d)};
             return 'relay';
         }
     } else if (is === 'relay') {
@@ -56,3 +61,6 @@ function stageOutHandler( stage, is) {
         }
     }
 }
+
+
+
