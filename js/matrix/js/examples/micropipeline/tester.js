@@ -54,6 +54,10 @@ function plus1 (x) {
     return x+1;
 }
 
+function divby3 (x) {
+    return Math.round( x/3);
+}
+
 function squared (x) {
     return x * x;
 }
