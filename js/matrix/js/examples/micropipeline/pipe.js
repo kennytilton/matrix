@@ -24,6 +24,9 @@ class Pipe extends Model {
 
         withIntegrity(qAwaken, this, x => this.awaken());
     }
+    masterClear () {
+        this.stages.map( stg=> stg.masterClear())
+    }
     tick () {
         // for (let sn = this.stages.length-1; sn >= 0; --sn) {
         //     this.stages[sn].tick();

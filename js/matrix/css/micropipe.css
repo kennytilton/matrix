@@ -59,10 +59,10 @@
 
 .bundle {
     /*background: cyan;*/
-    width: fit-content;
+    /*width: fit-content;*/
     margin-top: 12px;
-    display: flex;
-    flex-direction: row;
+    /*display: flex;*/
+    /*flex-direction: row;*/
     /*text-align: center;*/
 }
 

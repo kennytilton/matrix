@@ -40,6 +40,10 @@ class Bundle extends Model {
 
         withIntegrity(qAwaken, this, x => this.awaken());
     }
+    masterClear() {
+        this.rq=this.ak=0;
+        this.data=null;
+    }
     req () {
         ast( this.ak === this.rq, "%s cannot be toggled when idle r=%d, a=%d"
             , this.name, this.rq, this.ak);

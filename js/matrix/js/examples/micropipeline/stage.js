@@ -19,6 +19,11 @@ class Stage extends Model {
         this.fsmOut.tick();
         this.fsmIn.tick();
     }
+    masterClear () {
+        this.data = null;
+        this.feeder.masterClear();
+        this.out.masterClear();
+    }
 }
 
 function stageInHandler( stage, is) {
@@ -27,7 +32,7 @@ function stageInHandler( stage, is) {
             if (stage.feeder.rq === mTick) {
                 return 'capture';
             }
-            clg('capturing with', stage.feeder.rq, mTick);
+            // clg('capturing with', stage.feeder.rq, mTick);
             stage.data = stage.feeder.data;
             return 'ack';
         }
