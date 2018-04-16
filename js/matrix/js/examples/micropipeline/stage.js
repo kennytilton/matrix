@@ -23,6 +23,8 @@ class Stage extends Model {
         this.data = null;
         this.feeder.masterClear();
         this.out.masterClear();
+        this.fsmIn = new FSM( 'stagein', this, stageInHandler );
+        this.fsmOut = new FSM( 'stageout', this, stageOutHandler );
     }
 }
 
@@ -46,7 +48,9 @@ function stageInHandler( stage, is) {
         if ( stage.out.unackd()) {
             //clg('stagein> waiting for outAck', stage.name);
         } else {
-            stage.out.data = {t: stage.data.t, d: stage.process(stage.data.d)};
+            stage.out.data = {t: stage.data.t
+                            , od: stage.data.od
+                            , d: stage.process(stage.data.d)};
             return 'relay';
         }
     } else if (is === 'relay') {

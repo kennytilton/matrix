@@ -57,6 +57,14 @@
     text-align: center;
 }
 
+.signal {
+    display: block;
+    max-width:20px;
+    max-height:16px;
+    width: auto;
+    height: auto;
+}
+
 .bundle {
     /*background: cyan;*/
     /*width: fit-content;*/
@@ -80,7 +88,7 @@
 
 .logic {
     width: fit-content;
-    /*margin: 8px;*/
+    margin: 8px;
     /*margin-top: 18px;*/
     padding: 5px;
     border: 2px solid cyan;
@@ -92,6 +100,7 @@
 
 .data {
     margin-left: 6px;
+    min-height: 24px;
     font-size: 1.5em;
     font-family: 'Bodoni 72';
 }

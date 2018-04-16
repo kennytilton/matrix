@@ -20,6 +20,7 @@ class Pipe extends Model {
             return s;
         });
         this.stgIn = this.stages[0];
+        ast(this.stgIn, "no stgIn!!!!!");
         this.stgOut = this.stages[this.stages.length-1];
 
         withIntegrity(qAwaken, this, x => this.awaken());
