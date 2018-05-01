@@ -71,3 +71,61 @@ class Bundle extends Model {
     }
 }
 
+function bundleView( label, f, stageN) {
+    return ( stageN % 2 === 1 )?
+        div( {class: "pure-u-5-5 pure-g bundle"},
+            raImg(f, rqSignal, stageN),
+            payloadView(f, stageN),
+            raImg(f, akSignal, stageN))
+        : div( {class: "pure-u-5-5 pure-g bundle"},
+            raImg(f, akSignal, stageN),
+            payloadView(f, stageN),
+            raImg(f, rqSignal, stageN));
+}
+
+function payloadView( hs, stageN) {
+    return div({ class: "pure-u-3-5"},
+        div( {class: "pure-g"},
+            div({class: "pure-u-2-5"}),
+            div({class: "pure-u-1-5",
+                    style: "display:flex;flex-direction:row;margin:8px;align-items:center"}
+                , span("D" + stageNDisplay(stageN))
+                , div( c=> span({class: "data bouncer"
+                    , content: hs.data? hs.data.d+'':'...'
+                    , style: "font-size:1em;" + dataStyle( hs.data)})))));
+}
+
+
+function raImg(hs, signalFn, stageN) {
+    return div({class: "pure-u-1-5"},
+        div( {style: "display:flex;flex-direction:row;margin:8px;align-items:center;"},
+            span( {style: cF( c=> dataStyle(hs.data,'ramig'))}
+                , (signalFn===akSignal?"A":"R")
+                + stageNDisplay(stageN))
+            , img({ class: "signal", src: cF( c=> tnImgFormula(c))}
+                , { signal: cF( c=> signalFn( c, hs))})));
+}
+
+function rqSignal( c, hs) {
+    let r = hs.rq;
+    if (r) {
+        return (c.pv==='up')? 'down':'up';
+    } else {
+        return 'zz';
+    }
+}
+
+function akSignal( c, hs) {
+    let r = hs.ak;
+    if (r) {
+        return (c.pv==='up')? 'down':'up';
+    } else {
+        return 'zz';
+    }
+}
+
+function tnImgFormula(c) {
+    return "public/" + (c.md.signal === 'up'? "tnRise":
+        (c.md.signal === 'zz'? "tnNull":"tnFall")) + ".png";
+}
+

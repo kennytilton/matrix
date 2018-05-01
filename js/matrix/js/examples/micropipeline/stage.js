@@ -72,4 +72,38 @@ function stageOutHandler( stage, is) {
 }
 
 
+function stageView( stage, stageN) {
+    return div( { class: "pure-g", style: "background:"+["#bbb","#ddd"][stageN%2]}, //{style: "display:flex;flex-direction:column;margin:8px"},
+        ( stageN===1? bundleView( "Feeder", stage.feeder, stageN):null)
+        , registerView( stage)
+        , div( {class: "pure-u-5-5 pure-g",style: "background:#ffd;"+flexrow}, // "logicbox"}
+            b({class: "pure-u-1-5", style: "margin:6px"}
+                , "logic")
+            , div( {class: "pure-u-3-5",
+                    style: "display:flex; align-items:center"},
+                code( stage.process.toString()
+                    .replace("function ", "")
+                    .replace("return ", ""))))
+        , bundleView( "Out", stage.out, stageN+1));
+}
+const flexrow = "display:flex;flex-direction:row;align-items:center;";
+
+function registerView( stage) {
+    return div({class: "pure-u-5-5 pure-g", style:"margin:3px"},
+        div({class: "pure-u-2-5"})
+        , div({class: "pure-u-2-5 pure-g"}
+            , b({class: "pure-u-1-5", style: "margin-top:0.3em"}, "REG")
+            , div( {class: "pure-u-2-5"},
+                span({
+                    class: " data"
+                    , style: dataStyle(stage.data)
+                    , content: stage.data ? stage.data.d+'':"..."}))));
+}
+
+
+
+function stageNDisplay( n ) {
+    return inParens(n === 1 ? "in":
+        (n === 1+gProcesses.length? "out" : n));
+}
 

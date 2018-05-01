@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MicroPipe</title>
+    <title>Micropipeline</title>
 
     <script src="js/closure-library/closure/goog/base.js"></script>
 
@@ -11,7 +11,6 @@
           rel="stylesheet"
           integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w"
           crossorigin="anonymous">
-
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
@@ -28,11 +27,12 @@
     <script src="js/mxWeb.js"></script>
     <script src="js/mxXHR.js"></script>
 
-    <script src="js/examples/micropipeline/mechanism.js"></script>
+    <script src="js/examples/micropipeline/bundle.js"></script>
     <script src="js/examples/micropipeline/stage.js"></script>
     <script src="js/examples/micropipeline/pipe.js"></script>
     <script src="js/examples/micropipeline/tester.js"></script>
     <script src="js/examples/micropipeline/micropipeline.js"></script>
+    <script src="js/examples/micropipeline/autopipe.js"></script>
 
     <STYLE type="text/css">
         .bouncer {text-align: center;
@@ -72,8 +72,7 @@
     <p>Was the google closure compilation clean? If so...</p>
     <p>Please check the browser console for diagnostics.</p>
     <script>
-        //window.testXHR();
-        document.body.innerHTML = tag2html( window.MicroPipe());
+        document.body.innerHTML = tag2html( window.Micropipeline());
     </script>
 </body>
 </html>

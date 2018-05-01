@@ -33,7 +33,7 @@ window['sid'] = sid;
 class Model {
 	// to-do?: maybe forget constructors ever working like CLOS and standardize on "make" as preferred over "new"
 	constructor(parent, name, islots, awakenp=true) {
-		// clg("Model entry name=" + name + ", par= "+ parent + ', gPar=' + gPar);
+		clg("Model entry name=" + name + ", par= "+ parent + ', gPar=' + gPar);
 		this.par = parent || gPar; // we build models as parent<->>kids
 		// clg("Model this " + islots.name + " gets par " + this.par + " named " + (this.par? this.par.name : "unnamed"));
 		this.sid = ++sid;

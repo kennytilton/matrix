@@ -4,34 +4,7 @@
 
 /*html { margin-left: calc(100vw - 100%); }*/
 
-/*html::before {*/
-    /*content: "";*/
-    /*background: url(image/circuittall.jpg) no-repeat center center fixed;*/
-    /*-webkit-background-size: cover;*/
-    /*-moz-background-size: cover;*/
-    /*-o-background-size: cover;*/
-    /*background-size: cover;*/
-    /*opacity: .3;*/
-    /*z-index: -2;*/
 
-/*}*/
-
-/*html::before {*/
-    /*content: "";*/
-    /*position: absolute;*/
-    /*top: 0;*/
-    /*left: 0;*/
-
-    /*width: 940px;*/
-    /*height: 1192px;*/
-    /*opacity: .4;*/
-    /*z-index: -1;*/
-    /*background-size: cover;*/
-    /*-webkit-background-size: cover;*/
-    /*-moz-background-size: cover;*/
-    /*-o-background-size: cover;*/
-    /*background: url(image/circuittall.jpg);*/
-/*}*/
 .rqak { margin: 4px}
 
 .payload { margin: 4px}
@@ -66,21 +39,9 @@
 }
 
 .bundle {
-    /*background: cyan;*/
-    /*width: fit-content;*/
     margin-top: 12px;
-    /*display: flex;*/
-    /*flex-direction: row;*/
-    /*text-align: center;*/
 }
 
-/*.bundle {*/
-    /*width: fit-content;*/
-    /*display: flex;*/
-    /*flex-direction: row;*/
-    /*margin: 8px;*/
-    /*align-items: center;*/
-/*}*/
 .regsubbox {
     display: inline-block;
     vertical-align: baseline;
@@ -89,7 +50,6 @@
 .logic {
     width: fit-content;
     margin: 8px;
-    /*margin-top: 18px;*/
     padding: 5px;
     border: 2px solid cyan;
     -webkit-border-radius: 10px;

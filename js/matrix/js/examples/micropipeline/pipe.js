@@ -61,3 +61,10 @@ class Pipe extends Model {
     }
 }
 
+
+function pipeView( pipe) {
+    let stageN = 1;
+    return div( { class: "pure-u-4-5", style: "background:gray"}
+        , pipe.stages.map( s=> stageView(s, stageN++)));
+}
+

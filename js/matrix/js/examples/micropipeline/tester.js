@@ -102,21 +102,7 @@ function pipeTestIII ( ) {
 
 // pipeTestIII();
 
-function blockEvent (mx, e) {
-    if (cmdKeys.indexOf(e.key)===-1) {
-        clg('blocking '+e.keyCode);
-        e.stopPropagation();
-    }
-}
 
-function loadPipe (mx, e) {
-    if (e.key !== 'Enter') return;
-
-    appdiv.backlog = toIntegers( e.target.value);
-    clg('vals', appdiv.backlog);
-
-    // e.target.value = null;
-}
 
 function toIntegers (s) {
     return s.replace(/,/g," ")
