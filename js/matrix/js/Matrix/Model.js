@@ -1,4 +1,4 @@
-
+goog.provide('Matrix.Model');
 
 /* global kNascent, kUntilAsked, kAlways, kAwake, qAwaken,  Cell */
 //@formatter:off
@@ -33,7 +33,7 @@ window['sid'] = sid;
 class Model {
 	// to-do?: maybe forget constructors ever working like CLOS and standardize on "make" as preferred over "new"
 	constructor(parent, name, islots, awakenp=true) {
-		//clg("Model entry name=" + name + ", par= "+ parent + ', gPar=' + gPar);
+		// clg("Model entry name=" + name + ", par= "+ parent + ', awakenp=' + awakenp);
 		this.par = parent || gPar; // we build models as parent<->>kids
 		// clg("Model this " + islots.name + " gets par " + this.par + " named " + (this.par? this.par.name : "unnamed"));
 		this.sid = ++sid;
@@ -111,6 +111,7 @@ class Model {
 			}
 		}
 		this.state = kAwake;
+		return this;
 	}
 	slotObserverResolve (slot) {
 		// see how Tag class in mxWeb overrides this
@@ -154,7 +155,7 @@ class Model {
 			} else {
 				//clg('fm failed!!! '+what);
 				if (how.mustp) {
-					throw `fget failed what = ${what.toString()}, id ${this.id}, where = ${this.name}`;
+					throw `fget failed what = ${what.toString()}, id ${this.sid}, where = ${this.name}`;
 				}
 			}
 		} finally {
@@ -190,7 +191,7 @@ class Model {
 				// clg(`somex passed eltx ${eltx} and elt ${elt}`)
 				let found = (elt !== how.skip)
 					&& elt.fmTv(what, Object.assign( {}, how, { upp: false, mep: true}));
-		if (found) return found;})) ||
+				if (found) return found;})) ||
 
 		(function () {
 			// clg(`fmTv ${self.name} considers upp ${how.upp} par=${self.par}`);
@@ -209,7 +210,7 @@ Model.prototype['awaken'] = Model.prototype.awaken;
 
 var isModel = x => x instanceof Model;
 
-function mkm( par, id, props, kids, factory='Model') {
+function mkm( par, id, props, kids=null, factory='Model') {
 	let opts = Object.assign({}
 	                    , props
 		                , kids ? {kids: cKids( kids)} : null),
@@ -218,6 +219,16 @@ function mkm( par, id, props, kids, factory='Model') {
 	return md;
 }
 window['mkm'] = mkm;
+
+function mkmu( par, id, props, kids=null, factory='Model') {
+    let opts = Object.assign({}
+        , props
+        , kids ? {kids: cKids( kids)} : null),
+        md = new window[factory]( par, id, opts, false);
+    if (!isModel(md)) throw 'mkm made not-modelp';
+    return md;
+}
+window['mkmu'] = mkmu;
 
 function pkdFlat (ary, r=[]) {
     for (let i = 0; i < ary.length; ++i)
