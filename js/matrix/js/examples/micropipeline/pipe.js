@@ -9,7 +9,7 @@ class Pipe extends Model {
 
         this.stages = this.processes.map( proc => {
             let f = lastOut || new Bundle( null, { name: "ex->" + stageN })
-                , o = new Bundle( null, {name: "hs-"+stageN+"->"+(stageN+1)})
+                , o = new Bundle( null, {name: "bundle-"+stageN+"->"+(stageN+1)})
                 , s = new Stage( null, {
                         name: "s-"+ stageN
                         , feeder: f

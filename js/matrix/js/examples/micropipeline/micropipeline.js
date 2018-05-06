@@ -2,10 +2,26 @@ var mTick = 0;
 
 var gProcesses = [plus1, squared, negated, divby3];
 
+function bbs(b) {
+    let from = 0, changes = 0, n=7;
+    //console.log("b "+b);
+    while (--n) {
+        //console.log("from ", from, " x ", b.slice(from));
+        let found = b.slice(from).search("010");
+        //console.log("found "+ found);
+        if (found === -1)
+            break;
+        ++changes;
+        from = from + found + 3;
+    }
+    return changes;
+}
+
 function Micropipeline () {
     return div({ id: 'app'},
             {
-                tick: cI( mTick)
+                name: 'app'
+                , tick: cI( mTick)
                 , backlog: cI( null)
                 , pipe: new Pipe( null, {
                     processes: gProcesses})
@@ -46,6 +62,7 @@ function Micropipeline () {
                             //, div( c.md.results.map( r=>span( {class: "data"}, r)))
                     ]});
 }
+
 
 window['Micropipeline'] = Micropipeline;
 
@@ -92,7 +109,7 @@ function piperOutFSMTransition (ctx, is) {
 
 var dataColors = ['#dfd','cyan'];
 
-function dataStyle (d, tag) {
+function dataStyle ( d, dbgtag) {
     let ds =  "background:" +
         (d? dataColors[dataTicks.indexOf(d.t) % dataColors.length]+";" : "none;");
     //if (d && tag) clg('dstyle', tag, ds, d.t, d.k, dataTicks.indexOf(d.t));

@@ -4,25 +4,25 @@ cellsReset();
 
 var categories = ['chat', 'code', 'main'];
 var nubits = {};
-categories.map( c=> nubits[c] = {});
+categories.map(c => nubits[c] = {});
 
 var chats = {};
 var sources = {};
 var bitIds = ['preface', 'justhtml', 'webco', 'dynodom', 'ktodo',
-                'xhr', 'yourturn', 'summary'];
+    'xhr', 'yourturn', 'summary'];
 
 var bits = new Array;
 
-function defit (category, id, it) {
+function defit(category, id, it) {
     if (!categories.includes(category))
-        throw 'defbit> undefined category '+category;
+        throw 'defbit> undefined category ' + category;
     if (!bitIds.includes(id))
-        throw 'defbit> undefined bit '+id;
+        throw 'defbit> undefined bit ' + id;
 
     nubits[category][id] = it;
 }
 
-function getit (category, id, b) {
+function getit(category, id, b) {
     if (!categories.includes(category))
         throw 'getit> undefined category ' + category;
     if (!bitIds.includes(id))
@@ -31,96 +31,119 @@ function getit (category, id, b) {
     return nubits[category][id];
 }
 
-function defbit (id, b) { defit( 'main', id, b)}
-function getbit( id) { return getit('main', id)()}
+function defbit(id, b) {
+    defit('main', id, b)
+}
 
-function defchat (id, b) { defit( 'chat', id, b);}
-function getchat( id) { return getit('chat', id)}
+function getbit(id) {
+    return getit('main', id)()
+}
 
-function defcode (id, b) { defit( 'code', id, b);}
-function getcode( id) { return getit('code', id)}
+function defchat(id, b) {
+    defit('chat', id, b);
+}
+
+function getchat(id) {
+    return getit('chat', id)
+}
+
+function defcode(id, b) {
+    defit('code', id, b);
+}
+
+function getcode(id) {
+    return getit('code', id)
+}
 
 // ------------------------------------------------
 // -------- The bits ------------------------------
 // ------------------------------------------------
 
 defbit('preface',
-    ()=>{return {
+    () => {
+        return {
             title: "Preface",
             notes: [
                 "The last hundred lines of the source comprise the host application, itself a demonstration of mxWeb.",
                 "Here is a complete <a target='_blank' href='https://github.com/kennytilton/webmx/tree/master/js'>" +
-                            "TodoMVC</a> implementation.",
+                "TodoMVC</a> implementation.",
                 "Pardon my CSS. And even my Javascript. I am a native Lisper.",
                 "We have a ClojureScript version as well."],
             mxDom:
-                [section({ class: "todoapp"},
+                [section({class: "todoapp"},
                     header({class: "header"},
                         h1("todos"))),
-                    center( "Coming soon, the app.")]
-    }});
+                    center("Coming soon, the app.")]
+        }
+    });
 
 defbit('justhtml',
-    ()=>{return {
-        title: "An All-JS, HTML Work-alike. And fast.",
-        notes: null,
-        mxDom: [
-        section({class: "todoapp"},
-            header({class: "header"},
-                 h1("todos"))),
-        footer({class: "info"},
-            [
-                "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-                "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
-            ].map(s => p({}, s)))
-        ]
-    }});
+    () => {
+        return {
+            title: "An All-JS, HTML Work-alike. And fast.",
+            notes: null,
+            mxDom: [
+                section({class: "todoapp"},
+                    header({class: "header"},
+                        h1("todos"))),
+                footer({class: "info"},
+                    [
+                        "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+                        "Inspired by <a href='http://todomvc.com'>TodoMVC</a>"
+                    ].map(s => p({}, s)))
+            ]
+        }
+    });
 
 /// --- webco - Web Components -------------------------------
 ///
 
-function credits (attrs, ...content) {
+function credits(attrs, ...content) {
     return footer(Object.assign({}, {class: "info"}, attrs),
         // Look, Ma! No JSX! No toolchain! Standard JS....
-        content.map( s => p({},s)));
+        content.map(s => p({}, s)));
 }
 
-defbit( "webco",
-    ()=>{return {
-        title: "Web Components Accompli",
-        mxDom: [
-        section({ class: "todoapp"},
-            header({class: "header"},
-                h1("todos"))),
-        credits({style: "font-size:18px"},
-            "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
-            "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
-    }});
+defbit("webco",
+    () => {
+        return {
+            title: "Web Components Accompli",
+            mxDom: [
+                section({class: "todoapp"},
+                    header({class: "header"},
+                        h1("todos"))),
+                credits({style: "font-size:18px"},
+                    "Created by <a href='http://tiltontec.com'>Kenneth Tilton",
+                    "Inspired by <a href='http://todomvc.com'>TodoMVC</a>")]
+        }
+    });
 
 class TodoList extends Model {
-    constructor( titles ) {
-        super( null, "TodoList",
+    constructor(titles) {
+        super(null, "TodoList",
             {
-                items: cI( titles? titles.map( t=> new Todo(t)):[]),
-                empty: cF( c=> c.md.items.length ===0),
-                done: cF( c=> c.md.items.filter( td=> td.completed)),
-                undone: cF( c=> c.md.items.filter( td=> !td.completed))
+                items: cI(titles ? titles.map(t => new Todo(t)) : []),
+                empty: cF(c => c.md.items.length === 0),
+                done: cF(c => c.md.items.filter(td => td.completed)),
+                undone: cF(c => c.md.items.filter(td => !td.completed))
             });
         this.awaken();
     }
-    add (td) {
+
+    add(td) {
         // if we mutate 'items', data flow internals will not see the change
         let newv = this.items.slice(0);
-        newv.push( td);
+        newv.push(td);
         this.items = newv;
         return this;
     }
-    delete (td) {
+
+    delete(td) {
         // if we mutate 'items', data flow internals will not see the change
-        let tdx = this.items.indexOf( td);
+        let tdx = this.items.indexOf(td);
         if (tdx === -1) return;
         let is = this.items.slice(0);
-        is.splice( tdx, 1);
+        is.splice(tdx, 1);
         this.items = is;
         return this;
     }
@@ -129,7 +152,7 @@ class TodoList extends Model {
 
 var Todos;
 
-function todoAddNewEZ (mx, e) {
+function todoAddNewEZ(mx, e) {
     if (e.key === 'Enter') {
         let title = e.target.value.trim();
         e.target.value = null; // clear input either way
@@ -143,171 +166,195 @@ function todoAddNewEZ (mx, e) {
     }
 }
 
-function todoAppHeader ( newTodoHandler ) {
+function todoAppHeader(newTodoHandler) {
     return header({class: "header"},
-                h1("todos"),
-                input({
-                    class: "new-todo",
-                    autofocus: true,
-                    placeholder: "Type an item to do and hit Return.",
-                    onkeypress: newTodoHandler
-                }));
+        h1("todos"),
+        input({
+            class: "new-todo",
+            autofocus: true,
+            placeholder: "Type an item to do and hit Return.",
+            onkeypress: newTodoHandler
+        }));
 }
 
-function todoDashboardEZ ( ...plugins ) {
-    return footer({ class: "footer",
-                    hidden: cF(  c => Todos.empty )},
-            span({ class: "todo-count"},
-                 { content: cF(c => {
-                                let remCt = Todos.undone.length;
-                                return `${remCt} item${remCt === 1 ? '' : 's'} remaining`;
-                    })}),
-        (plugins || []).map( p => p())
+function todoDashboardEZ(...plugins) {
+    return footer({
+            class: "footer",
+            hidden: cF(c => Todos.empty)
+        },
+        span({class: "todo-count"},
+            {
+                content: cF(c => {
+                    let remCt = Todos.undone.length;
+                    return `${remCt} item${remCt === 1 ? '' : 's'} remaining`;
+                })
+            }),
+        (plugins || []).map(p => p())
     );
 }
 
 /// dynodom - DOM driven by data flow --------------------
 
 defbit("dynodom",
-    ()=>{return {
-        title: "Enter Data Flow",
-        notes: ["To-do LIs are all regenerated to accommodate one new to-do. We fix that shortly.",
-            "Component functions break up the code as well as offer re-use."],
-        initFn: ()=> Todos = new TodoList,
-        mxDom: [
-            section({class: "todoapp"},
-                todoAppHeader( todoAddNewEZ),
-                section({
-                        class: "main",
-                        hidden: cF(c => Todos.empty)
-                    },
-                    ul({class: "todo-list"},
+    () => {
+        return {
+            title: "Enter Data Flow",
+            notes: ["To-do LIs are all regenerated to accommodate one new to-do. We fix that shortly.",
+                "Component functions break up the code as well as offer re-use."],
+            initFn: () => Todos = new TodoList,
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader(todoAddNewEZ),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
                             c => Todos.items
-                                    .map(td => li({style: {padding: "9px"}},
-                                            td.title)))),
-                todoDashboardEZ())]
-    }});
+                                .map(td => li({style: {padding: "9px"}},
+                                    td.title)))),
+                    todoDashboardEZ())]
+        }
+    });
 
 // ----------------------------------------------------------
 // --- ktodo - To-do gets its own data flow properties ------
 
 class Todo extends Model {
-    constructor( title ) {
-        super( null, null,
+    constructor(title) {
+        super(null, null,
             {
                 title: title, // no editing this version
-                completed: cI( false)
+                completed: cI(false)
             });
-            }
-    delete () {
-        Todos.delete( this);
+    }
+
+    delete() {
+        Todos.delete(this);
     }
 }
 
-function todoAddNewBetter (mx, e) {
+function todoAddNewBetter(mx, e) {
     if (e.key !== 'Enter') return;
     let title = e.target.value.trim();
     if (title !== '') {
-        Todos.add( new Todo( title));
+        Todos.add(new Todo(title));
     }
     e.target.value = null;
 }
 
-function todoLI( attrs, c, todo, extras) {
-    return li( Object.assign( { class: cF(c => (todo.completed ? "completed" : null))}, attrs),
-            { todo: todo},
-            div({class: "view"},
-                input({ class: "toggle",
-                        type: "checkbox",
-                        checked: cF( c=> todo.completed),
-                        onclick: ()=> todo.completed = !todo.completed})
-                , label({ content: todo.title })
-                , extras? extras( c, todo) : null
-                , button({ class: "destroy",
-                            onclick: ()=> todo.delete()})))
+function todoLI(attrs, c, todo, extras) {
+    return li(Object.assign({class: cF(c => (todo.completed ? "completed" : null))}, attrs),
+        {todo: todo},
+        div({class: "view"},
+            input({
+                class: "toggle",
+                type: "checkbox",
+                checked: cF(c => todo.completed),
+                onclick: () => todo.completed = !todo.completed
+            })
+            , label({content: todo.title})
+            , extras ? extras(c, todo) : null
+            , button({
+                class: "destroy",
+                onclick: () => todo.delete()
+            })))
 }
 
-function clearCompleted () {
-    return button({ class: "clear-completed",
-                    hidden: cF(c=> Todos.done.length === 0),
-                    onclick: mx => Todos.done.map( td=> td.delete())},
-            "Clear completed");
+function clearCompleted() {
+    return button({
+            class: "clear-completed",
+            hidden: cF(c => Todos.done.length === 0),
+            onclick: mx => Todos.done.map(td => td.delete())
+        },
+        "Clear completed");
 }
 
 // --- ktodo -- Individual properties of To-dos are cells -------
 defbit('ktodo',
-    ()=>{return {
-        title: "To-Do properties join the data flow",
-        initFn: ()=> {
-            Todos = new TodoList(["Wash car"]);
-        },
-        mxDom: [
-            section({class: "todoapp"},
-                todoAppHeader( todoAddNewBetter),
-                section({ class: "main",
-                            hidden: cF( c=> Todos.empty)},
-                    ul({class: "todo-list"},
-                        c => Todos.items.map(td => todoLI( {}, c, td )))),
-                todoDashboardEZ(clearCompleted))]
-    }});
+    () => {
+        return {
+            title: "To-Do properties join the data flow",
+            initFn: () => {
+                Todos = new TodoList(["Wash car"]);
+            },
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader(todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
+                            c => Todos.items.map(td => todoLI({}, c, td)))),
+                    todoDashboardEZ(clearCompleted))]
+        }
+    });
 
 // --- xhr ---------------------------------------------------------
 
 defbit('xhr',
-    ()=>{return {
-        title: "XHR joins the data flow",
-        notes: [
-            "The JS mxXHR lift into the Matrix was hacked just enough to support this panel.",
-            "The 'kidValues' mechanism avoids rebuilding existing DOM and even proxies."],
-        initFn: ()=> {
-            Todos = new TodoList(["adderall", "Yankees"]);
-        },
-        mxDom: [
-            section({class: "todoapp"},
-                todoAppHeader( todoAddNewBetter),
-                section({
-                        class: "main",
-                        hidden: cF( c=> Todos.empty)
-                    },
-                    ul({class: "todo-list"},
-                        {
-                            kidValues: cF(c => Todos.items),
-                            kidKey: k => k.todo,
-                            kidFactory: (c,td) => todoLI({}, c, td, aeAlertGI)
+    () => {
+        return {
+            title: "XHR joins the data flow",
+            notes: [
+                "The JS mxXHR lift into the Matrix was hacked just enough to support this panel.",
+                "The 'kidValues' mechanism avoids rebuilding existing DOM and even proxies."],
+            initFn: () => {
+                Todos = new TodoList(["adderall", "Yankees"]);
+            },
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader(todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
                         },
-                        c => c.kidValuesKids())),
-                todoDashboardEZ(clearCompleted))]
-    }});
+                        ul({class: "todo-list"},
+                            {
+                                kidValues: cF(c => Todos.items),
+                                kidKey: k => k.todo,
+                                kidFactory: (c, td) => todoLI({}, c, td, aeAlertGI)
+                            },
+                            c => c.kidValuesKids())),
+                    todoDashboardEZ(clearCompleted))]
+        }
+    });
 
-function aeBrandURI (brand) {
+function aeBrandURI(brand) {
     return `https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:${ brand }&limit=3`
 }
 
-function aeAlertGI ( c, todo ) {
-    return i( {
-                class: "aes material-icons md-36",
-                hidden: cF( c=> c.md.aeInfo===null),
-                style: cF(  c => { return { display: Todos.empty? "none":"block",
-                                    font_size: "36px",
-                                    color: "red",
-                                    background: "white"}}),
-                onclick: mx => alert( mx.aeInfo),
-                },
+function aeAlertGI(c, todo, onClick ) {
+    return i({
+            class: "aes material-icons md-36",
+            hidden: cF(c => c.md.aeInfo === null),
+            style: cF(c => {
+                return {
+                    display: Todos.empty ? "none" : "block",
+                    font_size: "36px",
+                    color: "red",
+                    background: "white"
+                }
+            }),
+            onclick: onClick || (mx => alert(mx.aeInfo)),
+        },
         {
-            lookup: cF( c=> new mxXHR( aeBrandURI( todo.title), {
+            lookup: cF(c => new mxXHR(aeBrandURI(todo.title), {
                 send: true,
-                delay: 500 + Math.random(5)*1000})),
+                delay: 500 + Math.random(5) * 1000
+            })),
 
-            aeInfo: cF( function (c) {
-                let xhr = c.md.lookup.xhr;
-                clg('xhr????', xhr)
-                if ( xhr) {
+            aeInfo: cF(function (c) {
+                let xhr = c.md.lookup.xhr
+
+                if (xhr) {
                     clg('xhr!!!', xhr.status)
-                    if ( xhr.isSuccess() ) {
-                        let obj = xhr.getResponseJson();
-                        return obj.meta.results.total + ' Adverse Events found on FDA.gov';
+                    if (xhr.isSuccess()) {
+                        let obj = xhr.getResponseJson()
+                        return obj.meta.results.total + ' Adverse Events found on FDA.gov'
                     } else {
-                        return null;
+                        return null
 
                     }
 
@@ -318,48 +365,84 @@ function aeAlertGI ( c, todo ) {
                         return null;
                     }*/
                 } else {
-                    return null;
+                    return null
                 }
             })
         },
         "warning")
 }
 
-function todoMatchesFilter( td, filter ) {
-    return filter==="All"
-        || (filter==="Active" && !td.completed)
-        || (filter==="Completed" && td.completed);
+function todoMatchesFilter(td, filter) {
+    return filter === "All"
+        || (filter === "Active" && !td.completed)
+        || (filter === "Completed" && td.completed);
 }
 
-function fmK( from, className, how) {
-    return from.fmUp( mx=>mx.class === className)
+function fmK(from, className, how) {
+    return from.fmUp(mx => mx.class === className)
 }
+
+// --- graphQL --------------------------------------------------
+
+defbit('GQL',
+    () => {
+        return {
+            title: "Transparent GraphQL",
+            notes: [
+                "The GraphQL behavior emerges from naturally coded XHRs.",
+                "The efficiency Just Follows&trade; from the data flow granularity."
+            ],
+            initFn: () => {
+                Todos = new TodoList(["adderall", "Yankees"]);
+            },
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader(todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
+                            {
+                                kidValues: cF(c => Todos.items),
+                                kidKey: k => k.todo,
+                                kidFactory: (c, td) => todoLI({}, c, td, aeAlertGI)
+                            },
+                            c => c.kidValuesKids())),
+                    todoDashboardEZ(clearCompleted))]
+        }
+    });
 
 // --- yourturn: An exercise for you to try ---------------------
 
 defbit('yourturn',
-    ()=>{return {
-        title: "Your turn!",
-        notes: null,
-        initFn: ()=> {
-            Todos = new TodoList(["adderall", "Yankees", "Visine", "probiotics", "echinacea"]);
-        },
+    () => {
+        return {
+            title: "Your turn!",
+            notes: null,
+            initFn: () => {
+                Todos = new TodoList(["adderall", "Yankees", "Visine", "probiotics", "echinacea"]);
+            },
 
-        mxDom: [
-            section({class: "todoapp"},
-                todoAppHeader( todoAddNewBetter),
-                section({ class: "main",
-                        hidden: cF( c=> Todos.empty)},
-                    ul({class: "todo-list"},
-                        c => {
-                            let f = fmK(c.md, "filters").selection;
-                            return Todos.items
-                                        //.filter(td=>todoMatchesFilter(td, f))
-                                        .map( td=> todoLI( {hidden: cF( c=> !todoMatchesFilter( td, fmK(c.md, "filters").selection))}, c, td))
-                        })),
-                todoDashboardEZ( todoFilters, clearCompleted))]}});
+            mxDom: [
+                section({class: "todoapp"},
+                    todoAppHeader(todoAddNewBetter),
+                    section({
+                            class: "main",
+                            hidden: cF(c => Todos.empty)
+                        },
+                        ul({class: "todo-list"},
+                            c => {
+                                let f = fmK(c.md, "filters").selection;
+                                return Todos.items
+                                //.filter(td=>todoMatchesFilter(td, f))
+                                    .map(td => todoLI({hidden: cF(c => !todoMatchesFilter(td, fmK(c.md, "filters").selection))}, c, td))
+                            })),
+                    todoDashboardEZ(todoFilters, clearCompleted))]
+        }
+    });
 
-function todoFilters () {
+function todoFilters() {
     return ul({class: "filters"},
         {selection: cI("All")},
         ['All', 'Active', 'Completed']
@@ -388,19 +471,21 @@ defbit('cntr',
 // --- Summary ---------------------------------
 
 defbit('summary',
-    ()=>{return {
-        title: "Summary: The Developer Experience",
-        notes: null,
-        code: null,
-        mxDom:
-            [
-                section({ class: "todoapp"},
-                    header({class: "header"},
-                        h1("mxWeb"))),
-                credits({style: "font-size:18px"},
-                    "Created by <a target='_blank' href='mailto:ken@tiltontec.com'>Kenneth Tilton</a>",
-                    "Part of the <a href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>Matrix System</a>")]
-    }});
+    () => {
+        return {
+            title: "Summary: The Developer Experience",
+            notes: null,
+            code: null,
+            mxDom:
+                [
+                    section({class: "todoapp"},
+                        header({class: "header"},
+                            h1("mxWeb"))),
+                    credits({style: "font-size:18px"},
+                        "Created by <a target='_blank' href='mailto:ken@tiltontec.com'>Kenneth Tilton</a>",
+                        "Part of the <a href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>Matrix System</a>")]
+        }
+    });
 
 
 // --------------------------------------------------------------------
@@ -427,7 +512,7 @@ the other works by filtering the to-dos before generating the LIs.\
 Good luck! If you need help, send <a target='_blank' href='mailto:ken@tiltontec.com'>me</a> a note.");
 */
 
-defcode( 'yourturn', "\
+defcode('yourturn', "\
 function todoMatchesFilter( td, filter ) {\n\
     return filter==='All'\n\
         || (filter==='Active' && !td.completed)\n\
@@ -444,7 +529,7 @@ function todoFilters () {\n\
 }");
 
 
-defchat( 'preface',
+defchat('preface',
     "Welcome to the development of an application within an application, each built \
 with mxWeb, a Web framework consisting of just HTML and CSS running within a \
 fine-grained data flow system we call Matrix.\
@@ -459,7 +544,7 @@ This will help.</a>\
 \n\
 Please check the notes below, then hit 'Next' to get started.");
 
-defcode( 'preface',
+defcode('preface',
     "All tag functions have the signature:\n\
   <i>tag</i>([<i>HTML attributes</i>, [<i>custom properties</i>,]] <i>children*</i>)\n\
 \n\n\
@@ -583,7 +668,7 @@ function todoDashboardEZ ( ...plugins ) {\n\
     );\n\
 }");
 
-defchat( "dynodom", "\
+defchat("dynodom", "\
 And now data flow: a change to the model triggers \
 changed view content, including new DOM elements. \
 \n\
@@ -732,7 +817,7 @@ function aeBrandURI (brand) {\n\
 /// ------------------------------------------
 /// --- Summary ------------------------------
 
-defchat( 'summary',
+defchat('summary',
     "All submissions to TodoMVC.com offer the same functionality, and most \
 involve some reactive mechanism.\
 \n\
@@ -763,22 +848,22 @@ If interested in this or the CLJS version, send <a target='_blank' href='mailto:
 // ------------------------------------------------------------------
 // --- we "lift" localStorage into the Matrix. To a degree. ---------
 
-const currBitNo = cFI( c=> {
+const currBitNo = cFI(c => {
         let r = window.localStorage.getObject("CPMatrixTodo.bit");
         //clg('local bit no ', r);
-        return r === null ? 0 : (r < 0? 0: (r >= bitIds.length? (bitIds.length - 1): r));
+        return r === null ? 0 : (r < 0 ? 0 : (r >= bitIds.length ? (bitIds.length - 1) : r));
     },
     // we use an observer to persist the current "bit" number so page reloads pick up where we left off
-    { observer: (n, md, newv ) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
+    {observer: (n, md, newv) => window.localStorage.setObject("CPMatrixTodo.bit", newv)});
 
 // -------------------------------------------------------------------------------------
 // --- Main ----------------------------------------------------------------------------
 
-function CPMatrixTodo () {
+function CPMatrixTodo() {
     return [
         p({class: 'techtitular techtitle'}, "Introducing Matrix and mxWeb"),
         toolbar(),
-        div( c=> bitAssemble( bitIds[currBitNo.v]))
+        div(c => bitAssemble(bitIds[currBitNo.v]))
         //toolbar()
     ];
 }
@@ -786,49 +871,51 @@ function CPMatrixTodo () {
 window['CPMatrixTodo'] = CPMatrixTodo;
 
 function codeGlossary() {
-    return div( {style: "padding-left:12px;background:#f5f5f5"},
-        ul( {class: "precode", style: "border:none;list-style:square;background:none"},
+    return div({style: "padding-left:12px;background:#f5f5f5"},
+        ul({class: "precode", style: "border:none;list-style:square;background:none"},
             [span("'cI' creates an input Cell"),
                 span("'cF' creates a formulaic Cell"),
                 span("'mkm' makes a model (object with cells for properties)"),
                 i("Code that 'subscribes' to other data"),
                 b("Code that computes derived data"),
-                strong("Event code that feeds outside data into the Matrix flow")].map( g=> li(g))))
+                strong("Event code that feeds outside data into the Matrix flow")].map(g => li(g))))
 }
 
-function bitAssemble( bid) {
-    let codeString = getcode( bid),
-        chat = getchat( bid),
-        b = getbit( bid);
+function bitAssemble(bid) {
+    let codeString = getcode(bid),
+        chat = getchat(bid),
+        b = getbit(bid);
 
-    if ( b.initFn) {
+    if (b.initFn) {
         b.initFn();
     }
     return [
-        div( b.mxDom),
-        p( {class: 'techtitular techsubtitle'}, b.title),
-        newsprint( chat),
-        b.notes? div( p({class: 'techheader'}, "Nota bene"),
-            ul( {class: "techwrite",
-                    style: "list-style:square"},
-                b.notes.map( note=> li( {style: {margin_bottom: "6px"}},
-                    note)))): null,
+        div(b.mxDom),
+        p({class: 'techtitular techsubtitle'}, b.title),
+        newsprint(chat),
+        b.notes ? div(p({class: 'techheader'}, "Nota bene"),
+            ul({
+                    class: "techwrite",
+                    style: "list-style:square"
+                },
+                b.notes.map(note => li({style: {margin_bottom: "6px"}},
+                    note)))) : null,
 
-        codeString? [ div( p({class: 'techheader'}, "Code Highlights (glossary below)"),
+        codeString ? [div(p({class: 'techheader'}, "Code Highlights (glossary below)"),
             pre({class: 'precode'}, codeString)),
-            div( p({class: 'techheader'}, "Code Glossary"),
+            div(p({class: 'techheader'}, "Code Glossary"),
                 codeGlossary())] : null
     ];
 }
 
-function newsprint( text) {
+function newsprint(text) {
     /*
     This is a great example of a custom Web component.
     Not so much the quickly hacked implementation, but
     the idea itself of filling a void in HTML (flowing
     text into columns like a newspaper) with a function
     which, once evolved, becomes a permanent asset. And
-    it just yields standard HTML/CSS. And no preprocessor
+    it just yields standard HTML/CSS, so no preprocessor
     is required.
      */
     if (!text) return p("");
@@ -836,70 +923,88 @@ function newsprint( text) {
     let pgs = text.split("\n"),
         brk = null;
 
-    for ( let n =0, chars = 0; n < pgs.length; ++n) {
+    for (let n = 0, chars = 0; n < pgs.length; ++n) {
         chars += pgs[n].length;
-        if ( chars > text.length * 0.40) {
+        if (chars > text.length * 0.40) {
             brk = ++n;
             break;
         }
     }
 
-    return div( {style: {display: "flex",
-            flex_direction: "row"},
-            class: "techwrite"},
+    return div({
+            style: {
+                display: "flex",
+                flex_direction: "row"
+            },
+            class: "techwrite"
+        },
         div({class: "narrativecol"},
-            pgs.slice(0, brk).map( pgr => p(pgr))),
-        div({class: "narrativecol",
-                style: "border-left: 1px solid #aaa;"},
-            pgs.slice(brk).map( pgr => p(pgr))));
+            pgs.slice(0, brk).map(pgr => p(pgr))),
+        div({
+                class: "narrativecol",
+                style: "border-left: 1px solid #aaa;"
+            },
+            pgs.slice(brk).map(pgr => p(pgr))));
 }
 
-function toolbar () {
+function toolbar() {
     return div({
-            style: {background: "#fdfdfd",
+            style: {
+                background: "#fdfdfd",
                 margin_left: "24px",
                 width: "400px",
                 display: "flex",
                 flex_direction: "row",
-                align_items: "center"}},
+                align_items: "center"
+            }
+        },
         controls)
 }
+
 var nTabsStyle = "display:flex;flex-direction:row;margin:8px";
 var controls = [
-    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
+    button({
+            class: cF(c => "pure-button " + ( c.md.disabled ? "pure-button-disabled" : "")),
             style: "margin-left:18px",
-            disabled: cF( ()=> currBitNo.v <= 0),
-            onclick: c=> --currBitNo.v},
+            disabled: cF(() => currBitNo.v <= 0),
+            onclick: c => --currBitNo.v
+        },
         "Back"),
-    div( {style: nTabsStyle}, nTabs( bitIds.length)),
-    button({class: cF( c=> "pure-button " +  ( c.md.disabled ? "pure-button-disabled":"")),
-            disabled: cF( c=> currBitNo.v >= bitIds.length - 1),
-            onclick: c=> ++currBitNo.v}
+    div({style: nTabsStyle}, nTabs(bitIds.length)),
+    button({
+            class: cF(c => "pure-button " + ( c.md.disabled ? "pure-button-disabled" : "")),
+            disabled: cF(c => currBitNo.v >= bitIds.length - 1),
+            onclick: c => ++currBitNo.v
+        }
         , "Next"),
     input({
         id: "logToggle",
         type: "checkbox",
         checked: domLogging,
-        onchange: (mx,e) => domLogging = e.target.checked,
+        onchange: (mx, e) => domLogging = e.target.checked,
         style: "margin-left:24px;margin-right:9px"
     }),
     label(
-        { for: "logToggle",
-            title: "open the JS console to see logging of all DOM manipulation."},
+        {
+            for: "logToggle",
+            title: "open the JS console to see logging of all DOM manipulation."
+        },
         "DOM logging")];
 
 
-function nTabs (n) {
+function nTabs(n) {
     tabs = [];
-    for( let i=0; i < n; ++i) {
+    for (let i = 0; i < n; ++i) {
         let ii = i;
-        tabs.push( div( c=> (ii===currBitNo.v) ?
-            span( {style: "margin:6px"}, bitIds[ii] )
-            : button( { onclick: ()=> currBitNo.v = ii,
-                        title: cF( c=> getbit( bitIds[ii]).title),
-                        style: cF( c=>"margin-left:8px;background-color:"
-                                + (ii===currBitNo.v? "cyan":""))},
-                         ""+i)));
+        tabs.push(div(c => (ii === currBitNo.v) ?
+            span({style: "margin:6px"}, bitIds[ii])
+            : button({
+                    onclick: () => currBitNo.v = ii,
+                    title: cF(c => getbit(bitIds[ii]).title),
+                    style: cF(c => "margin-left:8px;background-color:"
+                        + (ii === currBitNo.v ? "cyan" : ""))
+                },
+                "" + i)));
     }
     return tabs;
 }
