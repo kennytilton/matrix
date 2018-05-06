@@ -30,7 +30,7 @@ class Job extends MXStorable {
                         , jobs = MXStorable.loadAllItems(Job, JOB_LS_PREFIX) || [];
                     for (let jn = 0; jn < jobs.length; ++jn) {
                         let j = jobs[jn]
-                        clg('job Storage->dict', j.hnId)
+                        //clg('job Storage->dict', j.hnId)
                         jd[j.hnId] = j;
                     }
 
@@ -59,10 +59,10 @@ const Jobs = Job.loadFromStorage();
 
 // --- loading user prefs -----------------------------
 
-for(var key in Jobs.dict){
-    var j = Jobs.dict[key];
-    clg('loaded job', key, j.hnId, j.stars)
-}
+// for(var key in Jobs.dict){
+//     var j = Jobs.dict[key];
+//     clg('loaded job', key, j.hnId, j.stars)
+// }
 
 function jobsCollect(dom) {
     let raw = Array.prototype.slice.call(dom.querySelectorAll('.athing'))
@@ -80,11 +80,11 @@ function jobsCollect(dom) {
             ast(hnId);
             //clg( 'OK job', hnId);
             if ( !Jobs.dict[hnId]) {
-                clg('initializing user job', hnId)
+                //clg('initializing user job', hnId)
                 let j = new Job( {hnId: hnId});
                 Jobs.dict[ hnId] = j;
             } else {
-                clg('old userjob!!!!!', jct, hnId);
+                //clg('old userjob!!!!!', jct, hnId);
             }
             jobs.push(spec);
             if (++jct > 10) break;
@@ -111,12 +111,15 @@ function jobSpecBuild(j, dom, deep) {
         tab = tab + '..';
     }
 
-    //if (cn) clg('sub'+tab, cn);
     if (cn === "hnuser") {
         j.user = dom.innerHTML
+
+    } else if (cn === "age") {
+        j.age = dom.children[0].innerHTML
+
     } else if (cn === "comment") {
         j.comment = dom
-        // clg('comment', dom.children.length, dom.children[0].tagName, dom.innerHTML)
+
     } else if (cn === "c00") {
         let ih = dom.innerHTML
             , ps = ih.split("<p>")
