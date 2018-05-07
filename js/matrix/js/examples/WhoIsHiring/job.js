@@ -2,6 +2,8 @@
 
 const JOB_LS_PREFIX = "whoishiring.";
 
+MXStorable.removeAllItems(JOB_LS_PREFIX);
+
 class Job extends MXStorable {
     constructor(islots) {
         super( Object.assign( {
@@ -46,8 +48,7 @@ function jobsCollect(dom) {
         , jobs = [];
 
     for (let rn = 0
-        ; rn <  raw.length
-         // && rn < 100
+        ; rn <  raw.length && (jobs.length < 6)
         ; ++rn) {
 
         let spec = jobSpec(raw[rn])
@@ -62,7 +63,6 @@ function jobsCollect(dom) {
                 UJob.dict[ hnId] = j;
             }
             jobs.push(spec)
-            //if (jobs.length > 100) break;
         }
     }
 
@@ -98,12 +98,12 @@ function jobSpecBuild(j, dom, deep) {
             , hdr = ps[0]
             , hs = hdr.split("|")
             , hsmatch = function(rx) {
-            for (hn=1; hn < hs.length; ++hn) {
-                if (hs[hn].match(rx) !== null) {
-                    return true
-                }
-            }
-            return false
+                            for (hn=1; hn < hs.length; ++hn) {
+                                if (hs[hn].match(rx) !== null) {
+                                    return true
+                                }
+                            }
+                            return false
         };
 
         if (hs.length > 1) {
@@ -115,6 +115,7 @@ function jobSpecBuild(j, dom, deep) {
             j.OK = true
             j.company = hs[0]
             j.hdrest = hs.slice(1)
+            j.title = dom.innerHTML.split("<p>")[0]
             j.body = ps.slice(1).join("<p>")
             //clg('job header', hs.length, hdr)
             //clg('hdrest0', j.hdrest[0])

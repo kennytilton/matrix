@@ -47,17 +47,17 @@ function jobHnIdKey(j) {
 }
 
 function jobAgeKey(j) {
-    return j.age
+    return (j.age || '')
 }
 
 function jobCompanyKey(j) {
-    return j.company
+    return (j.company || '')
 }
 
 function jobStarsKey(j) {
-    return UJob.dict[j.hnId].stars;
+    let uj = UJob.dict[j.hnId];
+    return (uj && uj.stars) || 0;
 }
-
 
 function sortBar() {
     return div({
@@ -90,4 +90,65 @@ function sortBar() {
                 }))))
 
 }
+function mkBodyRgx() {
+    return input({}, { name: "bodyrgx",
+        autofocus: true,
+        placeholder: "Regex for listing body search",
+        onkeypress: filterByBody})
+}
+
+function mkTitleRgx() {
+    return input({
+        autofocus: true
+        , placeholder: "Regex for listing title search"
+        , onkeypress: filterByTitle
+        , value: "gineer && Taipei"
+    }, {
+        name: "titlergx"
+        , rgx: cI( null)
+    })
+}
+
+function filterByTitle (mx, e) {
+
+    if (e.key !== 'Enter')
+        return
+
+    let rgx = e.target.value.trim()
+
+    if (rgx === '') {
+        mx.rgx = null // test
+        return
+    }
+
+    try {
+        mx.rgx = rgx.split('||').map( orx=> orx.trim().split('&&').map(andx => new RegExp( andx.trim())));
+    }
+    catch(error) {
+        alert(error.toString());
+    }
+
+}
+
+function filterByBody (mx, e) {
+    if (e.key !== 'Enter') return;
+
+    let rgx = e.target.value.trim();
+    if (rgx === '') return;
+
+    mx.rgx = rgx;
+
+    // Convert to rgx obj and check for errors
+
+    // Add rgx  search and set jobs
+    // Add to job filtering
+
+    // Implement &&
+
+    // Implement ||
+
+    // Implement || and &&&
+
+}
+
 

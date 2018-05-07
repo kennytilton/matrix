@@ -16,18 +16,42 @@ function jobListFilter(mx, jobs) {
     let remoteness = mx.fmUp("remoteness").selection
         , visaok = mx.fmUp("visaok").onOff
         , internok = mx.fmUp("internok").onOff
-        , sortBy = mx.fmUp("sortby").selection;
+        , sortBy = mx.fmUp("sortby").selection
+        , titleRgx = mx.fmUp("titlergx").rgx;
 
     return jobs.filter(j => remoteness === 'any'
                             || (remoteness === 'remote' && j.remote)
                             || (remoteness === 'onsite' && j.onsite))
         .filter(j => !visaok || j.visa)
         .filter(j => !internok || j.intern)
+        .filter(j => !titleRgx || rgxTreeMatch( j.title, titleRgx))
         .sort((j, k) => {
-            let keyFn = sortBy.keyFn;
-            return sortBy.order * (keyFn(j) < keyFn(k) ? -1 : 1)});
+            let keyFn = sortBy.keyFn
+                , rawComp = (keyFn(j) < keyFn(k) ? -1 : 1);
+            return sortBy.order * rawComp
+    });
 
 }
+
+function rgxTreeMatch( s, ors) {
+    return ors.some( orx => rgxAndMatch(s, orx))
+}
+
+function rgxAndMatch( s, ands) {
+    return ands.every( andx => s.match( andx))
+}
+
+// function rgxAndMatch( s, ands) {
+//     let res = ands.every( andx => {
+//         let m = s.match( andx);
+//         //clg('matching', m? 'YEP':'NOPE', andx, s)
+//         return m
+//     });
+//     if (res) {
+//         clg('AND Bingo!!!!!!!!!!!!!', res, s)
+//     }
+//     return res;
+// }
 
 function jobListItem(c, j) {
     //clg('joblistitem hdr0', j.hdrest[0])
@@ -80,15 +104,10 @@ function jobSocket() {
             , style: "display: none; width:1000px; height:100px"
             , onload: md => {
                 if (md.dom.contentDocument) { // FF
-                    clg('contdoc');
                     b = md.dom.contentDocument.getElementsByTagName('body')[0];
-                    clg('body!!!!!!!!!!', b);
-                    let jobs = jobsCollect(b);
-                    clg(' got jobs', jobs.length)
-                    hiringApp.jobs = jobs;
-                } else if (md.dom.contentWindow) { // IE
-                    clg('contwin');
-                    //b = md.dom.contentWindow.document.getElementsByTagName('body')[0];
+                    hiringApp.jobs = jobsCollect(b);
+                } else {
+                    alert('Only FireFox is supported.');
                 }
             }
         }
@@ -105,14 +124,15 @@ function WhoIsHiring() {
         , jobSocket()
         , remoteBar()
         , visaIntern()
+        , mkTitleRgx()
+        //, mkBodyRgx()
         , sortBar()
 
         , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").kids.length)})
         , ul({}
             , {
                 name: "job-list"
-                , jobsFiltered: cF(c => jobListFilter(c.md, hiringApp.jobs))
-                , kidValues: cF(c => c.md.jobsFiltered || [])
+                , kidValues: cF(c => jobListFilter(c.md, hiringApp.jobs) || [])
                 , kidKey: j => j.hnId
                 , kidFactory: jobListItem
             }
