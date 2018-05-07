@@ -5,47 +5,32 @@ goog.require('Matrix.mxXHR');
 
 const SLOT_CT = 5;
 
-var jct = 0;
-
 const hiringApp = new TagSession(null, 'HiringSession'
     , {
         jobs: cI([])
-        , jobsFiltered: cF(c => c.md.jobs || [])
     });
-
-// '.c5a,.cae,.c00,.c9c,.cdd,.c73,.c88'
-
 
 // ------ the view --------------------------------------
 
-function propComp(p1, p2) {
-    return (p1 < p2 ? -1 : 1)
-}
-
 function jobListFilter(mx, jobs) {
     let remoteness = mx.fmUp("remoteness").selection
-        , filtered = jobs.filter(j => {
-        return remoteness === 'any'
-            || (remoteness === 'remote' && j.remote)
-            || (remoteness === 'onsite' && j.onsite)
-    })
-        , sortBy = mx.fmUp("sortby").selection
-        , sorted = filtered.sort((jj, kk) => {
-        let j = Jobs.dict[jj.hnId], k = Jobs.dict[kk.hnId];
-        clg('sorting', sortBy.prop, sortBy.order, jj.hnId, j.hnId, kk.hnId, k.hnId)
-        let prop = sortBy.prop
-            , order = sortBy.order
-            , comp = order * propComp(jj[prop] || j[prop], kk[prop] || k[prop]);
+        , visaok = mx.fmUp("visaok").onOff
+        , internok = mx.fmUp("internok").onOff
+        , sortBy = mx.fmUp("sortby").selection;
 
-        clg('comp', prop, order, comp, j[prop], k[prop])
+    return jobs.filter(j => remoteness === 'any'
+                            || (remoteness === 'remote' && j.remote)
+                            || (remoteness === 'onsite' && j.onsite))
+        .filter(j => !visaok || j.visa)
+        .filter(j => !internok || j.intern)
+        .sort((j, k) => {
+            let keyFn = sortBy.keyFn;
+            return sortBy.order * (keyFn(j) < keyFn(k) ? -1 : 1)});
 
-        return comp
-    });
-    return sorted;
 }
 
 function jobListItem(c, j) {
-    clg('jobListItem', j.hnId);
+    //clg('joblistitem hdr0', j.hdrest[0])
     return li(
         div(
             // p({content: j.hnId + ' > ' + j.user})
@@ -56,9 +41,9 @@ function jobListItem(c, j) {
                     }
                 }
                 , tag("b", {style: "margin-right:12px"}, {}, j.company), jobStars(j))
-            , p(j.hdrest.join(" | "))
+            , p({content: j.hdrest.join(" | ")})
 
-            //, div({content: j.comment.innerHTML})
+            //, div({content: j.body})
         ))
 }
 
@@ -67,9 +52,8 @@ const MAX_STARS = 5;
 function jobStars(j) {
     return div(c => {
         let stars = []
-            , ujob = Jobs.dict[j.hnId]
+            , ujob = UJob.dict[j.hnId]
             , rating = ujob.stars;
-        clg('star', j.hnId, 'rating', rating)
 
         for (let n = 0; n < MAX_STARS; ++n)
             stars.push(i({
@@ -78,11 +62,11 @@ function jobStars(j) {
                         return "cursor:pointer; color:" + ( rating >= c.md.starN ? "#0f0" : "#eee")
                     })
                     , onclick: mx => {
-                        clg('setting', j.hnId, mx.starN);
+                        //clg('setting', j.hnId, mx.starN);
                         ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
                     }
                 }
-                , {starN: n+1}
+                , {starN: n + 1}
                 , "grade"))
         return stars
     })
@@ -120,6 +104,7 @@ function WhoIsHiring() {
         h1("Hacker News Who's Hiring?")
         , jobSocket()
         , remoteBar()
+        , visaIntern()
         , sortBar()
 
         , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").kids.length)})
@@ -132,44 +117,6 @@ function WhoIsHiring() {
                 , kidFactory: jobListItem
             }
             , c => c.kidValuesKids()))
-}
-
-function remoteBar() {
-    return ul({}, {
-            name: "remoteness"
-            , selection: cI('any')
-        }
-        , [["Any", 'any'], ["On-site", 'onsite'], ["Remote", 'remote']]
-            .map(([label, value]) => button({
-                style: cF(c => c.md.selected ? "background:cyan" : "")
-                , onclick: mx => {
-                    clg('setting selection', mx.value, mx.selection, mx.tag);
-                    mx.fmUp("remoteness").selection = mx.value;
-                }
-                , content: label
-            }, {
-                value: value
-                , selected: cF(c => c.md.fmUp("remoteness").selection === value)
-            })))
-}
-
-function sortBar() {
-    return ul({}, {
-            name: "sortby"
-            , selection: cI({prop: 'stars', order: -1})
-        }
-        , [["Message Id", 'hnId'], ["Stars", 'stars'], ["Company", 'company'], ["Age", 'age']]
-            .map(([label, value]) => button({
-                style: cF(c => c.md.selected ? "background:cyan" : "")
-                , onclick: mx => {
-                    clg('setting selection', mx.value, mx.selection, mx.tag);
-                    mx.fmUp("sortby").selection = {prop: mx.value, order: 1};
-                }
-                , content: label
-            }, {
-                value: value
-                , selected: cF(c => c.md.fmUp("sortby").selection.prop === value)
-            })))
 }
 
 window['WhoIsHiring'] = WhoIsHiring;
