@@ -1,12 +1,13 @@
 function mkJobSelects() {
     return div({style: {display: "flex"}}
-        , span({ style: "margin-right:36px"},
+        , span({style: "margin-right:36px; min-width:96px"},
             "Selects:")
-        , ["REMOTE", "INTERN", "VISA"].map( lbl => input({
-            type: "checkbox", style: "margin-left:18px"
-            , checked: cF( c=> c.md.onOff)
-            , onclick: mx => mx.onOff = !mx.onOff}
-            , {name: lbl+"ok", onOff: cI(false)}
+        , ["REMOTE", "INTERN", "VISA"].map(lbl => input({
+                type: "checkbox", style: "margin-left:18px"
+                , checked: cF(c => c.md.onOff)
+                , onclick: mx => mx.onOff = !mx.onOff
+            }
+            , {name: lbl + "ok", onOff: cI(false)}
             , lbl)))
 }
 
@@ -34,7 +35,7 @@ function sortBar() {
                 , "align-items": "center"
             }
         }
-        , span("Sort by: ")
+        , span({style: "min-width:96px"}, "Sort by:")
         , ul({}, {
                 id: "sortby", name: "sortby"
                 , selection: cI({keyFn: jobStarsKey, order: -1})
@@ -59,37 +60,39 @@ function sortBar() {
 
 }
 
-function labeledRow( label, ...children) {
+function labeledRow(label, ...children) {
     return div({
             style: {
                 display: "flex"
                 , "align-items": "center"
             }
         }
-        , span( label)
+        , span({style: "min-width:96px"}, label)
         , children)
 }
 
 function mkBodyRgx() {
-    return mkListingRgx( 'body', "Body Regex", null, true)
+    return mkListingRgx('body', "Body Regex", null, true)
 }
 
-function mkListingRgx( prop, lbl, ivalue, autofocus=false) {
-    return labeledRow( lbl + ": ", input({
+function mkListingRgx(prop, lbl, ivalue, autofocus = false) {
+    return labeledRow(lbl + ": ", input({
         autofocus: autofocus
         , placeholder: `Regex for ${prop} search`
         , onkeypress: buildRgxTree
         , value: ivalue || ''
+        , style: "min-width:192px;font-size:2em"
     }, {
-        name: prop+ "rgx"
-        , rgxTree: cI( null)
+        name: prop + "rgx"
+        , rgxTree: cI(null)
     }))
 }
 
 function mkTitleRgx() {
-    return mkListingRgx( 'title', "Title Regex")
+    return mkListingRgx('title', "Title Regex")
 }
-function buildRgxTree (mx, e) {
+
+function buildRgxTree(mx, e) {
 
     if (e.key !== 'Enter')
         return
@@ -103,12 +106,12 @@ function buildRgxTree (mx, e) {
 
     clg('building tree', rgx)
 
-    mx.rgxTree = rgx.split('||').map( orx=> orx.trim().split('&&').map(andx => {
+    mx.rgxTree = rgx.split('||').map(orx => orx.trim().split('&&').map(andx => {
         try {
-            return new RegExp( andx.trim())
+            return new RegExp(andx.trim())
         }
-        catch(error) {
-            alert( error.toString() + ": <" + andx.trim() + ">")
+        catch (error) {
+            alert(error.toString() + ": <" + andx.trim() + ">")
         }
     }))
 

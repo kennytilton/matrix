@@ -41,18 +41,11 @@ window['WhoIsHiring'] = WhoIsHiring;
 
 function jobListItem(c, j) {
     return li(
-        div(
-            // p({content: j.hnId + ' > ' + j.user})
-            div({
-                    style: {
-                        display: "flex"
-                        , "align-items": "center"
-                    }
-                }
-                , tag("b", {style: "margin-right:12px"}, {}, j.company), jobStars(j))
-            , h4(j.title.map( h=>h.textContent).join(" | "))
-            , j.body.map( bd=> p({content: bd.innerHTML}))
-        ))
+        h3(j.title.map( h=>h.textContent).join(" | "))
+        , jobStars(j)
+        , j.body.map(bd => p( bd.textContent))
+        //, j.body.map(bd => p({content: bd.innerHTML}))
+    )
 }
 
 // --- loading job data -----------------------------------------
@@ -91,8 +84,8 @@ function jobListFilter(mx, jobs) {
     return jobs.filter(j => !remoteok || j.remote)
         .filter(j => !visaok || j.visa)
         .filter(j => !internok || j.intern)
-        .filter(j => !titleRgx || rgxTreeMatch( j.titlesearch, titleRgx))
-        .filter(j => !bodyRgx || rgxTreeMatch( j.bodysearch, bodyRgx))
+        .filter(j => !titleRgx || rgxTreeMatch(j.titlesearch, titleRgx))
+        .filter(j => !bodyRgx || rgxTreeMatch(j.bodysearch, bodyRgx))
         .sort((j, k) => {
             let keyFn = sortBy.keyFn
                 , rawComp = (keyFn(j) < keyFn(k) ? -1 : 1);
@@ -101,8 +94,8 @@ function jobListFilter(mx, jobs) {
 
 }
 
-function rgxTreeMatch( s, ors) {
-    return ors.some( ands => ands.every( andx => s.match( andx)))
+function rgxTreeMatch(s, ors) {
+    return ors.some(ands => ands.every(andx => s.match(andx)))
 }
 
 // ------ the view --------------------------------------
