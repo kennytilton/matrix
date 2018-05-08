@@ -90,26 +90,38 @@ function sortBar() {
                 }))))
 
 }
+
+function labeledRow( label, ...children) {
+    return div({
+            style: {
+                display: "flex"
+                , "align-items": "center"
+            }
+        }
+        , span( label)
+        , children)
+}
+
 function mkBodyRgx() {
-    return input({}, { name: "bodyrgx",
-        autofocus: true,
-        placeholder: "Regex for listing body search",
-        onkeypress: filterByBody})
+    return mkListingRgx( 'body', "Body Regex", "Clojur || Lisp || BPM || Postgre", true)
+}
+
+function mkListingRgx( prop, lbl, ivalue, autofocus=false) {
+    return labeledRow( lbl + ": ", input({
+        autofocus: autofocus
+        , placeholder: `Regex for ${prop} search`
+        , onkeypress: buildRgxTree
+        , value: ivalue || ''
+    }, {
+        name: prop+ "rgx"
+        , rgxTree: cI( null)
+    }))
 }
 
 function mkTitleRgx() {
-    return input({
-        autofocus: true
-        , placeholder: "Regex for listing title search"
-        , onkeypress: filterByTitle
-        , value: "gineer && Taipei"
-    }, {
-        name: "titlergx"
-        , rgx: cI( null)
-    })
+    return mkListingRgx( 'title', "Title Regex")
 }
-
-function filterByTitle (mx, e) {
+function buildRgxTree (mx, e) {
 
     if (e.key !== 'Enter')
         return
@@ -117,38 +129,21 @@ function filterByTitle (mx, e) {
     let rgx = e.target.value.trim()
 
     if (rgx === '') {
-        mx.rgx = null // test
+        mx.rgxTree = null // test
         return
     }
 
-    try {
-        mx.rgx = rgx.split('||').map( orx=> orx.trim().split('&&').map(andx => new RegExp( andx.trim())));
-    }
-    catch(error) {
-        alert(error.toString());
-    }
+    clg('building tree', rgx)
 
+    mx.rgxTree = rgx.split('||').map( orx=> orx.trim().split('&&').map(andx => {
+        try {
+            return new RegExp( andx.trim())
+        }
+        catch(error) {
+            alert( error.toString() + ": <" + andx.trim() + ">")
+        }
+    }))
+
+    clg('loaded ', mx.rgxTree)
 }
-
-function filterByBody (mx, e) {
-    if (e.key !== 'Enter') return;
-
-    let rgx = e.target.value.trim();
-    if (rgx === '') return;
-
-    mx.rgx = rgx;
-
-    // Convert to rgx obj and check for errors
-
-    // Add rgx  search and set jobs
-    // Add to job filtering
-
-    // Implement &&
-
-    // Implement ||
-
-    // Implement || and &&&
-
-}
-
 

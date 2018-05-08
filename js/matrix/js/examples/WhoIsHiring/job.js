@@ -48,7 +48,7 @@ function jobsCollect(dom) {
         , jobs = [];
 
     for (let rn = 0
-        ; rn <  raw.length && (jobs.length < 6)
+        ; rn <  raw.length && (jobs.length < 100)
         ; ++rn) {
 
         let spec = jobSpec(raw[rn])
@@ -92,7 +92,11 @@ function jobSpecBuild(j, dom, deep) {
     } else if (cn === "age") {
         j.age = dom.children[0].innerHTML
 
-    } else if ("c5a,cae,c00,c9c,cdd,c73,c88".search(cn) !== -1) {
+    } else if (cn.length === 3 && "c5a,cae,c00,c9c,cdd,c73,c88".search(cn) !== -1) {
+        let rs = dom.getElementsByClassName('reply');
+        Array.prototype.map.call( rs, function(e){
+            e.remove()
+        });
         let ih = dom.innerHTML
             , ps = ih.split("<p>")
             , hdr = ps[0]
@@ -108,24 +112,29 @@ function jobSpecBuild(j, dom, deep) {
 
         if (hs.length > 1) {
             let onsite = new RegExp(/(on-?site)/, 'i')
-                //, internOK = new RegExp('/^(intern|interns(?=,)|internship)$/','i')
                 , internOK = new RegExp(/((internship|intern)(?=|s,\)))/,'i')
                 , visaOK = new RegExp(/((visa|visas)(?=|s,\)))/,'i')
                 , remote = new RegExp(/(remote)/, 'i');
-            j.OK = true
             j.company = hs[0]
+
             j.hdrest = hs.slice(1)
-            j.title = dom.innerHTML.split("<p>")[0]
-            j.body = ps.slice(1).join("<p>")
-            //clg('job header', hs.length, hdr)
-            //clg('hdrest0', j.hdrest[0])
+            j.title = j.hdrest.join(' | ');
             j.onsite =  hsmatch(onsite)
             j.remote = hsmatch(remote)
             j.visa = hsmatch(visaOK)
             j.intern = hsmatch(internOK)
-            // if (hdr.search("INTERN") !== -1) {
-            //     clg("Intern!!!!", j.intern, hdr)
-            // }
+            j.OK = true || j.company.search("Factual") !== -1
+            if (j.OK) {
+                // clg('LISTING!!!!', j.hnId, cn)
+                let pgrs = dom.getElementsByTagName('p')
+                    , tempbody = []
+                Array.prototype.map.call( pgrs, function(pgr){
+                    //clg('PGR!!!', pgr.innerHTML)
+                    tempbody.push( pgr.innerHTML)
+                })
+                j.body = tempbody
+                j.bodysearch = tempbody.join('<**>')
+            }
         }
     }
     if (cn === "reply") {
