@@ -10,32 +10,6 @@ const hiringApp = new TagSession(null, 'HiringSession'
         jobs: cI([])
     });
 
-// ------ the view --------------------------------------
-
-const MAX_STARS = 5;
-
-function jobStars(j) {
-    return div(c => {
-        let stars = []
-            , ujob = UJob.dict[j.hnId]
-            , rating = ujob.stars;
-
-        for (let n = 0; n < MAX_STARS; ++n)
-            stars.push(i({
-                    class: "material-icons"
-                    , style: cF(c => {
-                        return "cursor:pointer; color:" + ( rating >= c.md.starN ? "#0f0" : "#eee")
-                    })
-                    , onclick: mx => {
-                        //clg('setting', j.hnId, mx.starN);
-                        ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
-                    }
-                }
-                , {starN: n + 1}
-                , "grade"))
-        return stars
-    })
-}
 
 // --- main ---------------------------------------
 
@@ -44,8 +18,8 @@ function WhoIsHiring() {
     return div(
         h1("Hacker News Who's Hiring?")
         , jobSocket()
-        , remoteBar()
-        , visaIntern()
+        // , remoteBar()
+        , mkJobSelects()
         , mkTitleRgx()
         , mkBodyRgx()
         , sortBar()
@@ -76,11 +50,8 @@ function jobListItem(c, j) {
                     }
                 }
                 , tag("b", {style: "margin-right:12px"}, {}, j.company), jobStars(j))
-            , h4(j.title)
-            , j.body.map( bd=> {
-                clg('bodybit', bd)
-                return p(bd)
-            })
+            , h4(j.title.map( h=>h.textContent).join(" | "))
+            , j.body.map( bd=> p({content: bd.innerHTML}))
         ))
 }
 
@@ -108,21 +79,19 @@ function jobSocket() {
 // --- filtering ------------------------------------------------
 
 function jobListFilter(mx, jobs) {
-    let remoteness = mx.fmUp("remoteness").selection
-        , visaok = mx.fmUp("visaok").onOff
-        , internok = mx.fmUp("internok").onOff
+    let remoteok = mx.fmUp("REMOTEok").onOff
+        , visaok = mx.fmUp("VISAok").onOff
+        , internok = mx.fmUp("INTERNok").onOff
         , sortBy = mx.fmUp("sortby").selection
         , titleRgx = mx.fmUp("titlergx").rgxTree
         , bodyRgx = mx.fmUp("bodyrgx").rgxTree
 
-    clg('title tree', titleRgx)
+    clg('remoteok tree', remoteok)
 
-    return jobs.filter(j => remoteness === 'any'
-        || (remoteness === 'remote' && j.remote)
-        || (remoteness === 'onsite' && j.onsite))
+    return jobs.filter(j => !remoteok || j.remote)
         .filter(j => !visaok || j.visa)
         .filter(j => !internok || j.intern)
-        .filter(j => !titleRgx || rgxTreeMatch( j.title, titleRgx))
+        .filter(j => !titleRgx || rgxTreeMatch( j.titlesearch, titleRgx))
         .filter(j => !bodyRgx || rgxTreeMatch( j.bodysearch, bodyRgx))
         .sort((j, k) => {
             let keyFn = sortBy.keyFn
@@ -136,3 +105,31 @@ function rgxTreeMatch( s, ors) {
     return ors.some( ands => ands.every( andx => s.match( andx)))
 }
 
+// ------ the view --------------------------------------
+
+const MAX_STARS = 5;
+
+function jobStars(j) {
+    let stars = []
+        , ujob = UJob.dict[j.hnId]
+        , rating = ujob.stars;
+
+    clg('jobstars', j.hnId, ujob, rating)
+
+    return div(c => {
+        for (let n = 0; n < MAX_STARS; ++n)
+            stars.push(i({
+                    class: "material-icons"
+                    , style: cF(c => {
+                        return "cursor:pointer; color:" + ( rating >= c.md.starN ? "#0f0" : "#eee")
+                    })
+                    , onclick: mx => {
+                        //clg('setting', j.hnId, mx.starN);
+                        ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
+                    }
+                }
+                , {starN: n + 1}
+                , "grade"))
+        return stars
+    })
+}

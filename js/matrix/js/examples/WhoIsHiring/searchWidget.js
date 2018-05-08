@@ -1,45 +1,13 @@
-function visaIntern() {
+function mkJobSelects() {
     return div({style: {display: "flex"}}
         , span({ style: "margin-right:36px"},
-            "Status:")
-        , input({ type: "checkbox"
-                , checked: cF( c=> c.md.onOff)
-                , onclick: mx => mx.onOff = !mx.onOff}
-            , {name: "internok", onOff: cI(false)}
-            , "INTERN?")
-        , input({ type: "checkbox"
-                , checked: cF( c=> c.md.onOff)
-                , onclick: mx => mx.onOff = !mx.onOff}
-            , {name: "visaok", onOff: cI(false)}
-            , "VISA?")
-    )
-}
-
-function remoteBar() {
-    // todo make like sortby
-    return div({
-            style: {
-                display: "flex"
-                , "align-items": "center"
-            }
-        }
-        , span("Locus: ")
-        , ul({}, {
-                name: "remoteness"
-                , selection: cI('any')
-            }
-            , [["Any", 'any'], ["On-site", 'onsite'], ["Remote", 'remote']]
-                .map(([label, value]) => button({
-                    style: cF(c => c.md.selected ? "background:cyan" : "")
-                    , onclick: mx => {
-                        //clg('setting selection', mx.value, mx.selection, mx.tag);
-                        mx.fmUp("remoteness").selection = mx.value;
-                    }
-                    , content: label
-                }, {
-                    value: value
-                    , selected: cF(c => c.md.fmUp("remoteness").selection === value)
-                }))))
+            "Selects:")
+        , ["REMOTE", "INTERN", "VISA"].map( lbl => input({
+            type: "checkbox", style: "margin-left:18px"
+            , checked: cF( c=> c.md.onOff)
+            , onclick: mx => mx.onOff = !mx.onOff}
+            , {name: lbl+"ok", onOff: cI(false)}
+            , lbl)))
 }
 
 function jobHnIdKey(j) {
@@ -103,7 +71,7 @@ function labeledRow( label, ...children) {
 }
 
 function mkBodyRgx() {
-    return mkListingRgx( 'body', "Body Regex", "Clojur || Lisp || BPM || Postgre", true)
+    return mkListingRgx( 'body', "Body Regex", null, true)
 }
 
 function mkListingRgx( prop, lbl, ivalue, autofocus=false) {
