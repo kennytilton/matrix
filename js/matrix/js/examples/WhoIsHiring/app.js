@@ -17,7 +17,9 @@ function WhoIsHiring() {
     // return h1("testin");
     return div(
         h1("Hacker News &quot;Who Is Hiring?&quot; Browser")
-        , i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a><p></p>")
+        , p( i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. " +
+            "All filters are ANDed. RFEs welcome and can be raised " +
+            "<a href='https://github.com/kennytilton/matrix/issues'>here</a>."))
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()
@@ -25,6 +27,13 @@ function WhoIsHiring() {
         , sortBar()
 
         , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length)})
+        , progress({
+            id: "progress"
+            , max: cI(2000)
+            , hidden: cI( null)
+            , value: cI(0)
+        }, {name: "progress"})
+
         , ul({}
             , {
                 name: "job-list"

@@ -8,7 +8,7 @@ const JOB_LS_PREFIX = "whoishiring.";
 
 // MXStorable.removeAllItems(JOB_LS_PREFIX);
 
-class UserJob extends MXStorable {
+class UserNotes extends MXStorable {
     constructor(islots) {
         super(Object.assign({
                 lsPrefix: JOB_LS_PREFIX
@@ -33,7 +33,7 @@ class UserJob extends MXStorable {
             , {
                 dict: cF(c => {
                     let jd = {}
-                        , jobs = MXStorable.loadAllItems(UserJob, JOB_LS_PREFIX) || [];
+                        , jobs = MXStorable.loadAllItems(UserNotes, JOB_LS_PREFIX) || [];
                     //clg('ujobs found', WhoIsHiring.length)
                     for (let jn = 0; jn < jobs.length; ++jn) {
                         let j = jobs[jn]
@@ -47,7 +47,7 @@ class UserJob extends MXStorable {
     }
 }
 
-const UJob = UserJob.loadFromStorage();
+const UJob = UserNotes.loadFromStorage();
 
 // ------ user annotations u/x --------------------------------------
 

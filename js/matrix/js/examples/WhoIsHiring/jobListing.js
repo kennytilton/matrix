@@ -2,12 +2,7 @@
 
 function jobListingLoader() {
     return div(
-        progress({
-            id: "progress"
-            , max: cI( 2000)
-            , value: cI(0)
-        }, {name: "progress"})
-        , iframe({
+        iframe({
             src: "files/whoishiring-2018-05.html" // "files/hiring-201805-06e.htm"
             , style: "display: none; width:1000px; height:100px"
             , onload: md => jobsCollect(md)
@@ -35,32 +30,31 @@ function jobsCollect(md) {
 }
 
 function parseListings( listing, tempJobs, chunkSize, progressBar) {
-    let chunker = chunk => {
-        let jct = Math.min(chunk.length, chunkSize)
+    let total = listing.length
+        , chunker = offset => {
+        let jct = Math.min( total - offset, chunkSize)
 
         if (jct > 0) {
-            //clg('parsing', jct, chunk.length);
             for (jn = 0; jn < jct; ++jn) {
-                let spec = jobSpec(chunk[jn])
+                let spec = jobSpec( listing[ offset + jn])
 
                 if (spec.OK) {
                     let hnId = spec.hnId;
-                    //clg('specok', hnId);
 
                     if (!UJob.dict[hnId]) {
-                        UJob.dict[hnId] = new UserJob({hnId: hnId});
+                        UJob.dict[hnId] = new UserNotes({hnId: hnId});
                     }
                     tempJobs.push(spec)
                 }
             }
-            let v = progressBar.value;
-            progressBar.value = v + 1;
-            window.requestAnimationFrame(() => chunker(chunk.slice(jct)));
+            progressBar.value = progressBar.value + 1;
+            window.requestAnimationFrame(() => chunker( offset + jct));
         } else {
-            hiringApp.jobs = tempJobs;
+            progressBar.hidden = true
+            hiringApp.jobs = tempJobs
         }
     }
-    chunker( listing);
+    chunker( 0);
 }
 
 function jobSpec(dom) {

@@ -132,9 +132,6 @@ function obsAttrGlobal (property, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
     let trueAttr = AttrAliases.get(property) || property;
     domlog( 'attr global', property, newv, oldv);
-    if (property === 'max' || property === 'max') {
-        clg('obs ', property, newv, oldv)
-    }
     md.dom[trueAttr] = newv;
 }
 
@@ -290,7 +287,7 @@ class Tag extends Model {
 			} else if (TagAttributesGlobal.has(slot)) {
 				obs = obsAttrGlobal;
 			} else {
-				console.warn(`tag ${this.tag} not resolving observer for ${slot}`);
+				// console.warn(`tag ${this.tag} not resolving observer for ${slot}`);
 				obs = kObserverUnresolved;
 			}
 			this.slotObservers[slot] = obs;

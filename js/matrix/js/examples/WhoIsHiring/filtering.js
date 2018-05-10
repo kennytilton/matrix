@@ -1,7 +1,6 @@
 // --- filtering and sorting ------------------------------------------------
 
 function jobListFilter(mx, jobs) {
-    clg( 'jlfilter sees', jobs.length)
     let remoteok = mx.fmUp("REMOTE").onOff
         , visaok = mx.fmUp("VISA").onOff
         , internok = mx.fmUp("INTERN").onOff
