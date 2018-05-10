@@ -122,6 +122,7 @@ function obsTagEventHandler (property, md, newv, oldv, c) {
 	if (oldv===kUnbound) return; // on awaken, all HTML is assembled at once
 	//clg(`setting tag ${md.dbg()} style ${property}!!! `+ newv);
     // todo this is untested, might need translation of property
+
 	md.dom[property] = newv;
 }
 
@@ -131,6 +132,9 @@ function obsAttrGlobal (property, md, newv, oldv, c) {
     if (oldv===kUnbound) return; // on awaken all HTML is assembled at once
     let trueAttr = AttrAliases.get(property) || property;
     domlog( 'attr global', property, newv, oldv);
+    if (property === 'max' || property === 'max') {
+        clg('obs ', property, newv, oldv)
+    }
     md.dom[trueAttr] = newv;
 }
 
@@ -286,7 +290,7 @@ class Tag extends Model {
 			} else if (TagAttributesGlobal.has(slot)) {
 				obs = obsAttrGlobal;
 			} else {
-				//console.warn(`tag ${this.tag} not resolving observer for ${slot}`);
+				console.warn(`tag ${this.tag} not resolving observer for ${slot}`);
 				obs = kObserverUnresolved;
 			}
 			this.slotObservers[slot] = obs;
@@ -313,11 +317,12 @@ var isTag = x => x instanceof Tag;
 
 /* global Tag TagEvents */
 const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class'
-    ,'content', 'contenteditable','contextmenu'
+    ,'cols', 'content', 'contenteditable','contextmenu'
     , 'data','dir','draggable','dropzone','for','hidden','href'
     ,'id','itemid','itemprop','itemref','itemscope'
-	,'itemtype','lang','spellcheck','src','style','tabindex','title','translate', 'type'
-    ,'viewBox','fill','d']);
+	,'itemtype','lang','max'
+    ,'spellcheck','src','style','tabindex','title','translate', 'type'
+    ,'value','viewBox','fill','d']);
 
 const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','onblur','oncancel'
 	,'oncanplay','oncanplaythrough','onchange','onclick','onclose','oncontextmenu','oncuechange'

@@ -1,22 +1,62 @@
+// --- filtering and sorting ------------------------------------------------
+
+function jobListFilter(mx, jobs) {
+    clg( 'jlfilter sees', jobs.length)
+    let remoteok = mx.fmUp("REMOTE").onOff
+        , visaok = mx.fmUp("VISA").onOff
+        , internok = mx.fmUp("INTERN").onOff
+        , starred = mx.fmUp("Starred").onOff
+        , applied = mx.fmUp("Applied").onOff
+        , noted = mx.fmUp("Noted").onOff
+        , sortBy = mx.fmUp("sortby").selection
+        , titleRgx = mx.fmUp("titlergx").rgxTree
+        , bodyRgx = mx.fmUp("bodyrgx").rgxTree
+
+    return jobs.filter(j => !remoteok || j.remote)
+        .filter(j => !visaok || j.visa)
+        .filter(j => !internok || j.intern)
+        .filter(j => !applied || UJob.dict[j.hnId].applied)
+        .filter(j => !starred || UJob.dict[j.hnId].stars > 0)
+        .filter(j => !noted || UJob.dict[j.hnId].notes)
+
+        .filter(j => !titleRgx || rgxTreeMatch(j.titlesearch, titleRgx))
+        .filter(j => !bodyRgx || rgxTreeMatch(j.bodysearch, bodyRgx))
+};
+
+function rgxTreeMatch(s, ors) {
+    return ors.some(ands => ands.every(andx => s.match(andx)))
+}
+
+// --- filtering U/X ------------------------------------------------
+
 function mkJobSelects() {
     return div({style: {display: "flex"}}
         , span({style: "min-width:80px"},
             "Selects:")
-        , ["REMOTE", "INTERN", "VISA"].map(lbl => input({
+        , ["REMOTE", "INTERN", "VISA", "Starred", "Applied", "Noted"].map(lbl => input({
                 type: "checkbox", style: "margin-left:18px"
                 , checked: cF(c => c.md.onOff)
                 , onclick: mx => mx.onOff = !mx.onOff
             }
-            , {name: lbl + "ok", onOff: cI(false)}
+            , {name: lbl, onOff: cI(false)}
             , lbl)))
+}
+
+// --- sorting ------------------------------------------------------
+
+function jobListSort(mx, jobs) {
+    let sortBy = mx.fmUp("sortby").selection
+
+    return jobs.sort((j, k) => {
+        let keyFn = sortBy.keyFn
+            , rawComp = (keyFn(j) < keyFn(k) ? -1 : 1);
+        return sortBy.order * rawComp
+    });
+
 }
 
 function jobHnIdKey(j) {
     return j.hnId
-}
-
-function jobAgeKey(j) {
-    return (j.age || '')
 }
 
 function jobCompanyKey(j) {
@@ -41,7 +81,7 @@ function sortBar() {
                 , selection: cI({keyFn: jobStarsKey, order: -1})
             }
             , [["Message Id", jobHnIdKey], ["Stars", jobStarsKey]
-                , ["Company", jobCompanyKey], ["Age", jobAgeKey]]
+                , ["Company", jobCompanyKey]]
                 .map(([label, keyFn]) => button({
                     style: cF(c => c.md.selected ? "background:cyan" : "")
                     , onclick: mx => {
@@ -60,16 +100,8 @@ function sortBar() {
 
 }
 
-function labeledRow(label, ...children) {
-    return div({
-            style: {
-                display: "flex"
-                , "margin-top" : "9px"
-                , "align-items": "center"
-            }
-        }
-        , span({style: "min-width:96px"}, label)
-        , children)
+function mkTitleRgx() {
+    return mkListingRgx('title', "Title Regex")
 }
 
 function mkBodyRgx() {
@@ -89,12 +121,19 @@ function mkListingRgx(prop, lbl, ivalue, autofocus = false) {
     }))
 }
 
-function mkTitleRgx() {
-    return mkListingRgx('title', "Title Regex")
+function labeledRow(label, ...children) {
+    return div({
+            style: {
+                display: "flex"
+                , "margin-top" : "9px"
+                , "align-items": "center"
+            }
+        }
+        , span({style: "min-width:96px"}, label)
+        , children)
 }
 
 function buildRgxTree(mx, e) {
-
     if (e.key !== 'Enter')
         return
 
@@ -105,8 +144,6 @@ function buildRgxTree(mx, e) {
         return
     }
 
-    clg('building tree', rgx)
-
     mx.rgxTree = rgx.split('||').map(orx => orx.trim().split('&&').map(andx => {
         try {
             return new RegExp(andx.trim())
@@ -115,7 +152,4 @@ function buildRgxTree(mx, e) {
             alert(error.toString() + ": <" + andx.trim() + ">")
         }
     }))
-
-    clg('loaded ', mx.rgxTree)
 }
-

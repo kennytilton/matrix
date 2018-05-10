@@ -1,74 +1,66 @@
-//--- persistence ------------------------------------------------------
+// --- loading job data -----------------------------------------
 
-const JOB_LS_PREFIX = "whoishiring.";
+function jobListingLoader() {
+    return div(
+        progress({
+            id: "progress"
+            , max: cI( 2000)
+            , value: cI(0)
+        }, {name: "progress"})
+        , iframe({
+            src: "files/whoishiring-2018-05.html" // "files/hiring-201805-06e.htm"
+            , style: "display: none; width:1000px; height:100px"
+            , onload: md => jobsCollect(md)
+        }))
+}
 
-// MXStorable.removeAllItems(JOB_LS_PREFIX);
 
-class UserJob extends MXStorable {
-    constructor(islots) {
-        super(Object.assign({
-                lsPrefix: JOB_LS_PREFIX
-            },
-            islots,
-            {
-                hnId: islots.hnId
-                , stars: cI(islots.stars) // null OK
-                , hidden: cI(islots.hidden || false)
-                , applied: cI(islots.applied || false)
-                , notes: cI(islots.notes)
-            }))
-    }
+function jobsCollect(md) {
+    if (md.dom.contentDocument) { // FF
+        hnBody = md.dom.contentDocument.getElementsByTagName('body')[0];
+        let chunkSize = 10
+            , listing = Array.prototype.slice.call(hnBody.querySelectorAll('.athing'))
+            , tempJobs = []
+            , progressBar = md.fmUp("progress");
 
-    static storableProperties() {
-        // created and deleted are provided by MXStorable
-        return ["id", "hnId", "stars", "hidden", "applied", "notes"].concat(super.storableProperties());
-    }
+        ast(progressBar);
 
-    static loadFromStorage() {
-        return mkm(null, 'JobList'
-            , {
-                dict: cF(c => {
-                    let jd = {}
-                        , jobs = MXStorable.loadAllItems(UserJob, JOB_LS_PREFIX) || [];
-                    //clg('ujobs found', WhoIsHiring.length)
-                    for (let jn = 0; jn < jobs.length; ++jn) {
-                        let j = jobs[jn]
-                        //clg('job Storage->dict', j.hnId)
-                        jd[j.hnId] = j;
-                    }
+        if (listing.length > 0) {
+            progressBar.max = Math.floor( listing.length / chunkSize)+""
+            parseListings( listing, tempJobs, chunkSize, progressBar)
+        }
 
-                    return jd;
-                })
-            })
+
     }
 }
 
-const UJob = UserJob.loadFromStorage();
+function parseListings( listing, tempJobs, chunkSize, progressBar) {
+    let chunker = chunk => {
+        let jct = Math.min(chunk.length, chunkSize)
 
-function jobsCollect(dom) {
-    let raw = Array.prototype.slice.call(dom.querySelectorAll('.athing'))
-        , jobs = [];
+        if (jct > 0) {
+            //clg('parsing', jct, chunk.length);
+            for (jn = 0; jn < jct; ++jn) {
+                let spec = jobSpec(chunk[jn])
 
-    for (let rn = 0
-        ; rn < raw.length // && (WhoIsHiring.length < 50)
-        ; ++rn) {
+                if (spec.OK) {
+                    let hnId = spec.hnId;
+                    //clg('specok', hnId);
 
-        let spec = jobSpec(raw[rn])
-            , hnId = spec.hnId;
-
-        if (spec.OK) {
-            ast(hnId);
-            //clg( 'OK job', hnId);
-            if (!UJob.dict[hnId]) {
-                //clg('initializing user job', hnId)
-                let j = new UserJob({hnId: hnId});
-                UJob.dict[hnId] = j;
+                    if (!UJob.dict[hnId]) {
+                        UJob.dict[hnId] = new UserJob({hnId: hnId});
+                    }
+                    tempJobs.push(spec)
+                }
             }
-            jobs.push(spec)
+            let v = progressBar.value;
+            progressBar.value = v + 1;
+            window.requestAnimationFrame(() => chunker(chunk.slice(jct)));
+        } else {
+            hiringApp.jobs = tempJobs;
         }
     }
-
-    return jobs;
+    chunker( listing);
 }
 
 function jobSpec(dom) {
@@ -98,7 +90,7 @@ function jobSpecBuild(j, dom) {
         let child = dom.childNodes
             , inHeader = true;
 
-        if ( child[0].nodeType === 3
+        if (child[0].nodeType === 3
             // && child[0].textContent.search("Instructure") !== -1
             && child[0].textContent.split("|").length > 1) {
 
@@ -125,7 +117,7 @@ function jobSpecBuild(j, dom) {
 
 
             let htext = j.title.map(h => h.textContent).join(" | ")
-                , hseg = htext.split("|").map( s=> s.trim())
+                , hseg = htext.split("|").map(s => s.trim())
 
             let internOK = new RegExp(/((internship|intern)(?=|s,\)))/, 'i')
                 , visaOK = new RegExp(/((visa|visas)(?=|s,\)))/, 'i')
@@ -133,7 +125,7 @@ function jobSpecBuild(j, dom) {
                 , hsmatch = rx => hseg.some(hs => hs.match(rx) !== null);
 
             j.company = hseg[0]
-            j.OK = true || j.company.search("Privacy.com")===0;
+            j.OK = true || j.company.search("Privacy.com") === 0;
 
             j.titlesearch = htext
             j.bodysearch = j.body.map(n => n.textContent).join('<**>')
