@@ -1,6 +1,6 @@
 function mkJobSelects() {
     return div({style: {display: "flex"}}
-        , span({style: "margin-right:36px; min-width:96px"},
+        , span({style: "min-width:80px"},
             "Selects:")
         , ["REMOTE", "INTERN", "VISA"].map(lbl => input({
                 type: "checkbox", style: "margin-left:18px"
@@ -35,7 +35,7 @@ function sortBar() {
                 , "align-items": "center"
             }
         }
-        , span({style: "min-width:96px"}, "Sort by:")
+        , span({style: "min-width:40px"}, "Sort by:")
         , ul({}, {
                 id: "sortby", name: "sortby"
                 , selection: cI({keyFn: jobStarsKey, order: -1})
@@ -64,6 +64,7 @@ function labeledRow(label, ...children) {
     return div({
             style: {
                 display: "flex"
+                , "margin-top" : "9px"
                 , "align-items": "center"
             }
         }
@@ -81,7 +82,7 @@ function mkListingRgx(prop, lbl, ivalue, autofocus = false) {
         , placeholder: `Regex for ${prop} search`
         , onkeypress: buildRgxTree
         , value: ivalue || ''
-        , style: "min-width:192px;font-size:2em"
+        , style: "min-width:300px;font-size:1em"
     }, {
         name: prop + "rgx"
         , rgxTree: cI(null)

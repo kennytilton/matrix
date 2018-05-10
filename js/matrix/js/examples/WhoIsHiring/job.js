@@ -4,7 +4,7 @@ const JOB_LS_PREFIX = "whoishiring.";
 
 // MXStorable.removeAllItems(JOB_LS_PREFIX);
 
-class Job extends MXStorable {
+class UserJob extends MXStorable {
     constructor(islots) {
         super(Object.assign({
                 lsPrefix: JOB_LS_PREFIX
@@ -29,8 +29,8 @@ class Job extends MXStorable {
             , {
                 dict: cF(c => {
                     let jd = {}
-                        , jobs = MXStorable.loadAllItems(Job, JOB_LS_PREFIX) || [];
-                    //clg('ujobs found', jobs.length)
+                        , jobs = MXStorable.loadAllItems(UserJob, JOB_LS_PREFIX) || [];
+                    //clg('ujobs found', WhoIsHiring.length)
                     for (let jn = 0; jn < jobs.length; ++jn) {
                         let j = jobs[jn]
                         //clg('job Storage->dict', j.hnId)
@@ -43,14 +43,14 @@ class Job extends MXStorable {
     }
 }
 
-const UJob = Job.loadFromStorage();
+const UJob = UserJob.loadFromStorage();
 
 function jobsCollect(dom) {
     let raw = Array.prototype.slice.call(dom.querySelectorAll('.athing'))
         , jobs = [];
 
     for (let rn = 0
-        ; rn < raw.length && (jobs.length < 50)
+        ; rn < raw.length // && (WhoIsHiring.length < 50)
         ; ++rn) {
 
         let spec = jobSpec(raw[rn])
@@ -61,7 +61,7 @@ function jobsCollect(dom) {
             //clg( 'OK job', hnId);
             if (!UJob.dict[hnId]) {
                 //clg('initializing user job', hnId)
-                let j = new Job({hnId: hnId});
+                let j = new UserJob({hnId: hnId});
                 UJob.dict[hnId] = j;
             }
             jobs.push(spec)
@@ -114,7 +114,7 @@ function jobSpecBuild(j, dom) {
                         //clg('pgr1', n, n.nodeName, n.innerHTML)
                         j.body.push(n)
                     } else {
-                        clg('raw title seg', n.nodeType, n.textContent, n.nodeName)
+                        //clg('raw title seg', n.nodeType, n.textContent, n.nodeName)
                         j.title.push(n)
                     }
                 } else {

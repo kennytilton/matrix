@@ -16,19 +16,20 @@ const hiringApp = new TagSession(null, 'HiringSession'
 function WhoIsHiring() {
     // return h1("testin");
     return div(
-        h1("Hacker News Who's Hiring?")
+        h1("Hacker News &quot;Who Is Hiring?&quot; Browser")
+    , i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a><p></p>")
         , jobSocket()
-        // , remoteBar()
         , mkJobSelects()
         , mkTitleRgx()
         , mkBodyRgx()
         , sortBar()
 
-        , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").kids.length)})
+        , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length)})
         , ul({}
             , {
                 name: "job-list"
-                , kidValues: cF(c => jobListFilter(c.md, hiringApp.jobs) || [])
+                , selectedJobs: cF(c => jobListFilter(c.md, hiringApp.jobs) || [])
+                , kidValues: cF( c=> hiringApp.jobs || [])
                 , kidKey: j => j.hnId
                 , kidFactory: jobListItem
             }
@@ -40,8 +41,8 @@ window['WhoIsHiring'] = WhoIsHiring;
 // --- jobListItem ---------------------------------------------------------
 
 function jobListItem(c, j) {
-    return li(
-        h3(j.title.map( h=>h.textContent).join(" | "))
+    return li( {style: cF( c=> c.md.par.selectedJobs.indexOf(j)===-1? "display:none":"display:block")}
+        , h3(j.title.map( h=>h.textContent).join(" | "))
         , jobStars(j)
         , j.body.map(bd => p( bd.textContent))
         //, j.body.map(bd => p({content: bd.innerHTML}))
@@ -52,7 +53,7 @@ function jobListItem(c, j) {
 
 function jobSocket() {
     return iframe({
-            src: "resource/hiring-201805-06e.htm"
+            src: "files/hiring-201805-06e.htm"
             , style: "display: none; width:1000px; height:100px"
             , onload: md => {
                 if (md.dom.contentDocument) { // FF
@@ -79,7 +80,7 @@ function jobListFilter(mx, jobs) {
         , titleRgx = mx.fmUp("titlergx").rgxTree
         , bodyRgx = mx.fmUp("bodyrgx").rgxTree
 
-    clg('remoteok tree', remoteok)
+    // clg('remoteok tree', remoteok)
 
     return jobs.filter(j => !remoteok || j.remote)
         .filter(j => !visaok || j.visa)
@@ -107,7 +108,7 @@ function jobStars(j) {
         , ujob = UJob.dict[j.hnId]
         , rating = ujob.stars;
 
-    clg('jobstars', j.hnId, ujob, rating)
+    // clg('jobstars', j.hnId, ujob, rating)
 
     return div(c => {
         for (let n = 0; n < MAX_STARS; ++n)
