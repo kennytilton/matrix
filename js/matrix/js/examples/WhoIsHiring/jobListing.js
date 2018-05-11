@@ -47,7 +47,7 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
                 }
             }
             progressBar.value = progressBar.value + 1;
-            if (false || progressBar.value < 30)
+            if (true || progressBar.value < 30)
                 window.requestAnimationFrame(() => chunker( offset + jct))
             else {
                 progressBar.hidden = true

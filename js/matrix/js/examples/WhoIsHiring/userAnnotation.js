@@ -73,7 +73,6 @@ function jobStars(j) {
                         return "cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#0f0" : "#eee")
                     })
                     , onclick: mx => {
-                        clg('setting', j.hnId, mx.starN);
                         ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
                     }
                 }
