@@ -1,6 +1,7 @@
 // --- filtering and sorting ------------------------------------------------
 
 function jobListFilter(mx, jobs) {
+    clg('filtering!!!!!!!!!')
     let remoteok = mx.fmUp("REMOTE").onOff
         , visaok = mx.fmUp("VISA").onOff
         , internok = mx.fmUp("INTERN").onOff
@@ -48,6 +49,8 @@ function mkJobSelects() {
 function jobListSort(mx, jobs) {
     let sortBy = mx.fmUp("sortby").selection
 
+    clg('sorting by!!!!!!!!!!', sortBy.keyFn)
+
     return jobs.sort((j, k) => {
         let keyFn = sortBy.keyFn
             , rawComp = (keyFn(j) < keyFn(k) ? -1 : 1);
@@ -79,7 +82,7 @@ function sortBar() {
         , span({style: "min-width:40px"}, "Sort by:")
         , ul({}, {
                 id: "sortby", name: "sortby"
-                , selection: cI({keyFn: jobStarsKey, order: -1})
+                , selection: cI({keyFn: jobHnIdKey, order: -1})
             }
             , [["Message Id", jobHnIdKey], ["Stars", jobStarsKey]
                 , ["Company", jobCompanyKey]]
@@ -102,19 +105,19 @@ function sortBar() {
 }
 
 function mkTitleRgx() {
-    return mkListingRgx('title', "Title Regex")
+    return mkListingRgx('title', "Title Regex", 'title')
 }
 
 function mkFullRgx() {
-    return mkListingRgx('listing', "Listing Regex", null, true)
+    return mkListingRgx('listing', "Listing Regex", 'title and listing', true)
 }
 
-function mkListingRgx(prop, lbl, ivalue, autofocus = false) {
+function mkListingRgx(prop, lbl, desc, autofocus = false) {
     return labeledRow(lbl + ": ", input({
         autofocus: autofocus
-        , placeholder: `Regex for ${prop} search`
+        , placeholder: `Regex for ${desc} search`
         , onkeypress: buildRgxTree
-        , value: ivalue || ''
+        , value: ''
         , style: "min-width:300px;font-size:1em"
     }, {
         name: prop + "rgx"
@@ -130,7 +133,7 @@ function labeledRow(label, ...children) {
                 , "align-items": "center"
             }
         }
-        , span({style: "min-width:96px"}, label)
+        , span({style: "min-width:104px"}, label)
         , children)
 }
 

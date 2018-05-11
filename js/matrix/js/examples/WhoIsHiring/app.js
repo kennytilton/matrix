@@ -18,11 +18,16 @@ function WhoIsHiring() {
         h1("Ask HN: Who Is Hiring? (May 2018)")
         , p( i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. " +
             "All filters are ANDed. RFEs welcome and can be raised " +
-            "<a href='https://github.com/kennytilton/matrix/issues'>here</a>."))
+            "<a href='https://github.com/kennytilton/matrix/issues'>here</a>. " +
+            "Stable GitHub source can be " +
+            "<a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>" +
+            "found here</a>."))
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()
         , mkFullRgx()
+        , p( i( "Separate above regex terms with || or && (higher priority) to combine expressions." +
+            " Press 'Enter' to activate, including after clearing."))
         , sortBar()
 
         , h2({content: cF(c => {
@@ -54,8 +59,9 @@ window['WhoIsHiring'] = WhoIsHiring;
 // --- jobListItem ---------------------------------------------------------
 
 function jobListItem(c, j) {
-    return li({style: cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
-        , h3(j.title.map(h => h.textContent).join(" | "))
+    clg('building list item')
+    return li({style: ""} //cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
+        , h3( j.title.map(h => h.textContent).join(" | "))
         , userAnnotations(j)
         , j.body.map( n => {
             if (n.nodeType === 1) {
@@ -67,6 +73,7 @@ function jobListItem(c, j) {
             } else {
                 clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
             }
-        }))
+        })
+    )
 }
 

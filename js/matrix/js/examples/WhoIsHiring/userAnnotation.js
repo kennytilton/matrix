@@ -56,27 +56,24 @@ function userAnnotations(j) {
     , a({href: `https://news.ycombinator.com/item?id=${j.hnId}`}, "Original")
     , jobStars(j)
     , applied(j)
-    , noteEditor(j))
+    , noteEditor(j)
+    )
 }
 
 const MAX_STARS = 5;
 
 function jobStars(j) {
-    let stars = []
-        , ujob = UJob.dict[j.hnId]
-        , rating = ujob.stars;
-
-    // clg('jobstars', j.hnId, ujob, rating)
-
     return div(c => {
+        let stars = []
+            , ujob = UJob.dict[j.hnId]
         for (let n = 0; n < MAX_STARS; ++n)
             stars.push(i({
                     class: "material-icons"
                     , style: cF(c => {
-                        return "cursor:pointer; color:" + ( rating >= c.md.starN ? "#0f0" : "#eee")
+                        return "cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#0f0" : "#eee")
                     })
                     , onclick: mx => {
-                        //clg('setting', j.hnId, mx.starN);
+                        clg('setting', j.hnId, mx.starN);
                         ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
                     }
                 }
