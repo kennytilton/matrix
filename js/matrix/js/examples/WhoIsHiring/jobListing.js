@@ -9,11 +9,12 @@ function jobListingLoader() {
         }))
 }
 
+const PARSE_CHUNK_SIZE = 20
 
 function jobsCollect(md) {
     if (md.dom.contentDocument) { // FF
         hnBody = md.dom.contentDocument.getElementsByTagName('body')[0];
-        let chunkSize = 10
+        let chunkSize = 20
             , listing = Array.prototype.slice.call(hnBody.querySelectorAll('.athing'))
             , tempJobs = []
             , progressBar = md.fmUp("progress");
@@ -21,11 +22,9 @@ function jobsCollect(md) {
         ast(progressBar);
 
         if (listing.length > 0) {
-            progressBar.max = Math.floor( listing.length / chunkSize)+""
-            parseListings( listing, tempJobs, chunkSize, progressBar)
+            progressBar.max = Math.floor( listing.length / PARSE_CHUNK_SIZE)+""
+            parseListings( listing, tempJobs, PARSE_CHUNK_SIZE, progressBar)
         }
-
-
     }
 }
 
@@ -48,7 +47,10 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
                 }
             }
             progressBar.value = progressBar.value + 1;
-            window.requestAnimationFrame(() => chunker( offset + jct));
+            if (true || progressBar.value < 3)
+                window.requestAnimationFrame(() => chunker( offset + jct))
+            else
+                hiringApp.jobs = tempJobs
         } else {
             progressBar.hidden = true
             hiringApp.jobs = tempJobs
@@ -58,15 +60,14 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
 }
 
 function jobSpec(dom) {
-    //clg('jopspec', dom.id, dom.tagName, dom.classList)
-    let j = {hnId: dom.id}
+    let spec = {hnId: dom.id}
     for (let n = 0; n < dom.children.length; ++n) {
-        jobSpecBuild(j, dom.children[n])
+        jobSpecExtend( spec, dom.children[n])
     }
-    return j
+    return spec
 }
 
-function jobSpecBuild(j, dom) {
+function jobSpecExtend(j, dom) {
     let cn = dom.className;
 
     if (cn === "hnuser") {
@@ -97,14 +98,11 @@ function jobSpecBuild(j, dom) {
                 if (inHeader) {
                     if (n.nodeType === 1 && n.nodeName === 'P') {
                         inHeader = false
-                        //clg('pgr1', n, n.nodeName, n.innerHTML)
                         j.body.push(n)
                     } else {
-                        //clg('raw title seg', n.nodeType, n.textContent, n.nodeName)
                         j.title.push(n)
                     }
                 } else {
-                    //clg('pgrn', i, n.nodeName, n.innerHTML)
                     j.body.push(n)
                 }
             }
@@ -132,7 +130,7 @@ function jobSpecBuild(j, dom) {
         dom.remove()
     } else {
         for (let n = 0; n < dom.children.length; ++n) {
-            jobSpecBuild(j, dom.children[n])
+            jobSpecExtend(j, dom.children[n])
         }
     }
 }

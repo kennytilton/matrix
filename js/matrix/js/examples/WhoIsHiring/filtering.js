@@ -9,7 +9,7 @@ function jobListFilter(mx, jobs) {
         , noted = mx.fmUp("Noted").onOff
         , sortBy = mx.fmUp("sortby").selection
         , titleRgx = mx.fmUp("titlergx").rgxTree
-        , bodyRgx = mx.fmUp("bodyrgx").rgxTree
+        , listingRgx = mx.fmUp("listingrgx").rgxTree
 
     return jobs.filter(j => !remoteok || j.remote)
         .filter(j => !visaok || j.visa)
@@ -19,7 +19,9 @@ function jobListFilter(mx, jobs) {
         .filter(j => !noted || UJob.dict[j.hnId].notes)
 
         .filter(j => !titleRgx || rgxTreeMatch(j.titlesearch, titleRgx))
-        .filter(j => !bodyRgx || rgxTreeMatch(j.bodysearch, bodyRgx))
+        .filter(j => !listingRgx
+            || rgxTreeMatch(j.titlesearch, listingRgx)
+            || rgxTreeMatch(j.bodysearch, listingRgx))
 };
 
 function rgxTreeMatch(s, ors) {
@@ -103,8 +105,8 @@ function mkTitleRgx() {
     return mkListingRgx('title', "Title Regex")
 }
 
-function mkBodyRgx() {
-    return mkListingRgx('body', "Body Regex", null, true)
+function mkFullRgx() {
+    return mkListingRgx('listing', "Listing Regex", null, true)
 }
 
 function mkListingRgx(prop, lbl, ivalue, autofocus = false) {

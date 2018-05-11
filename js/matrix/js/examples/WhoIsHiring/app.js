@@ -14,22 +14,26 @@ const hiringApp = new TagSession(null, 'HiringSession'
 // --- main ---------------------------------------
 
 function WhoIsHiring() {
-    // return h1("testin");
-    return div(
-        h1("Hacker News &quot;Who Is Hiring?&quot; Browser")
+    return div( { style: "margin:0px;padding:36px"},
+        h1("Ask HN: Who Is Hiring? (May 2018)")
         , p( i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. " +
             "All filters are ANDed. RFEs welcome and can be raised " +
             "<a href='https://github.com/kennytilton/matrix/issues'>here</a>."))
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()
-        , mkBodyRgx()
+        , mkFullRgx()
         , sortBar()
 
-        , h2({content: cF(c => "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length)})
+        , h2({content: cF(c => {
+            let pgr = c.md.fmUp("progress")
+            return pgr.hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length
+                : "Comments parsed: "+ PARSE_CHUNK_SIZE * c.md.fmUp("progress").value
+        })})
+
         , progress({
             id: "progress"
-            , max: cI(2000)
+            , max: cI(0)
             , hidden: cI( null)
             , value: cI(0)
         }, {name: "progress"})
@@ -53,8 +57,16 @@ function jobListItem(c, j) {
     return li({style: cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
         , h3(j.title.map(h => h.textContent).join(" | "))
         , userAnnotations(j)
-        , j.body.map(bd => p(bd.textContent))
-        //, j.body.map(bd => p({content: bd.innerHTML}))
-    )
+        , j.body.map( n => {
+            if (n.nodeType === 1) {
+                return "<p>" + n.innerHTML + "</p>"
+
+            } else if (n.nodeType === 3) {
+                return "<p>" + n.textContent + "</p>"
+
+            } else {
+                clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
+            }
+        }))
 }
 

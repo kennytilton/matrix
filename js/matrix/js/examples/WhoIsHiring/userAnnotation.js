@@ -53,6 +53,7 @@ const UJob = UserNotes.loadFromStorage();
 
 function userAnnotations(j) {
     return div({style: "display:flex; align-items:center"}
+    , a({href: `https://news.ycombinator.com/item?id=${j.hnId}`}, "Original")
     , jobStars(j)
     , applied(j)
     , noteEditor(j))
