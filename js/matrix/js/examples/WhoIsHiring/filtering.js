@@ -37,6 +37,43 @@ function rgxTreeMatch(s, ors) {
 
 // --- filtering U/X ------------------------------------------------
 
+const uDefault = [["udShowListing", "Expand listings", "Show full listing or just the title"]]
+
+const hzFlexWrap = {
+    display: "flex"
+    , flex_wrap: "wrap"
+}
+
+function mkUserDefaults() {
+    return div({ style: hzFlexWrap}
+        , span({style: "min-width:80px"},
+            "Defaults")
+        , div( { style: hzFlexWrap}
+            , uDefault.map( info => onOffCheckbox(info))))
+}
+
+function onOffCheckbox( nameTooltip) {
+    let [ mxName, labelText, tooltip] = nameTooltip
+    return div(
+        input({
+                id: mxName+"ID"
+                , type: "checkbox"
+                , style: "margin-left:18px"
+                , checked: cF(c => c.md.onOff)
+                , title: tooltip
+                , onclick: mx => mx.onOff = !mx.onOff
+            }
+            , {
+                name: mxName
+                , onOff: cI(false)
+            })
+        , label( {
+            for: name+"ID"
+            , title: tooltip
+        }, labelText))
+
+}
+
 const jSelects = [["REMOTE", "Does regex search of title for remote jobs"]
     , ["INTERN", "Does regex search of title for internships"]
     , ["VISA", "Does regex search of title for Visa sponsors"]
@@ -45,25 +82,26 @@ const jSelects = [["REMOTE", "Does regex search of title for remote jobs"]
     , ["Noted", "Show only jobs on which you have made a note"]]
 
 function mkJobSelects() {
-    return div({style: {display: "flex"}}
+    return div({ style: hzFlexWrap}
         , span({style: "min-width:80px"},
-            "Selects:")
-        , jSelects.map( info => div(
-            input({
-                id: info[0]+"ID"
-                , type: "checkbox"
-                , style: "margin-left:18px"
-                , checked: cF(c => c.md.onOff)
-                , title: info[1]
-                , onclick: mx => {
-                        mx.onOff = !mx.onOff
+            "Selects")
+        , div( { style: hzFlexWrap}
+            , jSelects.map( info => div(
+                input({
+                        id: info[0]+"ID"
+                        , type: "checkbox"
+                        , style: "margin-left:18px"
+                        , checked: cF(c => c.md.onOff)
+                        , title: info[1]
+                        , onclick: mx => {
+                            mx.onOff = !mx.onOff
+                        }
                     }
-            }
-            , {name: info[0], onOff: cI(false)})
-        , label( {
-                for: info[0]+"ID"
-                , title: info[1]
-            }, info[0]))))
+                    , {name: info[0], onOff: cI(false)})
+                , label( {
+                    for: info[0]+"ID"
+                    , title: info[1]
+                }, info[0])))))
 }
 
 // --- sorting ------------------------------------------------------
@@ -96,11 +134,13 @@ function sortBar() {
     return div({
             style: {
                 display: "flex"
+                , flex_wrap: "wrap"
                 , "align-items": "center"
             }
         }
-        , span({style: "min-width:40px"}, "Sort by:")
-        , ul({}, {
+        , span({style: "min-width:40px"}, "Sort by")
+        , ul({ style: hzFlexWrap}
+            , {
                 id: "sortby", name: "sortby"
                 , selection: cI({keyFn: jobHnIdKey, order: -1})
             }
@@ -133,7 +173,7 @@ function mkFullRgx() {
 }
 
 function mkListingRgx(prop, lbl, desc, autofocus = false) {
-    return labeledRow(lbl + ": ", input({
+    return labeledRow(lbl, input({
         autofocus: autofocus
         , placeholder: `Regex for ${desc} search`
         , onkeypress: buildRgxTree
@@ -150,13 +190,29 @@ function labeledRow(label, ...children) {
     return div({
             style: {
                 display: "flex"
+                , flex_wrap: "wrap"
                 , "margin-top" : "9px"
                 , "align-items": "center"
             }
         }
+        , {helping: cI(false)}
         , span({style: "min-width:104px"}, label)
-        , children)
+        , children
+        , i({
+            class: "material-icons"
+            , style: "cursor:pointer; margin-left:6px"
+            , onclick: mx => mx.par.helping = !mx.par.helping
+            , content: cF( c=> c.md.par.helping? "help":"help_outline")
+        })
+        , ul( {style: cF( c=> "display:" + (c.md.par.helping? "block":"none"))}
+            , regexHelp.map( h=> li(h))))
 }
+
+const regexHelp = [
+    "Separate JS RegExp-legal terms with <b>||</b> or " +
+    "<b>&&</b> (higher priority) to combine expressions."
+    , "Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to activate, including after clearing."
+    , "Supply RegExp options after a comma. e.g. <b>taipei,i</b> for case-insensitive search."]
 
 function buildRgxTree(mx, e) {
     if (!(e.type === 'change' || (e.type==='keypress' && e.key === 'Enter')))

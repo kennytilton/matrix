@@ -8164,15 +8164,22 @@ UserNotes.loadFromStorage = function() {
 };
 var UJob = UserNotes.loadFromStorage();
 function userAnnotations(c) {
-  return div({style:"display:flex; align-items:center"}, a({href:"https://news.ycombinator.com/item?id=" + c.hnId}, "Original"), jobStars(c), applied(c), noteEditor(c));
+  return div({style:"display:flex; flex-wrap:wrap; align-items:center"}, moreOrLess(), jobStars(c), applied(c), noteEditor(c), a({style:"margin-left:6px", href:"https://news.ycombinator.com/item?id=" + c.hnId, title:"View listing on the HN site"}, img({src:"dist/hn24.jpg"})));
+}
+function moreOrLess() {
+  return div({style:hzFlexWrap}, {name:"showListing", onOff:cI(!1)}, i({class:"material-icons", style:"cursor:pointer", onclick:function(c) {
+    c.par.onOff = !c.par.onOff;
+  }, title:"Show/hide full listing", content:cF(function(c) {
+    return c.md.par.onOff ? "expand_less" : "expand_more";
+  })}));
 }
 var MAX_STARS = 5;
 function jobStars(c) {
-  return div(function(d) {
+  return div({style:"margin-left:6px; display:flex; flex-wrap:wrap"}, function(d) {
     d = [];
     for (var e = UJob.dict[c.hnId], f = 0; f < MAX_STARS; ++f) {
       d.push(i({class:"material-icons", style:cF(function(c) {
-        return "cursor:pointer; color:" + (e.stars >= c.md.starN ? "#0f0" : "#eee");
+        return "font-size:1em; cursor:pointer; color:" + (e.stars >= c.md.starN ? "#000" : "#eee");
       }), onclick:function(c) {
         e.stars = e.stars === c.starN ? 0 : c.starN;
       }}, {starN:f + 1}, "grade"));
@@ -8186,7 +8193,7 @@ function noteEditor(c) {
     return "cursor:pointer;color:" + (d.notes && 0 < d.notes.length ? "#f00" : "#000");
   }), onclick:function(c) {
     c.par.editing = !c.par.editing;
-  }}, "note_add"), textarea({style:cF(function(c) {
+  }, content:"note_add"}), textarea({style:cF(function(c) {
     return "display:" + (c.md.par.editing ? "block" : "none");
   }), cols:60, placeholder:"Your notes here", onchange:function(c, f) {
     clg("bam", f.target.value);
@@ -8231,15 +8238,32 @@ function rgxTreeMatch(c, d) {
     });
   });
 }
+var uDefault = [["udShowListing", "Expand listings", "Show full listing or just the title"]], hzFlexWrap = {display:"flex", flex_wrap:"wrap"};
+function mkUserDefaults() {
+  return div({style:hzFlexWrap}, span({style:"min-width:80px"}, "Defaults"), div({style:hzFlexWrap}, uDefault.map(function(c) {
+    return onOffCheckbox(c);
+  })));
+}
+function onOffCheckbox(c) {
+  var d = $jscomp.makeIterator(c);
+  c = d.next().value;
+  var e = d.next().value;
+  d = d.next().value;
+  return div(input({id:c + "ID", type:"checkbox", style:"margin-left:18px", checked:cF(function(c) {
+    return c.md.onOff;
+  }), title:d, onclick:function(c) {
+    return c.onOff = !c.onOff;
+  }}, {name:c, onOff:cI(!1)}), label({for:name + "ID", title:d}, e));
+}
 var jSelects = [["REMOTE", "Does regex search of title for remote jobs"], ["INTERN", "Does regex search of title for internships"], ["VISA", "Does regex search of title for Visa sponsors"], ["Starred", "Show only jobs you have rated with stars"], ["Applied", "Show only jobs you have marked as applied to"], ["Noted", "Show only jobs on which you have made a note"]];
 function mkJobSelects() {
-  return div({style:{display:"flex"}}, span({style:"min-width:80px"}, "Selects:"), jSelects.map(function(c) {
+  return div({style:hzFlexWrap}, span({style:"min-width:80px"}, "Selects"), div({style:hzFlexWrap}, jSelects.map(function(c) {
     return div(input({id:c[0] + "ID", type:"checkbox", style:"margin-left:18px", checked:cF(function(c) {
       return c.md.onOff;
     }), title:c[1], onclick:function(c) {
       c.onOff = !c.onOff;
     }}, {name:c[0], onOff:cI(!1)}), label({for:c[0] + "ID", title:c[1]}, c[0]));
-  }));
+  })));
 }
 function jobListSort(c, d) {
   var e = c.fmUp("sortby").selection;
@@ -8259,7 +8283,7 @@ function jobStarsKey(c) {
   return (c = UJob.dict[c.hnId]) && c.stars || 0;
 }
 function sortBar() {
-  return div({style:{display:"flex", "align-items":"center"}}, span({style:"min-width:40px"}, "Sort by:"), ul({}, {id:"sortby", name:"sortby", selection:cI({keyFn:jobHnIdKey, order:-1})}, [["Message Id", jobHnIdKey], ["Stars", jobStarsKey], ["Company", jobCompanyKey]].map(function(c) {
+  return div({style:{display:"flex", flex_wrap:"wrap", "align-items":"center"}}, span({style:"min-width:40px"}, "Sort by"), ul({style:hzFlexWrap}, {id:"sortby", name:"sortby", selection:cI({keyFn:jobHnIdKey, order:-1})}, [["Message Id", jobHnIdKey], ["Stars", jobStarsKey], ["Company", jobCompanyKey]].map(function(c) {
     c = $jscomp.makeIterator(c);
     var d = c.next().value, e = c.next().value;
     return button({style:cF(function(c) {
@@ -8280,14 +8304,23 @@ function mkFullRgx() {
   return mkListingRgx("listing", "Listing Regex", "title and listing", !0);
 }
 function mkListingRgx(c, d, e, f) {
-  return labeledRow(d + ": ", input({autofocus:void 0 === f ? !1 : f, placeholder:"Regex for " + e + " search", onkeypress:buildRgxTree, onchange:buildRgxTree, value:"", style:"min-width:300px;font-size:1em"}, {name:c + "rgx", rgxTree:cI(null)}));
+  return labeledRow(d, input({autofocus:void 0 === f ? !1 : f, placeholder:"Regex for " + e + " search", onkeypress:buildRgxTree, onchange:buildRgxTree, value:"", style:"min-width:300px;font-size:1em"}, {name:c + "rgx", rgxTree:cI(null)}));
 }
 function labeledRow(c, d) {
   for (var e = [], f = 1; f < arguments.length; ++f) {
     e[f - 1] = arguments[f];
   }
-  return div({style:{display:"flex", "margin-top":"9px", "align-items":"center"}}, span({style:"min-width:104px"}, c), e);
+  return div({style:{display:"flex", flex_wrap:"wrap", "margin-top":"9px", "align-items":"center"}}, {helping:cI(!1)}, span({style:"min-width:104px"}, c), e, i({class:"material-icons", style:"cursor:pointer; margin-left:6px", onclick:function(c) {
+    return c.par.helping = !c.par.helping;
+  }, content:cF(function(c) {
+    return c.md.par.helping ? "help" : "help_outline";
+  })}), ul({style:cF(function(c) {
+    return "display:" + (c.md.par.helping ? "block" : "none");
+  })}, regexHelp.map(function(c) {
+    return li(c);
+  })));
 }
+var regexHelp = ["Separate JS RegExp-legal terms with <b>||</b> or <b>&&</b> (higher priority) to combine expressions.", "Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to activate, including after clearing.", "Supply RegExp options after a comma. e.g. <b>taipei,i</b> for case-insensitive search."];
 function buildRgxTree(c, d) {
   if ("change" === d.type || "keypress" === d.type && "Enter" === d.key) {
     d = d.target.value.trim(), c.rgxTree = "" === d ? null : d.split("||").map(function(c) {
@@ -8403,10 +8436,9 @@ function jobSpecExtend(c, d) {
 }
 ;var SLOT_CT = 5, hiringApp = new TagSession(null, "HiringSession", {jobs:cI([])});
 function WhoIsHiring() {
-  return div({id:"whoshiring", style:"margin:0px;padding:36px"}, h1("Ask HN: Who Is Hiring? (May 2018)"), p(i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. All filters are ANDed. RFEs welcome and can be raised <a href='https://github.com/kennytilton/matrix/issues'>here</a>. Stable GitHub source can be <a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>found here</a>.")), jobListingLoader(), mkJobSelects(), 
-  mkTitleRgx(), mkFullRgx(), p(i("Separate above regex terms with || or && (higher priority) to combine expressions. Press 'Enter' or tab off to activate, including after clearing. Supply RegExp options after a comma. e.g. <b>taipei,i</b> for case-insensitive.")), sortBar(), h2({content:cF(function(c) {
+  return div({id:"whoshiring", style:"margin:0px;padding:36px"}, div({style:hzFlexWrap}, span({style:"font-size:2em; margin-bottom:12px"}, "Ask HN: Who Is Hiring? (May 2018)"), appHelpOption()), appHelp(), jobListingLoader(), mkJobSelects(), mkTitleRgx(), mkFullRgx(), sortBar(), h2({content:cF(function(c) {
     return c.md.fmUp("progress").hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length : "Comments parsed: " + 20 * c.md.fmUp("progress").value;
-  })}), progress({id:"progress", max:cI(0), hidden:cI(null), value:cI(0)}, {name:"progress"}), ul({}, {name:"job-list", selectedJobs:cF(function(c) {
+  })}), progress({id:"progress", max:cI(0), hidden:cI(null), value:cI(0)}, {name:"progress"}), ul({style:"list-style-type: none; background-color:#eee; padding:0"}, {name:"job-list", selectedJobs:cF(function(c) {
     return jobListFilter(c.md, hiringApp.jobs) || [];
   }), kidValues:cF(function(c) {
     return jobListSort(c.md, c.md.selectedJobs) || [];
@@ -8417,11 +8449,27 @@ function WhoIsHiring() {
   }));
 }
 window.WhoIsHiring = WhoIsHiring;
+function appHelpOption() {
+  return i({class:"material-icons", style:"cursor:pointer; margin-left:9px", onclick:function(c) {
+    return c.onOff = !c.onOff;
+  }, title:"Show/hide app help", content:cF(function(c) {
+    return c.md.onOff ? "help" : "help_outline";
+  })}, {name:"appHelpOption", onOff:cI(!1)});
+}
+var appHelpEntry = ["All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. ", "All filters are ANDed.", "RFEs welcome and can be raised <a href='https://github.com/kennytilton/matrix/issues'>here</a>. ", "GitHub source can be <a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>found here</a>."];
+function appHelp() {
+  return ul({style:cF(function(c) {
+    return "display:" + (c.md.fmUp("appHelpOption").onOff ? "block" : "none");
+  })}, appHelpEntry.map(function(c) {
+    return li(c);
+  }));
+}
 function jobListItem(c, d) {
-  clg("building list item");
-  return li({style:""}, h3(d.title.map(function(c) {
+  return li({style:"margin-bottom:9px; background-color:#fff"}, b(d.title.map(function(c) {
     return c.textContent;
-  }).join(" | ")), userAnnotations(d), d.body.map(function(c) {
+  }).join(" | ")), userAnnotations(d), div({style:cF(function(c) {
+    return "display:" + (c.md.fmUp("showListing").onOff ? "block" : "none");
+  })}, d.body.map(function(c) {
     if (1 === c.nodeType) {
       return "<p>" + c.innerHTML + "</p>";
     }
@@ -8429,6 +8477,6 @@ function jobListItem(c, d) {
       return "<p>" + c.textContent + "</p>";
     }
     clg("UNEXPECTED Node type", c.nodeType, c.nodeName, c.textContent);
-  }));
+  })));
 }
 ;

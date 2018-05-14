@@ -56,25 +56,54 @@ const UJob = UserNotes.loadFromStorage();
 // ------ user annotations u/x --------------------------------------
 
 function userAnnotations(j) {
-    return div({style: "display:flex; align-items:center"}
-    , a({href: `https://news.ycombinator.com/item?id=${j.hnId}`}, "Original")
-    , jobStars(j)
-    , applied(j)
-    , noteEditor(j)
+    return div({style: "display:flex; flex-wrap:wrap; align-items:center"}
+        , moreOrLess()
+        , jobStars(j)
+        , applied(j)
+        , noteEditor(j)
+        , a({
+                style: "margin-left:6px"
+                , href: `https://news.ycombinator.com/item?id=${j.hnId}`
+                , title: "View listing on the HN site"}
+            , img({ src: "dist/hn24.jpg"}))
     )
+}
+
+function moreOrLess () {
+    return div( {style: hzFlexWrap}
+        , {
+            name: "showListing"
+            , onOff: cI( false)
+// /*            cF( c=> {
+//                 clg('seeking ud', c.md, c.md.par)
+//                 let ud = c.md.fmUp("udShowListing")
+//                 clg("ud is", ud)
+//                 return false // ud.onOff
+//             })*/
+        }
+        , i({
+            class: "material-icons"
+            , style: "cursor:pointer"
+            , onclick: mx => {
+                mx.par.onOff = !mx.par.onOff
+            }
+            , title: "Show/hide full listing"
+            , content: cF( c=> c.md.par.onOff? "expand_less":"expand_more")
+        }))
 }
 
 const MAX_STARS = 5;
 
 function jobStars(j) {
-    return div(c => {
+    return div({style: "margin-left:6px; display:flex; flex-wrap:wrap"}
+    , c => {
         let stars = []
             , ujob = UJob.dict[j.hnId]
         for (let n = 0; n < MAX_STARS; ++n)
             stars.push(i({
                     class: "material-icons"
                     , style: cF(c => {
-                        return "cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#0f0" : "#eee")
+                        return "font-size:1em; cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#000" : "#eee")
                     })
                     , onclick: mx => {
                         ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
@@ -94,18 +123,18 @@ function noteEditor(j) {
     return div({style: "margin-left:18px"}
         , {editing: cI(false)}
         , i({
-                class: "material-icons"
-                , style: cF(c => {
-                    let c1 = ( ujob.notes && ujob.notes.length > 0) ? "#f00" : "#000"
+            class: "material-icons"
+            , style: cF(c => {
+                let c1 = ( ujob.notes && ujob.notes.length > 0) ? "#f00" : "#000"
 
-                    return "cursor:pointer;color:" + ( ujob.notes && ujob.notes.length > 0 ? "#f00" : "#000")
+                return "cursor:pointer;color:" + ( ujob.notes && ujob.notes.length > 0 ? "#f00" : "#000")
 
-                })
-                , onclick: mx => {
-                    mx.par.editing = !mx.par.editing
-                }
+            })
+            , onclick: mx => {
+                mx.par.editing = !mx.par.editing
             }
-            , "note_add")
+            , content: "note_add"
+        })
         , textarea({
                 style: cF(c => "display:"
                     + (c.md.par.editing ? "block" : "none"))

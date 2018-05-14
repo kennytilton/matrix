@@ -18,22 +18,18 @@ const hiringApp = new TagSession(null, 'HiringSession'
 
 function WhoIsHiring() {
     return div( { id: "whoshiring"
-                , style: "margin:0px;padding:36px"},
-        h1("Ask HN: Who Is Hiring? (May 2018)")
-        , p( i("All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. " +
-            "All filters are ANDed. RFEs welcome and can be raised " +
-            "<a href='https://github.com/kennytilton/matrix/issues'>here</a>. " +
-            "Stable GitHub source can be " +
-            "<a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>" +
-            "found here</a>."))
+            , style: "margin:0px;padding:36px"},
+        div( {style: hzFlexWrap}
+            , span({style: "font-size:2em; margin-bottom:12px"}
+                ,"Ask HN: Who Is Hiring? (May 2018)")
+            , appHelpOption())
+        , appHelp()
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()
         , mkFullRgx()
-        , p( i( "Separate above regex terms with || or && (higher priority) to combine expressions." +
-            " Press 'Enter' or tab off to activate, including after clearing." +
-            " Supply RegExp options after a comma. e.g. <b>taipei,i</b> for case-insensitive."))
         , sortBar()
+        //, mkUserDefaults()
 
         , h2({content: cF(c => {
             let pgr = c.md.fmUp("progress")
@@ -48,7 +44,7 @@ function WhoIsHiring() {
             , value: cI(0)
         }, {name: "progress"})
 
-        , ul({}
+        , ul({style: "list-style-type: none; background-color:#eee; padding:0"}
             , {
                 name: "job-list"
                 , selectedJobs: cF(c => jobListFilter(c.md, hiringApp.jobs) || [])
@@ -61,24 +57,50 @@ function WhoIsHiring() {
 
 window['WhoIsHiring'] = WhoIsHiring;
 
+function appHelpOption () {
+    return i({
+            class: "material-icons", style: "cursor:pointer; margin-left:9px"
+            , onclick: mx => mx.onOff = !mx.onOff
+            , title: "Show/hide app help"
+            , content: cF( c=> c.md.onOff? "help":"help_outline")
+        }
+        , { name: "appHelpOption"
+            , onOff: cI( false)})
+}
+
+const appHelpEntry = [
+    "All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. "
+    , "All filters are ANDed."
+    , "RFEs welcome and can be raised " +
+    "<a href='https://github.com/kennytilton/matrix/issues'>here</a>. "
+    , "GitHub source can be " +
+    "<a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>" +
+    "found here</a>."
+]
+
+function appHelp () {
+    return ul({style: cF( c=> "display:" + (c.md.fmUp("appHelpOption").onOff? "block":"none"))}
+        , appHelpEntry.map( e=> li(e)))
+}
+
 // --- jobListItem ---------------------------------------------------------
 
 function jobListItem(c, j) {
-    clg('building list item')
-    return li({style: ""} //cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
-        , h3( j.title.map(h => h.textContent).join(" | "))
+    return li({style: "margin-bottom:9px; background-color:#fff"} //cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
+        , b( j.title.map(h => h.textContent).join(" | "))
         , userAnnotations(j)
-        , j.body.map( n => {
-            if (n.nodeType === 1) {
-                return "<p>" + n.innerHTML + "</p>"
+        , div( {style: cF( c=> "display:"+ ( c.md.fmUp('showListing').onOff? "block":"none"))}
+            , j.body.map( n => {
+                if (n.nodeType === 1) {
+                    return "<p>" + n.innerHTML + "</p>"
 
-            } else if (n.nodeType === 3) {
-                return "<p>" + n.textContent + "</p>"
+                } else if (n.nodeType === 3) {
+                    return "<p>" + n.textContent + "</p>"
 
-            } else {
-                clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
-            }
-        })
+                } else {
+                    clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
+                }
+            }))
     )
 }
 
