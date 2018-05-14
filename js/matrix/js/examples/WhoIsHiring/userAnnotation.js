@@ -1,3 +1,7 @@
+goog.require('Matrix.Cells')
+goog.require('Matrix.Model')
+goog.require('Matrix.mxWeb')
+goog.provide('Hiring.usernote')
 
 //--- User Job Listing Annotations -------------
 //

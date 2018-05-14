@@ -1,3 +1,9 @@
+goog.require('Matrix.Cells')
+goog.require('Matrix.Model')
+goog.require('Matrix.mxWeb')
+goog.require('Hiring.usernote')
+goog.provide('Hiring.jobListing')
+
 // --- loading job data -----------------------------------------
 
 function jobListingLoader() {
@@ -46,13 +52,15 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
                     tempJobs.push(spec)
                 }
             }
-            progressBar.value = progressBar.value + 1;
-            if (true || progressBar.value < 30)
-                window.requestAnimationFrame(() => chunker( offset + jct))
-            else {
-                progressBar.hidden = true
-                hiringApp.jobs = tempJobs
-            }
+            progressBar.value = progressBar.value + 1
+            window.requestAnimationFrame(() => chunker( offset + jct))
+
+            // if (true || progressBar.value < 30)
+            //     window.requestAnimationFrame(() => chunker( offset + jct))
+            // else {
+            //     progressBar.hidden = true
+            //     hiringApp.jobs = tempJobs
+            // }
         } else {
             progressBar.hidden = true
             hiringApp.jobs = tempJobs
@@ -114,8 +122,11 @@ function jobSpecExtend(j, dom) {
                 , hseg = htext.split("|").map(s => s.trim())
 
             let internOK = new RegExp(/((internship|intern)(?=|s,\)))/, 'i')
+                , nointernOK = new RegExp(/((no internship|no intern)(?=|s,\)))/, 'i')
                 , visaOK = new RegExp(/((visa|visas)(?=|s,\)))/, 'i')
+                , novisaOK = new RegExp(/((no visa|no visas)(?=|s,\)))/, 'i')
                 , remoteOK = new RegExp(/(remote)/, 'i')
+                , noremoteOK = new RegExp(/(no remote)/, 'i')
                 , hsmatch = rx => hseg.some(hs => hs.match(rx) !== null);
 
             j.company = hseg[0]
@@ -123,9 +134,9 @@ function jobSpecExtend(j, dom) {
 
             j.titlesearch = htext
             j.bodysearch = j.body.map(n => n.textContent).join('<**>')
-            j.remote = hsmatch(remoteOK)
-            j.visa = hsmatch(visaOK)
-            j.intern = hsmatch(internOK)
+            j.remote = (hsmatch(remoteOK) && !hsmatch(noremoteOK))
+            j.visa = (hsmatch(visaOK) && !hsmatch(novisaOK))
+            j.intern = (hsmatch(internOK) && !hsmatch(novisaOK))
         }
     }
     if (cn === "reply") {

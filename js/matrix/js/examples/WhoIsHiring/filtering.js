@@ -1,7 +1,13 @@
+goog.require('Matrix.Cells')
+goog.require('Matrix.Model')
+goog.require('Matrix.mxWeb')
+goog.require('Hiring.usernote')
+goog.provide('Hiring.filtering')
+
 // --- filtering and sorting ------------------------------------------------
 
 function jobListFilter(mx, jobs) {
-    clg('filtering!!!!!!!!!')
+
     let remoteok = mx.fmUp("REMOTE").onOff
         , visaok = mx.fmUp("VISA").onOff
         , internok = mx.fmUp("INTERN").onOff
@@ -31,25 +37,39 @@ function rgxTreeMatch(s, ors) {
 
 // --- filtering U/X ------------------------------------------------
 
+const jSelects = [["REMOTE", "Does regex search of title for remote jobs"]
+    , ["INTERN", "Does regex search of title for internships"]
+    , ["VISA", "Does regex search of title for Visa sponsors"]
+    , ["Starred", "Show only jobs you have rated with stars"]
+    , ["Applied", "Show only jobs you have marked as applied to"]
+    , ["Noted", "Show only jobs on which you have made a note"]]
+
 function mkJobSelects() {
     return div({style: {display: "flex"}}
         , span({style: "min-width:80px"},
             "Selects:")
-        , ["REMOTE", "INTERN", "VISA", "Starred", "Applied", "Noted"].map(lbl => input({
-                type: "checkbox", style: "margin-left:18px"
+        , jSelects.map( info => div(
+            input({
+                id: info[0]+"ID"
+                , type: "checkbox"
+                , style: "margin-left:18px"
                 , checked: cF(c => c.md.onOff)
-                , onclick: mx => mx.onOff = !mx.onOff
+                , title: info[1]
+                , onclick: mx => {
+                        mx.onOff = !mx.onOff
+                    }
             }
-            , {name: lbl, onOff: cI(false)}
-            , lbl)))
+            , {name: info[0], onOff: cI(false)})
+        , label( {
+                for: info[0]+"ID"
+                , title: info[1]
+            }, info[0]))))
 }
 
 // --- sorting ------------------------------------------------------
 
 function jobListSort(mx, jobs) {
     let sortBy = mx.fmUp("sortby").selection
-
-    clg('sorting by!!!!!!!!!!', sortBy.keyFn)
 
     return jobs.sort((j, k) => {
         let keyFn = sortBy.keyFn
@@ -117,6 +137,7 @@ function mkListingRgx(prop, lbl, desc, autofocus = false) {
         autofocus: autofocus
         , placeholder: `Regex for ${desc} search`
         , onkeypress: buildRgxTree
+        , onchange: buildRgxTree
         , value: ''
         , style: "min-width:300px;font-size:1em"
     }, {
@@ -138,7 +159,7 @@ function labeledRow(label, ...children) {
 }
 
 function buildRgxTree(mx, e) {
-    if (e.key !== 'Enter')
+    if (!(e.type === 'change' || (e.type==='keypress' && e.key === 'Enter')))
         return
 
     let rgx = e.target.value.trim()
@@ -150,7 +171,8 @@ function buildRgxTree(mx, e) {
 
     mx.rgxTree = rgx.split('||').map(orx => orx.trim().split('&&').map(andx => {
         try {
-            return new RegExp(andx.trim())
+            let [term, options=''] = andx.trim().split(',')
+            return new RegExp( term, options)
         }
         catch (error) {
             alert(error.toString() + ": <" + andx.trim() + ">")
