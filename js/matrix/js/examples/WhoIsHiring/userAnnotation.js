@@ -57,7 +57,6 @@ const UJob = UserNotes.loadFromStorage();
 
 function userAnnotations(j) {
     return div({style: "display:flex; flex-wrap:wrap; align-items:center"}
-        , moreOrLess()
         , jobStars(j)
         , applied(j)
         , noteEditor(j)
@@ -69,28 +68,7 @@ function userAnnotations(j) {
     )
 }
 
-function moreOrLess () {
-    return div( {style: hzFlexWrap}
-        , {
-            name: "showListing"
-            , onOff: cI( false)
-// /*            cF( c=> {
-//                 clg('seeking ud', c.md, c.md.par)
-//                 let ud = c.md.fmUp("udShowListing")
-//                 clg("ud is", ud)
-//                 return false // ud.onOff
-//             })*/
-        }
-        , i({
-            class: "material-icons"
-            , style: "cursor:pointer"
-            , onclick: mx => {
-                mx.par.onOff = !mx.par.onOff
-            }
-            , title: "Show/hide full listing"
-            , content: cF( c=> c.md.par.onOff? "expand_less":"expand_more")
-        }))
-}
+
 
 const MAX_STARS = 5;
 

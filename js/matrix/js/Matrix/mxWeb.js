@@ -12,12 +12,17 @@ function domlog(...args) {
 }
 
 function dom2mx(dom, mustFind=true) {
-    //clg('dom2mx dom id',dom.id);
+    clg('dom2mx dom id',dom.id);
 	let js = mxDom[dom.id];
 	if ( !js && mustFind) {
-
-	    //debugger;
-		throw `dom2mx cannot find mxDom for with dom.sid ${dom.sid}, dom.id ${dom.id}`;
+	    clg('trying parent', dom.parentNode)
+	    let parent = dom.parentNode
+        if (parent)
+            return dom2mx( dom.parentNode, true)
+        else {
+            //debugger;
+            throw `dom2mx cannot find mxDom for with dom.sid ${dom.sid}, dom.id ${dom.id}`
+        }
 	}
 	return js;
 }
@@ -333,10 +338,29 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onvolumechange','onwaiting']);
 
 function tagEventHandler( event, prop ) {
-    //clg( 'Bam tagEventHandler!', event, prop);
-    let md = dom2mx( event.target);
-    md.callbacks.get(prop)(md, event, prop)
+    clg( 'Bam tagEventHandler!', event, prop);
+    let md = dom2mx( event.target, true);
+
+    if (md) {
+        tagEventBubble(md, event, prop)
+    } else {
+        clg('tagEventHandler unable to find mx from', dom)
+    }
 }
+
+function tagEventBubble( md, event, prop) {
+    if (md) {
+        clg('got md', md, md.tag, md.id)
+        let cb = md.callbacks.get(prop)
+        if (cb)
+            cb(md, event, prop)
+        else
+            tagEventBubble(md.par, event, prop)
+    } else {
+        clg('tagEventBubble topped out', prop, event)
+    }
+}
+
 function tagAttrsBuild(md) {
 	let attrs = '';
     md.attrKeys.forEach( function (prop) {

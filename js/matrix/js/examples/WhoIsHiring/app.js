@@ -31,7 +31,7 @@ function WhoIsHiring() {
         , sortBar()
         //, mkUserDefaults()
 
-        , h2({content: cF(c => {
+        , h4({content: cF(c => {
             let pgr = c.md.fmUp("progress")
             return pgr.hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length
                 : "Comments parsed: "+ 20 * c.md.fmUp("progress").value
@@ -86,21 +86,62 @@ function appHelp () {
 // --- jobListItem ---------------------------------------------------------
 
 function jobListItem(c, j) {
-    return li({style: "margin-bottom:9px; background-color:#fff"} //cF(c => c.md.par.selectedJobs.indexOf(j) === -1 ? "display:none" : "display:block")}
-        , b( j.title.map(h => h.textContent).join(" | "))
-        , userAnnotations(j)
-        , div( {style: cF( c=> "display:"+ ( c.md.fmUp('showListing').onOff? "block":"none"))}
-            , j.body.map( n => {
-                if (n.nodeType === 1) {
-                    return "<p>" + n.innerHTML + "</p>"
+    return li({
+            style: cF(c=> {
+                let kn = c.md.fmUp("job-list").kidValues.indexOf(j)
+                return "padding:4px;background-color:" + (kn % 2? "#fff":"#eee")
+            })
+            , onclick: mx=> {
+                clg('seeking mol', mx.name, mx.tag)
+                let mol = mx.fmDown("showListing")
+                clg('got mol', mol, mol.onFF)
+                mol.onOff = !mol.onOff
+            }}
+        , { name: "job-listing"}
+        , div( { style: "display:flex"}
+            , moreOrLess( )
+            , span(j.title.map(h => h.textContent).join(" | ")))
+        , div( {
+                class: cF( c=> {
+                    let show = c.md.fmUp('showListing').onOff;
+                    if (c.pv === kUnbound) {
+                        return show ? "slideIn" : ""
+                    } else {
+                        return show ? "slideIn" : "slideOut"
+                    }
+                })
+                , style: cF( c=> "margin:6px;background:#fff; display:"+ ( c.md.fmUp('showListing').onOff? "block":"none"))
 
-                } else if (n.nodeType === 3) {
-                    return "<p>" + n.textContent + "</p>"
+            }
+            , userAnnotations(j)
+            , div( { style: "margin:6px"}
+                , j.body.map( (n,x) => {
+                    if (n.nodeType === 1) {
+                        return "<p>" + n.innerHTML + "</p>"
 
-                } else {
-                    clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
+                    } else if (n.nodeType === 3) {
+                        return "<p>" + n.textContent + "</p>"
+
+                    } else {
+                        clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
+                    }
+                }))))
+}
+
+function moreOrLess () {
+    return i({
+                class: "material-icons"
+                , style: "cursor:pointer;color:#888"
+                , onclick: mx => {
+                    clg('colclick', mx.tag,mx.name)
+                    // let jl = mx.fmUp("job-listing")
+                    // c.md.onOff = !c.md.onOff
                 }
-            }))
-    )
+                , title: "Show/hide full listing"
+                , content: cF( c=> c.md.onOff? "arrow_drop_down":"arrow_right")
+            }, {
+                name: "showListing"
+                , onOff: cI( true)
+            })
 }
 
