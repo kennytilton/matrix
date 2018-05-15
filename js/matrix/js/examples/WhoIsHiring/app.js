@@ -16,14 +16,19 @@ const hiringApp = new TagSession(null, 'HiringSession'
 
 // --- main ---------------------------------------
 
+var tooManyJobsWarned = false;
+
 function WhoIsHiring() {
     return div( { id: "whoshiring"
             , style: "margin:0px;padding:36px"},
         div( {style: hzFlexWrap}
             , span({style: "font-size:2em; margin-bottom:12px;background:#ddd"}
-                ,"Ask HN: Who Is Hiring? (May 2018)")
+                , "Ask HN: Who Is Hiring?")
             , appHelpOption())
         , appHelp()
+        , p(i("All jobs scraped from the original " +
+            "<a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. "
+            ))
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()
@@ -31,15 +36,15 @@ function WhoIsHiring() {
         , sortBar()
         //, mkUserDefaults()
 
-        , div({style: hzFlexWrap}
-            , b({content: cF(c => {
+        , div({style: "display:flex;max-height:16px;align-items:center"}
+            , p({ content: cF(c => {
                 let pgr = c.md.fmUp("progress")
                 return pgr.hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length
                     : "Comments parsed: "+ 20 * c.md.fmUp("progress").value})})
             , button({
             style: cF(c=> {
                 let pgr = c.md.fmUp("progress")
-                return "margin-left:24px;display:"+ (pgr.hidden? "block":"none")
+                return "max-height:16px; margin-left:24px;display:"+ (pgr.hidden? "block":"none")
             })
             , onclick: mx => {
                 clg('flip all listings to', !mx.expanded);
@@ -63,11 +68,19 @@ function WhoIsHiring() {
             , {
                 name: "job-list"
                 , selectedJobs: cF(c => jobListFilter(c.md, hiringApp.jobs) || [])
-                , kidValues: cF(c => jobListSort(c.md, c.md.selectedJobs) || [])
+                , kidValues: cF(c => {
+                    let jsort = jobListSort(c.md, c.md.selectedJobs) || [];
+                    if ( jsort.length > 100 && !tooManyJobsWarned) {
+                        tooManyJobsWarned = true
+                        // alert(`Reducing ${jsort.length} jobs to 100. Last such warning this session.`)
+                    }
+                    return jsort.slice(0,100)
+                })
                 , kidKey: j => j.hnId
                 , kidFactory: jobListItem
             }
-            , c => c.kidValuesKids()))
+            , c => c.kidValuesKids())
+    )
 }
 
 window['WhoIsHiring'] = WhoIsHiring;
@@ -84,8 +97,7 @@ function appHelpOption () {
 }
 
 const appHelpEntry = [
-    "All jobs scraped from the original <a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. "
-    , "All filters are ANDed."
+    "All filters are ANDed."
     , "RFEs welcome and can be raised " +
     "<a href='https://github.com/kennytilton/matrix/issues'>here</a>. "
     , "GitHub source can be " +
@@ -116,7 +128,10 @@ function jobListItem(c, j) {
         , { name: "job-listing"}
         , div( { style: "cursor:pointer;display:flex"}
             , moreOrLess( )
-            , span(j.title.map(h => h.textContent).join(" | ")))
+            , span({onclick: mx=> {
+                let mol = mx.fmUp("showListing")
+                mol.onOff = !mol.onOff
+            }}, j.title.map(h => h.textContent).join(" | ")))
         , div( {
                 class: cF( c=> {
                     let show = c.md.fmUp('showListing').onOff;
@@ -131,7 +146,8 @@ function jobListItem(c, j) {
             }
             , userAnnotations(j)
             , div( { style: "margin:6px"}
-                , j.body.map( (n,x) => {
+                , c=> c.md.fmUp("showListing") ?
+                    j.body.map( (n,x) => {
                     if (n.nodeType === 1) {
                         return "<p>" + n.innerHTML + "</p>"
 
@@ -141,7 +157,7 @@ function jobListItem(c, j) {
                     } else {
                         clg('UNEXPECTED Node type', n.nodeType, n.nodeName, n.textContent)
                     }
-                }))))
+                }) : null)))
 }
 
 function moreOrLess () {
@@ -149,7 +165,7 @@ function moreOrLess () {
         class: "listing-toggle material-icons"
         , style: "cursor:pointer;color:#888"
         , onclick: mx => {
-            c.md.onOff = !c.md.onOff
+            mx.onOff = !mx.onOff
         }
         , title: "Show/hide full listing"
         , content: cF( c=> c.md.onOff? "arrow_drop_down":"arrow_right")

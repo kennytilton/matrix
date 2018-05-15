@@ -53,14 +53,15 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
                 }
             }
             progressBar.value = progressBar.value + 1
-            // window.requestAnimationFrame(() => chunker( offset + jct))
+            window.requestAnimationFrame(() => chunker( offset + jct))
 
-            if (false || progressBar.value < 10)
-                window.requestAnimationFrame(() => chunker( offset + jct))
-            else {
-                progressBar.hidden = true
-                hiringApp.jobs = tempJobs
-            }
+            // if (tempJobs.length < 10) //(progressBar.value < 10)
+            //     window.requestAnimationFrame(() => chunker( offset + jct))
+            // else {
+            //     //alert('Stopping after 200 jobs found')
+            //     progressBar.hidden = true
+            //     hiringApp.jobs = tempJobs
+            // }
         } else {
             progressBar.hidden = true
             hiringApp.jobs = tempJobs

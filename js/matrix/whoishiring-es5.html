@@ -8,6 +8,40 @@
 
     <script src="dist/whoishiring.js"></script>
 
+    <STYLE type="text/css">
+
+        .slideIn {
+            animation-duration: 1s;
+            animation-name: slideFadeIn;
+        }
+        .slideOut {
+            animation-duration: 1s;
+            animation-name: slideFadeIn;
+            animation-direction: reverse;
+        }
+        @keyframes slideFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 100%;
+            }
+        }
+        @keyframes fazeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .fazer {
+            animation-duration: 2s;
+            animation-name: fazeIn;
+            animation-fill-mode: forwards;
+        }
+    </STYLE>
+
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">

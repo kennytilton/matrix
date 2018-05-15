@@ -338,7 +338,7 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onvolumechange','onwaiting']);
 
 function tagEventHandler( event, prop ) {
-    //clg( 'Bam tagEventHandler!', event, prop);
+    // clg( 'Bam tagEventHandler!', event, prop);
     let md = dom2mx( event.target, true);
 
     if (md) {
@@ -350,12 +350,13 @@ function tagEventHandler( event, prop ) {
 
 function tagEventBubble( md, event, prop) {
     if (md) {
-        //clg('got md', md, md.tag, md.id)
+        //clg('bubble got md', md, md.tag, md.id)
         let cb = md.callbacks.get(prop)
-        if (cb)
+        if (cb) {
+            //clg('hitting cb!!!', md.tag, prop)
             cb(md, event, prop)
-        else
-            tagEventBubble(md.par, event, prop)
+            event.stopPropagation()
+        } // else tagEventBubble(md.par, event, prop)
     } else {
         clg('tagEventBubble topped out', prop, event)
     }
@@ -793,7 +794,7 @@ class MXStorable extends Model {
     }
 
     static obsAnyChange ( slot, row, newv, priorv, c) {
-        clg('mxStoring!', row.id, slot)
+        clg('mxStoring!', row.id, slot, newv)
         row.store()
     }
 

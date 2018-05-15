@@ -56,9 +56,10 @@ const UJob = UserNotes.loadFromStorage();
 // ------ user annotations u/x --------------------------------------
 
 function userAnnotations(j) {
+    //clg('uannot', j.hnId, j.company)
     return div({style: "display:flex; flex-wrap:wrap; align-items:center"}
         , jobStars(j)
-        , applied(j)
+        //, applied(j)
         , noteEditor(j)
         , a({
                 style: "margin-left:6px"
@@ -76,7 +77,8 @@ function jobStars(j) {
     return div({style: "margin-left:6px; display:flex; flex-wrap:wrap"}
     , c => {
         let stars = []
-            , ujob = UJob.dict[j.hnId]
+            , ujob = UJob.dict[j.hnId];
+        //clg('starring', j.hnId, j.company)
         for (let n = 0; n < MAX_STARS; ++n)
             stars.push(i({
                     class: "material-icons"
@@ -84,6 +86,7 @@ function jobStars(j) {
                         return "font-size:1em; cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#000" : "#eee")
                     })
                     , onclick: mx => {
+                        clg('onclick!!!',ujob.stars, j.hnId, j.company)
                         ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
                     }
                 }
@@ -127,18 +130,26 @@ function noteEditor(j) {
     )
 }
 
-function applied(j) {
-    let ujob = UJob.dict[j.hnId]
-
+function applied(ij) {
+    let j = Object.assign(ij)
     return div({
             style: "display:flex; align-items:center"
         }
         , input({
                 id: "applied?"
                 , type: "checkbox", style: "margin-left:18px"
-                , checked: cF(c => ujob.applied || false)
-                , onclick: mx => ujob.applied = !ujob.applied
+                , checked: cF(c => {
+                    let ujob = UJob.dict[c.md.hnId];
+                    clg('applied checked', ujob.applied, ij.company, ujob.company, ij.hnId, j.hnId, ujob.hnId)
+                    return ujob.applied || false
+                })
+                , onclick: cF( c=> mx => {
+                    let ujob = UJob.dict[c.md.hnId]
+                        , newv = !ujob.applied;
+                    clg('Applied!!!!', c.md.hnId, mx.hnId, ujob.company, ij.hnId, ujob.hnId, j.hnId ,newv)
+                    ujob.applied = newv
+                })
             }
-            , {name: "applied?"}),
+            , {hnId: j.hnId, name: "applied?"}),
         label({for: "applied?"}, "Applied"))
 }

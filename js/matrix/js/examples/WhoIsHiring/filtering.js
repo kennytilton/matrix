@@ -12,7 +12,7 @@ function jobListFilter(mx, jobs) {
         , visaok = mx.fmUp("VISA").onOff
         , internok = mx.fmUp("INTERN").onOff
         , starred = mx.fmUp("Starred").onOff
-        , applied = mx.fmUp("Applied").onOff
+        , applied = null //mx.fmUp("Applied").onOff
         , noted = mx.fmUp("Noted").onOff
         , sortBy = mx.fmUp("sortby").selection
         , titleRgx = mx.fmUp("titlergx").rgxTree
@@ -78,7 +78,7 @@ const jSelects = [["REMOTE", "Does regex search of title for remote jobs"]
     , ["INTERN", "Does regex search of title for internships"]
     , ["VISA", "Does regex search of title for Visa sponsors"]
     , ["Starred", "Show only jobs you have rated with stars"]
-    , ["Applied", "Show only jobs you have marked as applied to"]
+    //, ["Applied", "Show only jobs you have marked as applied to"]
     , ["Noted", "Show only jobs on which you have made a note"]]
 
 function mkJobSelects() {
@@ -179,7 +179,7 @@ function mkListingRgx(prop, lbl, desc, autofocus = false) {
         , onkeypress: buildRgxTree
         , onchange: buildRgxTree
         , value: ''
-        , style: "min-width:300px;font-size:1em"
+        , style: "min-width:72px;width:300px;font-size:1em"
     }, {
         name: prop + "rgx"
         , rgxTree: cI(null)
