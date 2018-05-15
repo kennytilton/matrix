@@ -181,27 +181,36 @@ class Model {
 	}
 	fmTv( what, how) {
 		let self = this;
-		return (how.mep && this.fmatch(what)) ||
-
-			(how.insidep
-			&& this.kids
-			&& this.kids.somex((eltx, elt)=>{
+		return (how.mep && this.fmatch(what))
+			|| (how.insidep
+				&& this.kids
+				&& this.kids.somex((eltx, elt)=>{
 			    //clg(`fmTv sees ${self} eltx ${eltx} elt ${elt}`);
 				//clg(`${self.name} kidchks ${elt.name}`);
 				// clg(`somex passed eltx ${eltx} and elt ${elt}`)
-				let found = (elt !== how.skip)
-					&& elt.fmTv(what, Object.assign( {}, how, { upp: false, mep: true}));
-				if (found) return found;})) ||
-
-		(function () {
-			// clg(`fmTv ${self.name} considers upp ${how.upp} par=${self.par}`);
-			return (how.upp
-			&& self.par
-			&& self.par.fmTv( what, Object.assign({}, how
-				, {mep: true
-					, insidep: true
-					, skip: self})));
-		})();
+					if (!elt) {
+                        //clg('fmTv ignores null kid in', this.name, this.id, this.tag)
+                        return null
+                    } else if (typeof elt === "string") {
+					    //clg('skipstring')
+					    return null
+					} else if (!elt.fmTv) {
+						//clg('fmTv skipping no fmtv', typeof elt)
+                        return null;
+					} else {
+                        let found = (elt !== how.skip)
+                            && elt.fmTv(what, Object.assign( {}, how, { upp: false, mep: true}));
+                        if (found) return found;
+					}
+					}))
+			|| (function () {
+				return (how.upp
+					&& self.par
+					&& self.par.fmTv( what, Object.assign({}, how
+						, {mep: true
+							, insidep: true
+							, skip: self})))
+			})()
 	}
 	mDeadp() {return this.state===kDead;}
 }

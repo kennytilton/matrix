@@ -20,7 +20,7 @@ function WhoIsHiring() {
     return div( { id: "whoshiring"
             , style: "margin:0px;padding:36px"},
         div( {style: hzFlexWrap}
-            , span({style: "font-size:2em; margin-bottom:12px"}
+            , span({style: "font-size:2em; margin-bottom:12px;background:#ddd"}
                 ,"Ask HN: Who Is Hiring? (May 2018)")
             , appHelpOption())
         , appHelp()
@@ -31,11 +31,26 @@ function WhoIsHiring() {
         , sortBar()
         //, mkUserDefaults()
 
-        , h4({content: cF(c => {
-            let pgr = c.md.fmUp("progress")
-            return pgr.hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length
-                : "Comments parsed: "+ 20 * c.md.fmUp("progress").value
-        })})
+        , div({style: hzFlexWrap}
+            , b({content: cF(c => {
+                let pgr = c.md.fmUp("progress")
+                return pgr.hidden ? "Jobs found: " + c.md.fmUp("job-list").selectedJobs.length
+                    : "Comments parsed: "+ 20 * c.md.fmUp("progress").value})})
+            , button({
+            style: cF(c=> {
+                let pgr = c.md.fmUp("progress")
+                return "margin-left:24px;display:"+ (pgr.hidden? "block":"none")
+            })
+            , onclick: mx => {
+                clg('flip all listings to', !mx.expanded);
+                let all = document.getElementsByClassName('listing-toggle');
+                Array.prototype.map.call(all, tog => tog.onOff = !mx.expanded)
+                mx.expanded = !mx.expanded
+            }
+
+            , content: cF( c=> c.md.expanded? "Collapse all":"Expand all")
+        }
+            , { name: "expander", expanded: cI(false)}))
 
         , progress({
             id: "progress"
@@ -79,7 +94,10 @@ const appHelpEntry = [
 ]
 
 function appHelp () {
-    return ul({style: cF( c=> "display:" + (c.md.fmUp("appHelpOption").onOff? "block":"none"))}
+    return ul({
+            class: cF( c=> slideInRule(c, c.md.fmUp("appHelpOption").onOff))
+            , style: cF( c=> "display:" + (c.md.fmUp("appHelpOption").onOff? "block":"none"))
+        }
         , appHelpEntry.map( e=> li(e)))
 }
 
@@ -89,16 +107,14 @@ function jobListItem(c, j) {
     return li({
             style: cF(c=> {
                 let kn = c.md.fmUp("job-list").kidValues.indexOf(j)
-                return "padding:4px;background-color:" + (kn % 2? "#fff":"#eee")
+                return "padding:4px;background-color:" + (kn % 2? "#ffd":"#eee")
             })
             , onclick: mx=> {
-                clg('seeking mol', mx.name, mx.tag)
                 let mol = mx.fmDown("showListing")
-                clg('got mol', mol, mol.onFF)
                 mol.onOff = !mol.onOff
             }}
         , { name: "job-listing"}
-        , div( { style: "display:flex"}
+        , div( { style: "cursor:pointer;display:flex"}
             , moreOrLess( )
             , span(j.title.map(h => h.textContent).join(" | ")))
         , div( {
@@ -130,18 +146,19 @@ function jobListItem(c, j) {
 
 function moreOrLess () {
     return i({
-                class: "material-icons"
-                , style: "cursor:pointer;color:#888"
-                , onclick: mx => {
-                    clg('colclick', mx.tag,mx.name)
-                    // let jl = mx.fmUp("job-listing")
-                    // c.md.onOff = !c.md.onOff
-                }
-                , title: "Show/hide full listing"
-                , content: cF( c=> c.md.onOff? "arrow_drop_down":"arrow_right")
-            }, {
-                name: "showListing"
-                , onOff: cI( true)
-            })
+        class: "listing-toggle material-icons"
+        , style: "cursor:pointer;color:#888"
+        , onclick: mx => {
+            c.md.onOff = !c.md.onOff
+        }
+        , title: "Show/hide full listing"
+        , content: cF( c=> c.md.onOff? "arrow_drop_down":"arrow_right")
+    }, {
+        name: "showListing"
+        , onOff: cFI( c=> {
+            let expander = c.md.fmUp("expander")
+            return expander.expanded
+        })
+    })
 }
 

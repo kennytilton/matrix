@@ -147,7 +147,7 @@ function sortBar() {
             , [["Message Id", jobHnIdKey], ["Stars", jobStarsKey]
                 , ["Company", jobCompanyKey]]
                 .map(([label, keyFn]) => button({
-                    style: cF(c => c.md.selected ? "background:cyan" : "")
+                    style: cF(c => c.md.selected ? "background:#ddf" : "")
                     , onclick: mx => {
                         let currSel = mx.fmUp("sortby").selection;
                         clg('setting selection', mx.selection);
@@ -204,14 +204,25 @@ function labeledRow(label, ...children) {
             , onclick: mx => mx.par.helping = !mx.par.helping
             , content: cF( c=> c.md.par.helping? "help":"help_outline")
         })
-        , ul( {style: cF( c=> "display:" + (c.md.par.helping? "block":"none"))}
+        , ul( {
+                class: cF( c=> slideInRule(c, c.md.par.helping))
+                ,style: cF( c=> "display:" + (c.md.par.helping? "block":"none"))
+            }
             , regexHelp.map( h=> li(h))))
+}
+
+function slideInRule( c, show) {
+    if (c.pv === kUnbound) {
+        return show ? "slideIn" : ""
+    } else {
+        return show ? "slideIn" : "slideOut"
+    }
 }
 
 const regexHelp = [
     "Separate JS RegExp-legal terms with <b>||</b> or " +
     "<b>&&</b> (higher priority) to combine expressions."
-    , "Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to activate, including after clearing."
+    , "Press <kbd style='font-size:1.4em'>Enter</kbd> or <kbd style='font-size:1.4em'>Tab</kbd> to activate, including after clearing."
     , "Supply RegExp options after a comma. e.g. <b>taipei,i</b> for case-insensitive search."]
 
 function buildRgxTree(mx, e) {

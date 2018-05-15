@@ -12,7 +12,7 @@ function domlog(...args) {
 }
 
 function dom2mx(dom, mustFind=true) {
-    clg('dom2mx dom id',dom.id);
+    //clg('dom2mx dom id',dom.id);
 	let js = mxDom[dom.id];
 	if ( !js && mustFind) {
 	    clg('trying parent', dom.parentNode)
@@ -338,7 +338,7 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onvolumechange','onwaiting']);
 
 function tagEventHandler( event, prop ) {
-    clg( 'Bam tagEventHandler!', event, prop);
+    //clg( 'Bam tagEventHandler!', event, prop);
     let md = dom2mx( event.target, true);
 
     if (md) {
@@ -350,7 +350,7 @@ function tagEventHandler( event, prop ) {
 
 function tagEventBubble( md, event, prop) {
     if (md) {
-        clg('got md', md, md.tag, md.id)
+        //clg('got md', md, md.tag, md.id)
         let cb = md.callbacks.get(prop)
         if (cb)
             cb(md, event, prop)
