@@ -1,6 +1,6 @@
 goog.provide('Matrix.mxWeb');
 goog.require('Matrix.Model');
-const mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
+var mxDom = []; // here we will link JS "mirror" DOM to actual DOM by their numerical ids
 
 var domLogging = false;
 
@@ -197,7 +197,7 @@ class Tag extends Model {
 		if (attrs===undefined) debugger;
 
 		if (attrs.id) {
-			this.id = attrs.id;
+            this.id = attrs.id;
 		} else {
 		    attrs.id = this.sid;
 			this.id = this.sid;
@@ -211,7 +211,17 @@ class Tag extends Model {
 
 		// --- binding mxDom with dom -----------------
 
+        if (mxDom[this.id]) {
+            if (mxDom[this.id] === this) {
+                clg('double load!!!!!')
+            } else {
+                clg('WARNING: dup DOM id: '
+                    , this.id, attrs.id, this.name, mxDom[this.id])
+            }
+        }
+
 		mxDom[this.id]=this;
+
 		this.domCache = null;
 		Object.defineProperty( this, 'dom',
 			{enumerable: true,
@@ -338,7 +348,6 @@ const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','on
 	,'onvolumechange','onwaiting']);
 
 function tagEventHandler( event, prop ) {
-    // clg( 'Bam tagEventHandler!', event, prop);
     let md = dom2mx( event.target, true);
 
     if (md) {
@@ -370,7 +379,6 @@ function tagAttrsBuild(md) {
                 clg('bingo event!!!!!!!!!! ' + prop);
                 clg('bingo event handler!!!!!!!!!! ' + md[prop]);
             }
-
             ast( md[prop] instanceof Function, 'tagattrsbuild handler not fn');
             md.callbacks.set( prop, md[prop]);
             attrs += ` ${prop}="tagEventHandler(event, '${prop}')"`;

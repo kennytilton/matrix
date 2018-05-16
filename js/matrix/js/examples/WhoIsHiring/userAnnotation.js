@@ -59,7 +59,7 @@ function userAnnotations(j) {
     //clg('uannot', j.hnId, j.company)
     return div({style: "display:flex; flex-wrap:wrap; align-items:center"}
         , jobStars(j)
-        //, applied(j)
+        , applied(j)
         , noteEditor(j)
         , a({
                 style: "margin-left:6px"
@@ -67,33 +67,6 @@ function userAnnotations(j) {
                 , title: "View listing on the HN site"}
             , img({ src: "dist/hn24.jpg"}))
     )
-}
-
-
-
-const MAX_STARS = 5;
-
-function jobStars(j) {
-    return div({style: "margin-left:6px; display:flex; flex-wrap:wrap"}
-    , c => {
-        let stars = []
-            , ujob = UJob.dict[j.hnId];
-        //clg('starring', j.hnId, j.company)
-        for (let n = 0; n < MAX_STARS; ++n)
-            stars.push(i({
-                    class: "material-icons"
-                    , style: cF(c => {
-                        return "font-size:1em; cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#000" : "#eee")
-                    })
-                    , onclick: mx => {
-                        clg('onclick!!!',ujob.stars, j.hnId, j.company)
-                        ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
-                    }
-                }
-                , {starN: n + 1}
-                , "grade"))
-        return stars
-    })
 }
 
 // --- notes ---------------------------------------------
@@ -119,9 +92,15 @@ function noteEditor(j) {
         , textarea({
                 style: cF(c => "display:"
                     + (c.md.par.editing ? "block" : "none"))
-                , cols: 60
+                , cols: 20
                 , placeholder: "Your notes here"
+                , onclick: mx => {
+                    let li = mx.fmUp("job-listing");
+                    clg('note sees li', li.id)
+                }
                 , onchange: (mx, e) => {
+
+
                     clg('bam', e.target.value)
                     ujob.notes = e.target.value
                 }
@@ -129,27 +108,54 @@ function noteEditor(j) {
             , ujob.notes || "")
     )
 }
+// --- stars ----------------------------------------------
 
-function applied(ij) {
-    let j = Object.assign(ij)
+const MAX_STARS = 5;
+
+function jobStars(j) {
+    return div({style: "margin-left:6px; display:flex; flex-wrap:wrap"}
+        , c => {
+            let stars = []
+                , ujob = UJob.dict[j.hnId];
+            //clg('starring', j.hnId, j.company)
+            for (let n = 0; n < MAX_STARS; ++n)
+                stars.push(i({
+                        class: "material-icons"
+                        , style: cF(c => {
+                            return "font-size:1em; cursor:pointer; color:" + ( ujob.stars >= c.md.starN ? "#000" : "#eee")
+                        })
+                        , onclick: mx => {
+                            let li = mx.fmUp("job-listing")
+                            clg('onclick!!!', li.id, ujob.stars, j.hnId, j.company)
+                            ujob.stars = (ujob.stars === mx.starN ? 0 : mx.starN);
+                        }
+                    }
+                    , {starN: n + 1}
+                    , "grade"))
+            return stars
+        })
+}
+
+// --- applied -----------------------------------------------
+
+function applied(j) {
     return div({
-            style: "display:flex; align-items:center"
+            style: "display:flex; flex-wrap: wrap; align-items:center"
         }
         , input({
-                id: "applied?"
+                id: "applied?"+j.hnId
                 , type: "checkbox", style: "margin-left:18px"
                 , checked: cF(c => {
-                    let ujob = UJob.dict[c.md.hnId];
-                    clg('applied checked', ujob.applied, ij.company, ujob.company, ij.hnId, j.hnId, ujob.hnId)
+                    let ujob = UJob.dict[j.hnId];
                     return ujob.applied || false
                 })
-                , onclick: cF( c=> mx => {
-                    let ujob = UJob.dict[c.md.hnId]
+                , onclick: mx => {
+                    let ujob = UJob.dict[j.hnId]
                         , newv = !ujob.applied;
-                    clg('Applied!!!!', c.md.hnId, mx.hnId, ujob.company, ij.hnId, ujob.hnId, j.hnId ,newv)
                     ujob.applied = newv
-                })
+                }
+
             }
-            , {hnId: j.hnId, name: "applied?"}),
-        label({for: "applied?"}, "Applied"))
+            , {name: "applied?"}),
+        label({for: "applied?"+j.hnId}, "Applied"))
 }

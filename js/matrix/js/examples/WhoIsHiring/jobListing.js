@@ -55,7 +55,7 @@ function parseListings( listing, tempJobs, chunkSize, progressBar) {
             progressBar.value = progressBar.value + 1
             window.requestAnimationFrame(() => chunker( offset + jct))
 
-            // if (tempJobs.length < 100) //(progressBar.value < 10)
+            // if (tempJobs.length < 5) //(progressBar.value < 10)
             //     window.requestAnimationFrame(() => chunker( offset + jct))
             // else {
             //     //alert('Stopping after 200 jobs found')
@@ -131,7 +131,7 @@ function jobSpecExtend(j, dom) {
                 , hsmatch = rx => hseg.some(hs => hs.match(rx) !== null);
 
             j.company = hseg[0]
-            j.OK = true || j.company.search("Privacy.com") === 0;
+            j.OK = true // || j.company.search("Privacy.com") === 0;
 
             j.titlesearch = htext
             j.bodysearch = j.body.map(n => n.textContent).join('<**>')
