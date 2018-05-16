@@ -57,57 +57,57 @@ const UJob = UserNotes.loadFromStorage();
 
 function userAnnotations(j) {
     //clg('uannot', j.hnId, j.company)
-    return div({style: "display:flex; flex-wrap:wrap; align-items:center"}
-        , jobStars(j)
-        , applied(j)
-        , noteEditor(j)
-        , a({
-                style: "margin-left:6px"
-                , href: `https://news.ycombinator.com/item?id=${j.hnId}`
-                , title: "View listing on the HN site"}
-            , img({ src: "dist/hn24.jpg"}))
-    )
+    return div( {style: "display:flex; flex-direction: column"}
+        , div ({style: "display:flex; flex-wrap:wrap; align-items:center"}
+            , jobStars(j)
+            , applied(j)
+            , noteToggle(j)
+            , a({
+                    style: "margin-left:6px"
+                    , href: `https://news.ycombinator.com/item?id=${j.hnId}`
+                    , title: "View listing on the HN site"}
+                , img({ src: "dist/hn24.jpg"})))
+        // beneath that
+        , noteEditor(j))
+}
+
+function displayStyle( visible, notVisValue = "none") {
+    return "display:" + (visible ? "block" : notVisValue) + ";"
 }
 
 // --- notes ---------------------------------------------
 
-function noteEditor(j) {
+function noteToggle(j) {
     let ujob = UJob.dict[j.hnId]
 
-    return div({style: "margin-left:18px"}
-        , {editing: cI(false)}
-        , i({
+    return i({
             class: "material-icons"
             , style: cF(c => {
-                let c1 = ( ujob.notes && ujob.notes.length > 0) ? "#f00" : "#000"
+                let c1 = ( ujob.notes && ujob.notes.length > 0) ? "cyan" : "#000"
 
-                return "cursor:pointer;color:" + ( ujob.notes && ujob.notes.length > 0 ? "#f00" : "#000")
+                return "margin-left:18px; cursor:pointer;color:" + ( ujob.notes && ujob.notes.length > 0 ? "#f00" : "#000")
 
             })
-            , onclick: mx => {
-                mx.par.editing = !mx.par.editing
-            }
+            , onclick: mx => mx.editing = !mx.editing
             , content: "note_add"
-        })
-        , textarea({
-                style: cF(c => "display:"
-                    + (c.md.par.editing ? "block" : "none"))
-                , cols: 20
-                , placeholder: "Your notes here"
-                , onclick: mx => {
-                    let li = mx.fmUp("job-listing");
-                    clg('note sees li', li.id)
-                }
-                , onchange: (mx, e) => {
-
-
-                    clg('bam', e.target.value)
-                    ujob.notes = e.target.value
-                }
-            }
-            , ujob.notes || "")
-    )
+        }, {name: "note-toggle", editing: cI( (ujob.notes||"").length > 0 )})
 }
+
+function noteEditor (j) {
+    let ujob = UJob.dict[j.hnId]
+    return textarea({
+            class: cF( c=> slideInRule(c, c.md.fmUp("note-toggle").editing))
+            , style: cF(c => "padding:8px;margin-left:12px;margin-right:12px;"
+        + displayStyle(c.md.fmUp("note-toggle").editing))
+            , cols: 20
+            , placeholder: "Your notes here"
+            , onchange: (mx, e) => ujob.notes = e.target.value
+        }
+        , ujob.notes || "")
+}
+
+
+
 // --- stars ----------------------------------------------
 
 const MAX_STARS = 5;
