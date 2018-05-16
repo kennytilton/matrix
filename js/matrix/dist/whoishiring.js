@@ -8185,23 +8185,28 @@ UserNotes.loadFromStorage = function() {
 };
 var UJob = UserNotes.loadFromStorage();
 function userAnnotations(c) {
-  return div({style:"display:flex; flex-wrap:wrap; align-items:center"}, jobStars(c), applied(c), noteEditor(c), a({style:"margin-left:6px", href:"https://news.ycombinator.com/item?id=" + c.hnId, title:"View listing on the HN site"}, img({src:"dist/hn24.jpg"})));
+  return div({style:"display:flex; flex-direction: column"}, div({style:"display:flex; flex-wrap:wrap; align-items:center"}, jobStars(c), applied(c), noteToggle(c), a({style:"margin-left:6px", href:"https://news.ycombinator.com/item?id=" + c.hnId, title:"View listing on the HN site"}, img({src:"dist/hn24.jpg"}))), noteEditor(c));
+}
+function displayStyle(c, d) {
+  return "display:" + (c ? "block" : void 0 === d ? "none" : d) + ";";
+}
+function noteToggle(c) {
+  var d = UJob.dict[c.hnId];
+  return i({class:"material-icons", style:cF(function(c) {
+    return "margin-left:18px; cursor:pointer;color:" + (d.notes && 0 < d.notes.length ? "#f00" : "#000");
+  }), onclick:function(c) {
+    return c.editing = !c.editing;
+  }, content:"note_add"}, {name:"note-toggle", editing:cI(0 < (d.notes || "").length)});
 }
 function noteEditor(c) {
   var d = UJob.dict[c.hnId];
-  return div({style:"margin-left:18px"}, {editing:cI(!1)}, i({class:"material-icons", style:cF(function(c) {
-    return "cursor:pointer;color:" + (d.notes && 0 < d.notes.length ? "#f00" : "#000");
-  }), onclick:function(c) {
-    c.par.editing = !c.par.editing;
-  }, content:"note_add"}), textarea({style:cF(function(c) {
-    return "display:" + (c.md.par.editing ? "block" : "none");
-  }), cols:60, placeholder:"Your notes here", onclick:function(c) {
-    c = c.fmUp("job-listing");
-    clg("note sees li", c.id);
-  }, onchange:function(c, f) {
-    clg("bam", f.target.value);
-    d.notes = f.target.value;
-  }}, d.notes || ""));
+  return textarea({class:cF(function(c) {
+    return slideInRule(c, c.md.fmUp("note-toggle").editing);
+  }), style:cF(function(c) {
+    return "padding:8px;margin-left:12px;margin-right:12px;display:" + (c.md.fmUp("note-toggle").editing ? "flex" : "none");
+  }), placeholder:"Your notes here", onchange:function(c, f) {
+    return d.notes = f.target.value;
+  }}, d.notes || "");
 }
 var MAX_STARS = 5;
 function jobStars(c) {
@@ -8220,7 +8225,7 @@ function jobStars(c) {
   });
 }
 function applied(c) {
-  return div({style:"display:flex; align-items:center"}, input({id:"applied?" + c.hnId, type:"checkbox", style:"margin-left:18px", checked:cF(function(d) {
+  return div({style:"display:flex; flex-wrap: wrap; align-items:center"}, input({id:"applied?" + c.hnId, type:"checkbox", style:"margin-left:18px", checked:cF(function(d) {
     return UJob.dict[c.hnId].applied || !1;
   }), onclick:function(d) {
     d = UJob.dict[c.hnId];

@@ -98,8 +98,8 @@ function noteEditor (j) {
     return textarea({
             class: cF( c=> slideInRule(c, c.md.fmUp("note-toggle").editing))
             , style: cF(c => "padding:8px;margin-left:12px;margin-right:12px;"
-        + displayStyle(c.md.fmUp("note-toggle").editing))
-            , cols: 20
+        + "display:" + (c.md.fmUp("note-toggle").editing ? "flex":"none"))
+            // , cols: 20
             , placeholder: "Your notes here"
             , onchange: (mx, e) => ujob.notes = e.target.value
         }
