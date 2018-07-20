@@ -332,8 +332,9 @@ const TagAttributesGlobal =  new Set(['accesskey','autofocus','checked','class'
     ,'cols', 'content', 'contenteditable','contextmenu'
     , 'data','dir','draggable','dropzone','for','hidden','href'
     ,'id','itemid','itemprop','itemref','itemscope'
-	,'itemtype','lang','max'
-    ,'spellcheck','src','style','tabindex','title','translate', 'type'
+	,'itemtype','lang','max','name'
+    ,'selected','spellcheck','src','style'
+    ,'tabindex','title','translate', 'type'
     ,'value','viewBox','fill','d']);
 
 const TagEvents =  new Set(['onabort','onautocomplete','onautocompleteerror','onblur','oncancel'

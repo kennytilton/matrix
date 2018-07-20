@@ -27,9 +27,7 @@ function WhoIsHiring() {
                 , "Ask HN: Who Is Hiring?")
             , appHelpOption())
         , appHelp()
-        , p(i("All jobs scraped from the original " +
-            "<a href='https://news.ycombinator.com/item?id=16967543'>May 2018 listing</a>. "
-            ))
+        , pickAMonth()
         , jobListingLoader()
         , mkJobSelects()
         , mkTitleRgx()

@@ -166,11 +166,11 @@ function sortBar() {
 }
 
 function mkTitleRgx() {
-    return mkListingRgx('title', "Title Regex", 'title')
+    return mkListingRgx('title', "Title Search", 'title')
 }
 
 function mkFullRgx() {
-    return mkListingRgx('listing', "Listing Regex", 'title and listing', true)
+    return mkListingRgx('listing', "Listing Search", 'title and listing', true)
 }
 
 function mkListingRgx(prop, lbl, desc, autofocus = false) {
