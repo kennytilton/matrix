@@ -72,15 +72,12 @@
     (is (nil? (c-model c)))
     (is (= :bingo2 (c-slot c) (c-slot-name c)))
     (is (= (c-get c) 42))
-    (is @bingo2)
+    (is (= false @bingo2))
     ))
-
 
 (deftest t-custom-obs
   (let [bobs (atom nil)
-        b (
-
-        cI 2 :slot :bb
+        b (cI 2 :slot :bb
                 :obs (fn-obs
                        (trx nil slot me new old)
                        (reset! bobs new)))
@@ -91,35 +88,16 @@
                (* 10 (c-get b)))]
     (#?(:clj dosync :cljs do)
      (is (= (c-get b) 2))
-     (is (= @bobs 2))
+     (is (= @bobs nil))
      (is (= (c-get c) 20))
-     ;; (is (= @cobs 20))
-     ;; (c-reset! b 3)
-     ;; (is (= 3 @bobs))
-     ;; (is (= 30 (c-get c)))
-     ;; (is (= 30 @cobs))
-     )))
+     (is (= @cobs 20))
+     (c-reset! b 3)
+     (is (= 3 @bobs))
+     (is (= 30 (c-get c)))
+     (is (= 30 @cobs)))))
 
 #?(:cljs (do
            (cljs.test/run-tests)
              ))
 
 
-;; (def obj #?(:clj Object :cljs js/Object))
-
-;; (defmulti speak2 (fn [one two] [(:type (meta one))(:type (meta two))]))
-
-;; (derive ::dog ::animal)
-;; (derive ::cat ::animal)
-
-;; (defmethod speak2 [::dog obj] [_ _]
-;;   (println :woof))
-
-;; (speak2 (atom nil :meta {:type ::dog}) (atom nil :meta {:type obj}))
-
-;; (defmethod speak2 [::cat obj] [_ _]
-;;   (println :meow))
-
-;; (speak2 (atom nil :meta {:type ::cat})  (atom nil :meta {:type obj}))
-
-;; (speak2 (atom nil :meta {:type ::dog})  (atom nil :meta {:type obj}))

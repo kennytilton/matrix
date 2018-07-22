@@ -69,7 +69,7 @@
 
 
     (#?(:clj ref :cljs atom) (merge {:value unbound
-                                     ::cty/state :nascent        ;; s/b :unbound?
+                                     ::cty/state :nascent   ;; s/b :unbound?
                                      :pulse 0
                                      :pulse-last-changed 0
                                      :pulse-observed 0
@@ -104,10 +104,6 @@
      :code '~body
      :value unbound
      :rule (c-fn ~@body)))
-
-;(defmacro bound-cache []
-;  `(when (not= cache unbound)
-;     cache))
 
 (defmacro cF+ [[& options] & body]
   `(make-c-formula
@@ -207,7 +203,7 @@
     :rule (c-fn ~@body)
     :debug true))
 
-;; hhhhack add validation somewhere of lazy option
+;; todo add validation somewhere of lazy option
 
 (defmacro c-formula [[& kvs] & body]
   `(make-c-formula
@@ -218,9 +214,9 @@
 
 (defn cI [value & option-kvs]
   (apply make-cell
-    (list* :value value
-      :input? true
-      option-kvs)))
+         :value value
+         :input? true
+         option-kvs))
 
 ;; --- where change and animation begin -------
 
@@ -240,7 +236,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (c-value-assume c new-value nil)
     ;-------------------------------------------
     :else
-    (do ;; tufte/p :wi-cvassume-sync
+    (do                                                     ;; tufte/p :wi-cvassume-sync
      (#?(:clj dosync :cljs do)
      (p :outer-wi
        (with-integrity (:change (c-slot c))

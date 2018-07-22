@@ -193,7 +193,7 @@
               :x2 2
               :age (cF (* 21 (md-get me :x2)))
               )]
-     (println :meta (meta me))
+
      (is (= 2 (md-get me :x2)))
      (is (= 42 (md-get me :age)))
      (is (nil? (md-cell me :age)))

@@ -69,7 +69,7 @@
         (md-reset! f :ee 0)
         (is (empty? (md-get f :kids)))
         (is (nil? @dmw))
-        (is (= :dead (:state (meta dmw))))))))
+        (is (= :dead (::cty/state (meta dmw))))))))
 
 
 #?(:cljs (do

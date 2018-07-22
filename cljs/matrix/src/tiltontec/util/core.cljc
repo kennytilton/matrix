@@ -54,6 +54,7 @@
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))
   (alter-meta! ref assoc slot new-value)
+  ;;(prn :altermeta!! slot new-value)
   new-value)
 ;; --- error handling -----------------
 

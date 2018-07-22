@@ -38,7 +38,6 @@
    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
    ))
 
-
 (deftest hw-01
   (let [v ;;"visitor"
         {:name "World"
@@ -55,13 +54,14 @@
   (let [obs-action (atom nil)
         v ;;"visitor"
         {:name "World"
-         :action (cI "knocks"
+         :action (cI nil
                        :slot :v-action
                        :obs ;; short for observer
                        (fn [slot me new old c]
                          (reset! obs-action new)
                          (println :observing slot new old)))}]
     (is (=  (c-get (:name v)) "World"))
+    (c-reset! (:action v) "knocks")
     (is (=  (c-get (:action v)) "knocks"))
     (is (= "knocks" @obs-action))))
 

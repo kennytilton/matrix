@@ -80,7 +80,7 @@
       (c-reset! c new-value))
     (do
       (println :reset-oops)
-      (println :meta (meta me)) 
+      (println :reset-meta (meta me))
        (println :cz (:cz (meta me)))
       (if (contains? @me slot)
         (err str "change not mediated by cell " slot "/" (ia-type me))
@@ -94,10 +94,6 @@
 
 (defn mswap!> [me slot swap-fn & swap-fn-args]
   (mset!> me slot (apply swap-fn (<mget me slot) swap-fn-args)))
-
-
-
-;;(rmap-setf [slot me] new-value))))
 
 (defn backdoor-reset!? [me slot new-value]
   (if-let [c  (md-cell me slot)]
@@ -156,9 +152,11 @@
 (defmethod observe [:kids ::family]
   [_ _ newk oldk _]
   (when-not (= oldk unbound)
+    ;(prn :obskids)
     (let [lostks (difference (set oldk)(set newk))]
       (when-not (empty? lostks)
         (doseq [k lostks]
+          ;(prn :not2be!! k)
           (not-to-be k))))))
 
 (defmethod not-to-be [::family]

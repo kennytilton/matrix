@@ -103,7 +103,7 @@
   (let [b (cI 2 :slot :yowza
                 :obs (fn-obs (reset! yowza new)))]
     (is (= 2 (c-get b)))
-    (is (= 2 @yowza))
+    (is (= 0 @yowza))
     (c-reset! b 42)
     (is (= 42 (c-get b)))
     (is (= 42 @yowza))))
@@ -296,7 +296,7 @@
  
   (let [ob (atom 0)
         b (cI 2 :slot :bb
-                :obs (fn-obs (trx nil :obs-bb!! new old)
+                :obs (fn-obs (trx :obs-bb!! new old)
                              (swap! ob inc))
                 :unchanged-if (fn [n p]
                                 (trx nil :ucif-sees n p)
@@ -310,20 +310,20 @@
                (+ 40 (c-get b)))]
     (is (= (c-get c) 42))
     (is (= (c-get b) 2))
-    (is (= 1 @ob))
+    (is (= 0 @ob))
     (is (= 1 @cct))
 
 
     (c-reset! b 4)
     (is (= (c-get c) 42))
     (is (= (c-get b) 4))
-    (is (= 1 @ob))
+    (is (= 0 @ob))
     (is (= 1 @cct))
 
     (c-reset! b 5)
     (is (= (c-get c) 45))
     (is (= (c-get b) 5))
-    (is (= 2 @ob))
+    (is (= 1 @ob))
     (is (= 2 @cct))))
     
 (deftest opti-away

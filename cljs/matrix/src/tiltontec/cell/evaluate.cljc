@@ -231,6 +231,7 @@
   ;
 
   (#?(:clj dosync :cljs do)
+  ;;(prn :awk-c c @+pulse+ (c-pulse-observed c)(c-value-state c))
    (when (> @+pulse+ (c-pulse-observed c))                  ;; safeguard against double-call
      (when-let [me (c-me c)]
        (rmap-setf [(c-slot c) me] (c-value c)))
@@ -365,7 +366,7 @@ then clear our record of them."
              (not (c-input? c)))                            ;; yes, dependent cells can be inputp
 
     ;;(println :optimizing-away!!!! (c-slot c)(c-useds c))
-    (rmap-setf [::cty/state c] :optimized-away)                  ;; leaving this for now, but we toss
+    (rmap-setf [::cty/state c] :optimized-away)             ;; leaving this for now, but we toss
                                         ; the cell below. hhack
     (c-observe c prior-value :opti-away)
 
@@ -409,7 +410,7 @@ then clear our record of them."
                       [(ia-type me)]))
 
 (defmethod not-to-be :default [me]
-  ;; (println :not2be-default (type (when me @me)) (:id @me) me)
+  (println :not2be-default (type (when me @me)) (:id @me) me)
   (not-to-be-self me))
 
 ;----------------- change detection ---------------------------------
@@ -482,11 +483,11 @@ then clear our record of them."
         (propagate-to-callers c callers)
         ;;(trx :obs-chkpulse!!!!!!!! @+pulse+ (c-pulse-observed c))
 
-        (when-not (c-optimized-away? c) ;; they get observed at the time
+        (when-not (c-optimized-away? c)                     ;; they get observed at the time
           ;;(trx :not-opti!!!! @c)
           (when (or (> @+pulse+ (c-pulse-observed c))
                   (some #{(c-lazy c)}
-                    [:once-asked :always true]))         ;; messy: these can get setfed/propagated twice in one pulse+
+                    [:once-asked :always true]))            ;; messy: these can get setfed/propagated twice in one pulse+
             ;;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
             (c-observe c prior-value :propagate)))
 
@@ -535,7 +536,7 @@ then clear our record of them."
                                         ; before the optimization step.
                (do #_ (trx :not-propping @+pulse+ (c-slot c)
                      ;; :val (c-value c)
-                     :to (c-slot caller) :caller ;; @caller
+                     :to (c-slot caller) :caller            ;; @caller
                      (c-state caller) :current (c-current? caller)
                      :c-not-used? (not (some #{c} (c-useds caller)))
                      :c-not-opti (not (c-optimized-away? c))))

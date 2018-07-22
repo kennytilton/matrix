@@ -1,5 +1,5 @@
 (ns tiltontec.util.base
-  (:require [clojure.string :as $]))
+  (:require [clojure.string :as str]))
 
 #?(:cljs (enable-console-print!))
 
@@ -17,7 +17,7 @@
 
 (defn call-trc$ [s bits]
   (str s ": " #?(:cljs (str bits)
-                 :clj ($/join ", " bits))))
+                 :clj (str/join ", " bits))))
 
 
 (defn call-trc [s & os]
