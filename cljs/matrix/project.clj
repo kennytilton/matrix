@@ -1,5 +1,8 @@
 (defproject com.tiltontec/matrix "0.1.4-SNAPSHOT"
   :description "Matrix dataflow library for CLJS"
+  :scm {:name "git"
+        :git "https://github.com/kennytilton/matrix"
+        :dir "cljs/matrix"}
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -10,6 +13,7 @@
                  [org.clojure/data.int-map "0.2.4"]
                  [com.cognitect/transit-cljs "0.8.243"]
                  [com.taoensso/tufte "1.1.2"]]
+
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-npm "0.6.2"]]
