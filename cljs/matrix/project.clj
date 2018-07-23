@@ -1,7 +1,7 @@
 (defproject com.tiltontec/matrix "0.1.4-SNAPSHOT"
   :description "Matrix dataflow library for CLJS"
   :scm {:name "git"
-        :git "https://github.com/kennytilton/matrix"
+        :url "https://github.com/kennytilton/matrix"
         :dir "cljs/matrix"}
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
