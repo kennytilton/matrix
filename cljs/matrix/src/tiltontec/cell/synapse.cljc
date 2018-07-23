@@ -29,6 +29,9 @@
               :refer-macros [cF cF+ c_F cF_]
               :refer [cI c-reset! make-c-formula]])))
 
+(defn- really? []
+  true)
+
 (defn existing-syn [synapse-id]
   (assert (keyword? synapse-id) "Synapse ID must be a keyword")
   (assert *depender* (str "You attempted to create synapse " synapse-id " outside a Cell formula. Synapses serve containing Cells."))
