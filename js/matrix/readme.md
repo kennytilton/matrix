@@ -139,7 +139,7 @@ The static method `loadAllItems` loads to-dos from browser `localStorage` into t
 ```javascript
 empty: cF( c => c.md.items.length === 0),
 ```
-Let's dissect `c.md.length`. In the technical bit you might have skipped we said formulaic cells were first-class functions of the object qualified by the property they mediated. We simplified. The input is the mediating cell itself, which stores the object qualified in an `md` property.
+Let's dissect `c.md.items.length`. In the technical bit you might have skipped we said formulaic cells were first-class functions of the object qualified by the property they mediated. We simplified. The input is the mediating cell itself, which stores the object qualified in an `md` property.
 
 So what controls the `items` property? Well, we exceeded the spec and did logical deletion of to-dos so the `items` rule looks like this:
 ```javascript
