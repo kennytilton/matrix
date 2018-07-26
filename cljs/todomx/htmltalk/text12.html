@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+<head>
+  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+  <title>Slide 13</title>
+</head>
+<body text="#000000" bgcolor="#D5C0BB" link="#000080" vlink="#0000CC" alink="#000080">
+<center>
+<a href="text0.html">First page</a> <a href="text11.html">Back</a> <a href="text13.html">Continue</a> <a href="text52.html">Last page</a> <a href="Lisp-NYC-2018-02.html">Overview</a> <a href="img12.html">Graphics</a></center><br>
+<h1 style="direction:ltr;"><font color="#000080"> Functional is slow. Step #3.</font></h1>
+<h2 style="direction:ltr;">Cache the computation (so now we need state):
+<h2 style="direction:ltr;">(defstruct cell rule <i><b>value</b></i>)
+<h2 style="direction:ltr;">(defmethod right ((self geo-box))
+<h2 style="direction:ltr;">   (b-if cell (slot-cell self 'right)
+<h2 style="direction:ltr;">     (if (unboundp (value cell))
+<h2 style="direction:ltr;">       (setf (value cell)
+<h2 style="direction:ltr;">          (funcall rule self)))
+<h2 style="direction:ltr;">       (value cell))
+<h2 style="direction:ltr;">     (slot-value self 'right)))
+</body>
+</html>

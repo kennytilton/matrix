@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+<head>
+  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+  <title>Slide 14</title>
+</head>
+<body text="#000000" bgcolor="#D5C0BB" link="#000080" vlink="#0000CC" alink="#000080">
+<center>
+<a href="text0.html">First page</a> <a href="text12.html">Back</a> <a href="text14.html">Continue</a> <a href="text52.html">Last page</a> <a href="Lisp-NYC-2018-02.html">Overview</a> <a href="img13.html">Graphics</a></center><br>
+<h1 style="direction:ltr;"><font color="#000080"> Full sweep is still slow. Step #4a.</font></h1>
+<h2 style="direction:ltr;">Track dependents so we can notify them:
+<h2 style="direction:ltr;">(defstruct cell rule value <i><u><b>users</b></u></i>)
+<h2 style="direction:ltr;">(defmethod right ((self geo-box))
+<h2 style="direction:ltr;">  (b-if cell (slot-cell self 'right)
+<h2 style="direction:ltr;">     (progn
+<h2 style="direction:ltr;">        (when *user*
+<h2 style="direction:ltr;">           (c-record-user cell *user*))
+<h2 style="direction:ltr;">        (let ((*user* cell))                         (setf (value cell)
+<h2 style="direction:ltr;">             (funcall rule cell)))
+<h2 style="direction:ltr;">     (slot-value self 'right)))
+</body>
+</html>

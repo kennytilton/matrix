@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+<head>
+  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+  <title>Slide 34</title>
+</head>
+<body text="#000000" bgcolor="#D5C0BB" link="#000080" vlink="#0000CC" alink="#000080">
+<center>
+<a href="text0.html">First page</a> <a href="text32.html">Back</a> <a href="text34.html">Continue</a> <a href="text52.html">Last page</a> <a href="Lisp-NYC-2018-02.html">Overview</a> <a href="img33.html">Graphics</a></center><br>
+<h1 style="direction:ltr;"><font color="#000080">Synapses as Streams</font></h1>
+<h2 style="direction:ltr;">syn·apse [sin-aps, si-naps] Physiology noun - A junction between two nerve cells, consisting of a minute gap across which impulses pass by diffusion of a neurotransmitter.
+<h2 style="direction:ltr;">      (let [sensor (cI nil)
+<h2 style="direction:ltr;">            alarm (cF (if <i><b>(with-synapse (:delta-sensor [prior (atom nil)])</b></i>
+<h2 style="direction:ltr;"><i><b>                          (when-let [reading (&lt;cget sensor)]</b></i>
+<h2 style="direction:ltr;"><i><b>                           (let [delta (Math/abs</b></i>
+<h2 style="direction:ltr;"><i><b>                                         (if @prior</b></i>
+<h2 style="direction:ltr;"><i><b>                                             (- reading @prior)</b></i>
+<h2 style="direction:ltr;"><i><b>                                             0))]</b></i>
+<h2 style="direction:ltr;"><i><b>                              (when (&gt; delta 5)</b></i>
+<h2 style="direction:ltr;"><i><b>                                 (reset! prior reading)</b></i>
+<h2 style="direction:ltr;"><i><b>                                 delta)</b></i>)))
+<h2 style="direction:ltr;">                         :on :off)))]
+<h2 style="direction:ltr;">           ...etc...)
+</body>
+</html>

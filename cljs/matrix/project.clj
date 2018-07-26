@@ -2,7 +2,9 @@
   :description "Matrix dataflow library for CLJS"
   :scm {:name "git"
         :url "https://github.com/kennytilton/matrix"
-        :dir "cljs/matrix"}
+        ;:url "https://github.com/kennytilton/matrix/tree/master/cljs/matrix"
+        :dir "./cljs/matrix"
+        }
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

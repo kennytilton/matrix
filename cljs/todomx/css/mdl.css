@@ -1,0 +1,11 @@
+blockquote.noqmark:after {
+    content: "";
+}
+
+blockquote.noqmark:before {
+    content: "";
+}
+
+.intro-section {
+  max-width: 960px;
+}
