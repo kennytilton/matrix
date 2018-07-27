@@ -10,7 +10,7 @@ rxTrak hopes to carry developers down the rest of the functional path on which F
 
 > Nothing challenges software more than managing UI state as an intelligent user does their earnest best to use a computer interface correctly. 
 
-Remember Scotty trying to talk into the Macintosh mouse? 'Nuff said. But FB engineers claimed as a feature that they would not tell us how to manage state, the problem Fred Brooks deemed so intractable that _No Silver Bullet_ was possible. Oddly, FB engineers then specified how to manage state. Flux.
+Remember Scotty trying to talk into the Macintosh mouse? Nuff said. But FB engineers claimed as a feature that they would not tell us how to manage state, the problem Fred Brooks deemed so intractable that _No Silver Bullet_ was possible. Oddly, FB engineers then specified how to manage state. Flux.
 
 ![Flux](documentation/flux.png)
 
