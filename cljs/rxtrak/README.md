@@ -21,7 +21,10 @@ Enter Hoplon/Javelin, the Reagent ratom, MobX, and binding.Scala. These truly re
 
 > Facebook now says React was the wrong name, say it should have been called ScheduleJS, and go so far as to reject the reactive paradigm because of its unscheduled eagerness.
 
-By "natural" we mean "without giving dependencies any thought". We just think about our application semantics, author views declaratively, mutate application state in response to user gestures, and then...we are done.
+By "natural" we mean "without giving architecture any thought", React components being the perfect example. We just think about our application semantics, author views declaratively, mutate application state in response to user gestures, and then...we are done.
+
+### All dataflow all the time
+Our FB heros made clear that their library only managed the view. Matrix applications extend the declarative/functional model to any aspect we care enough about to glue. Tcl/Tk, GTk, OpenGL, a persistent CLOS database, a Postgres implementation of a graph DB, browser local storage, Ajax XHR requests have all been connected in one seamless dataflow network in various Matrix applications. mxWeb itself is hundreds of lines of code extending dataflow to the DOM, obviating any need for VDOM and its diffing.
 
 ### Enough yapping
 The rest of this page describes how to run the completed demo. Over in the documentation we will wlak you through how to build it yourself, introducing first Matrix dataflow and then the mxWeb un-framework.
