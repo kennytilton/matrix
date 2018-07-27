@@ -1,19 +1,16 @@
 # The Matrix and mxWeb FAQ
 I had to make these up for now.
-## OMG. Is not dataflow unchecked mutation?
-We remember that feeling. "Hey, I am the programmer! I have to be in control!".
+## OMG! Dataflow is unchecked mutation!
+We remember that feeling. "Hey, I am the programmer! I have to be in control!". But, hey, is a speadsheet written in ViciCalc or Lotus 1-2-3 mutation run amok? We write the functions for each cell, after all, and decide which other cells to use. The only thing the engine does is recompute everything reliably and efficiently when input cells or formulas are changed.
 
 In truth, a DAG of nodes deriving their values from functions of other nodes are just an optimization of functional programming: computed values are cached for performance and the cache invalidation is reliably automatic. Guy Steele compared constraint programming to automatic garbage collection, except in this case the automation is of application state consistency.
-## So you think you invented dataflow?
-Nope. The prior, subsequent, and concurrent art is extensive. Dataflow is the 
-wheel that keeps on being reinvented. Some libraries close to Matrix in spirit 
-are Common Lisp Garnet KR, C++ Adam/Eve, Scheme FrTime, JS MobX, binding.Scala, CLJS 
-Hoplon/Javen, and the CLJS Reagent ratom.
-## Why the name Matrix?
+## Did you invent dataflow?
+It was pretty much an accident while working on a hard problem, and many others have done the same. The prior, subsequent, and concurrent art is extensive. Dataflow is the wheel that keeps on being reinvented. Some libraries close to Matrix in spirit are Common Lisp Garnet KR, C++ Adam/Eve, Scheme FrTime, JS MobX, binding.Scala, CLJS Hoplon/Javelin, and the CLJS Reagent ratom.
+## Why the name Matrix? Where is Neo?
 The movies were great, but they got the word "matrix" wrong. What does it really mean? We like this definition:
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
 
-In the movie, the Matrix harnessed humans to suck energy from them. In English, a matrix provides the conditions for new things to come to life. This dataflow library provides an environment in which the developer can arrange for, say, a proxy nuclear powerplant to take form. The matrix powerplant runs by itself given:
+In the movie, the Matrix harnessed humans to suck energy from them. In English, a matrix provides the conditions for new things to come to life. This library provides an environment in which the developer can arrange for, say, a proxy nuclear powerplant to take form. The matrix powerplant runs by itself given:
 * declaratively coded connective formulae;
 * glue to feed data into the matrix from inputs; and
 * more glue to pipe results back out.
