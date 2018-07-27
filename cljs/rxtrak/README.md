@@ -1,20 +1,20 @@
 # rxTrak&trade;
 
-A personal medication tracking demo of the mxWeb&trade; UI un-framework, itself the poster child for Matrix&trade;, a point granular dataflow library.
+A toy medication tracking demo leveraging the mxWeb&trade; UI un-framework, itself the poster child for Matrix&trade;, a point granular dataflow library supporting a new programming paradigm. Gasp.
 
 > You say "reactive" we say "dataflow".
 
 ## Overview
 
-rxTrak hopes to carry developers down the rest of the functional path on which Facebook's ReactJS has started them. Thanks to ReactJS, the programming hoi polloi has discovered the joy of declarative, functional programming, but the Facebook engineers dropped us off just as we got to the hard part: state management.
+rxTrak hopes to carry developers down the rest of the functional path on which Facebook's ReactJS has started them. Thanks to ReactJS, the programming hoi polloi has discovered the joy of declarative, functional programming. Unfortunately, the FB engineers dropped us off before the hard part: state management.
 
-> Nothing challenges software more than managing the state to support an intelligent user doing their earnest best to use a computer iterface correctly. 
+> Nothing challenges software more than managing UI state as an intelligent user does their earnest best to use a computer interface correctly. 
 
-Remember Scotty trying to talk into the Macintosh mouse? 'Nuff said. But Facebook engineers claimed as a feature that they would not tell us how to manage state, the problem Fred Brooks deemed so intractable that _No Silver Bullet_ was possible.
+Remember Scotty trying to talk into the Macintosh mouse? 'Nuff said. But FB engineers claimed as a feature that they would not tell us how to manage state, the problem Fred Brooks deemed so intractable that _No Silver Bullet_ was possible. Oddly, FB engineers then specified how to manage state. Flux.
 
-Oddly, FB engineers then specified how to manage state. Flux. 
 ![Flux](documentation/flux.png)
-Dan Abramov made a brave attempt with Redux, but what started simple scaled ornate. As with everything Lisps touch, ClojureScript re-frame by Mike Thompson turned out vastly better, but the artificiality of Flux remains.
+
+Dan Abramov made a brave attempt with Redux, but what started simple scaled to ornate. As with everything Lisps touch, ClojureScript re-frame by Mike Thompson turned out vastly better, but the exposed wiring of Flux remained.
 
 ### Pub-Sub no mas
 Enter Hoplon/Javelin, the Reagent ratom, MobX, and binding.Scala. These truly reactive frameworks support a more natural expression of the one-way dataflow Facebook engineers correctly identified as vital to front-end developer sanity, one in which the framework magically identifies and automates the dataflow DAG implicit in the natural coding of an interface.
