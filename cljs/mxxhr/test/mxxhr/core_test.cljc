@@ -1,4 +1,4 @@
-(ns tiltontec.xhr-test
+(ns mxxhr.core-test
   (:require
     [clojure.test :refer :all]
     [clojure.string :as str]
@@ -25,7 +25,7 @@
                       mx-par]
               :as md])
 
-    [tiltontec.xhr
+    [mxxhr.core
      :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
              xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
              xhr-selection xhr-to-map xhr-name-to-map]]
@@ -184,45 +184,45 @@
 
 ;; todo next test needs to wait on respoonses
 #_
-(deftest fda-adverse-lite
-  ;; for 3 AEs
-  ;;   for each drug taken by patient
-  ;;     get the labeling
-  ;;     get up to 3 recall notices from the manufacturer
-  (cells-init)
-  (counts-reset)
-  (let [ae-count 1
-        brand "adderall"
-        top (send-xhr :brand-adv-events (cl-format nil ae-brand brand ae-count)
-              {:brand brand
-               :kids  (cF (when-let [aes (:results (xhr-selection me))]
-                            (countit :aes aes)
-                            (prn :ae-count (count aes))
-                            (the-kids
-                              (for [ae aes]
-                                (make ::md/family
-                                  :name :adverse-event
-                                  :ae (select-keys ae [:transmissiondate
-                                                       :sender
-                                                       :serious])
-                                  :patient (dissoc (:patient ae) :drug)
-                                  :kids (patient-drugs ae))))))})]
+    (deftest fda-adverse-lite
+      ;; for 3 AEs
+      ;;   for each drug taken by patient
+      ;;     get the labeling
+      ;;     get up to 3 recall notices from the manufacturer
+      (cells-init)
+      (counts-reset)
+      (let [ae-count 1
+            brand "adderall"
+            top (send-xhr :brand-adv-events (cl-format nil ae-brand brand ae-count)
+                          {:brand brand
+                           :kids  (cF (when-let [aes (:results (xhr-selection me))]
+                                        (countit :aes aes)
+                                        (prn :ae-count (count aes))
+                                        (the-kids
+                                          (for [ae aes]
+                                            (make ::md/family
+                                              :name :adverse-event
+                                              :ae (select-keys ae [:transmissiondate
+                                                                   :sender
+                                                                   :serious])
+                                              :patient (dissoc (:patient ae) :drug)
+                                              :kids (patient-drugs ae))))))})]
 
 
-    (when (xhr-await top)
-      (prn :statuskey (xhr-status-key top))
-      (is (= :ok (xhr-status-key top)))
-      (is (= ae-count (count (md-kids top))))
-      (doseq [ae (md-kids top)]
-        (doseq [drug (take 16 (md-kids ae))]
-          (prn :drugfo2 (<mget drug :ndc))
-          (doseq [info (md-kids drug)]
-            (prn :drugstat (xhr-status info)(xhr-status-key info) :ndc (:ndc drug))
-            (is (some #{(xhr-status-key info)} [:ok [:error 400] [:error 404] 400 404])))))
+        (when (xhr-await top)
+          (prn :statuskey (xhr-status-key top))
+          (is (= :ok (xhr-status-key top)))
+          (is (= ae-count (count (md-kids top))))
+          (doseq [ae (md-kids top)]
+            (doseq [drug (take 16 (md-kids ae))]
+              (prn :drugfo2 (<mget drug :ndc))
+              (doseq [info (md-kids drug)]
+                (prn :drugstat (xhr-status info)(xhr-status-key info) :ndc (:ndc drug))
+                (is (some #{(xhr-status-key info)} [:ok [:error 400] [:error 404] 400 404])))))
 
-      ;; (pprint (xhr-to-map top))
+          ;; (pprint (xhr-to-map top))
 
-      (println :fini!!!!!!!! @counts))))
+          (println :fini!!!!!!!! @counts))))
 
 (defmethod xhr-name-to-map :drug-label [xhr]
   {:name :drug-label
@@ -241,9 +241,9 @@
 
 (defmacro getxhr [id uri & child-xhrs]
   `(make-xhr ~uri
-     {:send? true
-      :name  ~id
-      :kids  (cF ~@child-xhrs)}))
+             {:send? true
+              :name  ~id
+              :kids  (cF ~@child-xhrs)}))
 
 (defn xhr-dump
   ([xhr] (xhr-dump "untagged" xhr))
@@ -263,7 +263,7 @@
 
 (defn xhr-html [uri]
   (send-xhr uri
-    {:body-parser identity}))
+            {:body-parser identity}))
 
 (deftest xhr-index-html
   ;; get just one
@@ -323,19 +323,19 @@
 (deftest xhr-tree-simple
   (binding [*plnk-keys* [:xhr]]
     (let [top (make-xhr "http://google.com"
-                {:send?       true
-                 :body-parser identity
-                 :kids        (cF (cpr :kidrule!!!!!!)
-                                  (when-let [parent (<mget me :response)]
-                                    (the-kids
-                                      (make-xhr "http://yahoo.com"
-                                        {:par         me
-                                         :send?       true
-                                         :body-parser identity})
-                                      (make-xhr "http://youtube.com"
-                                        {:par         me
-                                         :send?       true
-                                         :body-parser identity}))))})]
+                        {:send?       true
+                         :body-parser identity
+                         :kids        (cF (cpr :kidrule!!!!!!)
+                                          (when-let [parent (<mget me :response)]
+                                            (the-kids
+                                              (make-xhr "http://yahoo.com"
+                                                        {:par         me
+                                                         :send?       true
+                                                         :body-parser identity})
+                                              (make-xhr "http://youtube.com"
+                                                        {:par         me
+                                                         :send?       true
+                                                         :body-parser identity}))))})]
 
       ;;(xhr-send top)
       (when (xhr-await top)
@@ -464,18 +464,18 @@
 
 (defn xhr-dummy [id options]
   (make-xhr "http://example.com"
-    {:id          id
-     :send?       true
-     :kids        (:kids options)
-     :body-parser (fn [b]
-                    (when-let [lat (:latency options)]
-                      ;(println :latency-sim lat)
-                      (Thread/sleep lat))
-                    (let [r (:response options)]
-                      ;(println :opts!!!!! options)
-                      (if (fn? r)
-                        (r (:params options))
-                        r)))}))
+            {:id          id
+             :send?       true
+             :kids        (:kids options)
+             :body-parser (fn [b]
+                            (when-let [lat (:latency options)]
+                              ;(println :latency-sim lat)
+                              (Thread/sleep lat))
+                            (let [r (:response options)]
+                              ;(println :opts!!!!! options)
+                              (if (fn? r)
+                                (r (:params options))
+                                r)))}))
 
 (defmacro with-xhr-body [id xhr]
   `(:body (xhr-response
@@ -497,29 +497,29 @@
   (let [h (cF (let [f15 (merge
                           (when-let [f1v (with-xhr-body :get-f1
                                                         (xhr-dummy :f1-service-a
-                                                          {:latency  100
-                                                           :response "responseA"}))]
+                                                                   {:latency  100
+                                                                    :response "responseA"}))]
                             {:f1 f1v
                              :f3 (with-xhr-body :get-f3
                                                 (xhr-dummy :service-c
-                                                  {:params   {:f1 f1v}
-                                                   :latency  60
-                                                   :response #(str "responseB-" (:f1 %))}))})
+                                                           {:params   {:f1 f1v}
+                                                            :latency  60
+                                                            :response #(str "responseB-" (:f1 %))}))})
                           (when-let [f2v (with-xhr-body :get-f2
                                                         (xhr-dummy :f2-service-b
-                                                          {:latency  40
-                                                           :response 100}))]
+                                                                   {:latency  40
+                                                                    :response 100}))]
                             {:f2 f2v
                              :f4 (with-xhr-body :get-f4
                                                 (xhr-dummy :service-d
-                                                  {:params   {:f2 f2v}
-                                                   :latency  140
-                                                   :response #(+ 40 (:f2 %))}))
+                                                           {:params   {:f2 f2v}
+                                                            :latency  140
+                                                            :response #(+ 40 (:f2 %))}))
                              :f5 (with-xhr-body :get-f5
                                                 (xhr-dummy :service-e
-                                                  {:params   {:f2 f2v}
-                                                   :latency  55
-                                                   :response #(+ 5000 (:f2 %))}))}))]
+                                                           {:params   {:f2 f2v}
+                                                            :latency  55
+                                                            :response #(+ 5000 (:f2 %))}))}))]
                 (println :so-far!!!!!!!!!!! f15)
 
                 (let [must [:f3 :f4 :f5]
@@ -535,30 +535,30 @@
 (deftest reactx-tree-2
   (let [top (make
               :f1 (cF (xhr-dummy :f1-service-a
-                        {:latency  100
-                         :response "responseA"}))
+                                 {:latency  100
+                                  :response "responseA"}))
 
               :f2 (cF (xhr-dummy :f2-service-b
-                        {:latency  40
-                         :response 100}))
+                                 {:latency  40
+                                  :response 100}))
 
               :f3 (cF (when-let [f1v (:body (xhr-response (<mget me :f1)))]
                         (xhr-dummy :service-c
-                          {:params   {:f1 f1v}
-                           :latency  60
-                           :response #(str "responseB-" (:f1 %))})))
+                                   {:params   {:f1 f1v}
+                                    :latency  60
+                                    :response #(str "responseB-" (:f1 %))})))
 
               :f45 (cF (when-let [f2v (:body (xhr-response (<mget me :f2)))]
                          (cpr :building-245!!!!!!!!!!!!!!!!!!!!!!)
                          (vector
                            (xhr-dummy :service-d
-                             {:params   {:f2 f2v}
-                              :latency  140
-                              :response #(+ 40 (:f2 %))})
+                                      {:params   {:f2 f2v}
+                                       :latency  140
+                                       :response #(+ 40 (:f2 %))})
                            (xhr-dummy :service-e
-                             {:params   {:f2 f2v}
-                              :latency  55
-                              :response #(+ 5000 (:f2 %))}))))
+                                      {:params   {:f2 f2v}
+                                       :latency  55
+                                       :response #(+ 5000 (:f2 %))}))))
 
 
               :result (cF (when (and (every? #(<mget me %) [:f3 :f45])
@@ -575,29 +575,29 @@
 (deftest reactx-tree
   (let [top (make
               :f1 (cF (xhr-dummy :f1-service-a
-                        {:latency  100
-                         :response "responseA"}))
+                                 {:latency  100
+                                  :response "responseA"}))
 
               :f2 (cF (xhr-dummy :f2-service-b
-                        {:latency  40
-                         :response 100}))
+                                 {:latency  40
+                                  :response 100}))
 
               :f3 (cF (when-let [f1v (:body (xhr-response (<mget me :f1)))]
                         (xhr-dummy :service-c
-                          {:params   {:f1 f1v}
-                           :latency  60
-                           :response #(str "responseB-" (:f1 %))})))
+                                   {:params   {:f1 f1v}
+                                    :latency  60
+                                    :response #(str "responseB-" (:f1 %))})))
 
               :f45 (cF (when-let [f2v (:body (xhr-response (<mget me :f2)))]
                          (vector
                            (xhr-dummy :service-d
-                             {:params   {:f2 f2v}
-                              :latency  140
-                              :response #(+ 40 (:f2 %))})
+                                      {:params   {:f2 f2v}
+                                       :latency  140
+                                       :response #(+ 40 (:f2 %))})
                            (xhr-dummy :service-e
-                             {:params   {:f2 f2v}
-                              :latency  55
-                              :response #(+ 5000 (:f2 %))}))))
+                                      {:params   {:f2 f2v}
+                                       :latency  55
+                                       :response #(+ 5000 (:f2 %))}))))
 
               :result (cF (when (and (every? #(<mget me %) [:f3 :f45])
                                      (every? xhr-response (<mget me :f45)))

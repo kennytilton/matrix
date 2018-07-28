@@ -1,4 +1,4 @@
-(ns tiltontec.xhr
+(ns mxxhr.core
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
@@ -208,7 +208,7 @@
   ([uri attrs]
    (assert (string? uri) (str "param uri <" uri "> not a string"))
    (let [xhr (apply make
-                    :type :tiltontec.xhr/xhr
+                    :type ::xhr
                     :id (swap! +xhr-sid+ inc)               ;; debug aid
                     :uri uri
                     :response (cI nil)
@@ -223,7 +223,7 @@
      ;; (println :xhr-made!!!!!!!!!! uri)
      xhr)))
 
-(defmethod not-to-be [:tiltontec.xhr/xhr] [me]
+(defmethod not-to-be [::xhr] [me]
   ;; todo: worry about leaks
   ;; (println :not-to-be-xhr!!!!!!! me)
 
@@ -252,7 +252,7 @@
                          :send? true
                          :timeout 5000} attrs))))
 
-(defmethod observe [:kids :tiltontec.xhr/xhr] [_ me newv oldv _]
+(defmethod observe [:kids ::xhr] [_ me newv oldv _]
   ;;
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
@@ -269,7 +269,7 @@
         :default                                            ;; try to cancel?
         (pln :ignoring-new-kid-xhrs!!!!!!! #_ newv)))))
 
-(defmethod observe [:send? :tiltontec.xhr/xhr] [_ me newv oldv _]
+(defmethod observe [:send? ::xhr] [_ me newv oldv _]
   ;;(println :observing-xhr!!!! newv (:uri @me))
   (when newv
     ;;;(println :send?-observer-sending-xhr!!!!!!!!!!!!!)
@@ -289,7 +289,7 @@
 
 (defn xhr-to-map [xhr]
   (case (type xhr)
-    :tiltontec.xhr/xhr
+    ::xhr
     (xhr-name-to-map xhr)
 
     :tiltontec.model.core/family

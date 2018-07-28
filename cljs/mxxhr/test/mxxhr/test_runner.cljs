@@ -1,5 +1,5 @@
-(ns tiltontec.xhr.test-runner
+(ns mxxhr.test-runner
   (:require [doo.runner :refer-macros [doo-tests]]
-            [tiltontec.xhr-test]))
+            [mxxhr.core-test]))
 
 (doo-tests 'tiltontec.xhr-test)
