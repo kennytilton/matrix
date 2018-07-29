@@ -7,14 +7,14 @@ More grandly, Matrix brings our application models to life, animating them in re
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
 
 ### You say "reactive", we say "dataflow"
-Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent systems. A financial analyst builds a spreadsheet model of a business by writing individual cell formulas over other cells, yes, but their goal is to play "what if?" by changing critical inputs and watching the effect propagate across the model.
+Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent systems. A financial analyst builds a spreadsheet model of a business by writing individual cell formulas, yes, but their goal is to play "what if?" by changing critical inputs and watching the effects sweep across the model.
 
 Matrix has much good company in this field. We believe Matrix offers more simplicity, transparency, granularity, expressiveness, efficiency, and functional coverage, but in each dimension differs in degree, not spirit.
 
 ### mxWeb "poster" application
 `mxWeb` is a thin web framework built atop Matrix. We introduce Matrix in the context of mxWeb, because nothing challenges a developer more than keeping application state consistent while an intelligent user does their best to use a rich interface correctly.
 
-So far, so fuzzy. Let's get "hello, Matrix" running and then look at some code. 
+So far, so abstract. Ourselves, we think better in concrete. Let's get "hello, Matrix" running and then look at some code. 
 
 ## Set-Up
 
