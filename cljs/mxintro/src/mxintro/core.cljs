@@ -14,7 +14,7 @@
 
 (let [root (dom/getElement "tagroot")
       app-matrix (md/make
-                   ::ticktock
+                   ::hellomx
                    :mx-dom (cFonce (md/with-par me
                                                 [(div {}
                                                       (h1 {} "hello,
