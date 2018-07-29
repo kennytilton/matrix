@@ -1,9 +1,9 @@
 # Introduction to Matrix and mxWeb
 
-Fundamentally, `Matrix` simply endows application state with causal power over other program state, freeing the developer of burden of reliably propagating unpredictable change across highly interdependent models.
+Fundamentally, `Matrix` simply endows application state with causal power over other program state, freeing the developer of the burden of reliably propagating unpredictable change across highly interdependent models.
 
 ### You say "reactive", we say "dataflow"
-Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent system behavior. A financial analyst builds a spreadsheet model of a business by writing cell formulas that use other cells, but their goal to play "what if?" by changing critical inputs and watching the effects propagate across the model.
+Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent system behavior. A financial analyst builds a spreadsheet model of a business by writing individual cell formulas over other cells, but their goal is to play "what if?" by changing critical inputs and watching the effects propagate across the model.
 
 Matrix has much good company in this field. We believe Matrix offers more transparency, finer granularity, more expressiveness, and greater functional coverage than others, but in each dimension Matrix differs in degree, not spirit.
 
@@ -25,9 +25,9 @@ lein deps
 lein clean
 lein fig:build
 ````
-This will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. A web page should appear on a browser near you with a header saying just "hello, Matrix".
+This will auto compile and send all changes to the browser without the need to reload. After the compilation process is complete, you will get a Browser Connected REPL. A web page should appear on a browser near you with a header saying just "hello, Matrix". 
+
+For issues, questions, or comments, ping us at kentilton on gmail, or @hiskennyness on Slack in the #Clojurians channel.
 
 ## Dataflow
 
