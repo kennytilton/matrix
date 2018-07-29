@@ -1,37 +1,35 @@
-# mxintro
+# Introduction to Matrix and mxWeb
 
-FIXME: Write a one-line description of your library/project.
+mxWeb is a thin web un-framework built atop the Matrix dataflow library. Matrix endows application state with causal power over other program state, freeing the developer of the tedious and error-prone task of reliably propagating change across complex models.
 
-## Overview
+Programmers specify formulas for individual properties of things, using transparent syntax that hides the wiring necessary to achieve the causation. An application emerges that runs by itself, more efficiently and reliably than is likely with manual state propagation.
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Matrix has much good company in what lately has been called _reactive programming_. The differences are in degree, not spirit. We believe Matrix offers more granularity, more flexibility, finer granularity, and greater application coverage than others.
 
-## Development
+We introduce Matrix in the context of one of its derived works, mxWeb, because nothing challenges an application more than keeping application state consistent while an intelligent user does their earnest best to use a rich interface correctly.
 
-To get an interactive development environment run:
+So far, so fuzzy. Let's get an SPA running and look at some code. 
 
-    lein fig:build
+## Set-Up
 
+````bash
+git clone 
+cd matrix/cljs/mxintro
+lein deps
+lein clean
+lein fig:build
+````
 This will auto compile and send all changes to the browser without the
 need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
+get a Browser Connected REPL.
 
-    (js/alert "Am I connected?")
+A web page should appear on a browser near you with a header saying just "hello, Matrix".
 
-and you should see an alert in the browser window.
 
-To clean all compiled files:
-
-	lein clean
-
-To create a production build run:
-
-	lein clean
-	lein fig:min
 
 
 ## License
 
-Copyright © 2018 FIXME
+Copyright © 2018 Kenneth Tilton
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
