@@ -1,14 +1,20 @@
 # Introduction to Matrix and mxWeb
 
-mxWeb is a thin web framework built atop the Matrix dataflow library. 
+Fundamentally, `Matrix` simply endows application state with causal power over other program state, freeing the developer of burden of reliably propagating unpredictable change across highly interdependent models.
 
-Matrix endows application state with causal power over other program state, freeing the developer of the tedious and error-prone task of reliably propagating change across complex models.
+### You say "reactive", we say "dataflow"
+Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent system behavior. A financial analyst builds a spreadsheet model of a business by writing cell formulas that use other cells, but their goal to play "what if?" by changing critical inputs and watching the effects propagate across the model.
 
-Matrix has much good company in this field known as _reactive programming_. We believe Matrix offers more transparency, finer granularity, more expressiveness, and greater application coverage, but the differences are in degree, not spirit.
+Matrix has much good company in this field. We believe Matrix offers more transparency, finer granularity, more expressiveness, and greater functional coverage than others, but in each dimension Matrix differs in degree, not spirit.
 
-Below we introduce Matrix in the context of mxWeb, because nothing challenges a developer more than keeping application state consistent while an intelligent user does their best to use a rich interface correctly.
+More grandly, Matrix brings our application models to life, animating them in response to streams of external inputs. Hence the name.
 
-So far, so fuzzy. Let's get "hello, Matrix" running and look at some code. 
+> ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
+
+### mxWeb "poster" application
+`mxWeb` is a thin web framework built atop Matrix. We introduce Matrix in the context of mxWeb, because nothing challenges a developer more than keeping application state consistent while an intelligent user does their best to use a rich interface correctly.
+
+So far, so fuzzy. Let's get "hello, Matrix" running then look at some code. 
 
 ## Set-Up
 
