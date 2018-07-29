@@ -11,9 +11,12 @@ Most folks today call this _reactive programming_. That describes well the progr
 
 Matrix has much good company in this field. We believe Matrix offers more simplicity, transparency, granularity, expressiveness, efficiency, and functional coverage, but in each dimension differs in degree, not spirit. Other recommended libraries are Reagent, Hoplon/Javelin, re-frame and beyond the CLJS shores MobX (JS), binding.Scala, and Python Trellis.
 
-### mxWeb "poster" application
-`mxWeb` is a thin web framework built atop Matrix. We introduce Matrix in the context of mxWeb, because nothing challenges a developer more than keeping application state consistent while an intelligent user does their best to use a rich interface correctly.
+### mxWeb, "poster" application
+`mxWeb` is a thin web un-framework built atop Matrix. We introduce Matrix in the context of mxWeb, because nothing challenges a developer more than keeping application state consistent while an intelligent user does their best to use a rich interface correctly.
 
+We say "un-framework" because it exists only to imbue the DOM with dataflow. The API design imperative is that the MDN reference be the mxWeb reference.
+
+### Next steps
 So far, so abstract. Ourselves, we think better in concrete. Let's get "hello, Matrix" running and then look at some code. 
 
 ## Set-Up
