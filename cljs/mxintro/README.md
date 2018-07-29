@@ -1,10 +1,12 @@
 # Introduction to Matrix and mxWeb
 
-Fundamentally, `Matrix` endows application state with causal power over other such state, freeing the developer of the burden of reliably propagating unpredictable change across highly interdependent models.
+Fundamentally, `Matrix` endows application state with causal power over other such state, freeing the developer from the burden of reliably propagating unpredictable change across highly interdependent models.
 
 More grandly, Matrix brings our application models to life, animating them in response to streams of external inputs. Hence the name.
 
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
+
+The movies were fun, but Mr. Hickey might disapprove the misconstruction of the name.
 
 ### You say "reactive", we say "dataflow"
 Most folks today call this _reactive programming_. That describes well the programmer mindset in the small, but we find _dataflow_ more descriptive of the emergent systems. A financial analyst builds a spreadsheet model of a business by writing individual cell formulas, yes, but their goal is to play "what if?" by changing a critical inputs and watching the effect sweep across the model.
