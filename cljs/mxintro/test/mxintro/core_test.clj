@@ -1,10 +1,11 @@
 (ns mxintro.core-test
   (:require [clojure.test :refer :all]
             [tiltontec.util.core :as util]
-            [tiltontec.cell.base :refer [unbound]]
+            [tiltontec.cell.base :refer [unbound *defer-changes*]]
             [tiltontec.cell.core
              :refer [make-cell make-c-formula c-fn
-                     cF cF cI]]
+                     cF cF cF+ cI cFonce]
+             :as cell]
             [tiltontec.model.core :as md
              :refer [<mget mset!>]]
             [mxintro.stopwatch :refer [mk-stopwatch]])
@@ -65,8 +66,11 @@
              :start (util/now)
              :current (cI (util/now))
              :elapsed (cF (- (current me) (start me))))]
+
+    (prn :begin-start (start sw) :current (current sw) :elapsed (elapsed sw))
+
     ;; we might have crossed an ms boundary, so do not look for equality
-    (is (< (elapsed sw 2)))
+    (is (< (elapsed sw) 2))
 
     ;; Let's have some fun and really let time elapse
     (Thread/sleep 1000)
@@ -74,9 +78,53 @@
     (set-current sw (util/now))
     ;; if we try to cheat and change the start, we get an error todo
 
-    (prn :start (start sw) :current (current sw) :elapsed (elapsed sw))
+    (prn :after-delay-start (start sw) :current (current sw) :elapsed (elapsed
+                                                                        sw))
 
     (is (>= (elapsed sw) 1000))))
+
+(deftest t-matrix-rizing
+  (let [max-elapsed 3000
+
+        ;; If the system clock will not come to the Matrix, the
+        ;; Matrix will wrap the system clock:
+        clock (md/make
+                :running? (cI true)
+                :ticker (cFonce (future
+                                  (loop []
+                                    (binding [*defer-changes* false]
+                                      (set-current me (util/now)))
+                                    (Thread/sleep 1000)
+                                    (if (<mget me :running?)
+                                      (recur)
+                                      (prn :clock-stopping)))))
+                :current (cI (util/now)
+                             :obs (fn [slot me new-val old-val c]
+                                    (prn :obs-clock slot new-val))))
+        stopwatch (md/make
+                    :start (cFonce (current clock))
+                    :elapsed (cF+ [:obs (fn [slot me new-val old-val c]
+                                          (prn :obs-stopwatch slot new-val))]
+                                  (- (current clock) (start me)))
+                    :stopped? (cF (> (elapsed me)
+                                     max-elapsed))
+                    :final (cF (if (<mget me :stopped?)
+                                 cache
+                                 (elapsed me))))]
+    ;; kick-off...
+    (loop []
+      (when-not (<mget stopwatch :stopped?)
+        (prn :main-still-running (elapsed stopwatch))
+        (Thread/sleep 250)
+        (recur)))
+
+    (is (<mget stopwatch :stopped?))
+
+    (is (> (elapsed stopwatch) max-elapsed))
+
+    (mset!> clock :running? false)))
+
+
 
 (deftest test-make-sw
   (let [sw (mk-stopwatch)]
@@ -119,8 +167,8 @@
 ;;; --- Topics ---------------------------
 
 ;; -- Operations
-; make
-; <mget, mset!>, mswap!
+;++ make
+;++ <mget, mset!>, mswap!
 ; error on setting unwrapped in cI
 ; error on setting formulaic (or why it got taken out)
 
@@ -155,9 +203,9 @@
 ; synapses
 
 ;; -- Transparency
-; make-cell -> cF/cI
-; wrappers for <mget and mset!> -- macro to gen
-; dependency reaches into functions
+;++ make-cell -> cF/cI
+;++ wrappers for <mget and mset!> -- macro to gen
+;++ dependency reaches into functions
 
 ;; -- Observers
 ; ad hoc observers
