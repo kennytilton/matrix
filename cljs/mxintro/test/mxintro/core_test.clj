@@ -1,12 +1,82 @@
 (ns mxintro.core-test
   (:require [clojure.test :refer :all]
             [tiltontec.util.core :as util]
+            [tiltontec.cell.base :refer [unbound]]
             [tiltontec.cell.core
-             :refer [cF cF cI]]
+             :refer [make-cell make-c-formula c-fn
+                     cF cF cI]]
             [tiltontec.model.core :as md
              :refer [<mget mset!>]]
             [mxintro.stopwatch :refer [mk-stopwatch]])
   (:import (com.sun.java.accessibility.util TopLevelWindowMulticaster)))
+
+(deftest t-cells-sugar-free
+  ; We ourselves do not like syntactic sugar up front because it hides
+  ; too much. We begin with wiring exposed. Just don't ask. Well..
+  ;
+  ; md/make, make-cell, and make-c-formula return refs in CLJ and
+  ; atoms in CLJS, with maps inside that implement dataflow. make is
+  ; for object instances, the others for instance properties.
+  ;
+  ; In formula cells, c-fn wraps the formula body and offers
+  ; the anaphoric "me" variable akin to "this" or "self" in other domains.
+  ;
+  ; <mget and mset!> read and write property values with dataflow.
+  ; In either case, (:some-property @something) is a backdoor.
+  ;
+  ; Now imagine we are modelling a stopwatch.
+  ;
+  (let [sw (md/make
+             :start (util/now)
+             :current (make-cell
+                        :value (util/now)
+                        :input? true)
+             :elapsed (make-c-formula
+                        :value unbound
+                        :rule (c-fn (- (<mget me :current)
+                                       (<mget me :start)))))]
+
+    ;; we might have crossed an ms boundary, so do not look for equality
+    (is (< (<mget sw :elapsed) 2))
+
+    (Thread/sleep 1000)
+    (mset!> sw :current (util/now))
+
+    ;; computed values are first-class properties accessible by any code
+    (prn :sw! (<mget sw :start) (<mget sw :current) (<mget sw :elapsed))
+
+    (is (> (<mget sw :elapsed) 500))))
+
+;; dependency tracking sees inside functions, so we can hide <mget et al
+(defn start [me] (<mget me :start))
+(defn current [me] (<mget me :current))
+(defn elapsed [me] (<mget me :elapsed))
+(defn set-current [me new-value] (mset!> me :current new-value))
+;; In the Common Lisp version we have a macro that writes those
+;; wrappers for us in the moral equivalent of defclass. In Javascript
+;; we use define_property and get the wrappers automatically.
+
+;; We have nice short wrappers for the cell makers as well
+;; - cI is for input cells
+;; - cF is for formulaic cells
+
+(deftest t-cells-sugary
+  (let [sw (md/make
+             :start (util/now)
+             :current (cI (util/now))
+             :elapsed (cF (- (current me) (start me))))]
+    ;; we might have crossed an ms boundary, so do not look for equality
+    (is (< (elapsed sw 2)))
+
+    ;; Let's have some fun and really let time elapse
+    (Thread/sleep 1000)
+
+    (set-current sw (util/now))
+    ;; if we try to cheat and change the start, we get an error todo
+
+    (prn :start (start sw) :current (current sw) :elapsed (elapsed sw))
+
+    (is (>= (elapsed sw) 1000))))
 
 (deftest test-make-sw
   (let [sw (mk-stopwatch)]
@@ -16,17 +86,15 @@
 
     (Thread/sleep 1000)
     (mset!> sw :current (util/now))
-    (prn :sw!  (<mget sw :current) (<mget sw :elapsed))
+    (prn :sw! (<mget sw :current) (<mget sw :elapsed))
 
     (is (> (<mget sw :elapsed) 500))))
 
-;; dependency tracking sees inside functions, so...
-(defn start [me] (<mget me :start))
-(defn elapsed [me] (<mget me :elapsed))
+
 (defn record [me] (<mget me :record))
 (defn finished? [me] (<mget me :finished?))
 (defn broken? [me] (<mget me :broken?))
-(defn set-current [me new-value] (mset!> me :current new-value))
+
 (defn set-finished? [me new-value] (mset!> me :finished? new-value))
 
 (deftest test-husein-bolt
