@@ -123,10 +123,10 @@
               {:async? true}
 
               (fn [response]
-                (prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
-                (countit [:xhr :reponse])
+                ;;(prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
+                ;;(countit [:xhr :reponse])
                 (if (mdead? xhr)
-                  (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                  (do #_ (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
                   (do
                     ;;(cpr :hitting-with-cc *within-integrity*)
                     (with-cc :xhr-handler-sets-responded
@@ -137,22 +137,23 @@
                 ;;(prn "xhr-send> raw exception" exception)
                 (let [edata (:data (bean exception))]
 
-                  (prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
+                  ;;(prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
                   (when-not (mdead? xhr)
                     (with-cc :xhr-handler-sets-error
                       (md-reset! xhr :response {:status (:status edata)
                                                 :body   (parse-json$ (:body edata))}))))))
 
        :cljs (go (let [response (<! (client/get uri {:with-credentials? false}))]
+                  ;;(prn :got-response-from-http-get!!! (now)(:status response))
                    (if (:success response)
                      (do
                        ;(prn :body (keys (:body response)))
                        ;(prn :success (:status response)  (keys response) (count (:body response)))
                        (if (mdead? xhr)
-                         (do (cpr :ignoring-response-to-dead-XHR!!! uri #_ (meta xhr)))
-                         (with-cc :xhr-handler-sets-responded
-                           (js/setTimeout
-                             #(do
+                         (do #_ (cpr :ignoring-response-to-dead-XHR!!! uri #_ (meta xhr)))
+                         (js/setTimeout
+                             #(with-cc :xhr-handler-sets-responded
+
                                 (when-let [d (:fake-delay @xhr)]
                                   (println :fake-delayed!!!!!! d))
                                 (md-reset! xhr :response
@@ -160,19 +161,19 @@
                                    :body   ((:body-parser @xhr) (:body response))}))
                              (or (:fake-delay @xhr) 0)))))
 
-                     (do
-                       (prn :NO-success :stat (:status response)
+                     (js/setTimeout
+                     #(do
+                       #_ (prn :NO-success (now) :stat (:status response)
                         :ecode (:error-code response)
                             :etext (:error-text response))
 
                        (if (mdead? xhr)
-                         (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                         (do #_ (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
                          (with-cc :xhr-handler-sets-responded
                            (md-reset! xhr :response {:status (:status response)
                                                      :body   [(:error-code response)
-                                                              (:error-text response)]}))))))))))
-
-
+                                                              (:error-text response)]}))))
+                                                              (or (:fake-delay @xhr) 0)))))))
 
 (defn xhr-status [xhr]
   (assert-xhr xhr :xhrstatus)
@@ -193,7 +194,8 @@
 
 (defn xhr-response [xhr]
   (assert-xhr xhr :reesponse)
-  ;;(println :xresp-sees (<mget xhr :uri)(<mget xhr :status))
+  (println :xresp-sees (<mget xhr :uri)(<mget xhr :status))
+  (println :xresp-returns (<mget xhr :response))
   (<mget xhr :response))
 
 (defn xhr-selection [xhr]

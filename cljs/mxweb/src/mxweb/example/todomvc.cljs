@@ -6,6 +6,7 @@
             [taoensso.tufte :as tufte :refer-macros (defnp profiled profile)]
 
             [tiltontec.util.core :refer [pln xor now]]
+            [tiltontec.cell.base :refer [unbound]]
             [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce cF1] :refer [cI]]
             [tiltontec.cell.observer :refer-macros [fn-obs]]
 

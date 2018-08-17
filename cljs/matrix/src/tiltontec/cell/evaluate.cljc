@@ -1,8 +1,8 @@
 (ns tiltontec.cell.evaluate
   (:require
       [clojure.set :refer [difference]]
-      #?(:clj [taoensso.tufte :as tufte :refer :all]
-         :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
+      ;#?(:clj [taoensso.tufte :as tufte :refer :all]
+      ;   :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
       #?(:cljs [tiltontec.util.base
                       :refer-macros [wtrx trx prog1]]
                :clj  [tiltontec.util.base

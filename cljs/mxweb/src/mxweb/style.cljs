@@ -28,7 +28,7 @@
     (or (<mget me :dom-cache)
         (if-let [dom (dom/getElement (str id))]
           (backdoor-reset! me :dom-cache dom)
-          (println :no-element id :found)))))
+          (println :style-no-element id :found)))))
 
 (defn make-css-inline [tag & stylings]
   (assert (tag? tag))

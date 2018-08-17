@@ -2,8 +2,8 @@
   (:require
 
     [tiltontec.util.core :refer [rmap-setf]]
-    #?(:clj [taoensso.tufte :as tufte :refer :all]
-       :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
+    ;#?(:clj [taoensso.tufte :as tufte :refer :all]
+    ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
               :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
        :clj [tiltontec.util.base :refer :all])
@@ -238,9 +238,8 @@ in the CL version of Cells SETF itself is the change API dunction."
     :else
     (do                                                     ;; tufte/p :wi-cvassume-sync
      (#?(:clj dosync :cljs do)
-     (p :outer-wi
-       (with-integrity (:change (c-slot c))
-         (c-value-assume c new-value nil)))))))
+     (with-integrity (:change (c-slot c))
+         (c-value-assume c new-value nil))))))
 
 (defn c-reset! [c new-value]
   (cset!> c new-value))

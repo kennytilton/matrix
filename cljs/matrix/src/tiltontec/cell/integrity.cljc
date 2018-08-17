@@ -1,7 +1,7 @@
 (ns tiltontec.cell.integrity
   (:require
-    #?(:clj [taoensso.tufte :as tufte :refer :all]
-      :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
+    ;#?(:clj [taoensso.tufte :as tufte :refer :all]
+    ;  :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
                       :refer-macros [wtrx trx prog1]]
                :clj  [tiltontec.util.base
@@ -97,7 +97,7 @@
     (loop [tag :tell-dependents]
       (case tag
         :tell-dependents
-        (do (p :telldeps
+        (do (do ;; p :telldeps
               (ufb-do :tell-dependents))
             (ufb-do :awaken)
 
@@ -198,7 +198,7 @@
                 (prog1
                  (action opcode defer-info)
 
-                 (tufte/p :finbiz
+                 (do ;; tufte/p :finbiz
                     (finish-business))
                  (ufb-assert-q-empty :tell-dependents)
                  (ufb-assert-q-empty :change))))))))

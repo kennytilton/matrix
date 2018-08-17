@@ -1,6 +1,7 @@
 (ns mxweb.example.flux-challenge
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [now pln]]
+            [tiltontec.cell.base :refer [unbound]]
             [tiltontec.cell.core :refer-macros [cF cF+ cFonce] :refer [cI]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
@@ -16,6 +17,7 @@
                      tagfo tag-dom
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
+
             [tiltontec.xhr
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
@@ -108,7 +110,9 @@
                       (= (get-in i [:homeworld :name])
                         (<get-obi-loc me))))}
 
-    (h3 {:content (cF (:name (<get-info (mx-par me))))})
+    (h3 {:content (cF (let [i (<get-info (mx-par me))
+                            n (:name i)]
+                        n))})
 
     (h6 {:content (cF (when-let [hw (get-in (<get-info (mx-par me))
                                       [:homeworld :name])]

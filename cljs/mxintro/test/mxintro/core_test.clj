@@ -191,14 +191,14 @@
 ; kids factory
 
 ;; -- Practices
-; cF just to initialize
-; cFn to initialize settable
-; operating on the cache
+;++ cF/cFonce just to initialize
+;++ cFn to initialize settable
+;++ operating on the cache
 ; use trx for debug prints (no dependency)
 
 ;; -- Varieties
 ; ephemerals
-; cFonce
+;++ cFonce
 ; lazy cells
 ; synapses
 
@@ -214,7 +214,7 @@
 ; with-cc for deferred mset/swap
 
 ;; -- Lifting
-; lifting the system clock
+;++ lifting the system clock
 ; lifting local storage
 ; lifting XHR
 ; lifting Postgres GraphDb

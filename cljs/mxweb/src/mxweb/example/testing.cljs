@@ -12,7 +12,7 @@
              :refer-macros [with-par]
              :refer [fget matrix mx-par <mget mset!> mxi-find mxu-find-name] :as md]
 
-            [tiltontec.xhr
+            [mxxhr.core
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
