@@ -18,7 +18,7 @@
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
 
-            [tiltontec.xhr
+            [mxxhr.core
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map]]
