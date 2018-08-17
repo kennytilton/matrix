@@ -13,7 +13,7 @@
                  [cheshire "5.8.0"]
                  [com.taoensso/tufte "1.1.2"]
                  [tiltontec/matrix "0.1.5-SNAPSHOT"]
-                 [tiltontec/mxxhr "0.1.1-SNAPSHOT"]]
+                 [tiltontec/mxxhr "0.1.2-SNAPSHOT"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-npm "0.6.2"]]
   :npm {:dependencies [[source-map-support "0.4.0"]]}
