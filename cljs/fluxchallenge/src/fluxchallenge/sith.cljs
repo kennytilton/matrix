@@ -23,6 +23,11 @@
                        (<mget me :with-obi?)))
 
 (defn sith-id-inject [sith-id sith-ids where]
+  ;
+  ; Just a convenience utility to maintain the Sith ID buffer
+  ; without worrying about nils and going out of bounds, either
+  ; of which this function NOPs.
+  ;
   (cond
     (and sith-id
          (< -1 where SLOT-CT)
@@ -33,7 +38,10 @@
 
     :default sith-ids))
 
-(defn obs-sith-info [slot me info]
+(defn obs-sith-info
+  "Populate buckets before/after a Sith with master/apprentice IDs
+  when the Sith lookup is completed and we learn those."
+  [slot me info]
   (when info
     (with-cc :bracket-sith
       (let [app (mx-par me)
@@ -46,17 +54,19 @@
               (mset!> app :sith-ids aids))))))))
 
 (defn make-sith [app sith-id]
-  ;(prn :mksith sith-id)
   (md/make ::Sith
     :par app
     :sith-id sith-id
     :lookup (cF (cond
                   (info me)
-                  ;; no need for lookup if we have the info already
+                  ;; no need for lookup if we have the info already;
+                  ;; forget how this could happen since the spec requires
+                  ;; fresh lookups in case server data changes.
                   nil
 
                   (with-obi? app)
-                  ;; Obi is with a displayed Sith, abort any active lookup
+                  ;; Obi is with a displayed Sith, so abort any active lookup.
+                  ;; So says the spec. TODO: make this an observer
                   (when-let [xhr (and cache
                                       (not= cache unbound)
                                       (<mget cache :xhr))]
@@ -67,12 +77,17 @@
 
                   :default
                   (send-xhr (str "http://localhost:3000/dark-jedis/" sith-id))))
+
     :response (cF+ [:obs (fn [slot me info]
                            (when info
                              (when-not (with-obi? app)
-                               ;; avoids circularity lookup <- info <-response <-lookup
                                (with-cc :load-info
-                                 ;;(prn :setting-info info)
+                                 ;; info cannot be function of response because
+                                 ;; lookup is a function of info: with-obi? uses
+                                 ;; info to decide, and lookup...hang on...
+                                 ;; TODO: make lookup dead simple, have info
+                                 ;; just watch response,
+                                 ;; have with-obi? observer abort any lookup.
                                  (mset!> me :info info)))))]
                 (when-let [lku (lookup me)]
                   (when (= 200 (:status (xhr-response lku)))

@@ -12,8 +12,7 @@
             [mxweb.gen :refer [evt-tag target-value]
              :refer-macros [h1 h3 h6 input div section button ul li]]
             [mxweb.html
-             :refer [io-read io-upsert io-clear-storage
-                     tag-dom-create
+             :refer [tag-dom-create
                      mxu-find-tag mxu-find-class
                      tagfo tag-dom
                      dom-has-class dom-ancestor-by-tag]
@@ -26,14 +25,8 @@
             [tiltontec.cell.synapse :refer-macros [with-synapse]]
             [fluxchallenge.sith :refer [with-obi? SLOT-CT make-sith info sith-id]]))
 
-(declare scroller-button sith-view the-sith-list
+(declare sith-ids obi-loc scroller-button sith-view the-sith-list
   nth-app-sith sith-app mtx-sith-ids disabled?)
-
-(defn sith-ids [me]
-  (<mget me :sith-ids))
-
-(defn obi-loc [me]
-  (<mget me :obi-loc))
 
 (defn obs-siths-lost-abort [slot me news olds _]
   (when (not= olds unbound)
@@ -45,6 +38,14 @@
 (defn app-scrollers [app]
   (div {:class    "css-scroll-buttons"
         :disabled (cF (with-obi? app))}
+    ;
+    ; The spec says to scroll two at a time but load Siths
+    ; one at a time. Hmm. So in both cases we take the next
+    ; Sith (master or apprentice) and set the ID buffer to
+    ; include that along with a nil at beginnning or end depending
+    ; on direction. This effectively loads the next by itself
+    ; then, once its data is retrieved, loads the second by itself.
+    ;
     (scroller-button "up" :master 0
       (fn [me]
         (let [s0 (nth-app-sith me 0)
@@ -64,24 +65,46 @@
 
 (defn matrix-build! []
   (md/make ::sith-app
+    ;
+    ; Here we see a formulaic cell used just for lifecycle reasons, in this
+    ; case so that the socket connection is guaranteed to be created before
+    ; the "app" instance comes to life. In different circumstances, we could
+    ; have the :obi-trakker socket change to different URIs, with superseded
+    ; sockets being released in an observer.
+    ;
     :obi-trakker (cF (if-let [sock (js/WebSocket. "ws://localhost:4000")]
                        (do
                          (set! (.-onmessage sock)
                            #(mset!> me :obi-loc (.-name (.parse js/JSON (.-data %)))))
                          sock)
                        (throw (js/Error. "Web socket connection failed: "))))
+    ;
+    ; The one "unsolicited" Matrix input. Others are XHR responses.
+    ;
     :obi-loc (cI nil)
+    ;
+    ; These inputs derive from the XHR lookups of Sith information, but have
+    ; the initial SIth defined by the spec hard-coded.
+    ;
     :sith-ids (cI [nil nil 3616 nil nil])
+    ;
+    ; Siths are computed from sith-ids, which changes incrementally, so we
+    ; check the property cache for a Sith with the right id before making
+    ; a new one.
+    ;
     :siths (cF+ [:obs obs-siths-lost-abort]
              (mapv (fn [sid]
                      (when sid
-                       (let [curr-siths (if (= cache unbound) [] cache)]
-                         (or (some (fn [s]
-                                     (when (and s (= sid (sith-id s)))
-                                       s))
-                               curr-siths)
-                           (make-sith me sid)))))
+                       (or (some (fn [s]
+                                   (when (and s (= sid (sith-id s)))
+                                     s))
+                             (if (= cache unbound) [] cache))
+                         (make-sith me sid))))
                (sith-ids me)))
+    ;
+    ; This could just be a function call since the cost of
+    ; checking at most five Siths is negligible.
+    ;
     :with-obi? (cF (some with-obi? (<mget me :siths)))
 
     :mx-dom (cFonce
@@ -108,25 +131,23 @@
 
      :onclick  #(on-click-handler (evt-tag %))
 
-     :disabled (cF
-                 (or
-                   (disabled? (mx-par me))
-                   (if-let [other-s (nth-app-sith me other-index)]
-                     (if-let [i (info other-s)]
-                       (do
-                         ;;(prn :buttdis-info!! other-index i role)
-                         (nil? (get-in i [role :id])))
-                       (do                                ;(prn :no-other-info other-index)
-                         true))
-                     (do                                    ;(prn :no-other other-index)
-                       true))))}
-    {:ul (cF (the-sith-list me))}))
-
-(defn sith-app [mx]
-  (mxu-find-type mx ::sith-app))
-
-(defn nth-app-sith [me n]
-  (nth (<mget (sith-app me) :siths) n))
+     :disabled (cF (or
+                     (disabled? (mx-par me))
+                     ;
+                     ; The spec says not to scroll if there is no "next" Sith,
+                     ; but also wants optimistic loading. ie, iff we *know* there
+                     ; is no next (because we have loaded a Sith with no next) do
+                     ; we disable the scroller.
+                     ;
+                     ; So you can bang away at a scroller and end up with blanks
+                     ; by goading the scroller into scrolling past the last
+                     ; master or apprentice.
+                     ;
+                     (if-let [other-s (nth-app-sith me other-index)]
+                       (if-let [i (info other-s)]
+                         (nil? (get-in i [role :id]))
+                         false)
+                       false)))}))
 
 (defn sith-view [par slot-n]
   (letfn [(sith-info [slot-n]
@@ -134,14 +155,30 @@
     (li {:class "css-slot"
          :style (cF (when-let [sith (nth-app-sith par slot-n)]
                       (when (with-obi? sith)
+                        ;
+                        ; I guess we style in red because we are required
+                        ; to stop loading info when Obi is on the home planet
+                        ; of a Sith we have in view.
+                        ;
                         "color:red")))}
-      (h3 {:content (cF (or (:name (sith-info slot-n)) ""))})
+      (h3 {:content (cF (:name (sith-info slot-n)))})
 
-      (h6 {:content (cF (if-let [i (sith-info slot-n)]
-                          (str "Homeworld: " (get-in i [:homeworld :name]))
-                          ""))}))))
+      (h6 {:content (cF (when-let [i (sith-info slot-n)]
+                          (str "Homeworld: " (get-in i [:homeworld :name]))))}))))
 
-;;; --- conveniences -------------------------------
+;;; --- sugar to hide some mget/mx-find noise -------------------------------
+
+(defn sith-ids [me]
+  (<mget me :sith-ids))
+
+(defn obi-loc [me]
+  (<mget me :obi-loc))
+
+(defn sith-app [mx]
+  (mxu-find-type mx ::sith-app))
+
+(defn nth-app-sith [me n]
+  (nth (<mget (sith-app me) :siths) n))
 
 (defn mtx-sith-ids [mx]
   (<mget (sith-app mx) :sith-ids))
