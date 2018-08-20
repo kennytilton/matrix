@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [now pln]]
             [tiltontec.cell.base :refer [unbound]]
+
             [tiltontec.cell.core :refer-macros [cF cF+ cFonce] :refer [cI]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core

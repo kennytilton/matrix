@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [now pln]]
             [tiltontec.cell.base :refer [unbound]]
+            [tiltontec.cell.evaluate :refer [not-to-be]]
             [tiltontec.cell.core :refer-macros [cF cF+ cFonce] :refer [cI]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
@@ -22,15 +23,47 @@
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map]]
-            [tiltontec.cell.synapse :refer-macros [with-synapse]]))
+            [tiltontec.cell.synapse :refer-macros [with-synapse]]
+            [fluxchallenge.sith :refer [with-obi? SLOT-CT make-sith info sith-id]]))
 
-(def SLOT_CT 5)
+(declare scroller-button sith-view the-sith-list
+  nth-app-sith sith-app mtx-sith-ids disabled?)
 
-(declare scroller-button sith-view the-sith-list <get-info the-matrix mtx-sith-ids disabled?
-  <get-obi-loc)
+(defn sith-ids [me]
+  (<mget me :sith-ids))
+
+(defn obi-loc [me]
+  (<mget me :obi-loc))
+
+(defn obs-siths-lost-abort [slot me news olds _]
+  (when (not= olds unbound)
+    (doseq [old olds]
+      (when old
+        (when (not (some #{old} news))
+          (not-to-be old))))))
+
+(defn app-scrollers [app]
+  (div {:class    "css-scroll-buttons"
+        :disabled (cF (with-obi? app))}
+    (scroller-button "up" :master 0
+      (fn [me]
+        (let [s0 (nth-app-sith me 0)
+              m-id (and s0 (info s0)
+                        (get-in (info s0) [:master :id]))]
+          (mset!> app :sith-ids (vec (concat [nil m-id]
+                                       (subvec (sith-ids app) 0 3)))))))
+    (scroller-button "down" :apprentice (dec SLOT-CT)
+      (fn [me]
+        (let [s-last (nth-app-sith me (dec SLOT-CT))
+              app-id (and s-last
+                          (info s-last)
+                          (get-in (info s-last) [:apprentice :id]))]
+          (mset!> app :sith-ids
+            (vec (concat (subvec (sith-ids app) 2)
+                   [app-id nil]))))))))
 
 (defn matrix-build! []
-  (md/make ::flux-challenge
+  (md/make ::sith-app
     :obi-trakker (cF (if-let [sock (js/WebSocket. "ws://localhost:4000")]
                        (do
                          (set! (.-onmessage sock)
@@ -38,119 +71,83 @@
                          sock)
                        (throw (js/Error. "Web socket connection failed: "))))
     :obi-loc (cI nil)
-    :sith-ids (cI [-1 -2 3616 -3 -4])
+    :sith-ids (cI [nil nil 3616 nil nil])
+    :siths (cF+ [:obs obs-siths-lost-abort]
+             (mapv (fn [sid]
+                     (when sid
+                       (let [curr-siths (if (= cache unbound) [] cache)]
+                         (or (some (fn [s]
+                                     (when (and s (= sid (sith-id s)))
+                                       s))
+                               curr-siths)
+                           (make-sith me sid)))))
+               (sith-ids me)))
+    :with-obi? (cF (some with-obi? (<mget me :siths)))
 
-    :mx-dom (cFonce (md/with-par me
-                      [(div {:class "app=container"}
-                         (h1 {:class   "css-planet-monitor"
-                              :content (cF (str "Obi-Wan currently on "
-                                             (or (<get-obi-loc me) "...dunno")))})
+    :mx-dom (cFonce
+              (let [app me]
+                (md/with-par me
+                  [(div {:class "app=container"}
+                     (h1 {:class   "css-planet-monitor"
+                          :content (cF (str "Obi-Wan currently on "
+                                         (or (obi-loc app) "...dunno")))})
 
-                         (section {:class "css-scrollable-list"}
-                           (ul {:class "css-slots"
-                                :name  "sith-list"}
+                     (section {:class "css-scrollable-list"}
+                       (ul {:class "css-slots"
+                            :name  "sith-list"}
+                         (mapv #(sith-view me %)
+                           (range SLOT-CT)))
 
-                             {:kid-values  (cF (mtx-sith-ids me))
-                              :kid-key     #(<mget % :sith-id)
-                              :kid-factory (fn [me sith-id]
-                                             (sith-view me sith-id))
+                       (app-scrollers app)))])))))
 
-                              :next-up     (cF (get-in (<get-info (first (<mget me :kids)))
-                                                 [:master :id]))
-                              :next-down   (cF (get-in (<get-info (last (<mget me :kids)))
-                                                 [:apprentice :id]))}
-
-                             (kid-values-kids me cache))
-
-                           (div {:class    "css-scroll-buttons"
-                                 :disabled (cF (some #(<mget % :with-obi?) (<mget (the-sith-list me) :kids)))}
-                             (scroller-button "up")
-                             (scroller-button "down"))))]))))
-
-(defn scroller-button [dir]
+(defn scroller-button [dir role other-index on-click-handler]
   (button
     {:class    (cF (str "css-button-" dir
                      (when (disabled? me)
                        " css-button-disabled")))
 
-     :onclick  (cF #(let [ul (<mget me :ul)]
-                      (dotimes [_ 2]
-                        (mset!> (the-matrix me) :sith-ids
-                          (case dir
-                            "up" (vec (concat [(<mget ul :next-up)] (subvec (mtx-sith-ids me) 0 (dec SLOT_CT))))
-                            "down" (vec (conj (subvec (mtx-sith-ids me) 1) (<mget ul :next-down))))))))
+     :onclick  #(on-click-handler (evt-tag %))
 
-     :disabled (cF (or
-                     (disabled? (mx-par me))
-                     (not (<mget (<mget me :ul) (case dir "up" :next-up "down" :next-down)))))}
-    {:ul       (cF (the-sith-list me))}))
+     :disabled (cF
+                 (or
+                   (disabled? (mx-par me))
+                   (if-let [other-s (nth-app-sith me other-index)]
+                     (if-let [i (info other-s)]
+                       (do
+                         ;;(prn :buttdis-info!! other-index i role)
+                         (nil? (get-in i [role :id])))
+                       (do                                ;(prn :no-other-info other-index)
+                         true))
+                     (do                                    ;(prn :no-other other-index)
+                       true))))}
+    {:ul (cF (the-sith-list me))}))
 
-(declare obs-sith-bracket slot-set-maybe)
+(defn sith-app [mx]
+  (mxu-find-type mx ::sith-app))
 
-(defn sith-view [par sith-id]
-  (li {:class "css-slot"
-       :style (cF (when (<mget me :with-obi?)
-                    "color:red"))}
-    {
-     :sith-id   sith-id
+(defn nth-app-sith [me n]
+  (nth (<mget (sith-app me) :siths) n))
 
-     :look-up   (cF (let [sith-id (<mget me :sith-id)]
-                      (when (> sith-id 0)
-                        (send-xhr (str "http://localhost:3000/dark-jedis/" sith-id)))))
+(defn sith-view [par slot-n]
+  (letfn [(sith-info [slot-n]
+            (info (nth-app-sith par slot-n)))]
+    (li {:class "css-slot"
+         :style (cF (when-let [sith (nth-app-sith par slot-n)]
+                      (when (with-obi? sith)
+                        "color:red")))}
+      (h3 {:content (cF (or (:name (sith-info slot-n)) ""))})
 
-     :info      (cF+ [:obs (fn [slot me sith]
-                             (when sith
-                               (obs-sith-bracket me sith-id sith)))]
-
-                  (when-let [lku (<mget me :look-up)]
-                    (when (= 200 (:status (xhr-response lku)))
-                      (:body (xhr-response lku)))))
-
-     :with-obi? (cF (when-let [i (<get-info me)]
-                      (= (get-in i [:homeworld :name])
-                        (<get-obi-loc me))))}
-
-    (h3 {:content (cF (let [i (<get-info (mx-par me))
-                            n (:name i)]
-                        n))})
-
-    (h6 {:content (cF (when-let [hw (get-in (<get-info (mx-par me))
-                                      [:homeworld :name])]
-                        (str "Homeworld: " hw)))})))
-
-(defn obs-sith-bracket [me sith-id sith]
-  (with-cc :bracket-info
-    (let [curr-ids (mtx-sith-ids me)
-          slot-n (.indexOf curr-ids sith-id)
-          [m? m-ids] (slot-set-maybe :m curr-ids (dec slot-n) (get-in sith [:master :id]))
-          [a? new-ids] (slot-set-maybe :a m-ids (inc slot-n) (get-in sith [:apprentice :id]))]
-      (when (or m? a?)
-        (mset!> (the-matrix me) :sith-ids new-ids)))))
-
-(defn slot-set-maybe [tag slots slot-n elt]
-  (if (and elt (>= slot-n 0) (< slot-n SLOT_CT) (not= elt (nth slots slot-n)))
-    [true (vec (concat (subvec slots 0 slot-n)
-                 [elt]
-                 (subvec slots (inc slot-n))))]
-    ;; else
-    [false slots]))
+      (h6 {:content (cF (if-let [i (sith-info slot-n)]
+                          (str "Homeworld: " (get-in i [:homeworld :name]))
+                          ""))}))))
 
 ;;; --- conveniences -------------------------------
 
-(defn the-matrix [mx]
-  (mxu-find-type mx ::flux-challenge))
-
-(defn <get-obi-loc [me]
-  (<mget (the-matrix me) :obi-loc))
-
 (defn mtx-sith-ids [mx]
-  (<mget (the-matrix mx) :sith-ids))
+  (<mget (sith-app mx) :sith-ids))
 
 (defn the-sith-list [me]
   (mxu-find-name me "sith-list"))
 
 (defn disabled? [me]
   (<mget me :disabled))
-
-(defn <get-info [me]
-  (<mget me :info))
