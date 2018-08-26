@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.228"]
                  [clj-http "3.7.0"]
-                 [cljs-http "0.1.44"]
+                 [cljs-http "0.1.45"]
                  [cljs-ajax "0.7.2"]
                  [cheshire "5.8.0"]
                  [com.cognitect/transit-cljs "0.8.243"]

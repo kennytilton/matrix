@@ -116,7 +116,7 @@
 (defn xhr-send [xhr]
 
   (let [uri (<mget xhr :uri)]
-    ;; (cpr :xhr-send-is-sending-uri (:id @xhr) uri)
+    (prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
     (#?(:clj alter :cljs swap!) xhr assoc :send-time (now))
 
     #?(:clj (client/get uri
@@ -143,7 +143,11 @@
                       (md-reset! xhr :response {:status (:status edata)
                                                 :body   (parse-json$ (:body edata))}))))))
 
-       :cljs (go (let [response (<! (client/get uri {:with-credentials? false}))]
+       :cljs (go
+        (let [chan (do (prn :seekingchan uri)
+       (client/get uri {:with-credentials? false}))]
+       (prn :hello-chan chan)
+       (let [response (<! chan)]
                    (if (:success response)
                      (do
                        ;(prn :body (keys (:body response)))
@@ -170,7 +174,7 @@
                          (with-cc :xhr-handler-sets-responded
                            (md-reset! xhr :response {:status (:status response)
                                                      :body   [(:error-code response)
-                                                              (:error-text response)]}))))))))))
+                                                              (:error-text response)]})))))))))))
 
 
 

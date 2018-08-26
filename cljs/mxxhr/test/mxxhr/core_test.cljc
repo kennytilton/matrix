@@ -320,6 +320,14 @@
         (pln :respo!! (xhrfo r)))
       )))
 
+(deftest just-sith
+  (cells-init)
+  (let [q (send-xhr
+            (str "http://localhost:3000/dark-jedis/" 3616))]
+    (xhr-await q )
+    (prn :sith (<mget q :response))))
+
+
 (deftest xhr-tree-simple
   (binding [*plnk-keys* [:xhr]]
     (let [top (make-xhr "http://google.com"
