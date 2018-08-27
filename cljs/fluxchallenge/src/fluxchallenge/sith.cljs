@@ -10,11 +10,10 @@
              kid-values-kids]
      :as md]
     [mxxhr.core
-     :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
+     :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-abort xhr-await xhr-status xhr-response
              xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
              xhr-selection xhr-to-map xhr-name-to-map]]
-    [cljs.core.async :as async]
-    [cljs-http.core :refer [abort!]]))
+    [cljs.core.async :as async]))
 
 (def SLOT-CT 5)
 
@@ -55,68 +54,35 @@
                   aids (sith-id-inject apprentice-id mids (inc myx))]
               (mset!> app :sith-ids aids))))))))
 
+(defn sith-lookup-abort [me]
+  (when-let [lku (lookup me)]
+    (when-not (xhr-response lku)
+      ;; TODO move to new mxxhr/xhr-abort
+      (xhr-abort lku))))
+
 (defn make-sith [app sith-id]
   (md/make ::Sith
     :par app
     :sith-id sith-id
-    :lookup (cF+ [:obs (fn [_ me lku prior-lku]
-                         (when (and prior-lku
-                                    (not= prior-lku unbound))
-                           (when (and ;; (nil? lku)
-                                      (not (xhr-response prior-lku)))
-                             (prn :aborting! prior-lku)
-                             (abort! (:cancel @prior-lku))
-                             #_ (when (.isActive xhr)
-                                  (prn :aborting-lookup sith-id xhr)
-                                  (.abort xhr)
-                                  nil))))]
-              (cond
-                  (info me)
-                  ;; no need for lookup if we have the info already;
-                  ;; forget how this could happen since the spec requires
-                  ;; fresh lookups in case server data changes.
-                  nil
 
-                  (with-obi? app)
-                  ;; Obi is with a displayed Sith, so no lookup.
-                  ;; See observer for cancel of outstanding lookup
-                  nil
+    :lookup (cF (send-xhr :load-sith
+                  (str "http://localhost:3000/dark-jedis/" sith-id)
+                  {:cancel (async/chan)}))
 
-                  :default
-                  (send-xhr :load-sith
-                    (str "http://localhost:3000/dark-jedis/" sith-id)
-                    {:cancel (async/chan)})))
+    :info (cF+ [:obs obs-sith-info]
+            (when-let [r (xhr-response (lookup me))]
+              (when (= 200 (:status r))
+                (:body r))))
 
-    :response (cF+ [:obs (fn [slot me info]
-                           ;;(prn :obs! info)
-                           (when info
-                             ;;(prn :info! info)
-                             (when-not (with-obi? app)
-                               ;;(prn :not-with! info)
-                               (with-cc :load-info
-                                 ;; info cannot be function of response because
-                                 ;; lookup is a function of info: with-obi? uses
-                                 ;; info to decide, and lookup...hang on...
-                                 ;; TODO: make lookup dead simple, have info
-                                 ;; just watch response,
-                                 ;; have with-obi? observer abort any lookup.
-                                 ;;(prn :mset!!!  info me)
-                                 (mset!> me :info info)))))]
-                (when-let [lku (lookup me)]
-                  (when-let [r (xhr-response lku)]
-                    ;;(prn :resp! r (:status r))
-                    (when (= 200 (:status r))
-                      ;;(prn :200!! (:body (xhr-response lku)))
-                      (:body (xhr-response lku))))))
-
-    :info (cI nil :obs obs-sith-info)
-    :with-obi? (cF (when-let [obi-loc (<mget app :obi-loc)]
-                     (when-let [i (info me)]
-                       (= (get-in i [:homeworld :name])
-                         obi-loc))))))
+    :with-obi? (cF+ [:obs (fn [slot me with?]
+                            (when with?
+                              (sith-lookup-abort me)))]
+                 (when-let [obi-loc (<mget app :obi-loc)]
+                   (when-let [i (info me)]
+                     (= (get-in i [:homeworld :name])
+                       obi-loc))))))
 
 (defmethod not-to-be [::Sith] [me]
-  (when-let [lku (lookup me)]
-    (when-let [xhr (<mget lku :xhr)]
-      (when (.isActive xhr)
-        (.abort xhr)))))
+  (sith-lookup-abort me)
+  ;; todo move abort into not-to-be of lookup???
+  (not-to-be (lookup me)))

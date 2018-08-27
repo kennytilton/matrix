@@ -25,15 +25,17 @@
             [tiltontec.cell.synapse :refer-macros [with-synapse]]
             [fluxchallenge.sith :refer [with-obi? SLOT-CT make-sith info sith-id]]))
 
-(declare sith-ids obi-loc scroller-button sith-view the-sith-list
-  nth-app-sith sith-app mtx-sith-ids disabled?)
+(declare
+  disabled? ;; dubious name for (<mget me :disabled)
+  sith-ids obi-loc scroller-button
+  sith-view the-sith-list
+  nth-app-sith sith-app mtx-sith-ids)
 
-(defn obs-siths-lost-abort [slot me news olds _]
+(defn obs-siths-lost-abort [slot me news olds cell]
   (when (not= olds unbound)
-    (doseq [old olds]
-      (when old
-        (when (not (some #{old} news))
-          (not-to-be old))))))
+    (doseq [lost (remove (set news) olds)]
+      (when lost
+        (not-to-be lost)))))
 
 (defn app-scrollers [app]
   (div {:class    "css-scroll-buttons"
@@ -42,7 +44,7 @@
     ; The spec says to scroll two at a time but load Siths
     ; one at a time. Hmm. So in both cases we take the next
     ; Sith (master or apprentice) and set the ID buffer to
-    ; include that along with a nil at beginnning or end depending
+    ; include that along with a nil at beginning or end depending
     ; on direction. This effectively loads the next by itself
     ; then, once its data is retrieved, loads the second by itself.
     ;
@@ -68,9 +70,9 @@
     ;
     ; Here we see a formulaic cell used just for lifecycle reasons, in this
     ; case so that the socket connection is guaranteed to be created before
-    ; the "app" instance comes to life. In different circumstances, we could
-    ; have the :obi-trakker socket change to different URIs, with superseded
-    ; sockets being released in an observer.
+    ; the "app" instance comes to life. In different circumstances, the :obi-trakker
+    ; socket might change to different URIs. In that case an observer would
+    ; handle releasing the retired socket.
     ;
     :obi-trakker (cF (if-let [sock (js/WebSocket. "ws://localhost:4000")]
                        (do
@@ -79,18 +81,18 @@
                          sock)
                        (throw (js/Error. "Web socket connection failed: "))))
     ;
-    ; The one "unsolicited" Matrix input. Others are XHR responses.
+    ; obi's locations is the one "unsolicited" Matrix input. Others are XHR responses.
     ;
     :obi-loc (cI nil)
     ;
     ; These inputs derive from the XHR lookups of Sith information, but have
-    ; the initial SIth defined by the spec hard-coded.
+    ; the initial hard-coded SIth defined by the spec.
     ;
     :sith-ids (cI [nil nil 3616 nil nil])
     ;
-    ; Siths are computed from sith-ids, which changes incrementally, so we
+    ; Siths are computed from sith-ids, which changes one at a time, so we
     ; check the property cache for a Sith with the right id before making
-    ; a new one.
+    ; a new one. Think ReactJS "keys".
     ;
     :siths (cF+ [:obs obs-siths-lost-abort]
              (mapv (fn [sid]
@@ -101,10 +103,7 @@
                              (if (= cache unbound) [] cache))
                          (make-sith me sid))))
                (sith-ids me)))
-    ;
-    ; This could just be a function call since the cost of
-    ; checking at most five Siths is negligible.
-    ;
+
     :with-obi? (cF (some with-obi? (<mget me :siths)))
 
     :mx-dom (cFonce
@@ -118,12 +117,27 @@
                      (section {:class "css-scrollable-list"}
                        (ul {:class "css-slots"
                             :name  "sith-list"}
+                         ;; the LIs stay; their contents shift
                          (mapv #(sith-view me %)
                            (range SLOT-CT)))
 
                        (app-scrollers app)))])))))
 
+(defmethod not-to-be [::sith-app] [me]
+  ; Not sure when a Web app would be scavenged.
+  ; This is here just to illustrate Matrix lifecycle.
+  (when-let [sock (<mget me :obi-trakker)]
+    (.close sock))
+  (doseq [sith (<mget me :siths)]
+    (when-let [lku (<mget sith :lookup)]
+      (when-not (= unbound lku)
+        (prn :would-n2be lku)
+        #_(not-to-be lku)))))
+
 (defn scroller-button [dir role other-index on-click-handler]
+  ;;
+  ;; here is a nice rich "Web Component"
+  ;;
   (button
     {:class    (cF (str "css-button-" dir
                      (when (disabled? me)
@@ -150,15 +164,16 @@
                        false)))}))
 
 (defn sith-view [par slot-n]
+  ; another "Web Component"
   (letfn [(sith-info [slot-n]
             (info (nth-app-sith par slot-n)))]
     (li {:class "css-slot"
          :style (cF (when-let [sith (nth-app-sith par slot-n)]
                       (when (with-obi? sith)
                         ;
-                        ; I guess we style in red because we are required
-                        ; to stop loading info when Obi is on the home planet
-                        ; of a Sith we have in view.
+                        ; I guess we style in red because red is for "stop"
+                        ; and we are required to stop loading when Obi
+                        ; is on the home planet of a Sith currently in view.
                         ;
                         "color:red")))}
       (h3 {:content (cF (:name (sith-info slot-n)))})

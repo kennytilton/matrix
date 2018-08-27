@@ -42,6 +42,8 @@
     [tiltontec.util.base
      :refer :all])
 
+    #?(:cljs [cljs-http.core :refer [abort!]])
+
     ; cool------------------------
 
     #?(:clj [tiltontec.cell.observer :refer [fn-obs observe observe-by-type]]
@@ -116,14 +118,14 @@
 (defn xhr-send [xhr]
 
   (let [uri (<mget xhr :uri)]
-    (prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
+    ;(prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
     (#?(:clj alter :cljs swap!) xhr assoc :send-time (now))
 
     #?(:clj (client/get uri
               {:async? true}
 
               (fn [response]
-                (prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
+                ;(prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
                 (countit [:xhr :reponse])
                 (if (mdead? xhr)
                   (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
@@ -137,16 +139,16 @@
                 ;;(prn "xhr-send> raw exception" exception)
                 (let [edata (:data (bean exception))]
 
-                  (prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
+                  ;(prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
                   (when-not (mdead? xhr)
                     (with-cc :xhr-handler-sets-error
                       (md-reset! xhr :response {:status (:status edata)
                                                 :body   (parse-json$ (:body edata))}))))))
 
        :cljs (go
-        (let [chan (do (prn :seekingchan uri)
+        (let [chan (do
        (client/get uri {:with-credentials? false}))]
-       (prn :hello-chan chan)
+
        (let [response (<! chan)]
                    (if (:success response)
                      (do
@@ -226,6 +228,13 @@
                     (vec (apply concat (seq (dissoc attrs :body-parser)))))]
      ;; (println :xhr-made!!!!!!!!!! uri)
      xhr)))
+
+(defn xhr-abort [xhr]
+  ;; todo could use some tests
+  #?(:cljs (when-let [chan (:cancel @xhr)]
+             (abort! chan))
+     :clj (when (.isActive xhr)
+            (.abort xhr))))
 
 (defmethod not-to-be [:mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
