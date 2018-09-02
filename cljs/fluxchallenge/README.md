@@ -105,4 +105,19 @@ And finally, a `not-to-be` method specialized on the Sith takes care of outstand
   (not-to-be (lookup me)))
 ```
 With property observers and `not-to-be` methods, the Matrix library provides the lifecycle hooks to manage fluctuating values and complete objects.
+### Application lifecycle
+Here is a much simpler example of Matrix lifecycle support: we need to listen on a socket for Obi-Wan's current locatiion.
+```
+(defn matrix-build! []
+  (md/make ::sith-app
+    :obi-trakker (cF (if-let [sock (js/WebSocket. "ws://localhost:4000")]
+                       (do
+                         (set! (.-onmessage sock)
+                           #(mset!> me :obi-loc (.-name (.parse js/JSON (.-data %)))))
+                         sock)
+                       (throw (js/Error. "Web socket connection failed: "))))
+   ...))
+```
+The astute reader will wonder why a *formula* is needed to open a socket. In this case, it is not, but having the socket connection established in a cell formula means it will be there as soon as required, but no sooner than required. Should some other value such as on which port to listen someday turn out to be formulaic, the JIT awakening of the Matrix naturally orders the evaluation of cells at startup so we do not need to think about it.
+
 
