@@ -29,30 +29,34 @@ lein fig:build
 ```
 If all goes well, Figwheel will start a server and open the client in a browser tab near you.
 
+If not, please ping me at kentilton at gmail. Now let us concentrate on the lifecycle mechanics required to implement the seeming magic of Matrix, in which properties and objects change and come and go seemingly by themselves.
+
 ![Flux Challenge](./docs/3.gif)
 
-<img height="350px" align="right" src="/docs/smalldag.png?raw=true">
+### The Challenge spec
+Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebook's Flux](https://facebook.github.io/flux/) architecture.
+```
+This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
+````
+Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. Here is a beaut:
+```
+When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
+```
+In brief, slam on the brakes if:
+* new socket info indicates Obi-Wan has landed on the Homeworld of a displayed Sith; or
+* if the user scrolls into view a Sith whose Homeowlrd Obi-Wan was last known to be on.
 
-Let us first reprise why this library is called Matrix (forget the movie):
+The "brakes" are disabling scroll controls, changing one Sith's text color, and cancelling outstanding Ajax requests.
+
+Enter Matrix.
+
+## The Matrix Defined
+Let us first reprise why this library is called Matrix (forget the otherwise entertaining movies):
 
 > Formulas can compute more than just descriptive properties such as "completed". We might have `K` for "kids" holding the children of some parent, such as the `LI` nodes under a `UL` DOM list. In other words, the population of our application model can grow or shrink with events.  
   
 We call a dynamic population of causally connected models a *matrix*.
 
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
-
-
-
-What should happen is [defined here](https://github.com/staltz/flux-challenge/blob/master/README.md). The tl;dr:
-* show where Obi-Wan is as he moves around;
-* start by looking up and showing a hardcoded Sith (3616);
-* bracket that Sith with master above and apprentice below, if anys;
-* scroll up and down two at a time;
-* always lookup afresh when scrolling to get latest info;
-* if a lookup for Sith is active when the Sith gets scrolled off, abort the lookup;
-* if Obi-Wan is on the planet of a Sith:
-* ...highlight that Sith in red;
-* ...disable scrolling.
-
 
 
