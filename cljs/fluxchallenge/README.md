@@ -29,7 +29,9 @@ lein fig:build
 ```
 If all goes well, Figwheel will start a server and open the client in a browser tab near you.
 
-![Flux Challenge](docs/3.gif)
+![Flux Challenge](./docs/3.gif)
+
+![dag](docs/smalldag.png)
 
 Let us first reprise why this library is called Matrix (forget the movie):
 
