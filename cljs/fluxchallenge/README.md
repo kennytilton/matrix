@@ -35,9 +35,9 @@ If not, please ping me at kentilton at gmail. Now let us concentrate on the life
 
 ### The Challenge spec
 Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebook's Flux](https://facebook.github.io/flux/) architecture.
-```
-This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
-````
+
+> This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
+
 Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. 
 
 The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view in case some data has changed, and cancel lookups when moot. In some of its own words:
@@ -49,9 +49,7 @@ In brief, slam on the brakes if:
 * if the user scrolls into view a Sith on whose Homeowlrd Obi-Wan was last known to be; or
 * for a Sith scrolled out of view, cancel its Ajax lookup if it is outstanding.
 
-The "brakes" are disabling scroll controls, changing one Sith's text color, and cancelling outstanding Ajax requests.
-
-Enter Matrix.
+The "brakes" are disabling scroll controls, changing one Sith's text color, and cancelling outstanding Ajax requests. Enter Matrix.
 
 ## The Matrix Defined
 Let us first reprise why this library is called Matrix (forget the otherwise entertaining movies):
@@ -106,4 +104,5 @@ And finally, a `not-to-be` method specialized on the Sith takes care of outstand
   ;; the lookup itself is a Matrix member, so...
   (not-to-be (lookup me)))
 ```
+With property observers and `not-to-be` methods, the Matrix library provides the lifecycle hooks to manage fluctuating values and complete objects.
 
