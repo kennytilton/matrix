@@ -71,4 +71,39 @@ So far in this series we have tried to stay out of the implementation weeds, but
 
 The Matrix lifecycle API has two callbacks to support Matrix objects aka models coming and going: `md-awaken` and `not-to-be`. (`to-be` got lost in a refactoring.) As for the interconnected properties, they are handled for us by `not-to-be`, which calls `c-quiesce` on every property of a model leaving the Matrix. `c-quiesce` simply notifies its dependencies that it no longer needs notification.
 
-Getting back to our Sith Lord
+We have not run into these because often they are not needed, and because a "lift" like mxWeb&trade; handles it for us where needed (such as adding and removing elements from the DOM). Now we need them.
+
+#### Sith lookup cancellation
+Getting back to our Sith Lord, one requirement is to cancel a lookup of the Sith's info if they get scrolled off. We are required not to cache data, so when a user scrolls a Sith out of view we drop it from the matrix.
+
+First, we recompute the Sith population as the list of visible IDs changes
+```
+    (cF+ [:obs obs-siths-lost-abort]
+       (mapv (fn [sid]
+               (when sid
+                 (or (some (fn [s]
+                             ;; watch out for nils
+                             (and s (= sid (sith-id s))) s)
+                       (if (= cache unbound) [] cache))
+                   (make-sith me sid))))
+         (sith-ids me)))
+```
+Note the observer `obs-siths-lost-abort`. As the name suggests, it watches for Siths being lost and tends to their graceful demise.
+```
+(defn obs-siths-lost-abort [slot me news olds cell]
+  (when (not= olds unbound)
+    (doseq [lost (remove (set news) olds)]
+      (when lost
+        (not-to-be lost)))))
+```
+And finally, a `not-to-be` method specialized on the Sith takes care of outstanding XHRs:
+```
+(defmethod not-to-be [::Sith] [me]
+  (when-let [lku (lookup me)]
+    (when-not (xhr-response lku)
+      ;; TODO move to new mxxhr/xhr-abort
+      (xhr-abort lku)))
+  ;; the lookup itself is a Matrix member, so...
+  (not-to-be (lookup me)))
+```
+
