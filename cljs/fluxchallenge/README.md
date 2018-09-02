@@ -38,13 +38,16 @@ Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebo
 ```
 This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
 ````
-Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. Here is a beaut:
+Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. 
+
+The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view in case some data has changed, and cancel lookups when moot. In some of its own words:
 
 > When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
 
 In brief, slam on the brakes if:
-* new socket info indicates Obi-Wan has landed on the Homeworld of a displayed Sith; or
-* if the user scrolls into view a Sith whose Homeowlrd Obi-Wan was last known to be on.
+* new socket info indicates Obi-Wan has landed on the Homeworld of a displayed Sith;
+* if the user scrolls into view a Sith on whose Homeowlrd Obi-Wan was last known to be; or
+* for a Sith scrolled out of view, cancel its Ajax lookup if it is outstanding.
 
 The "brakes" are disabling scroll controls, changing one Sith's text color, and cancelling outstanding Ajax requests.
 
@@ -59,4 +62,13 @@ We call a dynamic population of causally connected models a *matrix*.
 
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
 
+The implementation challenge may be clear to the astute reader: properties are watching and notifying other properties of objects wherever their declarative code cared to find them, and somehow we must gracefully add and remove objects *live* without breaking anything.
 
+It turned out to be pretty easy.
+
+### To be or not to be
+So far in this series we have tried to stay out of the implementation weeds, but this write-up is indeed about How It Works&trade; so here goes.
+
+The Matrix lifecycle API has two callbacks to support Matrix objects aka models coming and going: `md-awaken` and `not-to-be`. (`to-be` got lost in a refactoring.) As for the interconnected properties, they are handled for us by `not-to-be`, which calls `c-quiesce` on every property of a model leaving the Matrix. `c-quiesce` simply notifies its dependencies that it no longer needs notification.
+
+Getting back to our Sith Lord
