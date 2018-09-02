@@ -121,15 +121,22 @@ Here is a much simpler example of Matrix lifecycle support: we need to listen on
 The astute reader will wonder why a *formula* is needed to open a socket. In this case, it is not, but having the socket connection established in a cell formula means it will be there as soon as required, but no sooner than required. Should some other value such as on which port to listen someday turn out to be formulaic, the JIT awakening of the Matrix naturally orders the evaluation of cells at startup so we do not need to think about it.
 
 ### Component&trade; Compared
-There seems to be an overlap between Matrix and Stuart Sierra's [Component](https://github.com/stuartsierra/component), which in turn builds on his [Dependency](https://github.com/stuartsierra/dependency) DAG library.
+This third look at Matrix was triggered by an overlap we noticed between Matrix and Stuart Sierra's [Component](https://github.com/stuartsierra/component), which in turn builds on his [Dependency](https://github.com/stuartsierra/dependency) DAG library.
+
+Specifically, establishing a socket connection in a formulaic cell struck us as something for which Component was designed. Digging into the Component doc, we found a familiar perspective.
 
 > Large applications often consist of many stateful processes which must be started and stopped in a particular order. The component model makes those relationships explicit and declarative, instead of implicit in imperative code. - S. Sierra
 
-We are not conversant with Component so cannot say, but an interesting exercise would be repliacting the Component capabilities using a Matrix-powered system in place of Component systems. One motivation for such an exercise would be thus limitation of Component.
+An interesting exercise would be replicating Component capabilities using a Matrix-powered system in place of Component systems. Motivation for such an exercise would be limitations noted in the Component documentation:
 
-> You must explicitly specify all the dependency relationships among components: the code cannot discover these relationships automatically.
+> You must explicitly specify all the dependency relationships among components: the code cannot discover these relationships automatically.  
 
-The Matrix dependency graph is identified automatically and dynamically maintained at runtime by Matrix internals.
+The Matrix dependency graph is identified automatically and dynamically maintained at runtime by Matrix internals. As the Component doc notes, the developer builds and maintains the DAG themself.
+
+> In particular, the 'component' library assumes that all application state is passed as arguments to the functions that use it. As a result, this framework may be awkward to use with code which relies on global or singleton references.
+
+Matrix formulas all have unfettered yet predictable access to other Matrix state via the anaphoric `me` (think `this` or `self`) so no other parameters are required.
+
 
 
 
