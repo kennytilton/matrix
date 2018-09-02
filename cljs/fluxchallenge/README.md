@@ -39,9 +39,9 @@ Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebo
 This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
 ````
 Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. Here is a beaut:
-```
-When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
-```
+
+> When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
+
 In brief, slam on the brakes if:
 * new socket info indicates Obi-Wan has landed on the Homeworld of a displayed Sith; or
 * if the user scrolls into view a Sith whose Homeowlrd Obi-Wan was last known to be on.
