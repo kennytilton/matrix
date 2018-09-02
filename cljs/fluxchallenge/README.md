@@ -31,7 +31,7 @@ If all goes well, Figwheel will start a server and open the client in a browser 
 
 ![Flux Challenge](./docs/3.gif)
 
-![dag](docs/smalldag.png)
+<img height="350px" align="right" src="/docs/smalldag.png?raw=true">
 
 Let us first reprise why this library is called Matrix (forget the movie):
 
