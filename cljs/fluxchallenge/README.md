@@ -4,11 +4,11 @@ Welcome to the Matrix&trade; implementation of The Flux Challenge&trade;, part t
 
 In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. 
 
-The reader should know that the very existence of Part III came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
+The reader should know that the very need for part three came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
 
-First, though, let us get the app running.
+## Running the beast (optional)
+Running this solution is not at all needed to follow the rest of this discussion, so feel free to skip down to "The Challenge spec".
 
-## Running the beast
 Running SithTrak is a little different. One repo holds a server app against which we will test, while this repo implements the Challenge, a client that feeds off the Challenge server.
 
 ### the server
@@ -37,7 +37,7 @@ If not, please ping me at kentilton at gmail. Now let us concentrate on the life
 
 ![Flux Challenge](./docs/3.gif)
 
-### The Challenge spec
+## The Challenge spec
 Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebook's Flux](https://facebook.github.io/flux/) architecture.
 
 > This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
