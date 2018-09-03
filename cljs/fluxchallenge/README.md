@@ -1,11 +1,17 @@
 # SithTrak&trade;
 
-Welcome to the Matrix&trade; implementation of The Flux Challenge&trade;, part three of an introduction to Matrix. In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). 
+Welcome to the Matrix&trade; implementation of The Flux Challenge&trade;, part three of an introduction to Matrix. 
 
-In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. But first, let us get the app running.
+In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. 
+
+The reader should know that the very existence of Part III came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted.
+
+But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the elegant Matrix lifecycle was worth highlighting. 
+
+First, though, let us get the app running.
 
 ## Running the beast
-Running SithTrak is a little different. One repo holds a server app to test against, then this repo implements the challenge, a client.
+Running SithTrak is a little different. One repo holds a server app against which we will test, while this repo implements the Challenge, a client that feeds off the Challenge server.
 
 ### the server
 First, grab the whole Challenge (server and accepted submissions) and do the one-time install:
@@ -38,13 +44,13 @@ Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebo
 
 > This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
 
-Fortunately for our purposes, the Challenge requires a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates. 
+Fortunately for our purposes, the Challenge tries to stymie Flux with a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates, while at the same time tweaking the view in critical ways. 
 
-The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view in case some data has changed, and cancel lookups when moot. In some of its own words:
+The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view in case some data has changed, and cancel lookups when moot. In its own words:
 
 > When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
 
-In brief, slam on the brakes if:
+In brief, we must slam on the brakes if:
 * new socket info indicates Obi-Wan has landed on the Homeworld of a displayed Sith;
 * if the user scrolls into view a Sith on whose Homeowlrd Obi-Wan was last known to be; or
 * for a Sith scrolled out of view, cancel its Ajax lookup if it is outstanding.
