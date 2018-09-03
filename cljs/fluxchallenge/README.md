@@ -4,9 +4,7 @@ Welcome to the Matrix&trade; implementation of The Flux Challenge&trade;, part t
 
 In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. 
 
-The reader should know that the very existence of Part III came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted.
-
-But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the elegant Matrix lifecycle was worth highlighting. 
+The reader should know that the very existence of Part III came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
 
 First, though, let us get the app running.
 
@@ -14,7 +12,7 @@ First, though, let us get the app running.
 Running SithTrak is a little different. One repo holds a server app against which we will test, while this repo implements the Challenge, a client that feeds off the Challenge server.
 
 ### the server
-First, grab the whole Challenge (server and accepted submissions) and do the one-time install:
+Grab the whole Challenge (server and accepted submissions) and do a one-time install:
 ```` bash
 git clone https://github.com/kennytilton/flux-challenge.git
 cd flux-challenge/server
@@ -141,7 +139,12 @@ The Matrix dependency graph is identified automatically and dynamically maintain
 
 > In particular, the 'component' library assumes that all application state is passed as arguments to the functions that use it. As a result, this framework may be awkward to use with code which relies on global or singleton references.
 
-Matrix formulas all have unfettered yet predictable access to other Matrix state via the anaphoric `me` (think `this` or `self`) so no other parameters are required.
+Matrix formulas have unfettered access to other Matrix state via the anaphoric `me` (akin to `this` or `self`) so no other parameters are required.
+
+## Summary
+The automatic state management provided by reactive/dataflow systems greatly simplifies application development but presents a challenge: what if we *want* to be involved when state changes? And how do entire populations of dataflow-powered objects come and go from a running application?
+
+The Matrix library, by providing a few callbacks and specializable lifecycle methods such as `md-awaken` and `not-to-be`, gave the developer the hooks required for external dependency injection and resource allocation/deallocation, all with the same reliability and predictability with which it manages internal application state.
 
 
 
