@@ -4,7 +4,7 @@ Welcome to the Matrix&trade; implementation of [The Flux Challenge](https://gith
 
 In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. 
 
-The very need for a part three came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's wildly popular [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
+The very need for a part three came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's excellent [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
 
 ## Running the beast (optional)
 Running this solution is not at all needed to follow the rest of this discussion, so feel free to skip down to "The Challenge spec".
