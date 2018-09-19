@@ -42,9 +42,9 @@ Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebo
 
 > This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
 
-Fortunately for our purposes, the Challenge tries to stymie Flux with a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate resources such as Ajax requests intelligently as application state dictates, while at the same time tweaking the view in critical ways. 
+Fortunately for our purposes, the Challenge tries to stymie Flux with a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate Ajax requests as application state dictates, while at the same time tweaking the view in critical ways. 
 
-The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view in case some data has changed, and cancel lookups when moot. In its own words:
+The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view and to cancel lookups when their results would be moot. In its own words:
 
 > When either the current planet indicator changes OR loaded new rows: check if there is a displayed Dark Jedi whose home planet matches the current planet. If true, then display that Dark Jedi in red text, and cancel ALL ongoing HTTP requests for rows. Freeze the UI from scrolling until the current planet changes again and there is no red-highlighted Dark Jedi anymore.
 
@@ -103,7 +103,6 @@ And finally, a `not-to-be` method specialized on the Sith takes care of outstand
 (defmethod not-to-be [::Sith] [me]
   (when-let [lku (lookup me)]
     (when-not (xhr-response lku)
-      ;; TODO move to new mxxhr/xhr-abort
       (xhr-abort lku)))
   ;; the lookup itself is a Matrix member, so...
   (not-to-be (lookup me)))
@@ -135,7 +134,7 @@ An interesting exercise would be replicating Component capabilities using a Matr
 
 > You must explicitly specify all the dependency relationships among components: the code cannot discover these relationships automatically.  
 
-The Matrix dependency graph is identified automatically and dynamically maintained at runtime by Matrix internals. As the Component doc notes, the developer builds and maintains the DAG themself.
+The Matrix dependency graph is identified automatically and dynamically maintained at runtime by Matrix internals. By contrast, the Component developer builds and maintains the DAG themself.
 
 > In particular, the 'component' library assumes that all application state is passed as arguments to the functions that use it. As a result, this framework may be awkward to use with code which relies on global or singleton references.
 
@@ -144,7 +143,7 @@ Matrix formulas have unfettered access to other Matrix state via the anaphoric `
 ## Summary
 The automatic state management provided by reactive/dataflow systems greatly simplifies application development but presents a challenge: what if we *want* to be involved when state changes? And how do entire populations of dataflow-powered objects come and go from a running application?
 
-The Matrix library, by providing a few callbacks and specializable lifecycle methods such as `md-awaken` and `not-to-be`, gave the developer the hooks required for external dependency injection and resource allocation/deallocation, all with the same reliability and predictability with which it manages internal application state.
+The Matrix library, by providing a few callbacks and specializable lifecycle methods such as `md-awaken` and `not-to-be`, provides the developer with the hooks required for external dependency injection and resource allocation/deallocation, all with the same reliability and predictability with which it manages internal application state.
 
 
 
