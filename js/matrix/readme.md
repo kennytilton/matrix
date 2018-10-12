@@ -131,7 +131,7 @@ Above we saw how a new matrix property value (`hidden`) made it from the matrix 
    section({class: "main",
             hidden: cF( c => Todos.empty)})
 ```
-What moves `empty` between true and false? We start with the inocuous first line of `app.js`:
+What moves `empty` between true and false? We start with the innocuous first line of `app.js`:
 ```javascript
 const Todos = Todo.loadAllItems();
 ```
