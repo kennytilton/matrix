@@ -1,5 +1,5 @@
 function stopWatch () {
-    return tag2html(div (h1("On your mark. Get set..."), clock2()));
+    return tag2html(div (h1("On your mark. Get set..."), clock1()));
 }
 
 window['stopWatch'] = stopWatch;
@@ -7,7 +7,7 @@ window['stopWatch'] = stopWatch;
 function clock1 () {
     return h2({class: "example-clock"},
         {tick: cI( false, {ephemeralp: true}),
-        ticker: cF( c=> setInterval( () => c.md.tick = true, 200)),
+        ticker: cF( c=> setInterval( () => c.md.tick = true, 10)),
         content: cF( function (c) {
             if (c.md.tick) {
                 let d = new Date;
@@ -22,7 +22,7 @@ function clock1 () {
 function clock2 () {
     return h2({class: "example-clock"},
         {
-            ticker: mkTimer( null, 1000, c=> clg('slave 1', c.sid, Date.now()));
+            ticker: mkTimer( null, 1000, c=> clg('slave 1', c.sid, Date.now())),
             content: cF( function (c) {
                 if (c.md.tick) {
                     let d = new Date;

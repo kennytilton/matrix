@@ -98,8 +98,8 @@
              (mapv (fn [sid]
                      (when sid
                        (or (some (fn [s]
-                                   (when (and s (= sid (sith-id s)))
-                                     s))
+                                   ;; watch out for nils
+                                   (and s (= sid (sith-id s))) s)
                              (if (= cache unbound) [] cache))
                          (make-sith me sid))))
                (sith-ids me)))
@@ -131,8 +131,7 @@
   (doseq [sith (<mget me :siths)]
     (when-let [lku (<mget sith :lookup)]
       (when-not (= unbound lku)
-        (prn :would-n2be lku)
-        #_(not-to-be lku)))))
+        (not-to-be lku)))))
 
 (defn scroller-button [dir role other-index on-click-handler]
   ;;

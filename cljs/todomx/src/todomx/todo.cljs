@@ -20,7 +20,7 @@
 
 ;;; FYI: every implementation I looked at stores all Todos as a single blob in
 ;;; localStorage. The TodoMVC spec does not require anything more, but it seems
-;;; unrealistic. This implementation stores/updates each todo individually. We
+;;; unrealistic. This implementation stores/updates each to-do individually. We
 ;;; also record 'completed' as a timestamp (not just a boolean), track a 'created'
 ;;; timestamp, and use a 'deleted' timestamp to support logical deletion.
 ;;; That is just how we would build any real world app (and storing the to-dos

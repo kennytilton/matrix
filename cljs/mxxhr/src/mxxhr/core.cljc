@@ -236,6 +236,7 @@
      :clj (when (.isActive xhr)
             (.abort xhr))))
 
+;; (* 7 17 103 10163)
 (defmethod not-to-be [:mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
   ;; (println :not-to-be-xhr!!!!!!! me)
