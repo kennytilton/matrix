@@ -57,7 +57,7 @@ String withIntegrity (queue, deferInfo, action) {
 			 but signifying by having coded with-integrity
 			 that one is aware of this. If you have read this comment.
 			 */
-      action(queue, deferInfo);
+      action( null, deferInfo);
     }
   } else {
     var wi = gWithinIntegrity
@@ -69,8 +69,9 @@ String withIntegrity (queue, deferInfo, action) {
       if (gpulse()==0 || queue == qChange) {
         dataPulseNext('cwi');
       }
-      clg1('calling action', action);
+      clg2('calling action', gpulse(), action);
       var result = action(queue, deferInfo);
+      clg2('called action', gpulse(), result);
       finBiz(qNotify);
       return result;
     } finally {

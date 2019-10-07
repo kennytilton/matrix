@@ -3,7 +3,9 @@
 library cells;
 
 import 'src/cells/cell_base.dart';
-export 'src/cells/cell_base.dart' show cell, clg, clg1, clg2, clg3, clg4;
+export 'src/cells/cell_base.dart'
+    show cell, clg, clg1, clg2, clg3, clg4,
+      gpulse;
 import 'src/cells/integrity.dart';
 // TODO: Export any libraries intended for clients of this package.
 

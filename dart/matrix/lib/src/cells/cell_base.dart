@@ -59,8 +59,8 @@ int dataPulseNext([who = 'anon']) {
 // --- library init/re-init during development
 
 void cellsReset({options = const {}}) {
-  gCDebug = options.debug;
-  clientQHandler = options.clientQHandler;
+  gCDebug = options["debug"]; // todo test
+  clientQHandler = options["clientQHandler"]; // todo test
   cellsInit();
 }
 void cellsInit () {
@@ -133,12 +133,9 @@ class cell {
   Set callers = Set();
   Set useds = Set(); // formulaic Cells only
   Set others = Set(); // other models (of used cells) found and consulted by rule/formula
-  bool ephemeralp;
-  bool synapticp;
   dynamic observer;
 	cOptimizeWhen optimize;
   Function quiesceWith; // todo vestigial? FNYI?
-  bool slotOwning = false; // todo
   Function rule; // the formula for this Cell
   dynamic pv = kUnboundValue; // "prior value"
   cState state = cState.kNascent;
@@ -179,8 +176,17 @@ class cell {
 		}
 	}
 
+	bool get ephemeralp {
+		return this.options["ephemeralp"];
+	}
 	bool get inputp {
 		return this.options["inputp"];
+	}
+	bool get synapticp {
+		return this.options["synapticp"];
+	}
+	bool get slotOwningp {
+		return this.options["slotOwningp"];
 	}
 	dynamic get v {
 		return this.slotValue();
@@ -268,8 +274,8 @@ class cell {
 		if ( [cLazy.kOnceAsked, cLazy.kAlways, true].contains( this.lazy)) {
 			this.valueAssume(newv, null);
 		} else {
-	        //clg('svset', this.name, newv);
-			withChg(this.name, () {
+			clg2('sv unlazy set!', this.name, newv);
+			withChg(this.name, ( queue, deferInfo) {
 				this.valueAssume( newv, null);
 			});
 		}
@@ -388,38 +394,36 @@ class cell {
 
 	// --- state changes, from external assign or recalculation
 	valueAssume( newValue, propCode) {
-		var self = this;
+		withoutCDependency((cell c) {
+			var priorValue = c.pv
+			, priorState = c.valueState();
 
-		withoutCDependency(() {
-			var priorValue = self.pv
-			, priorState = self.valueState();
-
-			self.pv = newValue;
-			self.state = cState.kAwake;
-			self.pulseUpdate('sv-assume');
+			c.pv = newValue;
+			c.state = cState.kAwake;
+			c.pulseUpdate('sv-assume');
 
 			if (propCode=='propagate'
 					|| ![cState.kValid, cState.kUncurrentState].contains(priorState)
-					|| self.valueChangedp( newValue, priorValue)) {
-				var optimize = self.rule != null ? self.optimize : null;
+					|| c.valueChangedp( newValue, priorValue)) {
+				var optimize = c.rule != null ? c.optimize : null;
 				if (optimize == cOptimizeWhen.kValued) {
-					if (self.pv) {
-						self.unlinkFromUsed('opti-when');
+					if (c.pv) {
+						c.unlinkFromUsed('opti-when');
 						this.optimizeAwayMaybe(priorValue);
 					}
 				} else if (optimize != cOptimizeWhen.kNever) { // todo can this be inside the maybe fun?
-					self.optimizeAwayMaybe(priorValue);
+					c.optimizeAwayMaybe(priorValue);
 				}
 
 				if (!(propCode == 'no-propagate'
-						|| self.optimizedAwayp())) {
-					self.propagate(priorValue, self.callers);
+						|| c.optimizedAwayp())) {
+					c.propagate(priorValue, c.callers);
 				}
 			}
-		})();
+		})( this);
 		return newValue;
 	}
-	propagate(vPrior, callers) {
+	propagate(dynamic vPrior, Set callers) {
 		// might not need to pass in callers
 		if (onePulsep) {
 			if (gCustomPropagator) {
@@ -449,8 +453,8 @@ class cell {
 			}
 		}
 	}
-	propagateToCallers(callers) {
-		if (callers.size) {
+	propagateToCallers(Set callers) {
+		if (callers.isNotEmpty) {
 			var c = this;
 			withIntegrity(qNotify, c, () {
 				causation.addFirst(c); // this was (kinda) outside withIntegrity
@@ -473,7 +477,7 @@ class cell {
 
 	// --- the model alters the outside world (or itself, if necessary) ---
 	observerResolve () {
-		if (this.observer == null && this.md) { // The Model class
+		if (this.observer == null && this.md != null) { // The Model class
 			this.observer = this.md.slotObserverResolve(this.name);
 		}
 		return this.observer == kObserverUnresolved ? null : this.observer;
@@ -482,7 +486,7 @@ class cell {
 		//clg('observe entry', this.name, vPrior.toString());
 		var obs = this.observerResolve();
 
-		if (obs) {
+		if (obs != null) {
 			obs(this.name, this.md, this.pv, vPrior, this);
 		}
 	}

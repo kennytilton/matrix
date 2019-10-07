@@ -1,3 +1,4 @@
+import 'package:matrix/src/cells/cell_base.dart';
 import 'package:test/test.dart';
 import 'package:matrix/cell.dart';
 
@@ -17,18 +18,46 @@ import 'package:matrix/cell.dart';
 
 
 void coreTest () {
+  group('cells init', () {
+    setUp(() {
+      cellsReset();
+    });
+
+    test('init cells', () {
+      expect( gpulse(), 0);
+    });
+  });
   group('make a simple input cell', () {
     cell c;
 
     setUp(() {
-      c = cI( 42, {"name" : "moi"});
-      clg1('set up done', c.inputp);
-      clg2('set up done v', c.inputp, c.v);
+      cellsReset();
     });
 
-    test('First Test', () {
-      clg2("inputp?", c.v, c.inputp);
+    test('building input cell with value', () {
+      cell c = cI( 42, {"name" : "moi"});
+      expect( c.inputp, true);
       expect( c.v, 42);
+    });
+
+    test('changing input cell, no init', () {
+      cell c = cI( 42 );
+      expect( c.v, 42);
+      c.v = 11;
+      expect( c.v, 11);
+    });
+
+    test('changing input cell with increment operator', () {
+      cell c = cI( 11);
+      expect( c.v, 11);
+      ++c.v ;
+      expect( c.v, 12);
+    });
+
+    test('changing input cell with post increment operator', () {
+      cell c = cI( 42);
+      expect( c.v++, 42);
+      expect( c.v, 43);
     });
   });
 }
