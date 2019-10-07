@@ -1,9 +1,5 @@
 import 'dart:collection';
 import 'integrity.dart';
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
-}
 
 // --- the keys to dependency identification
 final Queue causation = Queue();
@@ -36,7 +32,15 @@ void clg1( String msg, x) {
   print( 'clg> $msg $x');
 }
 void clg2( String msg, x, y) {
-  print( 'clg> $msg: $x | $y');
+	print( 'clg> $msg: $x | $y');
+}
+
+void clg3( String msg, x, y, z) {
+	print( 'clg> $msg: $x | $y | $z');
+}
+
+void clg4( String msg, w, x, y, z) {
+	print( 'clg> $msg: $w | $x | $y | $z');
 }
 
 int dataPulseNext([who = 'anon']) {
@@ -130,7 +134,6 @@ class cell {
   Set useds = Set(); // formulaic Cells only
   Set others = Set(); // other models (of used cells) found and consulted by rule/formula
   bool ephemeralp;
-  bool inputp;
   bool synapticp;
   dynamic observer;
 	cOptimizeWhen optimize;
@@ -141,7 +144,7 @@ class cell {
   cState state = cState.kNascent;
   Map options;
 
-	cell(value, Function formula, [Map options]) {
+	cell(value, Function formula, Map options) {
 	  this.md = null; //when we get to Model, this will be the model of which I am an attribute
 		this.pulse = -1;
 		this.pulseLastChanged = -1;
@@ -149,11 +152,12 @@ class cell {
 		this.lazy = null; // not a predicate (can hold, inter alia, :until-asked)
 		this.callers = Set();
 		this.useds = Set(); // formulas only
+		clg1("options in!", options);
 
 		this.options = Map.from({
 			"name" : "anon",
+			"inputp" : false,
 			"ephemeralp": false,
-			"inputp": false,
 			"observer": null,
 			"optimize": cOptimizeWhen.kAlways,
 			"quiesceWith": null,
@@ -175,8 +179,11 @@ class cell {
 		}
 	}
 
+	bool get inputp {
+		return this.options["inputp"];
+	}
 	dynamic get v {
-	this.slotValue();
+		this.slotValue();
   }
   set v( dynamic newValue) {
     this.slotValueSet( newValue);
@@ -232,14 +239,15 @@ class cell {
 	// --- the offical slot access API -----------
 	//
 	slotValue() {
-		var rv = kUnboundValue
-			, self = this;
+		dynamic rv = kUnboundValue;
 
-		withIntegrity(null,null,  () {
-			var vPrior = self.pv;
+		clg1('slotval entry', this);
+
+		withIntegrity( null, null, (q, di) {
+			var self = this, vPrior = self.pv;
 			rv = self.ensureValueIsCurrent( 'c-read', null);
-			//clg('evic said',rv.toString());
-			if ( !self.md && self.state == cState.kNascent
+			clg1('evic said',rv.toString());
+			if ( self.md !=null && self.state == cState.kNascent
 				&& gpulse() > self.pulseObserved) {
 				self.state = cState.kAwake;
 				self.observe(vPrior, 'cget');
@@ -284,7 +292,7 @@ class cell {
 	}
 
 	ensureValueIsCurrent(tag, ensurer) {
-		//clg('evic entry ', this.name);
+		clg1('evic entry ', this);
 		if (gNotToBe) {
 			//clg('not2be');
 			return this.validp() ? this.pv : null;
@@ -600,45 +608,4 @@ Map cNetOptions( m1, m2) {
 	}
 	return net;
 }
-cell cF(formula, [options]) {
-	// make a conventional formula cell
-	return cell(null, formula, cNetOptions( options, null));
-}
 
-cell cF1(formula, [options]) {
-  return cell(null
-						, withoutCDependency(formula)
-						, cNetOptions( options, null));
-}
-cell cF_(formula, [options]) {
-	return cell(null, formula, cNetOptions( options, {"lazy": cLazy.kAlways}));
-}
-cell c_F(formula, [options]) {
-	return cell(null, formula, cNetOptions( options, {"lazy": cLazy.kUntilAsked}));
-}
-cell cFI(formula, [options]) {
-	/*
-	 make a cell whose formula runs once for
-	 its initial value but then is set procedurally
-	 as an input cell.
-	 */
-	return cell(null, formula, cNetOptions( options, {"inputp":true}));
-}
-
-cell cI(value, [options]) {
-	// standard input cell
-	return cell(value, null, cNetOptions( options, {"inputp":true}));
-}
-
-cell cIe(value, [options]) {
-	// ephemeral input cell
-	return cell(value, null,
-						cNetOptions(options, {"inputp":true,"ephemeralp":true}));
-}
-void obsDbg (name, me, newv, priorv, c) {
-	clg("obsDbg! ${name} ${me != null? (me.name? me.name : me.id) : 'noMd'} useds=${c.useds.length} new=${newv} prior=${priorv==kUnboundValue?'unbound':priorv}");
-//    console.log(`OBS: ${name} now ${newv} (was ${priorv})`);
-}
-void XobsDbg (name, me, newv, priorv, c) {
-	// handy way to hush obsDbg until sure not needed
-}

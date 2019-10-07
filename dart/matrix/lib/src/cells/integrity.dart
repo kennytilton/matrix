@@ -1,5 +1,5 @@
 import 'dart:collection';
-import 'package:matrix/src/cell_base.dart';
+import 'package:matrix/src/cells/cell_base.dart';
 
 void ufbAdd( q, task) {
   q.push( task);
@@ -39,7 +39,7 @@ void withoutIntegrity (Function fn) {
 
 String withIntegrity (queue, deferInfo, action) {
   if (gStop) return 'gStopped';
-
+  clg3('withinteg entry', gWithinIntegrity, deferInfo , action);
   if (gWithinIntegrity) {
     if (queue) {
       ufbAdd(queue, [deferInfo, action]);
@@ -69,6 +69,7 @@ String withIntegrity (queue, deferInfo, action) {
       if (gpulse()==0 || queue == qChange) {
         dataPulseNext('cwi');
       }
+      clg1('calling action', action);
       var result = action(queue, deferInfo);
       finBiz(qNotify);
       return result;
@@ -130,8 +131,8 @@ void finBiz (Queue q) { // short for "finish (unfinished) business"
       //
       // Here is where we kick those off (one at a time):
 
-      var work = q.removeFirst();
-      if (work) {
+      var work = q.isNotEmpty ? q.removeFirst() : null;
+      if (work != null) {
         dataPulseNext('change');
         work[1]('change', work[0]);
         q = qNotify;
