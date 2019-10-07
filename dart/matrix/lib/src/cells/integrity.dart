@@ -9,12 +9,12 @@ void ufbAdd( q, task) {
 
 Function withoutCDependency(fn) {
   return (c){
-    var sd = depender;
-    depender = null;
+    var sd = spvDepender;
+    spvDepender = null;
     try {
       return fn(c);
     } finally {
-      depender = sd;
+      spvDepender = sd;
     }
   };
 }

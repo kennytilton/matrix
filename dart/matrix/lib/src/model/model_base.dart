@@ -145,8 +145,8 @@ class Model {
 				, upp: true
 				, wocd: true} // without-c-dependency
 			, how);
-		let sd = depender;
-		depender = how.wocd? null : depender;
+		let sd = spvDepender;
+		spvDepender = how.wocd? null : spvDepender;
 		try {
 			let bingo = this.fmTv( what, how);
 			if (bingo) {
@@ -160,7 +160,7 @@ class Model {
 				}
 			}
 		} finally {
-			depender = sd;
+			spvDepender = sd;
 		}
 		//clg('fm returns!!!!! '+ (found && found.name));
 		return found;

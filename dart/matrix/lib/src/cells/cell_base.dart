@@ -4,7 +4,7 @@ import 'integrity.dart';
 // --- the keys to dependency identification
 final Queue causation = Queue();
 Queue callStack = Queue();
-cell depender;
+cell spvDepender;
 
 // todo Is this next ever used?
 bool gNotToBe = false; // am I in the process of leaving the model?
@@ -183,7 +183,7 @@ class cell {
 		return this.options["inputp"];
 	}
 	dynamic get v {
-		this.slotValue();
+		return this.slotValue();
   }
   set v( dynamic newValue) {
     this.slotValueSet( newValue);
@@ -247,16 +247,18 @@ class cell {
 			var self = this, vPrior = self.pv;
 			rv = self.ensureValueIsCurrent( 'c-read', null);
 			clg1('evic said',rv.toString());
-			if ( self.md !=null && self.state == cState.kNascent
-				&& gpulse() > self.pulseObserved) {
+			if ( self.md !=null
+					&& self.state == cState.kNascent
+					&& gpulse() > self.pulseObserved) {
 				self.state = cState.kAwake;
 				self.observe(vPrior, 'cget');
 				self.ephemeralReset();
 			}
 		});
-		if (depender != null) {
-			depender.recordDependency(this);
+		if (spvDepender != null) {
+			spvDepender.recordDependency(this);
 		}
+		clg1("slotvale returns", rv);
 		return rv;
 	}
 	slotValueSet(newv) {
@@ -366,10 +368,10 @@ class cell {
 		 rule of a formula and return its value, but along the
 		 way the links between dependencies and dependents get
 		 determined anew. */
-		var dp = depender
+		var dp = spvDepender
 			, dc = deferChanges;
 
-		depender = this;
+		spvDepender = this;
 		deferChanges = true;
 
 		try {
@@ -379,7 +381,7 @@ class cell {
 			return this.rule(this);
 		} finally {
 			callStack.removeFirst();
-			depender = dp;
+			spvDepender = dp;
 			deferChanges = dc;
 		}
 	}
@@ -425,7 +427,7 @@ class cell {
 			}
 		} else {
 			this.pulseLastChanged = gpulse();
-			var dp = depender
+			var dp = spvDepender
 				, cs = callStack
 				, pd = gCPropDepth
 				, dc = deferChanges;
@@ -440,7 +442,7 @@ class cell {
 				}
 				this.ephemeralReset();
 			} finally {
-				depender = dp;
+				spvDepender = dp;
 				callStack = cs;
 				gCPropDepth = pd;
 				deferChanges = dc;

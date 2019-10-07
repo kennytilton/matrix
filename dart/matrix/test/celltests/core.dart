@@ -23,6 +23,7 @@ void coreTest () {
     setUp(() {
       c = cI( 42, {"name" : "moi"});
       clg1('set up done', c.inputp);
+      clg2('set up done v', c.inputp, c.v);
     });
 
     test('First Test', () {
