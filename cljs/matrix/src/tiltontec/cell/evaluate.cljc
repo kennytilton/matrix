@@ -410,7 +410,7 @@ then clear our record of them."
                       [(ia-type me)]))
 
 (defmethod not-to-be :default [me]
-  (println :not2be-default (type (when me @me)) (:id @me) me)
+  ;; (println :not2be-default (type (when me @me)) (:id @me) me)
   (not-to-be-self me))
 
 ;----------------- change detection ---------------------------------

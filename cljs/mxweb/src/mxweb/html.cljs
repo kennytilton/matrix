@@ -17,11 +17,9 @@
      :refer [style-string] :as tagcss]
 
     [goog.dom :as dom]
-    [goog.html.SafeHtml :as safe]
     [goog.dom.classlist :as classlist]
     [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
     [goog.editor.focus :as focus]
-    [goog.ui.Control :as control]
     [goog.dom.selection :as selection]
     [goog.dom.forms :as form]
 
@@ -84,9 +82,7 @@
                       (dom/appendChild frag (tag-dom-create tag))))
                   frag)
      :default
-     (do (when-let [dbg (or dbg *mxweb-trace*)]
-           (pln :tag-dom-create dbg (tagfo me)))
-         ;;(pln :domcre-attrs (:attr-keys @me) (mxweb-attrs me))
+     (do ;;(pln :domcre-attrs (:attr-keys @me))
          (let [dom (apply dom/createDom (<mget me :tag)
                           (tag-attrs me)
                           (concat                           ;; to-do: need this?
@@ -94,6 +90,9 @@
                             (when-let [c (<mget me :content)]
                               [(tag-dom-create c)])))]
 
+           (when (some #{:list} (:attr-keys @me))
+             ;; todo investigate why this was necessary
+             (.setAttribute dom "list" (<mget me :list)))
            dom)))))
 
 (def +true-html+ {::type "type"})
@@ -112,19 +111,31 @@
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    ;;(println :obstagkids!!!!! (tagfo me))
+    #_ (println :obstagkids!!!!! (tagfo me)
+      :same-kids (= oldv newv)
+      :same-kid-set (= (set newv)(set oldv)))
     (do                                                     ;; p ::observe-kids
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
             gained (clojure.set/difference (set newv) (set oldv))]
-
         (cond
+          (and (= (set newv)(set oldv))
+               (not (= oldv newv)))
+          ;; simply reordered children
+          (let [frag (.createDocumentFragment js/document)]
+            (doseq [newk newv]
+              (dom/appendChild frag
+                (.removeChild pdom (tag-dom newk))))
+            ;; should not be necessary...
+            (dom/removeChildren pdom)
+            (dom/appendChild pdom frag))
+
           (empty? gained)
           ;; just lose the lost
           (doseq [oldk lost]
             (.removeChild pdom (tag-dom oldk))
             (when-not (string? oldk)
-              (println :obs-tag-kids-dropping (tagfo oldk))
+              ; (println :obs-tag-kids-dropping (tagfo oldk))
               (not-to-be oldk)))
 
           :default (let [frag (.createDocumentFragment js/document)]
@@ -142,7 +153,7 @@
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
                            (.removeChild pdom (tag-dom newk))
-                           (do ;;(println :obs-tag-kids-building-new-dom (tagfo newk))
+                           (do ; (println :obs-tag-kids-building-new-dom (tagfo newk))
                                (tag-dom-create newk)))))
 
                      (dom/removeChildren pdom)

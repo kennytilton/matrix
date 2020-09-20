@@ -330,17 +330,19 @@
      (the-kids ~@tree)))
 
 (defn kid-values-kids [me x-kids]
-  (let [x-kids (if (= x-kids unbound) [] x-kids)
-        k-key (md-get me :kid-key)
+  (let [k-key (md-get me :kid-key)
+        _ (assert k-key)
+        x-kids (when (not= x-kids unbound)
+                 (into {} (for [k x-kids]
+                            [(k-key k) k])))
         k-factory (md-get me :kid-factory)]
-    (assert (and k-key))
     (assert (and k-factory))
 
     (doall
-      (for [kid-value (md-get me :kid-values)]
-        (or (some (fn [x-kid]
-                    (when (= kid-value (k-key x-kid) (k-key x-kid))
-                      x-kid)) x-kids)
+      (map-indexed
+        (fn [idx kid-value]
+          (or (and x-kids (get x-kids kid-value))
             (binding [*par* me]
-              (k-factory me kid-value)))))))
+              (k-factory me kid-value))))
+        (md-get me :kid-values)))))
 

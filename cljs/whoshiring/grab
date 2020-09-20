@@ -1,0 +1,85 @@
+#!/bin/bash
+
+if [ ! $1 ]; then
+    echo "arg 1 hnId must be supplied"
+    exit
+fi
+
+if [ ! $2 ]; then
+    echo "arg 2 re-grab minutes must be supplied"
+    exit
+fi
+
+SLP=$(( 60*$2 ))
+
+echo "FYI: PWD is $PWD"
+
+if [ ! ${PWD##*/} = "whoshiring" ]; then
+    echo "Wrong present working directory: $PWD"
+    exit
+fi
+
+MAX_P=7
+
+echo "Grabbing HN message $1 at URLs https://news.ycombinator.com/item?id=$1/p=1..$MAX_P"
+
+mkdir -p resources/public/scrapes/temp/$1
+mkdir -p resources/public/scrapes/backup/$1
+
+rm resources/public/scrapes/temp/$1/*.*
+touch resources/public/scrapes/temp/$1/hn.js
+
+while true
+do
+  rm resources/public/scrapes/temp/$1/*.html
+  for ((x=1;x<=MAX_P;x++)); do
+        echo "x=$x"
+        curl  "https://news.ycombinator.com/item?id=$1&p=$x" > resources/public/scrapes/temp/$1/$x.html
+        ./iframify resources/public/scrapes/temp/$1/$x.html
+  done
+
+  rm -r resources/public/scrapes/backup/$1
+  cp -r resources/public/scrapes/$1 resources/public/scrapes/backup/$1
+
+  rm -r resources/public/scrapes/$1
+  cp -r resources/public/scrapes/temp/$1 resources/public/scrapes/$1
+
+  ls -al resources/public/scrapes/$1
+
+  git status
+
+  git add resources/public/scrapes/$1
+
+  git commit -am "scrape HN askHn $1"
+
+  git push
+
+  git status
+  echo "sleeping $2 minutes"
+  sleep $SLP
+done
+
+
+exit #-----------------------------------------------------
+
+if [ ! -f temp/$1.tmp ]; then
+    echo "Download target temp/$1.tmp not found after curl."
+    exit
+fi
+
+if diff -q temp/$1.tmp scrapes/$1.html; then
+  echo "$1.html has NOT changed"
+  exit
+else
+  echo "$1.html HAS changed"
+  epoch=`date +%s`
+  echo "epoch is $epoch"
+  mkdir -p scrapes/backup
+  cp scrapes/$1.html scrapes/backup/$1.$epoch.html
+  mv temp/$1.tmp scrapes/$1.html
+  git add scrapes/$1.html
+  git commit -m "Grab new $1 page"
+  git push
+fi
+
+echo "Bye-bye"

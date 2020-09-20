@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "FYI: PWD is $PWD"
+
+if [ ! $1 ]; then
+    echo "arg 1 hnId must be supplied"
+    exit
+fi
+
+if [ ! -f $1 ]; then
+    echo "iFramify target $1 not found."
+    exit
+fi
+
+echo "Checking HN message $1"
+
+# Insert <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+sed -i '' 's/<head>/<head><meta http-equiv="Content-type" content="text\/html;charset=UTF-8">/g' $1
+
+exit
