@@ -5,18 +5,12 @@
              :refer [cI c-reset! make-cell]]
             [tiltontec.model.core
              :refer-macros [with-par fmu]
-             :refer [matrix mset! mget mswap!] :as md]
+             :refer [matrix mset! mget mswap!]]
             [mxweb.gen
              :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]
              :refer [dom-tag evt-tag]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]))
-
-(defn fmUp [mx name]
-  (md/mxu-find-name mx name))
-
-(defn fmUpv [mx name slot]
-  (mget (fmUp mx name) :value))
 
 (defn rebuild-regex-tree [me]
   (let [match-case (mget (fmu :rgx-match-case) :on-off)
@@ -40,22 +34,20 @@
              :content lbl})
       (input {:placeholder (pp/cl-format nil "Regex for ~a search" desc)
               :list        datalist-id
-              :onchange    (fn [e]
-                             (mset! (evt-tag e) :regex-raw (not-empty (str/trim (utl/target-val e)))))
-              :onfocus     (fn [e]
-                             (let [dom (.-target e)]
-                               (.setSelectionRange dom 0 (count (.-value dom)))))
+              :onchange    #(mset! (evt-tag %) :regex-raw (not-empty (str/trim (utl/target-val %))))
+              :onfocus     #(let [dom (.-target %)]
+                              (.setSelectionRange dom 0 (count (.-value dom))))
               :value       ""}
-        {:name       rgx-id
-         :regex-raw  (cI nil)
+        {:name             rgx-id
+         :regex-raw        (cI nil)
          :regex-de-aliased (cF (when-let [rgx-raw (not-empty (mget me :regex-raw))]
                                  (if (mget (fmu :rgx-or-and) :on-off)
                                    (str/replace (str/replace rgx-raw #"\sand\s" " && ") #"\sor\s" " || ")
                                    rgx-raw)))
-         :regex-tree (cF (rebuild-regex-tree me))
-         :history    (cF (when-let [raw (not-empty (mget me :regex-raw))]
-                           (when-not (find #{raw} cache)
-                           (conj cache raw))))})
+         :regex-tree       (cF (rebuild-regex-tree me))
+         :history          (cF (when-let [raw (not-empty (mget me :regex-raw))]
+                                 (when-not (find #{raw} cache)
+                                   (conj cache raw))))})
       (datalist {:id datalist-id}
         (for [hs (mget (fmu rgx-id) :history)]
           (option {:value hs}))))))
@@ -82,8 +74,8 @@
     (input {:id       :rgx-match-case
             :type     "checkbox"
             :checked  (cF (mget me :on-off))
-            :onchange (fn [e] (mswap! (evt-tag e) :on-off not))}
-      {:name :rgx-match-case
+            :onchange #(mswap! (evt-tag %) :on-off not)}
+      {:name   :rgx-match-case
        :on-off (cI false)})
     (label {:for :rgx-match-case}
       "match case")))
@@ -98,15 +90,15 @@
             :type      "checkbox"
             :checked   (cF (mget me :on-off))
             :title     "Replace 'or/and' with '||/&&' for easier mobile entry."
-            :on-change (fn [e] (mswap! (evt-tag e) :on-off not))}
-      {:name :rgx-or-and
+            :on-change #(mswap! (evt-tag %) :on-off not)}
+      {:name   :rgx-or-and
        :on-off (cI true)})
     (label {:for :rgx-or-and}
       "allow or/and")))
 
 (defn make-regex-options []
   (div
-    (div {:style (merge util/hz-flex-wrap-centered
+    (div {:style (merge utl/hz-flex-wrap-centered
                    {:padding-right "12px"
                     :margin        "4px 0 9px 30px"})}
       (mk-regex-match-case)
@@ -114,9 +106,8 @@
       (span {:style   {:color  "white" :margin-left "24px"
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
-             :onclick (fn [e]
-                        (let [me (evt-tag e)]
-                          (mswap! me :helping not)))}
+             :onclick #(let [me (evt-tag %)]
+                         (mswap! me :helping not))}
         {:name    :rgx-help-toggle
          :helping (cI false)}
         "help"))

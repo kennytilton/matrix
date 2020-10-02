@@ -12,7 +12,6 @@
             [mxweb.gen
              :refer-macros [section header i h1 input footer p a span label ul li div button]
              :refer [evt-tag dom-tag]]
-            [whoshiring.ui-common :as util]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
             [whoshiring.job-memo :refer [job-memo] :as memo]))
@@ -242,7 +241,7 @@
 
 (defn control-panel []
   (div {:style "background-color:#ffb57d"}
-    (util/open-shut-case "os-filters" "Filters" true
+    (utl/open-shut-case "os-filters" "Filters" true
       (i {:style   "margin-left:12px"
           :content (cF (if (mdv! :os-filters-toggle :on-off)
                          ""
@@ -255,7 +254,7 @@
                                              (concat titles users)))))))})
       make-title-selects
       make-user-selects)
-    (util/open-case "rgx-filters" "Search"
+    (utl/open-case "rgx-filters" "Search"
       regex/make-title-regex
       regex/make-full-regex
       regex/make-regex-options)

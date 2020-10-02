@@ -116,12 +116,10 @@
                           [k (mget rx k)]))))
 
 (defn- job-memo-upsert [memo]
-  (let [ls-key (askwho-ls-key (mget memo :month-hn-id)
-                              (mget memo :job-hn-id))]
-    (prn :storing!! ls-key)
-    (io-upsert ls-key
-      (.stringify js/JSON
-        (job-memo-to-json memo)))))
+  (io-upsert (askwho-ls-key (mget memo :month-hn-id)
+               (mget memo :job-hn-id))
+    (.stringify js/JSON
+      (job-memo-to-json memo))))
 
 (defn job-memo-read [month-id job-id]
   (io-read-json

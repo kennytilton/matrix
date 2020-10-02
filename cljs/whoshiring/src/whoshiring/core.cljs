@@ -21,37 +21,9 @@
 
 (tufte/add-basic-println-handler! {})
 
-;;; --- app banner ------------------------------------------------------
-
-(def app-help-entry
-  ["Click any job header to show or hide the full listing."
-     "Double-click job description to open listing on HN in new tab."
-     "All filters are ANDed except as you direct within RegExp fields."
-     "Your edits are kept in local storage, so stick to one browser."
-     "Works off page scrapes taken often enough. E-mail <a href='mailto:kentilton@gmail.com'>Kenny</a> if they seem stopped."
-     "RFEs welcome and can be raised <a href='https://github.com/kennytilton/whoshiring/issues'>here</a>. "
-     "Built with <a href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>Matrix Inside</a>&trade;."
-     "This page is not affiliated with Hacker News, but..."
-     "..thanks to the HN crew for their assistance. All screw-ups remain <a href='https://news.ycombinator.com/user?id=kennytilton'>kennytilton</a>'s."
-     "Graphic design by <a href='https://www.mloboscoart.com'>Michael Lobosco</a>."])
-
-(defn app-banner []
-  (div {:style {:background "PAPAYAWHIP"}}
-    (header {}
-      (div {:content (cF (if (mget me :helping)
-                             "hide" "Pro Tips"))
-            :class   "about"
-            :title   "Usage hints, and credit where due."
-            :onclick #(let [me (evt-tag %)]
-                        (mswap! me :helping not))}
-        {:name :app-help
-         :helping (cI false)})
-      (div {:class "headermain"}
-        (span {:class "askhn"} "Ask HN:")
-        (span {:class "who"} "Who Is Hiring?")))
-    (utl/help-list app-help-entry :app-help)))
-
 ;;; --- landing page ------------------------------------
+
+(declare app-banner)
 
 (defn landing-page []
   (div {}
@@ -80,8 +52,35 @@
   #_ (when-let [route-starter (mget app-matrix :router-starter)]
     (route-starter)))
 
+;;; --- app banner ------------------------------------------------------
 
+(def app-help-entry
+  ["Click any job header to show or hide the full listing."
+   "Double-click job description to open listing on HN in new tab."
+   "All filters are ANDed except as you direct within RegExp fields."
+   "Your edits are kept in local storage, so stick to one browser."
+   "Works off page scrapes taken often enough. E-mail <a href='mailto:kentilton@gmail.com'>Kenny</a> if they seem stopped."
+   "RFEs welcome and can be raised <a href='https://github.com/kennytilton/whoshiring/issues'>here</a>. "
+   "Built with <a href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>Matrix Inside</a>&trade;."
+   "This page is not affiliated with Hacker News, but..."
+   "..thanks to the HN crew for their assistance. All screw-ups remain <a href='https://news.ycombinator.com/user?id=kennytilton'>kennytilton</a>'s."
+   "Graphic design by <a href='https://www.mloboscoart.com'>Michael Lobosco</a>."])
 
+(defn app-banner []
+  (div {:style {:background "PAPAYAWHIP"}}
+    (header {}
+      (div {:content (cF (if (mget me :helping)
+                           "hide" "Pro Tips"))
+            :class   "about"
+            :title   "Usage hints, and credit where due."
+            :onclick #(let [me (evt-tag %)]
+                        (mswap! me :helping not))}
+        {:name :app-help
+         :helping (cI false)})
+      (div {:class "headermain"}
+        (span {:class "askhn"} "Ask HN:")
+        (span {:class "who"} "Who Is Hiring?")))
+    (utl/help-list app-help-entry :app-help)))
 
 
 
