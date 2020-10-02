@@ -34,13 +34,13 @@
 
       app-dom (binding [*mxweb-trace* nil]                  ;; <-- set to nil if console too noisy
                 (tag-dom-create
-                  (md/<mget app-matrix :mx-dom)))
+                  (md/mget app-matrix :mx-dom)))
 
       start-ms (.getTime (js/Date.))
       start$ (tmc/to-string (tmc/from-long start-ms))]
 
   (set! (.-innerHTML root) nil)
   (dom/appendChild root app-dom)
-  (when-let [route-starter (md/<mget app-matrix :router-starter)]
+  (when-let [route-starter (md/mget app-matrix :router-starter)]
     (prn :starting-router)
     (route-starter)))

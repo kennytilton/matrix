@@ -3,7 +3,7 @@
             [tiltontec.cell.core :refer-macros [cF cFonce cF+] :refer [cI]]
             [tiltontec.cell.base :refer [unbound]]
             [tiltontec.model.core
-             :refer [matrix mx-par <mget mset!> mswap!> mxi-find mxu-find-name nextsib] :as md]
+             :refer [matrix mx-par mget mset! mswap! mxi-find mxu-find-name nextsib] :as md]
             [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 button input div span]]
             [mxweb.style
              :refer [make-css-inline]
@@ -33,16 +33,16 @@
                                                 }}
                                     (button {:style {:flex-basis "content"
                                                      :margin "6px"}
-                                             :onclick #(mset!> (evt-tag %) :clicked? true)}
+                                             :onclick #(mset! (evt-tag %) :clicked? true)}
 
                                       {:clicks  (cF (cond
-                                                      (<mget me :clicked?)
+                                                      (mget me :clicked?)
                                                       (+ cache
                                                         (if (or (= mode "Ten")
-                                                              (<mget (nextsib me) :onp))
+                                                              (mget (nextsib me) :onp))
                                                           1 0))
 
-                                                      (<mget (nextsib me) :to-onp)
+                                                      (mget (nextsib me) :to-onp)
                                                       (case mode
                                                         "Zero" 0
                                                         "Five" cache
@@ -54,16 +54,16 @@
 
                                        :clicked? (cI nil :ephemeral? true)}
 
-                                      (str mode "-" (<mget me :clicks)))
+                                      (str mode "-" (mget me :clicks)))
 
                                     (button {:style   (cF (make-css-inline me
                                                             :flex-basis "content"
                                                             :margin "6px"
-                                                            :background-color (cF (if (<mget (:tag @me) :onp) "cyan" "pink"))))
-                                             :onclick #(mswap!> (evt-tag %) :onp not)}
+                                                            :background-color (cF (if (mget (:tag @me) :onp) "cyan" "pink"))))
+                                             :onclick #(mswap! (evt-tag %) :onp not)}
                                       {:onp    (cI true)
                                        :to-onp (cF+ [:ephemeral? true]
-                                                 (when (<mget me :onp)
+                                                 (when (mget me :onp)
                                                    (not (= cache unbound))))}
                                       "Toggle")))
                              ["Zero" "Five" "Ten"]))

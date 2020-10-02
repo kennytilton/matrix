@@ -8,7 +8,7 @@
             [mxweb.example.pipeline.pipeline :as pline
              :refer [pseg-processor pipe-segs pipe-start]]
             [tiltontec.model.core
-             :refer [matrix mx-par <mget <mget mset!> mset!> mxi-find mxu-find-name
+             :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name
                      mxu-find-type]
              :as md]
 
@@ -24,7 +24,7 @@
 (declare clock pipe-seg-view pipe-feed)
 
 (defn mtx-pipeline [me]
-  (<mget (mxu-find-type me ::pipedemo) :pipeline))
+  (mget (mxu-find-type me ::pipedemo) :pipeline))
 
 (defn matrix-build! []
   ;;;;(pline/pipe-go)
@@ -57,14 +57,14 @@
                                                  ])}
                              "Feed")
 
-                           (p {:content (cF (str "pipe-fst: " (<mget (mtx-pipeline me) :fst)))})
-                           (p {:content (cF (str "pipe-in: " (<mget (mtx-pipeline me) :input)))})
+                           (p {:content (cF (str "pipe-fst: " (mget (mtx-pipeline me) :fst)))})
+                           (p {:content (cF (str "pipe-in: " (mget (mtx-pipeline me) :input)))})
 
-                           (for [k (pipe-segs (<mget mtx :pipeline))]
+                           (for [k (pipe-segs (mget mtx :pipeline))]
                              (pipe-seg-view me k))
 
-                           (p {:content (cF (pln :pipeout-runs!!!!!!!!! (<mget (mtx-pipeline me) :poutput))
-                                          (str "pipe-out: " (<mget (mtx-pipeline me) :poutput)))})
+                           (p {:content (cF (pln :pipeout-runs!!!!!!!!! (mget (mtx-pipeline me) :poutput))
+                                          (str "pipe-out: " (mget (mtx-pipeline me) :poutput)))})
                            )])))))
 
 (def pipe-data (atom nil))
@@ -133,7 +133,7 @@
         :style   (cF (str "color:" (<mget (mxu-find-name me :timecolor) :value)))
 
         :tick (cI false :ephemeral? true)
-        :ticker (cF (js/setInterval #(mset!> me :tick true) 1000))
+        :ticker (cF (js/setInterval #(mset! me :tick true) 1000))
 
         :content (cF (if (<mget me :tick)
                        (-> (js/Date.)

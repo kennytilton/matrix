@@ -1,5 +1,14 @@
 **/package-lock.json
-**/.DS_Store
+.DS_Store
 **/*.xml
 **/*.iml
-cljs/**/target/*
+cljs-out
+.nrepl-port
+.rebel_readline_history
+*.jar
+checkos
+target
+files
+closure-library
+dev.cljs.edn
+test.cljs.edn

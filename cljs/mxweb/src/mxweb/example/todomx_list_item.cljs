@@ -14,7 +14,7 @@
              :refer []]
 
 
-            [tiltontec.model.core :refer [matrix mx-par <mget mset!>
+            [tiltontec.model.core :refer [matrix mx-par mget mset!
                                           fget mxi-find mxu-find-class mxu-find-type
                                           kid-values-kids] :as md]
             [mxweb.html
@@ -54,10 +54,10 @@
 
 (defn todo-list-item [me todo matrix]
   ;;(println :building-li (:title @todo))
-  (li {:class   (cF [(when (<mget me :selected?) "chosen")
+  (li {:class   (cF [(when (mget me :selected?) "chosen")
                      (when (td-completed todo) "completed")])
 
-       :display (cF (if-let [route (<mget matrix :route)]
+       :display (cF (if-let [route (mget matrix :route)]
                       (cond
                         (or (= route "All")
                             (xor (= route "Active")
@@ -79,7 +79,7 @@
 
         (label {:onclick    (cF (let [selector (mxu-find-tag me :ul)]
                                   #(let [curr-sel (<mget selector :selections)]
-                                     (mset!> selector :selections
+                                     (mset! selector :selections
                                        (if (some #{todo} curr-sel)
                                          (remove #{todo} curr-sel)
                                          (conj curr-sel todo))))))
@@ -112,7 +112,7 @@
             (stop-editing)                                  ;; has to go first cuz a blur event will sneak in
             (if (= title "")
               (td-delete! todo)
-              (mset!> todo :title title)))
+              (mset! todo :title title)))
 
           (= (.-key e) "Escape")
           ;; this could leave the input field with mid-edit garbage, but
@@ -171,7 +171,7 @@
                                                              (< time-left (* 2 24 3600 1000)) "yellow"
                                                              :default "green"))
                                                          cache)))))
-          :oninput   #(mset!> todo :due-by
+          :oninput   #(mset! todo :due-by
                         (tmc/to-long
                           (tmc/from-string
                             (form/getValue (.-target %)))))}))

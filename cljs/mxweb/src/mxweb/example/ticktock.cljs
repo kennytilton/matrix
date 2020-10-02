@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
-             :refer [matrix mx-par <mget <mget mset!> mset!> mxi-find mxu-find-name] :as md]
+             :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
             [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 input div span]]))
 
 (declare clock time-color color-input)
@@ -18,12 +18,12 @@
 
 (defn clock []
   (div {:class   "example-clock"
-      :style   (cF (str "color:" (<mget (mxu-find-name me :timecolor) :value)))
+      :style   (cF (str "color:" (mget (mxu-find-name me :timecolor) :value)))
 
       :tick (cI false :ephemeral? true)
-      :ticker (cF (js/setInterval #(mset!> me :tick true) 1000))
+      :ticker (cF (js/setInterval #(mset! me :tick true) 1000))
 
-      :content (cF (if (<mget me :tick)
+      :content (cF (if (mget me :tick)
                      (-> (js/Date.)
                          .toTimeString
                          (str/split " ")
@@ -36,5 +36,5 @@
     (input {:name     :timecolor
             :tag/type "text"
             :value    (cI "#000")
-            :onchange #(mset!> (evt-tag %)
+            :onchange #(mset! (evt-tag %)
                                   :value (target-value %))})))

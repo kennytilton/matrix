@@ -10,7 +10,7 @@
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [fget <mget fasc fm! make mset!> backdoor-reset!]
+     :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
     [mxweb.style
@@ -52,16 +52,16 @@
   ;; are firing for the first time, because 'me' has not yet
   ;; been installed in the actual DOM, so call this only
   ;; from event handlers and the like.
-  (let [id (<mget me :id)]
+  (let [id (mget me :id)]
     (assert id)
-    (or (<mget me :dom-cache)
+    (or (mget me :dom-cache)
         (if-let [dom (dom/getElement (str id))]
           (backdoor-reset! me :dom-cache dom)
           (println :html-no-element id :found)))))
 
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
-                            (when-let [v (<mget mx k)]
+                            (when-let [v (mget mx k)]
                               [(name k) (case k
                                           :style (tagcss/style-string v)
                                           :class (if (coll? v)
@@ -83,16 +83,16 @@
                   frag)
      :default
      (do ;;(pln :domcre-attrs (:attr-keys @me))
-         (let [dom (apply dom/createDom (<mget me :tag)
+         (let [dom (apply dom/createDom (mget me :tag)
                           (tag-attrs me)
                           (concat                           ;; to-do: need this?
-                            (map #(tag-dom-create % dbg) (<mget me :kids))
-                            (when-let [c (<mget me :content)]
+                            (map #(tag-dom-create % dbg) (mget me :kids))
+                            (when-let [c (mget me :content)]
                               [(tag-dom-create c)])))]
 
            (when (some #{:list} (:attr-keys @me))
              ;; todo investigate why this was necessary
-             (.setAttribute dom "list" (<mget me :list)))
+             (.setAttribute dom "list" (mget me :list)))
            dom)))))
 
 (def +true-html+ {::type "type"})
@@ -102,7 +102,7 @@
       (name keyword)))
 
 (defn tag [me]
-  (<mget me :tag))
+  (mget me :tag))
 
 (defn tag? [me]
   (= (type-cljc me) :mxweb.base/tag))
@@ -202,19 +202,19 @@
 (defn mxu-find-class
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
-  (fget #(= (name class) (<mget % :class))
+  (fget #(= (name class) (mget % :class))
         where :me? false :up? true))
 
 (defn mxu-find-tag
   "Search up the matrix from node 'where' looking for element with class"
   [where tag]
-  (fget #(= (name tag) (<mget % :tag))
+  (fget #(= (name tag) (mget % :tag))
         where :me? false :up? true))
 
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with class"
   [where id]
-  (fget #(= (name id) (<mget % :id))
+  (fget #(= (name id) (mget % :id))
         where :me? false :up? true))
 
 ;;; --- localStorage io implementation --------------------------------

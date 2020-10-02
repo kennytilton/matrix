@@ -7,8 +7,8 @@
     [tiltontec.cell.base :refer [c-unbound?]]
     [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
     [tiltontec.model.core
-     :refer-macros [with-par cFkids mdv!]
-     :refer [matrix <mget mswap!> mset!>] :as md]
+     :refer-macros [with-par cFkids mdv! fmu]
+     :refer [matrix mget mswap! mset!] :as md]
     [mxweb.gen
      :refer-macros [img section header h1 input footer p a span label ul li div button br]
      :refer [make-tag dom-tag evt-tag]]))
@@ -47,8 +47,8 @@
   (mdv! helpeeName :helping))
 
 (defn help-off! [me helpeeName]
-  (let [h (md/mxu-find-name me helpeeName)]
-    (mset!> h :helping false)))
+  (let [h (fmu helpeeName)]
+    (mset! h :helping false)))
 
 (defn help-list [helpItems helpeeName]
   (div {:class   (cF (str "help " (slide-in-anime (helping? me helpeeName))))
@@ -84,10 +84,10 @@
                           :font-family "Arial"
                           :font-size   "1em"} style)
          :title   title
-         :onclick (fn [e] (mswap!> (evt-tag e) :on-off not))}
+         :onclick (fn [e] (mswap! (evt-tag e) :on-off not))}
     {:name   db-key
      :on-off (cI init-open?)}
-    (unesc (if (<mget me :on-off) on-char off-char))))
+    (unesc (if (mget me :on-off) on-char off-char))))
 
 (defn slide-in-rule [c show?]
   (if show?

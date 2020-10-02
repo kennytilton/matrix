@@ -7,16 +7,103 @@
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
             [tiltontec.model.core
-             :refer-macros [with-par mdv! mx-par]
-             :refer [matrix mset!> <mget mswap!>] :as md]
+             :refer-macros [with-par mdv! mx-par fmu]
+             :refer [matrix mset! mget mswap!] :as md]
             [mxweb.gen
              :refer-macros [section header i h1 input footer p a span label ul li div button]
              :refer [evt-tag dom-tag]]
             [whoshiring.ui-common :as util]
-            [whoshiring.filtering :as fltr]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
-            [whoshiring.job-memo :as memo]))
+            [whoshiring.job-memo :refer [job-memo] :as memo]))
+
+;;; --- filtering -------------------------------------------
+
+(defn make-job-select [key [tag help]]
+  (let [input-id (str tag "ID")]
+    (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
+      (input {:id       input-id
+              :title    help
+              :class    (str key "-jSelect")
+              :style    "background:#eee"
+              :type     "checkbox"
+              :checked  (cF (mget me :on-off))
+              :onchange (fn [e]
+                          (mswap! (evt-tag e) :on-off not))}
+        {:name   input-id
+         :on-off (cI false)})
+      (label {:for   input-id
+              :title help}
+        tag))))
+
+(defn make-job-selects-ex [key lbl j-major-selects]
+  (div {:style (merge utl/hz-flex-wrap {:margin "8px 0 8px 24px"})}
+    (map (fn [major]
+           (div {:style "display:flex; flex:nowrap;"}
+             (map (fn [info]
+                    (make-job-select key info))
+               major)))
+      j-major-selects)))
+
+(def title-selects
+  [[["REMOTE" "Does regex search of title for remote jobs"]
+    ["ONSITE" "Does regex search of title for on-site jobs"]]
+   [["INTERNS" "Does regex search of title for internships"]
+    ["VISA" "Does regex search of title for Visa sponsors"]]])
+
+(def user-selects
+  [[["Starred" "Show only jobs you have rated with stars"]
+    ["Noted" "Show only jobs on which you have made a note"]]
+   [["Applied" "Show only jobs you have marked as applied to"]
+    ["Excluded" "Show jobs you exluded from view"]]])
+
+(defn make-title-selects []
+  (make-job-selects-ex "title" "Title selects" title-selects))
+
+(defn make-user-selects []
+  (make-job-selects-ex "user" "User selects" user-selects))
+
+(defn regex-tree-match [rgx-tree text]
+  (some (fn [ands]
+          (when ands
+            (every? (fn [andx]
+                      (when andx
+                        (boolean (re-find andx text))))
+              ands))) rgx-tree))
+
+(defn job-list-filter [me jobs]
+  (let [fup? (fn [name]
+               (mget (fmu (str name "ID")) :on-off))
+        remote (fup? "REMOTE")
+        onsite (fup? "ONSITE")
+        interns (fup? "INTERNS")
+        visa (fup? "VISA")
+        excluded (fup? "Excluded")
+        starred (fup? "Starred")
+        applied (fup? "Applied")
+        noted (fup? "Noted")
+        title-regex (mget (fmu "titlergx") :regex-tree)
+        listing-regex (mget (fmu "listingrgx") :regex-tree)]
+
+    (filter (fn [job]
+              (and
+                (or (not remote) (:remote job))
+                (or (not onsite) (:onsite job))
+                (or (not visa) (:visa job))
+                (or (not interns) (:intern job))
+                (or (not excluded) (job-memo job :excluded))
+                (or (not starred) (pos? (job-memo job :stars)))
+                (or (not applied) (job-memo job :applied))
+                (or (not noted) (job-memo job :notes))
+                (or (not (seq title-regex))
+                  (regex-tree-match title-regex
+                    (job :title-search)))
+                (or (not (seq listing-regex))
+                  (regex-tree-match listing-regex
+                    (job :title-search))
+                  (regex-tree-match listing-regex
+                    (job :body-search)))))
+      jobs)))
 
 ;;; --- sorting ---------------------------------------------
 
@@ -24,7 +111,7 @@
   (or (:company j) ""))
 
 (defn job-stars-enrich [job]
-  (assoc job :stars 0 #_(or (utl/<app-cursor [:job-memos (:hn-id job) :stars]) 0)))
+  (assoc job :stars 0))
 
 (defn job-stars-compare [dir j k]
   ;; force un-starred to end regardless of sort order
@@ -51,19 +138,19 @@
 
 (defn sort-bar-option [sort-control jsort]
   (button {:class    "sortOption"
-           :style    (cF {:color (if (<mget me :selected)
+           :style    (cF {:color (if (mget me :selected)
                                    "blue" "#222")})
            :selected (cF (= (:title jsort)
-                           (:title (<mget sort-control :job-sort))))
+                           (:title (mget sort-control :job-sort))))
            :onclick  (fn [e]
                        (let [me (evt-tag e)]
-                         (if (<mget me :selected)
-                           (mswap!> sort-control :job-sort
-                             update :order #(* -1 %))
-                           (mset!> sort-control :job-sort jsort))))
+                        (if (mget me :selected)
+                          (mswap! sort-control :job-sort
+                            update :order #(* -1 %))
+                          (mset! sort-control :job-sort jsort))))
            :content  (cF (str (:title jsort) " "
-                           (when (<mget me :selected)
-                             (if (= (:order (<mget sort-control :job-sort)) -1)
+                           (when (mget me :selected)
+                             (if (= (:order (mget sort-control :job-sort)) -1)
                                (utl/unesc "&#x2798")
                                (utl/unesc "&#x279a")))))}))
 
@@ -85,19 +172,19 @@
 (defn job-count []
   (span {:style   "font-size:1em;margin-right:12px"
          :content (cF (str "Jobs: "
-                        (count (<mget (md/mxu-find-name me :job-list) :selected-jobs))))}))
+                        (count (mget (fmu :job-list) :selected-jobs))))}))
 
 (defn excluded-toggle []
   (span {:style   (cF (str "padding-bottom:4px;cursor:pointer;display:flex;align-items:center;font-size:1em;"
-                        "visibility:" (if true #_(pos? (<mget me :excluded-ct)) "visible;" "hidden;")
-                        "border:" (if (pos? (<mget me :on-off)) "thin solid red;" "none;")))
-         :content (cF (str "&#x20E0;: " (<mget me :excluded-ct)))
-         :onclick (fn [e] (mswap!> (evt-tag e) :on-off not))
+                        "visibility:" (if true #_(pos? (mget me :excluded-ct)) "visible;" "hidden;")
+                        "border:" (if (pos? (mget me :on-off)) "thin solid red;" "none;")))
+         :content (cF (str "&#x20E0;: " (mget me :excluded-ct)))
+         :onclick #(mswap! (evt-tag %) :on-off not)
          :title   "Show/hide items you have excluded"}
     {:name        :show-excluded-jobs
      :on-off      (cI false)
-     :excluded-ct (cF (count (filter (fn [j] (memo/<job-memo j :excluded))
-                               (<mget (md/mxu-find-name me :job-list) :selected-jobs))))}))
+     :excluded-ct (cF (count (filter (fn [j] (memo/job-memo j :excluded))
+                               (mget (fmu :job-list) :selected-jobs))))}))
 
 (def result-limit-default 42)
 
@@ -106,14 +193,14 @@
                  {:margin-left  "18px"
                   :margin-right "6px"})}
     (span "Show: ")
-    (input {:value    (cF (<mget me :limit))
+    (input {:value    (cF (mget me :limit))
             :style    "font-size:1em;max-width:48px;margin-left:6px;margin-right:6px"
             :onchange (fn [e]
                         (when-let [lim (try
                                          (js/parseInt (utl/target-val e) 10)
                                          (catch :default e nil))]
                           (when-not (js/Number.isNaN lim)
-                            (mset!> (evt-tag e) :limit lim))))}
+                            (mset! (evt-tag e) :limit lim))))}
       {:name  :result-limit
        :limit (cI result-limit-default)})))
 
@@ -121,16 +208,16 @@
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
            :onclick (fn [e]
-                      (mswap!> (evt-tag e) :expanded not))
-           :content (cF (if (<mget me :expanded)
+                      (mswap! (evt-tag e) :expanded not))
+           :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
     {:expanded (cI false
-                 :obs (fn [slot me newv oldv]
+                 :obs (fn [_ me newv oldv]
                         (when-not (= oldv unbound)
-                          (let [jl (md/mxu-find-name me :job-list)]
+                          (let [jl (fmu :job-list)]
                             (with-cc :expansion
-                              (doseq [jli (<mget jl :kids)]
-                                (mset!> jli :expanded newv)))))))}))
+                              (doseq [jli (mget jl :kids)]
+                                (mset! jli :expanded newv)))))))}))
 
 (defn job-listing-control-bar []
   (div {
@@ -164,10 +251,10 @@
                            (str/join " " (remove nil?
                                            (map (fn [dom]
                                                   (when (.-checked dom)
-                                                    (<mget (dom-tag dom) :name)))
+                                                    (mget (dom-tag dom) :name)))
                                              (concat titles users)))))))})
-      fltr/make-title-selects
-      fltr/make-user-selects)
+      make-title-selects
+      make-user-selects)
     (util/open-case "rgx-filters" "Search"
       regex/make-title-regex
       regex/make-full-regex

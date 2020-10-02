@@ -6,7 +6,7 @@
        :cljs cljs.pprint :clj :refer [pprint cl-format])
             [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
             [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
-            [tiltontec.model.core :refer [make <mget] :as md]))
+            [tiltontec.model.core :refer [make mget] :as md]))
 
 (defn tagfo [me]
   (select-keys @me [:id :tag :class :name]))
@@ -63,7 +63,7 @@
   (doseq [k (:kids @me)]
     (when (md-ref? k)
       (not-to-be k)))
-  (swap! tag-by-id dissoc (<mget me :id))
+  (swap! tag-by-id dissoc (mget me :id))
   (not-to-be-self me))
 
 (defmacro deftag [tag]

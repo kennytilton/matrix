@@ -80,7 +80,7 @@
      :refer [cI c-reset!]]
     [tiltontec.cell.observer :refer-macros [fn-obs]]
     [tiltontec.model.core
-     :refer [matrix mx-par <mget mset!> mxi-find  kid-values-kids] :as md]
+     :refer [matrix mx-par <mget mset! mxi-find  kid-values-kids] :as md]
     [mxweb.html
      :refer [io-read io-upsert io-clear-storage
              dom-tag tagfo tag-dom mxu-find-class
@@ -283,7 +283,7 @@
     ; and observing all cells, input or formulaic. Ergo, we got console output straight away.
 
 
-    (mset!> to-do :title "Sell car and boat")
+    (mset! to-do :title "Sell car and boat")
     ; console:  (:version 2 "Sell car and boat")
 
     (md/make ::dummyApp
@@ -332,7 +332,7 @@
                         (p {} "(click below to toggle whether to-do has been done)") ;; <-- User Guide
 
                         (p {:onclick #(binding [tag/*mxweb-trace* "toggle"]
-                                        (mset!> to-do :completed (not (completed to-do))))
+                                        (mset! to-do :completed (not (completed to-do))))
                             ; The dataflow engine propagates the change to the to-do to
                             ; the next two properties, and the console shows those changes
                             ; being propagated to the DOM attributes (and no DOM added or removed).
