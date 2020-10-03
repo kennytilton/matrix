@@ -46,34 +46,23 @@
 (defn helping? [me helpeeName]
   (mdv! helpeeName :helping))
 
-(defn help-off! [me helpeeName]
-  (let [h (fmu helpeeName)]
-    (mset! h :helping false)))
-
 (defn help-list [helpItems helpeeName]
   (div {:class   (cF (str "help " (slide-in-anime (helping? me helpeeName))))
         :style   (cF {:display     (if (helping? me helpeeName)
                                      "block" "none")
                       :margin-top  0
                       :padding-top "6px"})
-        :onclick #(help-off! (evt-mx %) helpeeName)}
+        :onclick #(let [me (evt-mx %)]
+                    (mset! (fmu helpeeName) :helping false))}
     (div {:style {:cursor      "pointer"
                   :textAlign   "left"
                   :marginRight "18px"}}
       (ul {:style {:listStyle  "none"
                    :marginLeft 0}}
         (map #(li {:style {:padding 0
-                            :margin  "0 18px 9px 0"}}
-                 (span %))
+                           :margin  "0 18px 9px 0"}}
+                (span %))
           helpItems)))))
-
-(defn view-on-hn [attrs uri]
-  (make-tag
-    "a" (merge {:href uri, :title "View on the HN site"} attrs) {}
-    (cFkids (img {:src "dist/hn24.png"})))
-  #_;; after we hack def tag...
-      (a (merge {:href "x42" #_uri, :title "View on the HN site"} attrs)
-        (img {:src "dist/hn24.png"})))
 
 (defn toggle-char [db-key title init-open? on-char off-char & [style]]
   (span {:style   (merge {:font-weight "bold"

@@ -16,7 +16,7 @@
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
             [mxweb.gen
-             :refer-macros [section select option progress header
+             :refer-macros [section select option progress header img
                             iframe i h1 input footer p a span label ul li div button]
              :refer [evt-mx dom-tag]]
             [whoshiring.job-parse :as jp]
@@ -55,9 +55,11 @@
 
 (defn hn-month-link []
   ;; An HN icon <a> tag linking to the actual HN page.
-  (utl/view-on-hn {:style {:margin-right "9px"}}
-    (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
-          (mdv! :search-mo :value)))))
+  (a {:href (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
+                  (mdv! :search-mo :value)))
+      :title "View on the HN site"
+      :style {:margin-right "9px"}}
+      (img {:src "dist/hn24.png"})))
 
 (defn month-load-progress-bar []
   (progress {:max    (cF (str (mget me :maxN)))
