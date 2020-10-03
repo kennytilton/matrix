@@ -42,12 +42,12 @@
   (select {:name     :search-mo
            :class    "searchMonth"
            :onchange #(let [me (evt-mx %)
-                             pgr (fmu :progress-bar)]
-                         (mset! pgr :value 0)
-                         (mset! pgr :maxN 0)
-                         (mset! pgr :seen #{})
-                         (mset! pgr :hidden false)
-                         (mset! me :value (utl/target-val %)))}
+                            pgr (fmu :progress-bar)]
+                        (mset! pgr :value 0)
+                        (mset! pgr :maxN 0)
+                        (mset! pgr :seen #{})
+                        (mset! pgr :hidden false)
+                        (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
             (option {:value hnId} desc))
@@ -55,21 +55,21 @@
 
 (defn hn-month-link []
   ;; An HN icon <a> tag linking to the actual HN page.
-  (a {:href (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
-                  (mdv! :search-mo :value)))
+  (a {:href  (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
+                   (mdv! :search-mo :value)))
       :title "View on the HN site"
       :style {:margin-right "9px"}}
-      (img {:src "dist/hn24.png"})))
+    (img {:src "dist/hn24.png"})))
 
 (defn month-load-progress-bar []
   (progress {:max    (cF (str (mget me :maxN)))
-             :hidden (cI false)                             ;; (cF (mdv! :search-mo :value))
+             :hidden (cI false)
              :value  (cI 0)}
     {:name :progress-bar
      :maxN (cI 0)
      :seen (cI #{})}))
 
-(def PARSE_CHUNK_SIZE 10)                                   ;; hhack
+(def PARSE_CHUNK_SIZE 20)
 
 (defn month-jobs-total []
   (span {:style   "color: #fcfcfc; margin: 0 12px 0 12px"
@@ -90,8 +90,7 @@
 
 ;;; ----   job-listing-loader -----------------------------
 
-
-(def public-res "/scrapes/~a/~a.html")
+(def scraped-html-path "/scrapes/~a/~a.html")
 
 (defn month-page-urls
   "Compute a vector of string URLs to be scraped, given month info
@@ -102,7 +101,7 @@
     (if-let [mo-def (get-monthly-def month-hn-id)]          ;; hard-coded table in index.html
       (map (fn [pg-offset]
              ;; files are numbered off-by-one to match the page param on HN
-             (pp/cl-format nil public-res month-hn-id (inc pg-offset)))
+             (pp/cl-format nil scraped-html-path month-hn-id (inc pg-offset)))
         (range (:pgCount mo-def)))
       (throw (js/Exception. (str "msg id " month-hn-id " not defined in gMonthlies table."))))))
 
@@ -117,7 +116,11 @@
   (let [total (count listings)
         tot-char 0
         temp-jobs (atom nil)]
-    (letfn [(chunker [offset]
+    (letfn [(cleanup []
+              (mset! loader :jobs @temp-jobs)
+              (mset! loader :fini true)
+              (frame-zap loader))
+            (chunker [offset]
               ;; todo cljourify
               (let [jct (min (- total offset) chunk-size)]
                 (if (pos? jct)
@@ -132,14 +135,8 @@
                     (mswap! progress-bar :value inc)
                     (if (< (count @temp-jobs) PAGE_JOBS_MAX)
                       (js/requestAnimationFrame #(chunker (+ offset jct)))
-                      (do
-                        (mset! loader :jobs @temp-jobs)
-                        (mset! loader :fini true)
-                        (frame-zap loader))))
-                  (do
-                    (mset! loader :jobs @temp-jobs)
-                    (mset! loader :fini true)
-                    (frame-zap loader)))))]
+                      (cleanup)))
+                  (cleanup))))]
       (chunker 0))))
 
 ;;; --- getting aThings from pages ------------------------------------
