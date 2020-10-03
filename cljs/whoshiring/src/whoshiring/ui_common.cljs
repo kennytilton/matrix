@@ -11,7 +11,7 @@
      :refer [matrix mget mswap! mset!] :as md]
     [mxweb.gen
      :refer-macros [img section header h1 input footer p a span label ul li div button br]
-     :refer [make-tag dom-tag evt-tag]]))
+     :refer [make-tag dom-tag evt-mx]]))
 
 ;;; --- clj++ --------------------------------------
 
@@ -56,17 +56,15 @@
                                      "block" "none")
                       :margin-top  0
                       :padding-top "6px"})
-        :onclick (fn [e]
-                   (help-off! (evt-tag e) helpeeName))}
+        :onclick #(help-off! (evt-mx %) helpeeName)}
     (div {:style {:cursor      "pointer"
                   :textAlign   "left"
                   :marginRight "18px"}}
       (ul {:style {:listStyle  "none"
                    :marginLeft 0}}
-        (map (fn [e]
-               (li {:style {:padding 0
+        (map #(li {:style {:padding 0
                             :margin  "0 18px 9px 0"}}
-                 (span e)))
+                 (span %))
           helpItems)))))
 
 (defn view-on-hn [attrs uri]
@@ -84,7 +82,7 @@
                           :font-family "Arial"
                           :font-size   "1em"} style)
          :title   title
-         :onclick (fn [e] (mswap! (evt-tag e) :on-off not))}
+         :onclick #(mswap! (evt-mx %) :on-off not)}
     {:name   db-key
      :on-off (cI init-open?)}
     (unesc (if (mget me :on-off) on-char off-char))))
@@ -94,15 +92,6 @@
     "slideIn"
     (if (c-unbound? c)
       "" "slideOut")))
-
-; function openCase( name, title, ...cases) {
-;    let toggleName = name+"-toggle";
-;    return div(
-;            span( {
-;                style: "margin-left:24px;min-width:48px"
-;            }, title)
-;        , cases.map( c=> c()))
-;}
 
 (defn open-case [name title & case-factories]
   (div

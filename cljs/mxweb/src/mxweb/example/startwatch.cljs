@@ -6,7 +6,7 @@
             [tiltontec.model.core
              :refer-macros [with-par]
              :refer [matrix mx-par mget mset! mxi-find mxu-find-name] :as md]
-            [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 input div]]
+            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 input div]]
             [tiltontec.cell.synapse :refer-macros [with-synapse]]))
 
 (declare clock time-color)

@@ -26,7 +26,7 @@
              :refer-macros [section header h1 input footer p a
                             img h2 h3 h4
                             pre span label ul li div button br code]
-             :refer [dom-tag evt-tag]]
+             :refer [dom-tag evt-mx]]
 
             [mxweb.style :refer [make-css-inline]]
 

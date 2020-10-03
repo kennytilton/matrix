@@ -8,7 +8,7 @@
              :refer [matrix mset! mget mswap!]]
             [mxweb.gen
              :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]
-             :refer [dom-tag evt-tag]]
+             :refer [dom-tag evt-mx]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]))
 
@@ -34,7 +34,7 @@
              :content lbl})
       (input {:placeholder (pp/cl-format nil "Regex for ~a search" desc)
               :list        datalist-id
-              :onchange    #(mset! (evt-tag %) :regex-raw (not-empty (str/trim (utl/target-val %))))
+              :onchange    #(mset! (evt-mx %) :regex-raw (not-empty (str/trim (utl/target-val %))))
               :onfocus     #(let [dom (.-target %)]
                               (.setSelectionRange dom 0 (count (.-value dom))))
               :value       ""}
@@ -74,7 +74,7 @@
     (input {:id       :rgx-match-case
             :type     "checkbox"
             :checked  (cF (mget me :on-off))
-            :onchange #(mswap! (evt-tag %) :on-off not)}
+            :onchange #(mswap! (evt-mx %) :on-off not)}
       {:name   :rgx-match-case
        :on-off (cI false)})
     (label {:for :rgx-match-case}
@@ -90,7 +90,7 @@
             :type      "checkbox"
             :checked   (cF (mget me :on-off))
             :title     "Replace 'or/and' with '||/&&' for easier mobile entry."
-            :on-change #(mswap! (evt-tag %) :on-off not)}
+            :on-change #(mswap! (evt-mx %) :on-off not)}
       {:name   :rgx-or-and
        :on-off (cI true)})
     (label {:for :rgx-or-and}
@@ -106,7 +106,7 @@
       (span {:style   {:color  "white" :margin-left "24px"
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
-             :onclick #(let [me (evt-tag %)]
+             :onclick #(let [me (evt-mx %)]
                          (mswap! me :helping not))}
         {:name    :rgx-help-toggle
          :helping (cI false)}

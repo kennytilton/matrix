@@ -9,7 +9,7 @@
      :refer [matrix mset! mget mswap! fget *par*] :as md]
     [mxweb.gen
      :refer-macros [section header i h1 input footer p a span label ul li div button]
-     :refer [evt-tag dom-tag]]
+     :refer [evt-mx dom-tag]]
     [whoshiring.control-panel :as ctl]
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
@@ -36,13 +36,12 @@
 (defn job-header [job]
   (div {:style   {:cursor  "pointer"
                   :display "flex"}
-        :onclick (fn [e]
-                   (mswap! (md/mxu-find-name (evt-tag e) :job-listing)
-                     :expanded not))}
+        :onclick #(mswap! (md/mxu-find-name (evt-mx %) :job-listing)
+                    :expanded not)}
     (span {:style (cF (str "color:red;max-height:16px;margin-right:9px; display:"
-                          (if (or (deets? me)
-                                (zero? (memo/job-memo job :stars)))
-                            "none" "block")))}
+                        (if (or (deets? me)
+                              (zero? (memo/job-memo job :stars)))
+                          "none" "block")))}
       (utl/unesc "&#x2b51"))
     (div (map node-to-hiccup
            (:title-seg job)))))
@@ -72,9 +71,9 @@
                                      ; if they have asked to see excluded items, show regardless
                                      (not (mget (fmu "ExcludedID") :on-off)))
                               "none" "block")})}
-    {:name :job-listing
+    {:name     :job-listing
      :expanded (cI false)
-     :job  job}
+     :job      job}
     (job-header job)
     (job-details job)))
 
@@ -91,21 +90,21 @@
 
 (defn job-list []
   (ul {:style {:list-style-type "none"
-                 :background      "#eee"
-                 ;; these next defeat gratuitous default styling of ULs by browser
-                 :padding         0
-                 :margin          0}}
-      {:name          :job-list
-       :selected-jobs (cF (let [raw-jobs (mget (fmu :job-loader) :jobs)
-                                sel-jobs (ctl/job-list-filter me raw-jobs)]
-                            sel-jobs))
-       :sorted-jobs   (cF (job-list-sort me
-                            (mget me :selected-jobs)))
-       :kid-factory   job-list-item
-       :kid-key       #(mget % :job)
-       :kid-values    (cF (take (or (mget (fmu :result-limit) :limit) 999999)
-                            (mget me :sorted-jobs)))}
-      (md/kid-values-kids me cache)))
+               :background      "#eee"
+               ;; these next defeat gratuitous default styling of ULs by browser
+               :padding         0
+               :margin          0}}
+    {:name          :job-list
+     :selected-jobs (cF (let [raw-jobs (mget (fmu :job-loader) :jobs)
+                              sel-jobs (ctl/job-list-filter me raw-jobs)]
+                          sel-jobs))
+     :sorted-jobs   (cF (job-list-sort me
+                          (mget me :selected-jobs)))
+     :kid-factory   job-list-item
+     :kid-key       #(mget % :job)
+     :kid-values    (cF (take (or (mget (fmu :result-limit) :limit) 999999)
+                          (mget me :sorted-jobs)))}
+    (md/kid-values-kids me cache)))
 
 
 

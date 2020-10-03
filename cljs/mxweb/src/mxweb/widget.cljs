@@ -12,7 +12,7 @@
 
     [mxweb.gen
      :refer-macros [section header h1 input footer p a span label ul li div button br]
-     :refer [make-tag dom-tag evt-tag]]))
+     :refer [make-tag dom-tag evt-mx]]))
 
 (defn tag-checkbox
   ;; todo: test variants

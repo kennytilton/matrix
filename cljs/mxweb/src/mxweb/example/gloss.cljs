@@ -4,7 +4,7 @@
             [tiltontec.cell.base :refer [unbound]]
             [tiltontec.model.core
              :refer [matrix mx-par mget mset! mswap! mxi-find mxu-find-name nextsib] :as md]
-            [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 button input div span]]
+            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 button input div span]]
             [mxweb.style
              :refer [make-css-inline]
              :as css]))
@@ -33,7 +33,7 @@
                                                 }}
                                     (button {:style {:flex-basis "content"
                                                      :margin "6px"}
-                                             :onclick #(mset! (evt-tag %) :clicked? true)}
+                                             :onclick #(mset! (evt-mx %) :clicked? true)}
 
                                       {:clicks  (cF (cond
                                                       (mget me :clicked?)
@@ -60,7 +60,7 @@
                                                             :flex-basis "content"
                                                             :margin "6px"
                                                             :background-color (cF (if (mget (:tag @me) :onp) "cyan" "pink"))))
-                                             :onclick #(mswap! (evt-tag %) :onp not)}
+                                             :onclick #(mswap! (evt-mx %) :onp not)}
                                       {:onp    (cI true)
                                        :to-onp (cF+ [:ephemeral? true]
                                                  (when (mget me :onp)

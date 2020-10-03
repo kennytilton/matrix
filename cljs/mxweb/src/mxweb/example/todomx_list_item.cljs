@@ -32,7 +32,7 @@
 
             [mxweb.gen
              :refer-macros [section header h1 input footer p a span label ul li div button br]
-             :refer [dom-tag evt-tag]]
+             :refer [dom-tag evt-mx]]
 
             [mxweb.style :refer [make-css-inline]]
 

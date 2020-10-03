@@ -3,7 +3,7 @@
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
-            [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 input div span]]))
+            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 input div span]]))
 
 (declare clock time-color color-input)
 
@@ -36,5 +36,5 @@
     (input {:name     :timecolor
             :tag/type "text"
             :value    (cI "#000")
-            :onchange #(mset! (evt-tag %)
+            :onchange #(mset! (evt-mx %)
                                   :value (target-value %))})))

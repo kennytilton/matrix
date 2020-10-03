@@ -18,9 +18,8 @@
             [mxweb.gen
              :refer-macros [section select option progress header
                             iframe i h1 input footer p a span label ul li div button]
-             :refer [evt-tag dom-tag]]
+             :refer [evt-mx dom-tag]]
             [whoshiring.job-parse :as jp]
-            [whoshiring.local-storage :as st]
             [whoshiring.job-memo :as memo]))
 
 (defn gMonthlies-cljs
@@ -42,14 +41,13 @@
 (defn month-selector []
   (select {:name     :search-mo
            :class    "searchMonth"
-           :onchange (fn [e]
-                       (let [me (evt-tag e)
+           :onchange #(let [me (evt-mx %)
                              pgr (fmu :progress-bar)]
                          (mset! pgr :value 0)
                          (mset! pgr :maxN 0)
                          (mset! pgr :seen #{})
                          (mset! pgr :hidden false)
-                         (mset! me :value (utl/target-val e))))}
+                         (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
             (option {:value hnId} desc))
@@ -162,8 +160,7 @@
   (iframe {:src    (cF (pp/cl-format nil "/scrapes/~a/~a.html"
                          hn-id pg-no))
            :style  "display:none"
-           :onload (fn [e]
-                     (jobs-collect (evt-tag e) pg-no))}
+           :onload #(jobs-collect (evt-mx %) pg-no)}
     {:month-hn-id hn-id
      :jobs        (cI nil)
      :fini        (cI false)
@@ -172,7 +169,7 @@
 (defn job-listing-loader []
   (div {:style "visibility:collapsed;"}
     {:name  :job-loader
-     :fini  (cF+ [:obs (fn [slot me fini?]
+     :fini  (cF+ [:obs (fn [_ me fini?]
                          (when fini?
                            (with-cc :hide-prgbar
                              (mset! (fmu :progress-bar)

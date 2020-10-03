@@ -8,7 +8,7 @@
              :refer [matrix mset! mget mswap!] :as md]
             [mxweb.gen
              :refer-macros [section textarea header i h1 input footer p a span label ul li div button]
-             :refer [evt-tag dom-tag]]
+             :refer [evt-mx dom-tag]]
             [whoshiring.job-memo :refer [job-memo job-memo-set! job-memo-swap!]]))
 
 ;;; --- stars ------------------------------------------
@@ -43,7 +43,7 @@
   (span {:style   (cF (str "margin-left:18px; cursor:pointer;color:"
                         (if (job-memo job :notes) "cyan" "#000")))
          :title   "Show/hide editor for your own notes"
-         :onclick #(mswap! (evt-tag %) :editing not)}
+         :onclick #(mswap! (evt-mx %) :editing not)}
     {:name    :note-toggle
      :editing (cFn (pos? (count (job-memo job :notes))))}
     "Notes"))

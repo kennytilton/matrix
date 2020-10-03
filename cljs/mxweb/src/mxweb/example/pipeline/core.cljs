@@ -12,7 +12,7 @@
                      mxu-find-type]
              :as md]
 
-            [mxweb.gen :refer [evt-tag target-value]
+            [mxweb.gen :refer [evt-mx target-value]
              :refer-macros [h1 h4 h5 input div span button p]]
 
             [cljs.core.async

@@ -128,7 +128,7 @@
 
 ;;; --- event conveniences -------------------
 
-(defn evt-tag [e]
+(defn evt-mx [e]
   (dom-tag (.-target e)))
 
 #?(:cljs

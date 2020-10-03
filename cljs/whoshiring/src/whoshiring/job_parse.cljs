@@ -2,8 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.set :as set]
             [tiltontec.model.core :refer [mget] :as md]
-            [whoshiring.job-memo :as memo]
-            [whoshiring.local-storage :as st]))
+            [whoshiring.job-memo :as memo]))
 
 (declare job-parse-extend)
 
@@ -49,15 +48,14 @@
 
   (let [cn (.-className dom)]
     (when (has-class? dom #{"c5a" "cae" "c00" "c9c" "cdd" "c73" "c88"})
-      (when-let [rs (.getElementsByClassName dom "reply")]
-        (map (fn [e] (.remove e)) (prim-seq rs)))
+      (when-let [replies (.getElementsByClassName dom "reply")]
+        (map (fn [r] (.remove r)) (prim-seq replies)))
       (let [child (.-childNodes dom)
             c0 (aget child 0)]
         ;; pre-digest all nodes
         (swap! spec assoc :body [])                         ;; needed?
         (if (and (= 3 (.-nodeType c0))
                  (pos? (count (filter #{\|} (.-textContent c0)))))
-
           (let [s (atom {:in-header true
                          :title-seg []})]
             (doseq [n (prim-seq child)]
@@ -71,11 +69,10 @@
                 (swap! spec update-in [:body] conj n)))
 
             (let [htext (str/join " | "
-                          (map (fn [h] (.-textContent h)) (:title-seg @s)))
+                          (map #(.-textContent %) (:title-seg @s)))
                   hseg (map str/trim (str/split htext #"\|"))
                   hsmatch (fn [rx]
-                            (not (nil?
-                                   (some (fn [h] (.match h rx)) hseg))))]
+                            (not (nil? (some #(.match % rx) hseg))))]
               (swap! spec assoc :OK true)
 
               (swap! spec assoc :company (nth hseg 0))

@@ -9,7 +9,7 @@
              :refer-macros [with-par]
              :refer [matrix mx-par mget mset! mxi-find mxu-find-name mxu-find-type
                      kid-values-kids] :as md]
-            [mxweb.gen :refer [evt-tag target-value]
+            [mxweb.gen :refer [evt-mx target-value]
              :refer-macros [h1 h3 h6 input div section button ul li]]
             [mxweb.html
              :refer [io-read io-upsert io-clear-storage

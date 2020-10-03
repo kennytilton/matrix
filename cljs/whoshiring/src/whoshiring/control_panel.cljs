@@ -11,7 +11,7 @@
              :refer [matrix mset! mget mswap!] :as md]
             [mxweb.gen
              :refer-macros [section header i h1 input footer p a span label ul li div button]
-             :refer [evt-tag dom-tag]]
+             :refer [evt-mx dom-tag]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
             [whoshiring.job-memo :refer [job-memo] :as memo]))
@@ -27,8 +27,7 @@
               :style    "background:#eee"
               :type     "checkbox"
               :checked  (cF (mget me :on-off))
-              :onchange (fn [e]
-                          (mswap! (evt-tag e) :on-off not))}
+              :onchange #(mswap! (evt-mx %) :on-off not)}
         {:name   input-id
          :on-off (cI false)})
       (label {:for   input-id
@@ -142,7 +141,7 @@
            :selected (cF (= (:title jsort)
                            (:title (mget sort-control :job-sort))))
            :onclick  (fn [e]
-                       (let [me (evt-tag e)]
+                       (let [me (evt-mx e)]
                         (if (mget me :selected)
                           (mswap! sort-control :job-sort
                             update :order #(* -1 %))
@@ -178,7 +177,7 @@
                         "visibility:" (if true #_(pos? (mget me :excluded-ct)) "visible;" "hidden;")
                         "border:" (if (pos? (mget me :on-off)) "thin solid red;" "none;")))
          :content (cF (str "&#x20E0;: " (mget me :excluded-ct)))
-         :onclick #(mswap! (evt-tag %) :on-off not)
+         :onclick #(mswap! (evt-mx %) :on-off not)
          :title   "Show/hide items you have excluded"}
     {:name        :show-excluded-jobs
      :on-off      (cI false)
@@ -199,7 +198,7 @@
                                          (js/parseInt (utl/target-val e) 10)
                                          (catch :default e nil))]
                           (when-not (js/Number.isNaN lim)
-                            (mset! (evt-tag e) :limit lim))))}
+                            (mset! (evt-mx e) :limit lim))))}
       {:name  :result-limit
        :limit (cI result-limit-default)})))
 
@@ -207,7 +206,7 @@
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
            :onclick (fn [e]
-                      (mswap! (evt-tag e) :expanded not))
+                      (mswap! (evt-mx e) :expanded not))
            :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
     {:expanded (cI false

@@ -17,7 +17,7 @@
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
 
-            [mxweb.gen :refer [evt-tag target-value]
+            [mxweb.gen :refer [evt-mx target-value]
              :refer-macros [h1 h2 h3 h4 h5 section label header footer br
                             textarea p span a img ul li input div button]]
             [mxweb.style
@@ -37,7 +37,7 @@
 
 (defn test-page-3 []
   [(div {:id      "xx"
-         :onclick #(let [me (evt-tag %)]
+         :onclick #(let [me (evt-mx %)]
                      (when true                             ;; (= (:id @me) "xx")
                        (println :xx-click!! % (:id @me) (:clicks @me))
                        (mset! me :clicks (inc (:clicks @me)))))}
@@ -68,9 +68,9 @@
                :mxweb/type "checkbox"
                :value    "subvalue"
                :checked  (cF (mget me :subbing?))
-               :onclick  #(let [tgt (evt-tag %)]
+               :onclick  #(let [tgt (evt-mx %)]
                             (.stopPropagation %)
-                            (mset! (evt-tag %) :subbing?
+                            (mset! (evt-mx %) :subbing?
                               (not (mget me :subbing?))))}
               {:subbing? (cI true)})
        (label {:for "subId"}
@@ -130,7 +130,7 @@
   [(h1 {:class "mdl-typography--display-2"} "Clojure NYC Meet-Up")
    (p {:class "mdl-typography--display-1"} "A Night to Remember")
    (div {:id      "xx"
-         :onclick #(let [me (evt-tag %)]
+         :onclick #(let [me (evt-mx %)]
                      (when (= (:id @me) "xx")
                        (println :xx-click!! % (:id @me) (:clicks @me))
                        (mset! me :clicks (inc (:clicks @me)))
