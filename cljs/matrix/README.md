@@ -1,9 +1,9 @@
 # Matrix / CLJS
 ### ...by TodoMVC Example
 
-Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [Tag](https://github.com/kennytilton/tag/tree/master/cljs), a sneaky-powerful Web framework as simple as its name.
+Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [mxWeb](https://github.com/kennytilton/matrix/tree/master/cljs/mxweb), a glitch-free, efficient Web framework.
 
-We explain Tag in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
+We explain mxWeb in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
 
 > What happens if a sophisticated, generic reactive library supports every aspect of a web app, including the model, logical view, DOM manipulation, and object persistence?
 
