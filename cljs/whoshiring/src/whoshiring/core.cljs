@@ -57,7 +57,7 @@
     (app-banner)
     (div {:style "margin:0px; background:#ffb57d"}
       (pick-a-month)
-      (job-listing-loader)
+      (job-listing-loader) ;; a hidden iframe used for parsing AskHN HTML
       (control-panel)
       (job-list))))
 
@@ -68,12 +68,12 @@
                    :mx-dom (cFonce (with-par me
                                      [(landing-page)])))))
 
-;;; startup....
+;;; --- app startup....
 
 (let [root (gdom/getElement "tagroot") ;; must be defined in index.html
       app-matrix (matrix-build!)
-      mx-dom (mget app-matrix :mx-dom)
-      app-dom (tag-dom-create mx-dom)]
+      app-dom (tag-dom-create
+                (mget app-matrix :mx-dom))]
   (set! (.-innerHTML root) nil)
   (gdom/appendChild root app-dom)
   #_ (when-let [route-starter (mget app-matrix :router-starter)]

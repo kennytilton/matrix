@@ -95,9 +95,8 @@
                :padding         0
                :margin          0}}
     {:name          :job-list
-     :selected-jobs (cF (let [raw-jobs (mget (fmu :job-loader) :jobs)
-                              sel-jobs (ctl/job-list-filter me raw-jobs)]
-                          sel-jobs))
+     :selected-jobs (cF (ctl/job-list-filter me
+                          (mget (fmu :job-loader) :jobs)))
      :sorted-jobs   (cF (job-list-sort me
                           (mget me :selected-jobs)))
      :kid-factory   job-list-item

@@ -4,27 +4,6 @@
             [tiltontec.model.core :refer [mget] :as md]
             [whoshiring.job-memo :as memo]))
 
-(declare job-parse-extend)
-
-(def dbg (atom true))
-
-(defn job-parse
-  "The top-level function that takes a dom node and
-  tries to extract a job spec to drive the rest of
-  the app. Note that no job results unless the parser
-  marks :OK as true."
-  [loader dom]
-  (let [spec (atom {:hn-id (.-id dom)})]
-    (doseq [child (prim-seq (.-children dom))]
-      (job-parse-extend spec child))
-
-    (when (:OK @spec)
-      (assoc @spec
-        :memo (let [mo-id (mget loader :month-hn-id)
-                    job-id (:hn-id @spec)]
-                (or (get (mget (md/mx-par loader) :memos) (memo/askwho-ls-key mo-id job-id))
-                  (memo/make-job-memo mo-id job-id)))))))
-
 ;;; key regexs used to decide job attributes for search filters
 
 (def internOK (js/RegExp. "internship|intern|interns" "i"))
@@ -94,3 +73,22 @@
     (when (not= cn "reply")
       (doseq [child (prim-seq (.-children dom))]
         (job-parse-extend spec child)))))
+
+;;; --- job parse ---------------------------------------
+
+(defn job-parse
+  "The top-level function that takes a dom node and
+  tries to extract a job spec to drive the rest of
+  the app. Note that no job results unless the parser
+  marks :OK as true."
+  [loader dom]
+  (let [spec (atom {:hn-id (.-id dom)})]
+    (doseq [child (prim-seq (.-children dom))]
+      (job-parse-extend spec child))
+
+    (when (:OK @spec)
+      (assoc @spec
+        :memo (let [mo-id (mget loader :month-hn-id)
+                    job-id (:hn-id @spec)]
+                (or (get (mget (md/mx-par loader) :memos) (memo/askwho-ls-key mo-id job-id))
+                  (memo/make-job-memo mo-id job-id)))))))

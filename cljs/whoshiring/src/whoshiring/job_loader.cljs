@@ -173,7 +173,7 @@
                            (with-cc :hide-prgbar
                              (mset! (fmu :progress-bar)
                                :hidden true))))]
-              (every? (fn [ldr] (mget ldr :fini))
+              (every? (fn [loader] (mget loader :fini))
                 (mget me :kids)))
      :jobs  (cF (when (mget me :fini)
                   (apply concat
@@ -182,7 +182,7 @@
      :memos (cF (memo/month-job-memos (mget (fmu :search-mo) :value)))}
     (let [hn-id (mget (fmu :search-mo) :value)
           mo-def (get-monthly-def hn-id)
-          pg-ct (:pgCount mo-def)]                          ;; hhack
+          pg-ct (:pgCount mo-def)]
       (map (fn [pg-no]
              (make-page-loader hn-id (inc pg-no)))
         (range pg-ct)))))
