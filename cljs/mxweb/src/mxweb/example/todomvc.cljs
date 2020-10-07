@@ -11,7 +11,7 @@
             [tiltontec.cell.observer :refer-macros [fn-obs]]
 
 
-            [tiltontec.model.core :refer [matrix mx-par <mget mset!>
+            [tiltontec.model.core :refer [matrix mx-par mget mset!
                                           fget mxi-find mxu-find-type
                                           kid-values-kids] :as md]
             [mxweb.html
@@ -23,7 +23,7 @@
 
             [mxweb.gen
              :refer-macros [section header h1 input footer p a span label ul li div button br]
-             :refer [dom-tag evt-tag]]
+             :refer [dom-tag evt-mx]]
 
             [mxweb.style :refer [make-css-inline]]
 
@@ -92,7 +92,7 @@
             {:default     :ignore
              :on-navigate (fn [route params query]
                             (prn :bam-route route)
-                            (mset!> @matrix :route (name route)))}))
+                            (mset! @matrix :route (name route)))}))
 
 ;;; --- the landing page -------------------------------
 
@@ -131,9 +131,9 @@
                                   todos (mx-todos)]
                               (when-not (= title "")
                                 (do                         ;; tufte/p ::growtodo
-                                  (mset!> todos :items-raw
+                                  (mset! todos :items-raw
                                     (do                     ;; tufte/p ::conj-todo
-                                      (conj (<mget todos :items-raw) ;; 'raw' is 'before filtering out logical deletes'
+                                      (conj (mget todos :items-raw) ;; 'raw' is 'before filtering out logical deletes'
                                             (tufte/p ::mktodo
                                               (make-todo {:title title})))))))
                               (form/setValue (.-target %) ""))))}))
@@ -143,7 +143,7 @@
 
 (defn todo-list-items []
   (section {:class  "main"
-            :hidden (cF (<mget (mx-todos me) :empty?))}
+            :hidden (cF (mget (mx-todos me) :empty?))}
            (toggle-all)
            (ul {:class "todo-list"}
 
@@ -154,12 +154,12 @@
                {:selections  (cI nil)
                 :kid-values  (cF (when-let [rte (mx-route me)]
                                    (sort-by td-created
-                                            (<mget (mx-todos me)
+                                            (mget (mx-todos me)
                                                     (case rte
                                                       "All" :items
                                                       "Completed" :items-completed
                                                       "Active" :items-active)))))
-                :kid-key     #(<mget % :todo)
+                :kid-key     #(mget % :todo)
                 :kid-factory (fn [me todo]
                                (todo-list-item me todo (mx-find-matrix me)))}
 
@@ -177,14 +177,14 @@
     (input {:id        "toggle-all"
             :class     "toggle-all"
             ::mxweb/type "checkbox"
-            :checked   (cF (= (<mget (mx-par me) :action) :uncomplete))})
+            :checked   (cF (= (mget (mx-par me) :action) :uncomplete))})
 
     (label {:for     "toggle-all"
             ;; a bit ugly: handler below is not in kids rule of LABEL, so 'me' is the DIV.
-            :onclick #(let [action (<mget me :action)]
+            :onclick #(let [action (mget me :action)]
                         (event/preventDefault %)            ;; else browser messes with checked, which we handle
                         (doseq [td (mx-todo-items)]
-                          (mset!> td :completed (when (= action :complete) (now)))))}
+                          (mset! td :completed (when (= action :complete) (now)))))}
            "Mark all as complete")))
 
 ;; --- AE autocheck -----------------------
@@ -198,19 +198,19 @@
 
     (input {:id        "ae-autocheckbox"
             ::mxweb/type "checkbox"
-            :onchange #(let [on? (<mget me :on?)]
+            :onchange #(let [on? (mget me :on?)]
                          (event/preventDefault %)            ;; else browser messes with checked, which we handle
                          (println :ae-chkbox-onchange on? (.-value (.-target %)))
-                         (mset!> me :on? (not on?)))
-            :checked   (cF (println :checked????? (<mget (mx-par me) :on?))
-                           (<mget (mx-par me) :on?))})
+                         (mset! me :on? (not on?)))
+            :checked   (cF (println :checked????? (mget (mx-par me) :on?))
+                           (mget (mx-par me) :on?))})
 
     (label {:for     "ae-autocheckbox"
             ;; a bit ugly: handler below is not in kids rule of LABEL, so 'me' is the DIV.
-            :onclick #(let [on? (<mget me :on?)]
+            :onclick #(let [on? (mget me :on?)]
                         (event/preventDefault %)            ;; else browser messes with checked, which we handle
                         (println :ae-label-click on?)
-                        (mset!> me :on? (not on?)))}
+                        (mset! me :on? (not on?)))}
            "Auto AE")))
 
 
@@ -221,21 +221,21 @@
     (div {:class   "std-clock"
           :content (cF (subs (.toDateString
                                (js/Date.
-                                 (<mget me :clock)))
+                                 (mget me :clock)))
                              4))}
       {:clock  (cI (now))
        :ticker (cFonce (js/setInterval
                          #(when (pos? (swap! steps dec))
                             (let [time-step (* 6 3600 1000)
-                                  w (<mget me :clock)]
-                              (mset!> me :clock (+ w time-step))))
+                                  w (mget me :clock)]
+                              (mset! me :clock (+ w time-step))))
                          1000))})))
 
 ;; --- dashboard -------------------------------------
 
 (defn dashboard-footer []
   (footer {:class  "footer"
-           :hidden (cF (<mget (mx-todos me) :empty?))}
+           :hidden (cF (mget (mx-todos me) :empty?))}
 
           (span {:class   "todo-count"
                  :content (cF (pp/cl-format nil "<strong>~a</strong>  item~:P remaining"
@@ -254,7 +254,7 @@
                           label))))
 
           (button {:class   "clear-completed"
-                   :hidden  (cF (empty? (<mget (mx-todos me) :items-completed)))
+                   :hidden  (cF (empty? (mget (mx-todos me) :items-completed)))
                    :onclick #(doseq [td (filter td-completed (mx-todo-items))]
                                (td-delete! td))}
                   "Clear completed")))
@@ -262,7 +262,7 @@
 ;; --- convenient accessors ---------------------
 
 (defn mx-route [mx]
-  (<mget (mx-find-matrix mx) :route))
+  (mget (mx-find-matrix mx) :route))
 
 (defn mx-todos
   "Given a node in the matrix, navigate to the root and read the todos. After
@@ -270,7 +270,7 @@
   and find the matrix in @matrix. Put another way, a starting node is required
   during the matrix's initial build."
   ([]
-   (<mget @matrix :todos))
+   (mget @matrix :todos))
 
   ([mx]
    (if (nil? mx)

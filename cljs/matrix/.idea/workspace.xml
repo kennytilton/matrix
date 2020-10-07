@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="" />
+    <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../example/whoishiring/core.clj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../todomx/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../todomx/project.clj" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -133,11 +137,11 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="816" y="182" width="1165" height="498" key="find.popup" timestamp="1601557290688">
+    <state x="816" y="182" width="1165" height="695" key="find.popup" timestamp="1601651266562">
       <screen x="0" y="23" width="2560" height="999" />
     </state>
     <state x="-1744" y="249" width="1165" height="705" key="find.popup/-2560.23.2560.1417/0.23.2560.999@-2560.23.2560.1417" timestamp="1600714124142" />
-    <state x="816" y="182" width="1165" height="498" key="find.popup/-2560.23.2560.1417/0.23.2560.999@0.23.2560.999" timestamp="1601557290688" />
+    <state x="816" y="182" width="1165" height="695" key="find.popup/-2560.23.2560.1417/0.23.2560.999@0.23.2560.999" timestamp="1601651266562" />
   </component>
   <component name="masterDetails">
     <states>

@@ -5,8 +5,8 @@
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer-macros [with-par]
-             :refer [matrix mx-par <mget mset!> mxi-find mxu-find-name] :as md]
-            [mxweb.gen :refer [evt-tag target-value] :refer-macros [h1 input div]]
+             :refer [matrix mx-par mget mset! mxi-find mxu-find-name] :as md]
+            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 input div]]
             [tiltontec.cell.synapse :refer-macros [with-synapse]]))
 
 (declare clock time-color)
@@ -81,9 +81,9 @@
         ;; an input over which we have no control, such as an external device that sends
         ;; data at a fixed rate we cannot change.
 
-        :ticker  (cF (js/setInterval #(mset!> me :tick true) 10))
+        :ticker  (cF (js/setInterval #(mset! me :tick true) 10))
 
-        :content (cF (if (<mget me :tick)
+        :content (cF (if (mget me :tick)
                          (let [d (js/Date.)
                                es (/ (- (now) @start) 1000)]
                            (swap! hits inc)
@@ -99,7 +99,7 @@
                              ;; With common requirements such as time-throttling we can reduce all this
                              ;; to a one-liner cSynTimely macro or something.
                              ;; (println :self-me self me (= self me))
-                             (when (<mget self :tick)
+                             (when (mget self :tick)
                                ;; the browser console will show with this print statement the full load
                                ;; of events coming through. Ouside the synapse body, a second print statememnt
                                ;; will show when the "content" formula actually gets re-run (and actually

@@ -7,7 +7,7 @@
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [<mget fasc fm! make mset!> backdoor-reset!]
+     :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]
     [mxweb.base :refer [tag?]]
     [goog.dom.classlist :as classlist]
@@ -23,9 +23,9 @@
   ;; are firing for the first time, because 'me' has not yet
   ;; been installed in the actual DOM, so call this only
   ;; from event handlers and the like.
-  (let [id (<mget me :id)]
+  (let [id (mget me :id)]
     (assert id)
-    (or (<mget me :dom-cache)
+    (or (mget me :dom-cache)
         (if-let [dom (dom/getElement (str id))]
           (backdoor-reset! me :dom-cache dom)
           (println :style-no-element id :found)))))

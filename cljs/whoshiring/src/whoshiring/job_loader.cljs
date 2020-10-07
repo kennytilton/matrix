@@ -7,8 +7,8 @@
              :refer [cI c-reset! make-cell]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
-             :refer-macros [with-par mdv! mx-par]
-             :refer [fmo matrix mset!> <mget mswap!>] :as md]
+             :refer-macros [with-par mdv! mx-par fmu]
+             :refer [fmo matrix mset! mget mswap!] :as md]
             [mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
@@ -16,11 +16,10 @@
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
             [mxweb.gen
-             :refer-macros [section select option progress header
+             :refer-macros [section select option progress header img
                             iframe i h1 input footer p a span label ul li div button]
-             :refer [evt-tag dom-tag]]
+             :refer [evt-mx dom-tag]]
             [whoshiring.job-parse :as jp]
-            [whoshiring.local-storage :as st]
             [whoshiring.job-memo :as memo]))
 
 (defn gMonthlies-cljs
@@ -42,14 +41,13 @@
 (defn month-selector []
   (select {:name     :search-mo
            :class    "searchMonth"
-           :onchange (fn [e]
-                       (let [me (evt-tag e)
-                             pgr (md/mxu-find-name me :progress-bar)]
-                         (mset!> pgr :value 0)
-                         (mset!> pgr :maxN 0)
-                         (mset!> pgr :seen #{})
-                         ;; (mset!> pgr :hidden false))
-                         (mset!> me :value (utl/target-val e))))}
+           :onchange #(let [me (evt-mx %)
+                            pgr (fmu :progress-bar)]
+                        (mset! pgr :value 0)
+                        (mset! pgr :maxN 0)
+                        (mset! pgr :seen #{})
+                        (mset! pgr :hidden false)
+                        (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
             (option {:value hnId} desc))
@@ -57,26 +55,28 @@
 
 (defn hn-month-link []
   ;; An HN icon <a> tag linking to the actual HN page.
-  (utl/view-on-hn {:style {:margin-right "9px"}}
-    (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
-          (mdv! :search-mo :value)))))
+  (a {:href  (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
+                   (mdv! :search-mo :value)))
+      :title "View on the HN site"
+      :style {:margin-right "9px"}}
+    (img {:src "dist/hn24.png"})))
 
 (defn month-load-progress-bar []
-  (progress {:max    (cF (str (<mget me :maxN)))
-             :hidden (cI false)                             ;; (cF (mdv! :search-mo :value))
+  (progress {:max    (cF (str (mget me :maxN)))
+             :hidden (cI false)
              :value  (cI 0)}
     {:name :progress-bar
      :maxN (cI 0)
      :seen (cI #{})}))
 
-(def PARSE_CHUNK_SIZE 10)                                   ;; hhack
+(def PARSE_CHUNK_SIZE 20)
 
 (defn month-jobs-total []
   (span {:style   "color: #fcfcfc; margin: 0 12px 0 12px"
          :content (cF
-                    (if (<mget (md/mxu-find-name me :job-loader) :fini)
-                      (str "Total jobs: " (count (<mget (md/mxu-find-name me :job-loader) :jobs)))
-                      (str "Parsing: " (* 1 PARSE_CHUNK_SIZE (<mget (md/mxu-find-name me :progress-bar) :value)))))}))
+                    (if (mget (fmu :job-loader) :fini)
+                      (str "Total jobs: " (count (mget (fmu :job-loader) :jobs)))
+                      (str "Parsing: " (* 1 PARSE_CHUNK_SIZE (mget (fmu :progress-bar) :value)))))}))
 
 ;; --- pick-a-month itself ----------------------------------
 
@@ -90,8 +90,7 @@
 
 ;;; ----   job-listing-loader -----------------------------
 
-
-(def public-res "/scrapes/~a/~a.html")
+(def scraped-html-path "/scrapes/~a/~a.html")
 
 (defn month-page-urls
   "Compute a vector of string URLs to be scraped, given month info
@@ -102,7 +101,7 @@
     (if-let [mo-def (get-monthly-def month-hn-id)]          ;; hard-coded table in index.html
       (map (fn [pg-offset]
              ;; files are numbered off-by-one to match the page param on HN
-             (pp/cl-format nil public-res month-hn-id (inc pg-offset)))
+             (pp/cl-format nil scraped-html-path month-hn-id (inc pg-offset)))
         (range (:pgCount mo-def)))
       (throw (js/Exception. (str "msg id " month-hn-id " not defined in gMonthlies table."))))))
 
@@ -117,29 +116,27 @@
   (let [total (count listings)
         tot-char 0
         temp-jobs (atom nil)]
-    (letfn [(chunker [offset]
+    (letfn [(cleanup []
+              (mset! loader :jobs @temp-jobs)
+              (mset! loader :fini true)
+              (frame-zap loader))
+            (chunker [offset]
               ;; todo cljourify
               (let [jct (min (- total offset) chunk-size)]
                 (if (pos? jct)
                   (do
                     (dotimes [jn jct]
                       (let [dom (nth listings (+ offset jn))]
-                        (when-not (some #{(.-id dom)} (<mget progress-bar :seen))
-                          (mswap!> progress-bar :seen conj (.-id dom))
+                        (when-not (some #{(.-id dom)} (mget progress-bar :seen))
+                          (mswap! progress-bar :seen conj (.-id dom))
                           (let [spec (jp/job-parse loader dom)]
                             (when (:OK spec)
                               (swap! temp-jobs conj spec))))))
-                    (mswap!> progress-bar :value inc)
+                    (mswap! progress-bar :value inc)
                     (if (< (count @temp-jobs) PAGE_JOBS_MAX)
                       (js/requestAnimationFrame #(chunker (+ offset jct)))
-                      (do
-                        (mset!> loader :jobs @temp-jobs)
-                        (mset!> loader :fini true)
-                        (frame-zap loader))))
-                  (do
-                    (mset!> loader :jobs @temp-jobs)
-                    (mset!> loader :fini true)
-                    (frame-zap loader)))))]
+                      (cleanup)))
+                  (cleanup))))]
       (chunker 0))))
 
 ;;; --- getting aThings from pages ------------------------------------
@@ -152,18 +149,17 @@
       (if-let [a-things (seq (take ATHING-PARSE-MAX (prim-seq (.querySelectorAll hn-body ".athing"))))]
         (do (set! (.-innerHTML hn-body) "")                 ;; free up memory
             (let [pgr (md/mxu-find-name loader :progress-bar)]
-              (mswap!> pgr :maxN +
+              (mswap! pgr :maxN +
                 (Math/floor (/ (count a-things) PARSE_CHUNK_SIZE)))
               (parse-listings loader a-things PARSE_CHUNK_SIZE pgr pg-no)))
-        (mset!> loader :fini true)))
-    (mset!> loader :fini true)))
+        (mset! loader :fini true)))
+    (mset! loader :fini true)))
 
 (defn make-page-loader [hn-id pg-no]
   (iframe {:src    (cF (pp/cl-format nil "/scrapes/~a/~a.html"
                          hn-id pg-no))
            :style  "display:none"
-           :onload (fn [e]
-                     (jobs-collect (evt-tag e) pg-no))}
+           :onload #(jobs-collect (evt-mx %) pg-no)}
     {:month-hn-id hn-id
      :jobs        (cI nil)
      :fini        (cI false)
@@ -172,24 +168,21 @@
 (defn job-listing-loader []
   (div {:style "visibility:collapsed;"}
     {:name  :job-loader
-     :fini  (cF+ [:obs (fn [slot me fini?]
+     :fini  (cF+ [:obs (fn [_ me fini?]
                          (when fini?
                            (with-cc :hide-prgbar
-                             (mset!> (md/mxu-find-name me :progress-bar)
+                             (mset! (fmu :progress-bar)
                                :hidden true))))]
-              (every? (fn [ldr] (<mget ldr :fini))
-                (<mget me :kids)))
-     :jobs  (cF (when (<mget me :fini)
+              (every? (fn [loader] (mget loader :fini))
+                (mget me :kids)))
+     :jobs  (cF (when (mget me :fini)
                   (apply concat
-                    (map (fn [k] (<mget k :jobs))
-                      (<mget me :kids)))))
-     :memos (cF (st/io-get-wild (st/askwho-ls-key (<mget (md/mxu-find-name me :search-mo) :value))
-                  (fn [raw-obj]
-                    (let [json-obj (st/io-read-json raw-obj)]
-                      (memo/load-job-memo json-obj)))))}
-    (let [hn-id (<mget (md/mxu-find-name me :search-mo) :value)
+                    (map (fn [k] (mget k :jobs))
+                      (mget me :kids)))))
+     :memos (cF (memo/month-job-memos (mget (fmu :search-mo) :value)))}
+    (let [hn-id (mget (fmu :search-mo) :value)
           mo-def (get-monthly-def hn-id)
-          pg-ct (:pgCount mo-def)]                          ;; hhack
+          pg-ct (:pgCount mo-def)]
       (map (fn [pg-no]
              (make-page-loader hn-id (inc pg-no)))
         (range pg-ct)))))

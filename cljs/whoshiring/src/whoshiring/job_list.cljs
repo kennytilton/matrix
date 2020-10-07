@@ -5,14 +5,13 @@
      :refer-macros [cF cF+ c-reset-next! cFonce cFn]
      :refer [cI c-reset! make-cell]]
     [tiltontec.model.core
-     :refer-macros [with-par mdv! mx-par]
-     :refer [matrix mset!> <mget mswap!> fget *par*] :as md]
+     :refer-macros [with-par mdv! mx-par fmu]
+     :refer [matrix mset! mget mswap! fget *par*] :as md]
     [mxweb.gen
      :refer-macros [section header i h1 input footer p a span label ul li div button]
-     :refer [evt-tag dom-tag]]
-    [whoshiring.filtering :as flt]
-    [whoshiring.user-annotations :as ua]
-    [goog.string :as gs]
+     :refer [evt-mx dom-tag]]
+    [whoshiring.control-panel :as ctl]
+    [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
     [whoshiring.ui-common :refer [target-val] :as utl]
     [whoshiring.job-loader :as loader]
@@ -32,18 +31,17 @@
     (p (str "Unexpected n type = " (.-nodeType n)))))
 
 (defn deets? [me]
-  (<mget (md/mxu-find-name me :job-listing) :expanded))
+  (mget (fmu :job-listing) :expanded))
 
 (defn job-header [job]
   (div {:style   {:cursor  "pointer"
                   :display "flex"}
-        :onclick (fn [e]
-                   (mswap!> (md/mxu-find-name (evt-tag e) :job-listing)
-                     :expanded not))}
+        :onclick #(mswap! (md/mxu-find-name (evt-mx %) :job-listing)
+                    :expanded not)}
     (span {:style (cF (str "color:red;max-height:16px;margin-right:9px; display:"
-                          (if (or (deets? me)
-                                (zero? (memo/<job-memo job :stars)))
-                            "none" "block")))}
+                        (if (or (deets? me)
+                              (zero? (memo/job-memo job :stars)))
+                          "none" "block")))}
       (utl/unesc "&#x2b51"))
     (div (map node-to-hiccup
            (:title-seg job)))))
@@ -68,20 +66,20 @@
 (defn job-list-item [job-no job]
   (li {:class "jobli"
        :style (cF {:cursor  "pointer"
-                   :display (if (and (memo/<job-memo job :excluded)
-                                     (not (<mget (md/mxu-find-name me :show-excluded-jobs) :on-off))
+                   :display (if (and (memo/job-memo job :excluded)
+                                     (not (mget (fmu :show-excluded-jobs) :on-off))
                                      ; if they have asked to see excluded items, show regardless
-                                     (not (<mget (md/mxu-find-name me "ExcludedID") :on-off)))
+                                     (not (mget (fmu "ExcludedID") :on-off)))
                               "none" "block")})}
-    {:name :job-listing
+    {:name     :job-listing
      :expanded (cI false)
-     :job  job}
+     :job      job}
     (job-header job)
     (job-details job)))
 
 (defn job-list-sort [me jobs]
   (let [{:keys [key-fn comp-fn order prep-fn] :as spec}
-        (<mget (md/mxu-find-name me :sort-by) :job-sort)]
+        (mget (fmu :sort-by) :job-sort)]
     (cond
       spec (sort (fn [j k]
                    (if comp-fn
@@ -92,21 +90,20 @@
 
 (defn job-list []
   (ul {:style {:list-style-type "none"
-                 :background      "#eee"
-                 ;; these next defeat gratuitous default styling of ULs by browser
-                 :padding         0
-                 :margin          0}}
-      {:name          :job-list
-       :selected-jobs (cF (let [raw-jobs (<mget (md/mxu-find-name me :job-loader) :jobs)
-                                sel-jobs (flt/job-list-filter me raw-jobs)]
-                            sel-jobs))
-       :sorted-jobs   (cF (job-list-sort me
-                            (<mget me :selected-jobs)))
-       :kid-factory   job-list-item
-       :kid-key       #(<mget % :job)
-       :kid-values    (cF (take (or (<mget (md/mxu-find-name me :result-limit) :limit) 999999)
-                            (<mget me :sorted-jobs)))}
-      (md/kid-values-kids me cache)))
+               :background      "#eee"
+               ;; these next defeat gratuitous default styling of ULs by browser
+               :padding         0
+               :margin          0}}
+    {:name          :job-list
+     :selected-jobs (cF (ctl/job-list-filter me
+                          (mget (fmu :job-loader) :jobs)))
+     :sorted-jobs   (cF (job-list-sort me
+                          (mget me :selected-jobs)))
+     :kid-factory   job-list-item
+     :kid-key       #(mget % :job)
+     :kid-values    (cF (take (or (mget (fmu :result-limit) :limit) 999999)
+                          (mget me :sorted-jobs)))}
+    (md/kid-values-kids me cache)))
 
 
 

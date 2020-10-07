@@ -11,7 +11,7 @@
 
     [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [fget <mget fasc fm! make mset!> backdoor-reset!]
+              :refer [fget mget fasc fm! make mset! backdoor-reset!]
               :as md]
 
     [tiltontec.util.core :as util :refer [pln now ]]
@@ -20,7 +20,7 @@
                       close! take partition-by offer! poll! <! >! alts!] :as async]))
 
 (defn pipe-segs [pipe]
-  (<mget pipe :kids))
+  (mget pipe :kids))
 
 (defn pipe-seg-by-id [pipe id]
   (get (:seg-id-map @pipe) id))
@@ -66,12 +66,12 @@
                           :let [id (swap! ida inc)]]
                       (make-pipe-seg me id proc))))))
 
-    :seg-id-map (cF (let [raw (for [seg (<mget me :kids)]
+    :seg-id-map (cF (let [raw (for [seg (mget me :kids)]
                                 [(pseg-id seg) seg])]
                       (into {} raw)))))
 
 (defn pl-delay [p]
-  (<mget p :delay))
+  (mget p :delay))
 
 (defn make-pipe-seg [pipe id processor]
   ;;(pln :make-seg id pipe)
@@ -93,7 +93,7 @@
              data nil]
 
         ;;(pln :seg-fst-to fst)
-        (mset!> seg :fst fst)
+        (mset! seg :fst fst)
 
         (case fst
           :exit
@@ -148,7 +148,7 @@
             (pln :piping-out!!!! data)
 
             (>! (pseg-pipe-out-data seg) data)
-            (mset!> (pseg-pipe seg) :poutput data)
+            (mset! (pseg-pipe seg) :poutput data)
             (recur :init nil))
 
           :get-ak-from-next-seg
@@ -169,7 +169,7 @@
         (loop [fst :init
                data nil]
 
-          (mset!> pipe :fst fst)
+          (mset! pipe :fst fst)
           (case fst
             :exit
             (pln :pipe-exiting)
@@ -177,7 +177,7 @@
             :init
             (let [d (<! (:in-data @pipe))]
               (pln :pipe-got! d)
-              (mset!> pipe :input d)
+              (mset! pipe :input d)
               (recur (if d :toggle-rq-first :exit) d))
 
             :toggle-rq-first

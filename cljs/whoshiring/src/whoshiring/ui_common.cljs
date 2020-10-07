@@ -7,11 +7,11 @@
     [tiltontec.cell.base :refer [c-unbound?]]
     [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
     [tiltontec.model.core
-     :refer-macros [with-par cFkids mdv!]
-     :refer [matrix <mget mswap!> mset!>] :as md]
+     :refer-macros [with-par cFkids mdv! fmu]
+     :refer [matrix mget mswap! mset!] :as md]
     [mxweb.gen
      :refer-macros [img section header h1 input footer p a span label ul li div button br]
-     :refer [make-tag dom-tag evt-tag]]))
+     :refer [make-tag dom-tag evt-mx]]))
 
 ;;; --- clj++ --------------------------------------
 
@@ -46,36 +46,23 @@
 (defn helping? [me helpeeName]
   (mdv! helpeeName :helping))
 
-(defn help-off! [me helpeeName]
-  (let [h (md/mxu-find-name me helpeeName)]
-    (mset!> h :helping false)))
-
 (defn help-list [helpItems helpeeName]
   (div {:class   (cF (str "help " (slide-in-anime (helping? me helpeeName))))
         :style   (cF {:display     (if (helping? me helpeeName)
                                      "block" "none")
                       :margin-top  0
                       :padding-top "6px"})
-        :onclick (fn [e]
-                   (help-off! (evt-tag e) helpeeName))}
+        :onclick #(let [me (evt-mx %)]
+                    (mset! (fmu helpeeName) :helping false))}
     (div {:style {:cursor      "pointer"
                   :textAlign   "left"
                   :marginRight "18px"}}
       (ul {:style {:listStyle  "none"
                    :marginLeft 0}}
-        (map (fn [e]
-               (li {:style {:padding 0
-                            :margin  "0 18px 9px 0"}}
-                 (span e)))
+        (map #(li {:style {:padding 0
+                           :margin  "0 18px 9px 0"}}
+                (span %))
           helpItems)))))
-
-(defn view-on-hn [attrs uri]
-  (make-tag
-    "a" (merge {:href uri, :title "View on the HN site"} attrs) {}
-    (cFkids (img {:src "dist/hn24.png"})))
-  #_;; after we hack def tag...
-      (a (merge {:href "x42" #_uri, :title "View on the HN site"} attrs)
-        (img {:src "dist/hn24.png"})))
 
 (defn toggle-char [db-key title init-open? on-char off-char & [style]]
   (span {:style   (merge {:font-weight "bold"
@@ -84,25 +71,16 @@
                           :font-family "Arial"
                           :font-size   "1em"} style)
          :title   title
-         :onclick (fn [e] (mswap!> (evt-tag e) :on-off not))}
+         :onclick #(mswap! (evt-mx %) :on-off not)}
     {:name   db-key
      :on-off (cI init-open?)}
-    (unesc (if (<mget me :on-off) on-char off-char))))
+    (unesc (if (mget me :on-off) on-char off-char))))
 
 (defn slide-in-rule [c show?]
   (if show?
     "slideIn"
     (if (c-unbound? c)
       "" "slideOut")))
-
-; function openCase( name, title, ...cases) {
-;    let toggleName = name+"-toggle";
-;    return div(
-;            span( {
-;                style: "margin-left:24px;min-width:48px"
-;            }, title)
-;        , cases.map( c=> c()))
-;}
 
 (defn open-case [name title & case-factories]
   (div

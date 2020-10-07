@@ -12,7 +12,7 @@
             [tiltontec.cell.evaluate :refer [<cget]]
 
 
-            [tiltontec.model.core :refer [matrix mx-par <mget mset!> mswap!>
+            [tiltontec.model.core :refer [matrix mx-par <mget mset! mswap!
                                           fget mxi-find mxu-find-type
                                           kid-values-kids] :as md]
             [mxweb.html
@@ -26,7 +26,7 @@
              :refer-macros [section header h1 input footer p a
                             img h2 h3 h4
                             pre span label ul li div button br code]
-             :refer [dom-tag evt-tag]]
+             :refer [dom-tag evt-mx]]
 
             [mxweb.style :refer [make-css-inline]]
 
@@ -238,7 +238,7 @@
       ;; these next two lines "lift" the system clock into the matrix where
       ;; other things can be affected by it.
       :time (cI (int (/ (now) 1000)))
-      :ticker (cF1 (js/setInterval #(mswap!> me :time inc) 1000))
+      :ticker (cF1 (js/setInterval #(mswap! me :time inc) 1000))
 
       :rx (cF1 (let [matrix me]
                  (md/make
@@ -300,7 +300,7 @@
     {:default     :ignore
      :on-navigate (fn [route params query]
                     (prn :bam-route route)
-                    (mset!> @matrix :route (name route)))}))
+                    (mset! @matrix :route (name route)))}))
 
 ;;; --- graveyard -----------------------------
 #_(prn :build-mx-URL!!!! (.-documentURI js/document))

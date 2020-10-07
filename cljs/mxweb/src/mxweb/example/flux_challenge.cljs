@@ -7,9 +7,9 @@
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
              :refer-macros [with-par]
-             :refer [matrix mx-par <mget mset!> mxi-find mxu-find-name mxu-find-type
+             :refer [matrix mx-par mget mset! mxi-find mxu-find-name mxu-find-type
                      kid-values-kids] :as md]
-            [mxweb.gen :refer [evt-tag target-value]
+            [mxweb.gen :refer [evt-mx target-value]
              :refer-macros [h1 h3 h6 input div section button ul li]]
             [mxweb.html
              :refer [io-read io-upsert io-clear-storage
@@ -35,7 +35,7 @@
     :obi-trakker (cF (if-let [sock (js/WebSocket. "ws://localhost:4000")]
                        (do
                          (set! (.-onmessage sock)
-                           #(mset!> me :obi-loc (.-name (.parse js/JSON (.-data %)))))
+                           #(mset! me :obi-loc (.-name (.parse js/JSON (.-data %)))))
                          sock)
                        (throw (js/Error. "Web socket connection failed: "))))
     :obi-loc (cI nil)
@@ -52,13 +52,13 @@
                                 :name  "sith-list"}
 
                              {:kid-values  (cF (mtx-sith-ids me))
-                              :kid-key     #(<mget % :sith-id)
+                              :kid-key     #(mget % :sith-id)
                               :kid-factory (fn [me sith-id]
                                              (sith-view me sith-id))
 
-                              :next-up     (cF (get-in (<get-info (first (<mget me :kids)))
+                              :next-up     (cF (get-in (<get-info (first (mget me :kids)))
                                                  [:master :id]))
-                              :next-down   (cF (get-in (<get-info (last (<mget me :kids)))
+                              :next-down   (cF (get-in (<get-info (last (mget me :kids)))
                                                  [:apprentice :id]))}
 
                              (kid-values-kids me cache))
@@ -76,7 +76,7 @@
 
      :onclick  (cF #(let [ul (<mget me :ul)]
                       (dotimes [_ 2]
-                        (mset!> (the-matrix me) :sith-ids
+                        (mset! (the-matrix me) :sith-ids
                           (case dir
                             "up" (vec (concat [(<mget ul :next-up)] (subvec (mtx-sith-ids me) 0 (dec SLOT_CT))))
                             "down" (vec (conj (subvec (mtx-sith-ids me) 1) (<mget ul :next-down))))))))
@@ -126,7 +126,7 @@
           [m? m-ids] (slot-set-maybe :m curr-ids (dec slot-n) (get-in sith [:master :id]))
           [a? new-ids] (slot-set-maybe :a m-ids (inc slot-n) (get-in sith [:apprentice :id]))]
       (when (or m? a?)
-        (mset!> (the-matrix me) :sith-ids new-ids)))))
+        (mset! (the-matrix me) :sith-ids new-ids)))))
 
 (defn slot-set-maybe [tag slots slot-n elt]
   (if (and elt (>= slot-n 0) (< slot-n SLOT_CT) (not= elt (nth slots slot-n)))
