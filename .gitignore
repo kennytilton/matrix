@@ -10,5 +10,3 @@ checkos
 target
 files
 closure-library
-dev.cljs.edn
-test.cljs.edn

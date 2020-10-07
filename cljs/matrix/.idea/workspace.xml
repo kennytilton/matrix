@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../example/whoishiring/core.clj" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/grab" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/grab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_loader.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_loader.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_parse.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_parse.cljs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../todomx/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../todomx/project.clj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
