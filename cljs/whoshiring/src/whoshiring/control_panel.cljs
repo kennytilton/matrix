@@ -10,8 +10,8 @@
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [matrix mset! mget mswap!] :as md]
             [mxweb.gen
-             :refer-macros [section header i h1 input footer p a span label ul li div button]
              :refer [evt-mx dom-tag]]
+            [mxweb.gen-macro :refer-macros [section header i h1 input footer p a span label ul li div button]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
             [whoshiring.job-memo :refer [job-memo] :as memo]))

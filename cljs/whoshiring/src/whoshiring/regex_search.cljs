@@ -7,10 +7,11 @@
              :refer-macros [with-par fmu]
              :refer [matrix mset! mget mswap!]]
             [mxweb.gen
-             :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]
-             :refer [dom-tag evt-mx]]
+             :refer [evt-mx]]
+            [mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [whoshiring.preferences :as up]))
 
 (defn rebuild-regex-tree [me]
   (let [match-case (mget (fmu :rgx-match-case) :on-off)
@@ -21,8 +22,8 @@
                     (js/RegExp. term (str options (when (and (not match-case)
                                                              (not (str/includes? (or options "") "i")))
                                                     "i")))))
-             (str/split or-clause #"&&")))
-      (str/split search #"||"))))
+             (str/split (str/trim or-clause) #"&&")))
+      (str/split search #"\|\|"))))
 
 (defn make-listing-regex [prop lbl desc]
   (let [rgx-id (str prop "rgx")
@@ -106,10 +107,7 @@
       (span {:style   {:color  "white" :margin-left "24px"
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
-             :onclick #(let [me (evt-mx %)]
-                         (mswap! me :helping not))}
-        {:name    :rgx-help-toggle
-         :helping (cI false)}
+             :onclick #(mswap! up/prefs :rgx-help? not)}
         "help"))
-    (utl/help-list regex-help :rgx-help-toggle)))
+    (utl/help-list regex-help :rgx-help?)))
 

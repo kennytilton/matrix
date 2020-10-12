@@ -4,7 +4,7 @@
             [whoshiring.ui-common :as utl]
             [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
-             :refer [cI c-reset! make-cell]]
+             :refer [cI]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
@@ -12,13 +12,11 @@
             [mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
-                     dom-tag tagfo tag-dom
+                      tagfo tag-dom
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
-            [mxweb.gen
-             :refer-macros [section select option progress header img
-                            iframe i h1 input footer p a span label ul li div button]
-             :refer [evt-mx dom-tag]]
+            [mxweb.gen :refer [evt-mx]]
+            [mxweb.gen-macro :refer-macros [select] :as g]
             [whoshiring.job-parse :as jp]
             [whoshiring.job-memo :as memo]))
 
@@ -39,7 +37,7 @@
 ;;; --- pick-a-month components -----------------
 
 (defn month-selector []
-  (select {:name     :search-mo
+  (g/select {:name     :search-mo
            :class    "searchMonth"
            :onchange #(let [me (evt-mx %)
                             pgr (fmu :progress-bar)]
@@ -50,19 +48,19 @@
                         (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
-            (option {:value hnId} desc))
+            (g/option {:value hnId} desc))
       (gMonthlies-cljs))))
 
 (defn hn-month-link []
   ;; An HN icon <a> tag linking to the actual HN page.
-  (a {:href  (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
+  (g/a {:href  (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
                    (mdv! :search-mo :value)))
       :title "View on the HN site"
       :style {:margin-right "9px"}}
-    (img {:src "dist/hn24.png"})))
+    (g/img {:src "dist/hn24.png"})))
 
 (defn month-load-progress-bar []
-  (progress {:max    (cF (str (mget me :maxN)))
+  (g/progress {:max    (cF (str (mget me :maxN)))
              :hidden (cI false)
              :value  (cI 0)}
     {:name :progress-bar
@@ -72,7 +70,7 @@
 (def PARSE_CHUNK_SIZE 20)
 
 (defn month-jobs-total []
-  (span {:style   "color: #fcfcfc; margin: 0 12px 0 12px"
+  (g/span {:style   "color: #fcfcfc; margin: 0 12px 0 12px"
          :content (cF
                     (if (mget (fmu :job-loader) :fini)
                       (str "Total jobs: " (count (mget (fmu :job-loader) :jobs)))
@@ -81,9 +79,9 @@
 ;; --- pick-a-month itself ----------------------------------
 
 (defn pick-a-month []
-  (div {:class "pickAMonth"}
+  (g/div {:class "pickAMonth"}
     (month-selector)
-    (div {:style utl/hz-flex-wrap-centered}
+    (g/div {:style utl/hz-flex-wrap-centered}
       (hn-month-link)
       (month-jobs-total)
       (month-load-progress-bar))))
@@ -156,7 +154,7 @@
     (mset! loader :fini true)))
 
 (defn make-page-loader [hn-id pg-no]
-  (iframe {:src    (cF (pp/cl-format nil "/scrapes/~a/~a.html"
+  (g/iframe {:src    (cF (pp/cl-format nil "/scrapes/~a/~a.html"
                          hn-id pg-no))
            :style  "display:none"
            :onload #(jobs-collect (evt-mx %) pg-no)}
@@ -166,7 +164,7 @@
      :pg-no       pg-no}))
 
 (defn job-listing-loader []
-  (div {:style "visibility:collapsed;"}
+  (g/div {:style "visibility:collapsed;"}
     {:name  :job-loader
      :fini  (cF+ [:obs (fn [_ me fini?]
                          (when fini?

@@ -10,8 +10,9 @@
      :refer-macros [with-par cFkids mdv! fmu]
      :refer [matrix mget mswap! mset!] :as md]
     [mxweb.gen
-     :refer-macros [img section header h1 input footer p a span label ul li div button br]
-     :refer [make-tag dom-tag evt-mx]]))
+     :refer [make-tag dom-tag evt-mx]]
+    [mxweb.gen-macro :refer-macros [img section header h1 input footer p a span label ul li div button br]]
+    [whoshiring.preferences :as up]))
 
 ;;; --- clj++ --------------------------------------
 
@@ -43,17 +44,13 @@
 
 ;;; --- reusable components -----
 
-(defn helping? [me helpeeName]
-  (mdv! helpeeName :helping))
-
-(defn help-list [helpItems helpeeName]
-  (div {:class   (cF (str "help " (slide-in-anime (helping? me helpeeName))))
-        :style   (cF {:display     (if (helping? me helpeeName)
+(defn help-list [helpItems pref-property]
+  (div {:class   (cF (str "help " (slide-in-anime (mget up/prefs pref-property))))
+        :style   (cF {:display     (if (mget up/prefs pref-property)
                                      "block" "none")
                       :margin-top  0
                       :padding-top "6px"})
-        :onclick #(let [me (evt-mx %)]
-                    (mset! (fmu helpeeName) :helping false))}
+        :onclick #(mset! up/prefs pref-property false)}
     (div {:style {:cursor      "pointer"
                   :textAlign   "left"
                   :marginRight "18px"}}

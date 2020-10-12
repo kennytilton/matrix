@@ -8,8 +8,8 @@
      :refer-macros [with-par mdv! mx-par fmu]
      :refer [matrix mset! mget mswap! fget *par*] :as md]
     [mxweb.gen
-     :refer-macros [section header i h1 input footer p a span label ul li div button]
-     :refer [evt-mx dom-tag]]
+     :refer [evt-mx ]]
+    [mxweb.gen-macro :refer-macros [img section header h1 input footer p a span label ul li div button br]]
     [whoshiring.control-panel :as ctl]
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]

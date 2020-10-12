@@ -10,9 +10,10 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
 
+    [mxweb.gen-macros
+     :refer-macros [section header h1 input footer p a span label ul li div button br]]
     [mxweb.gen
-     :refer-macros [section header h1 input footer p a span label ul li div button br]
-     :refer [make-tag dom-tag evt-mx]]))
+     :refer [make-tag evt-mx]]))
 
 (defn tag-checkbox
   ;; todo: test variants

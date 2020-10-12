@@ -7,10 +7,10 @@
     [tiltontec.model.core
      :refer-macros [with-par mdv!]
      :refer [matrix mswap! mget] :as md]
-    [mxweb.gen
-     :refer-macros [section header h1 input footer p a span label ul li div button br]
-     :refer [dom-tag evt-mx]]
+    [mxweb.gen :refer [ evt-mx]]
+    [mxweb.gen-macro :refer-macros [section header h1 input footer p a span label ul li div button br]]
     [mxweb.html :refer [tag-dom-create *mxweb-trace*]]
+    [whoshiring.preferences :as up]
     [whoshiring.ui-common :as utl]
     [whoshiring.job-loader :refer [pick-a-month job-listing-loader]]
     [whoshiring.control-panel :refer [control-panel]]
@@ -38,17 +38,15 @@
 (defn app-banner []
   (div {:style {:background "PAPAYAWHIP"}}
     (header {}
-      (div {:content (cF (if (mget me :helping)
+      (div {:content (cF (if (mget up/prefs :app-help?)
                            "hide" "Pro Tips"))
             :class   "about"
             :title   "Usage hints, and credit where due."
-            :onclick #(mswap! (evt-mx %) :helping not)}
-        {:name :app-help
-         :helping (cI false)})
+            :onclick #(mswap! up/prefs :app-help? not)})
       (div {:class "headermain"}
         (span {:class "askhn"} "Ask HN:")
         (span {:class "who"} "Who Is Hiring?")))
-    (utl/help-list app-help-entry :app-help)))
+    (utl/help-list app-help-entry :app-help?)))
 
 ;;; --- landing page ------------------------------------
 
@@ -68,16 +66,23 @@
                    :mx-dom (cFonce (with-par me
                                      [(landing-page)])))))
 
-;;; --- app startup....
+(defn main! []
+  (println "[main]: loading")
+  (let [root (gdom/getElement "tagroot") ;; must be defined in index.html
+        app-matrix (matrix-build!)
+        app-dom (tag-dom-create
+                  (mget app-matrix :mx-dom))]
+    (set! (.-innerHTML root) nil)
+    (gdom/appendChild root app-dom)
+    #_ (when-let [route-starter (mget app-matrix :router-starter)]
+         (route-starter))))
 
-(let [root (gdom/getElement "tagroot") ;; must be defined in index.html
-      app-matrix (matrix-build!)
-      app-dom (tag-dom-create
-                (mget app-matrix :mx-dom))]
-  (set! (.-innerHTML root) nil)
-  (gdom/appendChild root app-dom)
-  #_ (when-let [route-starter (mget app-matrix :router-starter)]
-    (route-starter)))
+(defn ^:dev/after-load after-load []
+  (js/console.log "after load")
+  (main!))
+
+(defn ^:dev/before-load before-load []
+  (js/console.log "before load"))
 
 
 

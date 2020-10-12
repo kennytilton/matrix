@@ -1,0 +1,8 @@
+
+{:source-paths ["src"]
+ :dependencies [[tiltontec/mxweb "0.1.8-SNAPSHOT"]]
+ :dev-http {8080 "target/"}
+ :builds {:app {:output-dir "target/"
+                :asset-path "."
+                :target :browser
+                :modules {:main {:init-fn whoshiring.core/main!}}}}}

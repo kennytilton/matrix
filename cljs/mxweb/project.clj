@@ -1,4 +1,4 @@
-(defproject tiltontec/mxweb "0.1.7-SNAPSHOT"
+(defproject tiltontec/mxweb "0.1.8-SNAPSHOT"
   :description "A Web un-Framework for the Matrix (dataflow library)"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
