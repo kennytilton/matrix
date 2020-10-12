@@ -90,5 +90,5 @@
       (assoc @spec
         :memo (let [mo-id (mget loader :month-hn-id)
                     job-id (:hn-id @spec)]
-                (or (get (mget (md/mx-par loader) :memos) (memo/askwho-ls-key mo-id job-id))
+                (or (get (mget (md/mx-par loader) :memos) (memo/job-memo-key mo-id job-id))
                   (memo/make-job-memo mo-id job-id)))))))
