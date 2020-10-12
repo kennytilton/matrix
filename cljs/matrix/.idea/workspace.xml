@@ -2,35 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/../mxweb/shadow-cljs.edn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../mxweb/src/mxweb/gen_macro.clj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../mxweb/src/mxweb/gen_macro.cljs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../whoshiring/shadow-cljs.edn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/flux_challenge.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/flux_challenge.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/gentle_intro.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/gentle_intro.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/gloss.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/gloss.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/pipeline/core.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/pipeline/core.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/pipeline/pipeline.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/pipeline/pipeline.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/startwatch.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/startwatch.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/testing.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/testing.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/ticktock.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/ticktock.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/todo.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/todo.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/todomvc.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/todomvc.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/example/todomx_list_item.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/example/todomx_list_item.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/gen.cljc" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/src/mxweb/gen.cljc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/mxintro/rxtrak.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/archive/mxintro/rxtrak.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/widget.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/src/mxweb/widget.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/control_panel.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/control_panel.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_loader.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_loader.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_memo_ui.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_memo_ui.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/regex_search.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/regex_search.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/ui_common.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/ui_common.cljs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
