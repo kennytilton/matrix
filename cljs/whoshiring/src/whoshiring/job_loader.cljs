@@ -154,7 +154,7 @@
     (mset! loader :fini true)))
 
 (defn make-page-loader [hn-id pg-no]
-  (g/iframe {:src    (cF (pp/cl-format nil "/scrapes/~a/~a.html"
+  (g/iframe {:src    (cF (pp/cl-format nil "scrapes/~a/~a.html"
                          hn-id pg-no))
            :style  "display:none"
            :onload #(jobs-collect (evt-mx %) pg-no)}

@@ -127,6 +127,7 @@
               (dom/appendChild frag
                 (.removeChild pdom (tag-dom newk))))
             ;; should not be necessary...
+            ;;(prn :reorder-rmechild pdom (dom/getFirstElementChild pdom))
             (dom/removeChildren pdom)
             (dom/appendChild pdom frag))
 
@@ -156,6 +157,7 @@
                            (do ; (println :obs-tag-kids-building-new-dom (tagfo newk))
                                (tag-dom-create newk)))))
 
+                     ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
                      (dom/removeChildren pdom)
                      (dom/appendChild pdom frag)))))))
 

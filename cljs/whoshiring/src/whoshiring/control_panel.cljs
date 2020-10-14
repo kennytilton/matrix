@@ -11,15 +11,18 @@
              :refer [matrix mset! mget mswap!] :as md]
             [mxweb.gen
              :refer [evt-mx dom-tag]]
-            [mxweb.gen-macro :refer-macros [section header i h1 input footer p a span label ul li div button]]
+            [mxweb.gen-macro
+             :refer-macros [section header i h1 input footer p a span label ul li div button]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
-            [whoshiring.job-memo :refer [job-memo] :as memo]))
+            [whoshiring.job-memo :refer [job-memo] :as memo]
+            [whoshiring.preferences
+             :refer [pref pref! pref-swap!]]))
 
 ;;; --- filtering -------------------------------------------
 
 (defn make-job-select [key [tag help]]
-  (let [input-id (str tag "ID")]
+  (let [input-id (keyword (str tag "ID"))]
     (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
       (input {:id       input-id
               :title    help
@@ -27,9 +30,10 @@
               :style    "background:#eee"
               :type     "checkbox"
               :checked  (cF (mget me :on-off))
-              :onchange #(mswap! (evt-mx %) :on-off not)}
+              :onchange #(pref-swap! input-id not)}
         {:name   input-id
-         :on-off (cI false)})
+         :hidden-name (str/capitalize tag)
+         :on-off (cF (pref input-id))})
       (label {:for   input-id
               :title help}
         tag))))
@@ -71,7 +75,7 @@
 
 (defn job-list-filter [me jobs]
   (let [fup? (fn [name]
-               (mget (fmu (str name "ID")) :on-off))
+               (mget (fmu (keyword (str name "ID"))) :on-off))
         remote (fup? "REMOTE")
         onsite (fup? "ONSITE")
         interns (fup? "INTERNS")
@@ -174,13 +178,13 @@
 
 (defn excluded-toggle []
   (span {:style   (cF (str "padding-bottom:4px;cursor:pointer;display:flex;align-items:center;font-size:1em;"
-                        "visibility:" (if true #_(pos? (mget me :excluded-ct)) "visible;" "hidden;")
-                        "border:" (if (pos? (mget me :on-off)) "thin solid red;" "none;")))
+                        "visibility:" (if (pos? (mget me :excluded-ct)) "visible;" "hidden;")
+                        "border:" (if (pref :show-excluded-jobs) "thin solid red;" "none;")))
          :content (cF (str "&#x20E0;: " (mget me :excluded-ct)))
-         :onclick #(mswap! (evt-mx %) :on-off not)
+         :onclick #(pref-swap! :show-excluded-jobs not)
          :title   "Show/hide items you have excluded"}
     {:name        :show-excluded-jobs
-     :on-off      (cI false)
+     :on-off      (cF (pref :show-excluded-jobs))
      :excluded-ct (cF (count (filter (fn [j] (memo/job-memo j :excluded))
                                (mget (fmu :job-list) :selected-jobs))))}))
 
@@ -249,7 +253,7 @@
                            (str/join " " (remove nil?
                                            (map (fn [dom]
                                                   (when (.-checked dom)
-                                                    (mget (dom-tag dom) :name)))
+                                                    (mget (dom-tag dom) :hidden-name)))
                                              (concat titles users)))))))})
       make-title-selects
       make-user-selects)

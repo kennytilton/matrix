@@ -45,7 +45,7 @@
             :onclick #(mswap! up/prefs :app-help? not)})
       (div {:class "headermain"}
         (span {:class "askhn"} "Ask HN:")
-        (span {:class "who"} "Who Is Hiring?")))
+        (span {:class "who"} "Who Is Hiring")))
     (utl/help-list app-help-entry :app-help?)))
 
 ;;; --- landing page ------------------------------------

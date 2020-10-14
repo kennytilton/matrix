@@ -14,8 +14,9 @@
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
     [whoshiring.ui-common :refer [target-val] :as utl]
-    [whoshiring.job-loader :as loader]
-    [whoshiring.job-memo :as memo]))
+    [whoshiring.job-memo :as memo]
+    [whoshiring.preferences
+     :refer [pref pref! pref-swap!]]))
 
 (defn node-to-hiccup [n]
   (case (.-nodeType n)
@@ -67,9 +68,9 @@
   (li {:class "jobli"
        :style (cF {:cursor  "pointer"
                    :display (if (and (memo/job-memo job :excluded)
-                                     (not (mget (fmu :show-excluded-jobs) :on-off))
+                                     (not (pref :show-excluded-jobs))
                                      ; if they have asked to see excluded items, show regardless
-                                     (not (mget (fmu "ExcludedID") :on-off)))
+                                     (not (pref :ExcludedID)))
                               "none" "block")})}
     {:name     :job-listing
      :expanded (cI false)
