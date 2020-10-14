@@ -71,10 +71,12 @@
   (assoc job :stars 0))
 
 (defn job-stars-compare [dir j k]
-  ;; force un-starred to end regardless of sort order
-  ;; order ties by ascending hn-id
-  (let [j-stars (:stars j)
-        k-stars (:stars k)]
+  ;; user star ranking is held in "memos" persisted in local storage
+  ;; force un-starred jobs to end regardless of sort order
+  ;; order ties by ascending hn-id (ie, order of posting to HN)
+  ;; "dir" is -1 for descending, 1 for ascending
+  (let [j-stars (job-memo j :stars)
+        k-stars (job-memo k :stars)]
     (if (pos? j-stars)
       (if (pos? k-stars)
         (* dir (if (< j-stars k-stars)

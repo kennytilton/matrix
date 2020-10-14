@@ -79,6 +79,7 @@
     (job-header job)
     (job-details job)))
 
+;; --- filtering ---------------------------------------------
 
 (defn regex-tree-match [rgx-tree text]
   (some (fn [ands]
@@ -120,9 +121,12 @@
                     (job :body-search)))))
       jobs)))
 
+;;; --- sorting ---------------------------------------------
+
 (defn job-list-sort [me jobs]
   (let [{:keys [key-fn comp-fn order prep-fn] :as spec}
         (mget (fmu :sort-by) :job-sort)]
+    (prn :sort-spec spec)
     (cond
       spec (sort (fn [j k]
                    (if comp-fn
@@ -131,6 +135,7 @@
              (map (or prep-fn identity) jobs))
       :default (map identity jobs))))
 
+;;; --- the list ----------------------------------------------
 
 (defn job-list []
   (ul {:style {:list-style-type "none"
