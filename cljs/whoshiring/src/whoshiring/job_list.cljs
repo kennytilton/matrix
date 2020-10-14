@@ -89,14 +89,14 @@
               ands))) rgx-tree))
 
 (defn job-list-filter [me jobs]
-  (let [remote (pref :REMOTE)
-        onsite (pref :ONSITE)
-        interns (pref :INTERNS)
-        visa (pref :VISA)
-        excluded (pref :Excluded)
-        starred (pref :Starred)
-        applied (pref :Applied)
-        noted (pref :Noted)
+  (let [remote (pref :remote)
+        onsite (pref :onsite)
+        interns (pref :interns)
+        visa (pref :visa)
+        excluded (pref :excluded)
+        starred (pref :starred)
+        applied (pref :applied)
+        noted (pref :noted)
         title-regex (mget (fmu "titlergx") :regex-tree)
         listing-regex (mget (fmu "listingrgx") :regex-tree)]
 

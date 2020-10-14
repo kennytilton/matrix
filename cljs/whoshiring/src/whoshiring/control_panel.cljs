@@ -21,20 +21,19 @@
 
 ;;; --- filtering -------------------------------------------
 
-(defn make-job-select [key [tag help]]
-  (let [input-id (keyword tag)]
-    (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
-      (input {:id       input-id
+(defn make-job-select [key [select-key help]]
+  (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
+      (input {:id       select-key
               :title    help
               :class    (str key "-jSelect")
               :style    "background:#eee"
               :type     "checkbox"
-              :checked  (cF (pref input-id))
-              :onchange #(pref-swap! input-id not)}
-        {:hidden-name (str/capitalize tag)})
-      (label {:for   input-id
+              :checked  (cF (pref select-key))
+              :onchange #(pref-swap! select-key not)}
+        {:hidden-name (str/capitalize (name select-key))})
+      (label {:for   select-key
               :title help}
-        tag))))
+        (name select-key))))
 
 (defn make-job-selects-ex [key lbl j-major-selects]
   (div {:style (merge utl/hz-flex-wrap {:margin "8px 0 8px 24px"})}
@@ -46,16 +45,16 @@
       j-major-selects)))
 
 (def title-selects
-  [[["REMOTE" "Does regex search of title for remote jobs"]
-    ["ONSITE" "Does regex search of title for on-site jobs"]]
-   [["INTERNS" "Does regex search of title for internships"]
-    ["VISA" "Does regex search of title for Visa sponsors"]]])
+  [[[:remote "Does regex search of title for remote jobs"]
+    [:onsite "Does regex search of title for on-site jobs"]]
+   [[:interns "Does regex search of title for internships"]
+    [:visa "Does regex search of title for Visa sponsors"]]])
 
 (def user-selects
-  [[["Starred" "Show only jobs you have rated with stars"]
-    ["Noted" "Show only jobs on which you have made a note"]]
-   [["Applied" "Show only jobs you have marked as applied to"]
-    ["Excluded" "Show jobs you exluded from view"]]])
+  [[[:starred "Show only jobs you have rated with stars"]
+    [:noted "Show only jobs on which you have made a note"]]
+   [[:applied "Show only jobs you have marked as applied to"]
+    [:excluded "Show jobs you exluded from view"]]])
 
 (defn make-title-selects []
   (make-job-selects-ex "title" "Title selects" title-selects))

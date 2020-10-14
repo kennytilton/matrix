@@ -22,21 +22,21 @@
     (.stringify js/JSON
       (preferences-to-json prefs))))
 
-(defn load-preferences [{:keys [app-help? rgx-help? REMOTE ONSITE
-                                INTERNS VISA Starred Noted
-                                Applied Excluded
+(defn load-preferences [{:keys [app-help? rgx-help? remote onsite
+                                interns visa starred noted
+                                applied excluded
                                 show-excluded-jobs]}]
   (md/make ::preferences
     :app-help? (cI false)
     :rgx-help? (cI false)
-    :REMOTE (cI REMOTE)
-    :ONSITE (cI ONSITE)
-    :INTERNS (cI INTERNS)
-    :VISA (cI VISA)
-    :Starred (cI Starred)
-    :Noted (cI Noted)
-    :Applied (cI Applied)
-    :Excluded (cI Excluded)
+    :remote (cI remote)
+    :onsite (cI onsite)
+    :interns (cI interns)
+    :visa (cI visa)
+    :starred (cI starred)
+    :noted (cI noted)
+    :applied (cI applied)
+    :excluded (cI excluded)
     :show-excluded-jobs (cI show-excluded-jobs)))
 
 (def prefs (if-let [prefs (ls/io-read-json
@@ -47,14 +47,14 @@
              (md/make ::preferences
                :app-help? (cI false)
                :rgx-help? (cI false)
-               :REMOTE (cI false)
-               :ONSITE (cI false)
-               :INTERNS (cI false)
-               :VISA (cI false)
-               :Starred (cI false)
-               :Noted (cI false)
-               :Applied (cI false)
-               :Excluded (cI false)
+               :remote (cI false)
+               :onsite (cI false)
+               :interns (cI false)
+               :visa (cI false)
+               :starred (cI false)
+               :noted (cI false)
+               :applied (cI false)
+               :excluded (cI false)
                :show-excluded-jobs (cI false))))
 
 (defn pref [key] (mget prefs key))
