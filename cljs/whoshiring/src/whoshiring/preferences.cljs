@@ -22,21 +22,21 @@
     (.stringify js/JSON
       (preferences-to-json prefs))))
 
-(defn load-preferences [{:keys [app-help? rgx-help? REMOTEID ONSITEID
-                                INTERNSID VISAID StarredID NotedID
-                                AppliedID ExcludedID
+(defn load-preferences [{:keys [app-help? rgx-help? REMOTE ONSITE
+                                INTERNS VISA Starred Noted
+                                Applied Excluded
                                 show-excluded-jobs]}]
   (md/make ::preferences
     :app-help? (cI false)
     :rgx-help? (cI false)
-    :REMOTEID (cI REMOTEID)
-    :ONSITEID (cI ONSITEID)
-    :INTERNSID (cI INTERNSID)
-    :VISAID (cI VISAID)
-    :StarredID (cI StarredID)
-    :NotedID (cI NotedID)
-    :AppliedID (cI AppliedID)
-    :ExcludedID (cI ExcludedID)
+    :REMOTE (cI REMOTE)
+    :ONSITE (cI ONSITE)
+    :INTERNS (cI INTERNS)
+    :VISA (cI VISA)
+    :Starred (cI Starred)
+    :Noted (cI Noted)
+    :Applied (cI Applied)
+    :Excluded (cI Excluded)
     :show-excluded-jobs (cI show-excluded-jobs)))
 
 (def prefs (if-let [prefs (ls/io-read-json
@@ -47,14 +47,14 @@
              (md/make ::preferences
                :app-help? (cI false)
                :rgx-help? (cI false)
-               :REMOTEID (cI false)
-               :ONSITEID (cI false)
-               :INTERNSID (cI false)
-               :VISAID (cI false)
-               :StarredID (cI false)
-               :NotedID (cI false)
-               :AppliedID (cI false)
-               :ExcludedID (cI false)
+               :REMOTE (cI false)
+               :ONSITE (cI false)
+               :INTERNS (cI false)
+               :VISA (cI false)
+               :Starred (cI false)
+               :Noted (cI false)
+               :Applied (cI false)
+               :Excluded (cI false)
                :show-excluded-jobs (cI false))))
 
 (defn pref [key] (mget prefs key))

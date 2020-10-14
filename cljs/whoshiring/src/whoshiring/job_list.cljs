@@ -9,12 +9,13 @@
      :refer [matrix mset! mget mswap! fget *par*] :as md]
     [mxweb.gen
      :refer [evt-mx ]]
-    [mxweb.gen-macro :refer-macros [img section header h1 input footer p a span label ul li div button br]]
+    [mxweb.gen-macro
+     :refer-macros [img section header h1 input footer p a span label ul li div button br]]
     [whoshiring.control-panel :as ctl]
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
     [whoshiring.ui-common :refer [target-val] :as utl]
-    [whoshiring.job-memo :as memo]
+    [whoshiring.job-memo :refer [job-memo] :as memo]
     [whoshiring.preferences
      :refer [pref pref! pref-swap!]]))
 
@@ -78,6 +79,47 @@
     (job-header job)
     (job-details job)))
 
+
+(defn regex-tree-match [rgx-tree text]
+  (some (fn [ands]
+          (when ands
+            (every? (fn [andx]
+                      (when andx
+                        (boolean (re-find andx text))))
+              ands))) rgx-tree))
+
+(defn job-list-filter [me jobs]
+  (let [remote (pref :REMOTE)
+        onsite (pref :ONSITE)
+        interns (pref :INTERNS)
+        visa (pref :VISA)
+        excluded (pref :Excluded)
+        starred (pref :Starred)
+        applied (pref :Applied)
+        noted (pref :Noted)
+        title-regex (mget (fmu "titlergx") :regex-tree)
+        listing-regex (mget (fmu "listingrgx") :regex-tree)]
+
+    (filter (fn [job]
+              (and
+                (or (not remote) (:remote job))
+                (or (not onsite) (:onsite job))
+                (or (not visa) (:visa job))
+                (or (not interns) (:intern job))
+                (or (not excluded) (job-memo job :excluded))
+                (or (not starred) (pos? (job-memo job :stars)))
+                (or (not applied) (job-memo job :applied))
+                (or (not noted) (job-memo job :notes))
+                (or (not (seq title-regex))
+                  (regex-tree-match title-regex
+                    (job :title-search)))
+                (or (not (seq listing-regex))
+                  (regex-tree-match listing-regex
+                    (job :title-search))
+                  (regex-tree-match listing-regex
+                    (job :body-search)))))
+      jobs)))
+
 (defn job-list-sort [me jobs]
   (let [{:keys [key-fn comp-fn order prep-fn] :as spec}
         (mget (fmu :sort-by) :job-sort)]
@@ -89,6 +131,7 @@
              (map (or prep-fn identity) jobs))
       :default (map identity jobs))))
 
+
 (defn job-list []
   (ul {:style {:list-style-type "none"
                :background      "#eee"
@@ -96,7 +139,7 @@
                :padding         0
                :margin          0}}
     {:name          :job-list
-     :selected-jobs (cF (ctl/job-list-filter me
+     :selected-jobs (cF (job-list-filter me
                           (mget (fmu :job-loader) :jobs)))
      :sorted-jobs   (cF (job-list-sort me
                           (mget me :selected-jobs)))

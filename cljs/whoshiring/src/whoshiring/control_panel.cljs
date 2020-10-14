@@ -22,18 +22,16 @@
 ;;; --- filtering -------------------------------------------
 
 (defn make-job-select [key [tag help]]
-  (let [input-id (keyword (str tag "ID"))]
+  (let [input-id (keyword tag)]
     (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
       (input {:id       input-id
               :title    help
               :class    (str key "-jSelect")
               :style    "background:#eee"
               :type     "checkbox"
-              :checked  (cF (mget me :on-off))
+              :checked  (cF (pref input-id))
               :onchange #(pref-swap! input-id not)}
-        {:name   input-id
-         :hidden-name (str/capitalize tag)
-         :on-off (cF (pref input-id))})
+        {:hidden-name (str/capitalize tag)})
       (label {:for   input-id
               :title help}
         tag))))
@@ -64,48 +62,6 @@
 
 (defn make-user-selects []
   (make-job-selects-ex "user" "User selects" user-selects))
-
-(defn regex-tree-match [rgx-tree text]
-  (some (fn [ands]
-          (when ands
-            (every? (fn [andx]
-                      (when andx
-                        (boolean (re-find andx text))))
-              ands))) rgx-tree))
-
-(defn job-list-filter [me jobs]
-  (let [fup? (fn [name]
-               (mget (fmu (keyword (str name "ID"))) :on-off))
-        remote (fup? "REMOTE")
-        onsite (fup? "ONSITE")
-        interns (fup? "INTERNS")
-        visa (fup? "VISA")
-        excluded (fup? "Excluded")
-        starred (fup? "Starred")
-        applied (fup? "Applied")
-        noted (fup? "Noted")
-        title-regex (mget (fmu "titlergx") :regex-tree)
-        listing-regex (mget (fmu "listingrgx") :regex-tree)]
-
-    (filter (fn [job]
-              (and
-                (or (not remote) (:remote job))
-                (or (not onsite) (:onsite job))
-                (or (not visa) (:visa job))
-                (or (not interns) (:intern job))
-                (or (not excluded) (job-memo job :excluded))
-                (or (not starred) (pos? (job-memo job :stars)))
-                (or (not applied) (job-memo job :applied))
-                (or (not noted) (job-memo job :notes))
-                (or (not (seq title-regex))
-                  (regex-tree-match title-regex
-                    (job :title-search)))
-                (or (not (seq listing-regex))
-                  (regex-tree-match listing-regex
-                    (job :title-search))
-                  (regex-tree-match listing-regex
-                    (job :body-search)))))
-      jobs)))
 
 ;;; --- sorting ---------------------------------------------
 
