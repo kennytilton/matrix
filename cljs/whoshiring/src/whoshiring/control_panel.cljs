@@ -161,11 +161,12 @@
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
            :onclick (fn [e]
-                      (swap! (evt-mx e) :expanded not))
+                      (mswap! (evt-mx e) :expanded not))
            :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
     {:expanded (cI false
                  :obs (fn [_ me newv oldv]
+                        (prn :expanded-obs newv oldv)
                         (when-not (= oldv unbound)
                           (let [jl (fmu :job-list)]
                             (with-cc :expansion
