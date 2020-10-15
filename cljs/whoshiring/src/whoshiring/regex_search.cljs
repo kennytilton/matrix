@@ -11,7 +11,7 @@
             [mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]
-            [whoshiring.preferences :refer [pref pref-swap!]]))
+            [whoshiring.preferences :refer [pref pref-toggle!]]))
 
 (defn rebuild-regex-tree [me]
   (map (fn [or-clause]
@@ -19,7 +19,6 @@
                 (let [[term options] (str/split (str/trim and-clause) #",")]
                   (js/RegExp. term (str options (when (and (not (pref :match-case))
                                                            (not (str/includes? (or options "") "i")))
-                                                  (prn :bam-insensitive (pref :match-case))
                                                   "i")))))
            (str/split (str/trim or-clause) #"&&")))
     (str/split (mget me :regex-de-aliased) #"\|\|")))
@@ -41,7 +40,7 @@
         {:name             rgx-id
          :regex-raw        (cI nil)
          :regex-de-aliased (cF (when-let [rgx-raw (not-empty (mget me :regex-raw))]
-                                 (if (mget (fmu :rgx-or-and) :on-off)
+                                 (if (pref :or-and-aliasing)
                                    (str/replace (str/replace rgx-raw #"\sand\s" " && ") #"\sor\s" " || ")
                                    rgx-raw)))
          :regex-tree       (cF (rebuild-regex-tree me))
@@ -74,7 +73,7 @@
     (input {:id       :match-case
             :type     "checkbox"
             :checked  (cF (pref :match-case))
-            :onchange #(pref-swap! :match-case not)})
+            :onchange #(pref-toggle! :match-case)})
     (label {:for :match-case}
       "match case")))
 
@@ -86,11 +85,9 @@
                 :align-items "center"}}
     (input {:id        :rgx-or-and
             :type      "checkbox"
-            :checked   (cF (mget me :on-off))
+            :checked   (cF (pref :or-and-aliasing))
             :title     "Replace 'or/and' with '||/&&' for easier mobile entry."
-            :on-change #(mswap! (evt-mx %) :on-off not)}
-      {:name   :rgx-or-and
-       :on-off (cI true)})
+            :onchange #(pref-toggle! :or-and-aliasing)})
     (label {:for :rgx-or-and}
       "allow or/and")))
 
@@ -104,7 +101,7 @@
       (span {:style   {:color  "white" :margin-left "24px"
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
-             :onclick #(pref-swap! :rgx-help? not)}
+             :onclick #(pref-toggle! :rgx-help?)}
         "help"))
     (utl/help-list regex-help :rgx-help?)))
 

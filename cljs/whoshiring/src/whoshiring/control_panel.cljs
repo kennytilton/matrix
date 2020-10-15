@@ -17,7 +17,7 @@
             [whoshiring.ui-common :as utl]
             [whoshiring.job-memo :refer [job-memo] :as memo]
             [whoshiring.preferences
-             :refer [pref pref! pref-swap!]]))
+             :refer [pref pref! pref-swap! pref-toggle!]]))
 
 ;;; --- filtering -------------------------------------------
 
@@ -29,7 +29,7 @@
             :style    "background:#eee"
             :type     "checkbox"
             :checked  (cF (pref select-key))
-            :onchange #(pref-swap! select-key not)}
+            :onchange #(pref-toggle! select-key)}
       {:hidden-name (str/capitalize (name select-key))})
     (label {:for   select-key
             :title help}
@@ -136,7 +136,7 @@
                         "visibility:" (if (pos? (mget me :excluded-ct)) "visible;" "hidden;")
                         "border:" (if (pref :show-excluded-jobs) "thin solid red;" "none;")))
          :content (cF (str "&#x20E0;: " (mget me :excluded-ct)))
-         :onclick #(pref-swap! :show-excluded-jobs not)
+         :onclick #(pref-toggle! :show-excluded-jobs)
          :title   "Show/hide items you have excluded"}
     {:name        :show-excluded-jobs
      :on-off      (cF (pref :show-excluded-jobs))
@@ -165,7 +165,7 @@
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
            :onclick (fn [e]
-                      (mswap! (evt-mx e) :expanded not))
+                      (swap! (evt-mx e) :expanded not))
            :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
     {:expanded (cI false

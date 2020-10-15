@@ -24,10 +24,11 @@
 
 (defn load-preferences [{:keys [remote onsite
                                 interns visa starred noted
-                                match-case
+                                match-case or-and-aliasing
                                 applied excluded
                                 job-sort
-                                show-excluded-jobs]}]
+                                show-excluded-jobs] :as prefs}]
+  (prn :load-prefs or-and-aliasing :as prefs)
   (md/make ::preferences
     :app-help? (cI false) ;; ignore last setting
     :rgx-help? (cI false) ;; ignore last setting
@@ -40,6 +41,7 @@
     :applied (cI applied)
     :excluded (cI excluded)
     :match-case (cI match-case)
+    :or-and-aliasing (cI or-and-aliasing)
     :job-sort (cI job-sort)
     :show-excluded-jobs (cI show-excluded-jobs)))
 
@@ -60,6 +62,7 @@
                :applied (cI false)
                :excluded (cI false)
                :match-case (cI false)
+               :or-and-aliasing (cI true)
                :job-sort (cI nil)
                :show-excluded-jobs (cI false))))
 
@@ -67,4 +70,6 @@
 (defn pref! [key value] (mset! prefs key value))
 (defn pref-swap! [key & swap-args]
   (apply mswap! prefs key swap-args))
+(defn pref-toggle! [key]
+  (pref-swap! key not))
 
