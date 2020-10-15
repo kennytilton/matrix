@@ -143,23 +143,19 @@
      :excluded-ct (cF (count (filter (fn [j] (memo/job-memo j :excluded))
                                (mget (fmu :job-list) :selected-jobs))))}))
 
-(def result-limit-default 42)
-
 (defn result-limit []
   (div {:style (merge utl/hz-flex-wrap-centered
                  {:margin-left  "18px"
                   :margin-right "6px"})}
     (span "Show: ")
-    (input {:value    (cF (mget me :limit))
+    (input {:value    (cF (pref :max-jobs-to-show))
             :style    "font-size:1em;max-width:48px;margin-left:6px;margin-right:6px"
             :onchange (fn [e]
                         (when-let [lim (try
                                          (js/parseInt (utl/target-val e) 10)
                                          (catch :default e nil))]
                           (when-not (js/Number.isNaN lim)
-                            (mset! (evt-mx e) :limit lim))))}
-      {:name  :result-limit
-       :limit (cI result-limit-default)})))
+                            (pref! :max-jobs-to-show lim))))})))
 
 (defn job-expansion-control []
   (button {:style   {:font-size "1em"

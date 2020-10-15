@@ -3,6 +3,7 @@
             [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
+            [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
              :refer-macros [with-par fmu]
              :refer [matrix mset! mget mswap!]]
@@ -11,7 +12,7 @@
             [mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]
-            [whoshiring.preferences :refer [pref pref-toggle!]]))
+            [whoshiring.preferences :refer [pref pref! pref-toggle!]]))
 
 (defn rebuild-regex-tree [me]
   (map (fn [or-clause]
@@ -38,21 +39,25 @@
                               (.setSelectionRange dom 0 (count (.-value dom))))
               :value       ""}
         {:name             rgx-id
-         :regex-raw        (cI nil)
+         :regex-raw        (cI nil
+                             :obs (fn [_ _ newv _]
+                                    (when-let [raw (not-empty newv)]
+                                      (with-cc :extend-history
+                                        (let [history (pref :search-history)]
+                                          (when-not (find #{raw} history)
+                                            (pref! :search-history
+                                              (conj history raw))))))))
          :regex-de-aliased (cF (when-let [rgx-raw (not-empty (mget me :regex-raw))]
                                  (if (pref :or-and-aliasing)
                                    (str/replace (str/replace rgx-raw #"\sand\s" " && ") #"\sor\s" " || ")
                                    rgx-raw)))
-         :regex-tree       (cF (rebuild-regex-tree me))
-         :history          (cF (when-let [raw (not-empty (mget me :regex-raw))]
-                                 (when-not (find #{raw} cache)
-                                   (conj cache raw))))})
+         :regex-tree       (cF (rebuild-regex-tree me))})
       (datalist {:id datalist-id}
-        (for [hs (mget (fmu rgx-id) :history)]
+        (for [hs (pref :search-history)]
           (option {:value hs}))))))
 
 (defn make-title-regex []
-  (make-listing-regex "title" "Titlex Only" "title"))
+  (make-listing-regex "title" "Titles Only" "title"))
 
 (defn make-full-regex []
   (make-listing-regex "listing" "Full Listing" "title and listing"))

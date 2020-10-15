@@ -71,7 +71,7 @@
                    :display (if (and (memo/job-memo job :excluded)
                                      (not (pref :show-excluded-jobs))
                                      ; if they have asked to see excluded items, show regardless
-                                     (not (pref :ExcludedID)))
+                                     (not (pref :excluded)))
                               "none" "block")})}
     {:name     :job-listing
      :expanded (cI false)
@@ -154,7 +154,7 @@
                           (mget me :selected-jobs)))
      :kid-factory   job-list-item
      :kid-key       #(mget % :job)
-     :kid-values    (cF (take (or (mget (fmu :result-limit) :limit) 999999)
+     :kid-values    (cF (take (or (pref :max-jobs-to-show) 999999)
                           (mget me :sorted-jobs)))}
     (md/kid-values-kids me cache)))
 

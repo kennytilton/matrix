@@ -119,7 +119,6 @@
               (mset! loader :fini true)
               (frame-zap loader))
             (chunker [offset]
-              ;; todo cljourify
               (let [jct (min (- total offset) chunk-size)]
                 (if (pos? jct)
                   (do

@@ -26,12 +26,13 @@
                                 interns visa starred noted
                                 match-case or-and-aliasing
                                 applied excluded
+                                search-history
                                 job-sort
+                                max-jobs-to-show
                                 show-excluded-jobs] :as prefs}]
-  (prn :load-prefs or-and-aliasing :as prefs)
   (md/make ::preferences
-    :app-help? (cI false) ;; ignore last setting
-    :rgx-help? (cI false) ;; ignore last setting
+    :app-help? (cI false)                                   ;; ignore last setting
+    :rgx-help? (cI false)                                   ;; ignore last setting
     :remote (cI remote)
     :onsite (cI onsite)
     :interns (cI interns)
@@ -43,28 +44,33 @@
     :match-case (cI match-case)
     :or-and-aliasing (cI or-and-aliasing)
     :job-sort (cI job-sort)
+    :search-history (cI search-history)
+    :max-jobs-to-show (cI max-jobs-to-show)
     :show-excluded-jobs (cI show-excluded-jobs)))
 
-(def prefs (if-let [prefs (ls/io-read-json
-                            (ls/io-read (preferences-key)))]
-             (do
-               (prn :bam prefs :off (preferences-key))
-               (load-preferences prefs))
-             (md/make ::preferences
-               :app-help? (cI false)
-               :rgx-help? (cI false)
-               :remote (cI false)
-               :onsite (cI false)
-               :interns (cI false)
-               :visa (cI false)
-               :starred (cI false)
-               :noted (cI false)
-               :applied (cI false)
-               :excluded (cI false)
-               :match-case (cI false)
-               :or-and-aliasing (cI true)
-               :job-sort (cI nil)
-               :show-excluded-jobs (cI false))))
+(def prefs (do
+             ;; (ls/io-delete (preferences-key))
+             (if-let [prefs (ls/io-read-json
+                              (ls/io-read (preferences-key)))]
+               (do (prn :existing-prefs prefs)
+                   (load-preferences prefs))
+               (md/make ::preferences
+                 :app-help? (cI false)
+                 :rgx-help? (cI false)
+                 :remote (cI false)
+                 :onsite (cI false)
+                 :interns (cI false)
+                 :visa (cI false)
+                 :starred (cI false)
+                 :noted (cI false)
+                 :applied (cI false)
+                 :excluded (cI false)
+                 :match-case (cI false)
+                 :or-and-aliasing (cI true)
+                 :search-history (cI nil)
+                 :max-jobs-to-show (cI 42)
+                 :job-sort (cI nil)
+                 :show-excluded-jobs (cI false)))))
 
 (defn pref [key] (mget prefs key))
 (defn pref! [key value] (mset! prefs key value))
