@@ -8,7 +8,7 @@
      :refer-macros [with-par mdv! mx-par fmu]
      :refer [matrix mset! mget mswap! fget *par*] :as md]
     [mxweb.gen
-     :refer [evt-mx ]]
+     :refer [evt-mx]]
     [mxweb.gen-macro
      :refer-macros [img section header h1 input footer p a span label ul li div button br]]
     [whoshiring.control-panel :as ctl]
@@ -124,16 +124,20 @@
 ;;; --- sorting ---------------------------------------------
 
 (defn job-list-sort [me jobs]
-  (let [{:keys [key-fn comp-fn order prep-fn] :as spec}
-        (mget (fmu :sort-by) :job-sort)]
-    (prn :sort-spec spec)
-    (cond
-      spec (sort (fn [j k]
-                   (if comp-fn
-                     (comp-fn order j k)
-                     (* order (if (< (key-fn j) (key-fn k)) -1 1))))
-             (map (or prep-fn identity) jobs))
-      :default (map identity jobs))))
+  (cond
+    (seq (pref :job-sort))
+    (let [{:keys [key-fn comp-fn order] :as spec}
+          (some (fn [full]
+                  (when (= (:title full)
+                          (:title (pref :job-sort)))
+                    (merge full (pref :job-sort))))
+            ctl/job-sorts)]
+      (sort (fn [j k]
+              (if comp-fn
+                (comp-fn order j k)
+                (* order (if (< (key-fn j) (key-fn k)) -1 1))))
+        (map identity jobs)))
+    :default (map identity jobs)))
 
 ;;; --- the list ----------------------------------------------
 

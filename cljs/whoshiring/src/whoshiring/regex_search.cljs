@@ -11,19 +11,18 @@
             [mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]
-            [whoshiring.preferences :as up]))
+            [whoshiring.preferences :refer [pref pref-swap!]]))
 
 (defn rebuild-regex-tree [me]
-  (let [match-case (mget (fmu :rgx-match-case) :on-off)
-        search (mget me :regex-de-aliased)]
-    (map (fn [or-clause]
-           (map (fn [and-clause]
-                  (let [[term options] (str/split (str/trim and-clause) #",")]
-                    (js/RegExp. term (str options (when (and (not match-case)
-                                                             (not (str/includes? (or options "") "i")))
-                                                    "i")))))
-             (str/split (str/trim or-clause) #"&&")))
-      (str/split search #"\|\|"))))
+  (map (fn [or-clause]
+         (map (fn [and-clause]
+                (let [[term options] (str/split (str/trim and-clause) #",")]
+                  (js/RegExp. term (str options (when (and (not (pref :match-case))
+                                                           (not (str/includes? (or options "") "i")))
+                                                  (prn :bam-insensitive (pref :match-case))
+                                                  "i")))))
+           (str/split (str/trim or-clause) #"&&")))
+    (str/split (mget me :regex-de-aliased) #"\|\|")))
 
 (defn make-listing-regex [prop lbl desc]
   (let [rgx-id (str prop "rgx")
@@ -66,19 +65,17 @@
    "Regex terms are split on comma and passed to <code>new RegExp(pattern,flags)</code>."
    "e.g. Enter <b>taipei,i</b> for case-insensitive search."])
 
-(defn mk-regex-match-case []
+(defn mk-match-case []
   (div {:style {:color       "#fcfcfc"
                 :margin      "0 9px 0 0"
                 :display     "flex"
                 :flex-wrap   "wrap"
                 :align-items "center"}}
-    (input {:id       :rgx-match-case
+    (input {:id       :match-case
             :type     "checkbox"
-            :checked  (cF (mget me :on-off))
-            :onchange #(mswap! (evt-mx %) :on-off not)}
-      {:name   :rgx-match-case
-       :on-off (cI false)})
-    (label {:for :rgx-match-case}
+            :checked  (cF (pref :match-case))
+            :onchange #(pref-swap! :match-case not)})
+    (label {:for :match-case}
       "match case")))
 
 (defn mk-rgx-or-and []
@@ -102,12 +99,12 @@
     (div {:style (merge utl/hz-flex-wrap-centered
                    {:padding-right "12px"
                     :margin        "4px 0 9px 30px"})}
-      (mk-regex-match-case)
+      (mk-match-case)
       (mk-rgx-or-and)
       (span {:style   {:color  "white" :margin-left "24px"
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
-             :onclick #(mswap! up/prefs :rgx-help? not)}
+             :onclick #(pref-swap! :rgx-help? not)}
         "help"))
     (utl/help-list regex-help :rgx-help?)))
 

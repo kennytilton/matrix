@@ -23,17 +23,17 @@
 
 (defn make-job-select [key [select-key help]]
   (div {:style "color: white; min-width:96px; display:flex; align-items:center"}
-      (input {:id       select-key
-              :title    help
-              :class    (str key "-jSelect")
-              :style    "background:#eee"
-              :type     "checkbox"
-              :checked  (cF (pref select-key))
-              :onchange #(pref-swap! select-key not)}
-        {:hidden-name (str/capitalize (name select-key))})
-      (label {:for   select-key
-              :title help}
-        (name select-key))))
+    (input {:id       select-key
+            :title    help
+            :class    (str key "-jSelect")
+            :style    "background:#eee"
+            :type     "checkbox"
+            :checked  (cF (pref select-key))
+            :onchange #(pref-swap! select-key not)}
+      {:hidden-name (str/capitalize (name select-key))})
+    (label {:for   select-key
+            :title help}
+      (name select-key))))
 
 (defn make-job-selects-ex [key lbl j-major-selects]
   (div {:style (merge utl/hz-flex-wrap {:margin "8px 0 8px 24px"})}
@@ -67,16 +67,13 @@
 (defn job-company-key [j]
   (or (:company j) ""))
 
-(defn job-stars-enrich [job]
-  (assoc job :stars 0))
-
 (defn job-stars-compare [dir j k]
   ;; user star ranking is held in "memos" persisted in local storage
   ;; force un-starred jobs to end regardless of sort order
   ;; order ties by ascending hn-id (ie, order of posting to HN)
   ;; "dir" is -1 for descending, 1 for ascending
-  (let [j-stars (job-memo j :stars)
-        k-stars (job-memo k :stars)]
+  (let [j-stars (or (job-memo j :stars) 0)
+        k-stars (or (job-memo k :stars) 0)]
     (if (pos? j-stars)
       (if (pos? k-stars)
         (* dir (if (< j-stars k-stars)
@@ -90,26 +87,29 @@
         (if (< (:hn-d j) (:hn-id k)) -1 1)))))
 
 (def job-sorts [{:title "Creation" :key-fn :hn-id :order -1}
-                {:title "Stars" :comp-fn job-stars-compare :order -1 :prep-fn job-stars-enrich}
+                {:title "Stars" :comp-fn job-stars-compare :order -1}
                 {:title "Company" :key-fn job-company-key :order 1}])
+
+(defn job-sort-pref [job-sort]
+  (dissoc job-sort :key-fn :comp-fn))
 
 ;;; --- job sort bar -------------------------------------------------------
 
-(defn sort-bar-option [sort-control jsort]
+(defn sort-bar-option [jsort]
   (button {:class    "sortOption"
            :style    (cF {:color (if (mget me :selected)
                                    "blue" "#222")})
            :selected (cF (= (:title jsort)
-                           (:title (mget sort-control :job-sort))))
+                           (:title (pref :job-sort))))
            :onclick  (fn [e]
                        (let [me (evt-mx e)]
-                        (if (mget me :selected)
-                          (mswap! sort-control :job-sort
-                            update :order #(* -1 %))
-                          (mset! sort-control :job-sort jsort))))
+                         (if (mget me :selected)
+                           (pref-swap! :job-sort
+                             update :order #(* -1 %))
+                           (pref! :job-sort (job-sort-pref jsort)))))
            :content  (cF (str (:title jsort) " "
                            (when (mget me :selected)
-                             (if (= (:order (mget sort-control :job-sort)) -1)
+                             (if (= (:order (pref :job-sort)) -1)
                                (utl/unesc "&#x2798")
                                (utl/unesc "&#x279a")))))}))
 
@@ -117,8 +117,6 @@
   (div {:style {:padding 0
                 :margin  "15px 0 0 24px"
                 :display "flex"}}
-    {:name     :sort-by
-     :job-sort (cI nil)}
     (span {:style {:margin-right "6px"}} "Sort by:")
     (let [ctl me]
       (ul {:style (merge utl/hz-flex-wrap
@@ -126,7 +124,7 @@
                      :padding    0
                      :margin     0})}
         (for [jsort job-sorts]
-          (li (sort-bar-option ctl jsort)))))))
+          (li (sort-bar-option jsort)))))))
 
 (defn job-count []
   (span {:style   "font-size:1em;margin-right:12px"

@@ -22,13 +22,15 @@
     (.stringify js/JSON
       (preferences-to-json prefs))))
 
-(defn load-preferences [{:keys [app-help? rgx-help? remote onsite
+(defn load-preferences [{:keys [remote onsite
                                 interns visa starred noted
+                                match-case
                                 applied excluded
+                                job-sort
                                 show-excluded-jobs]}]
   (md/make ::preferences
-    :app-help? (cI false)
-    :rgx-help? (cI false)
+    :app-help? (cI false) ;; ignore last setting
+    :rgx-help? (cI false) ;; ignore last setting
     :remote (cI remote)
     :onsite (cI onsite)
     :interns (cI interns)
@@ -37,6 +39,8 @@
     :noted (cI noted)
     :applied (cI applied)
     :excluded (cI excluded)
+    :match-case (cI match-case)
+    :job-sort (cI job-sort)
     :show-excluded-jobs (cI show-excluded-jobs)))
 
 (def prefs (if-let [prefs (ls/io-read-json
@@ -55,6 +59,8 @@
                :noted (cI false)
                :applied (cI false)
                :excluded (cI false)
+               :match-case (cI false)
+               :job-sort (cI nil)
                :show-excluded-jobs (cI false))))
 
 (defn pref [key] (mget prefs key))
