@@ -1,5 +1,6 @@
 (ns whoshiring.regex-search
   (:require [cljs.pprint :as pp]
+            [tiltontec.util.base :refer-macros [trx]]
             [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
@@ -15,14 +16,19 @@
             [whoshiring.preferences :refer [pref pref! pref-toggle!]]))
 
 (defn rebuild-regex-tree [me]
-  (map (fn [or-clause]
-         (map (fn [and-clause]
-                (let [[term options] (str/split (str/trim and-clause) #",")]
-                  (js/RegExp. term (str options (when (and (not (pref :match-case))
-                                                           (not (str/includes? (or options "") "i")))
-                                                  "i")))))
-           (str/split (str/trim or-clause) #"&&")))
-    (str/split (mget me :regex-de-aliased) #"\|\|")))
+  (when-let [search (not-empty (mget me :regex-de-aliased))]
+    (let [newtree (map (fn [or-clause]
+                         (map (fn [and-clause]
+                                (let [[term options] (str/split (str/trim and-clause) #",")]
+                                  (prn :rbrgx-termo term options :match-pref (pref :match-case))
+                                  (when-not (str/blank? term)
+                                    (js/RegExp. term (str options (when (and (not (pref :match-case))
+                                                                             (not (str/includes? (or options "") "i")))
+                                                                    "i"))))))
+                           (str/split (str/trim or-clause) #"&&")))
+                    (str/split search #"\|\|"))]
+      (trx :srch search :rgxtree newtree)
+      newtree)))
 
 (defn make-listing-regex [prop lbl desc]
   (let [rgx-id (str prop "rgx")
@@ -88,10 +94,10 @@
                 :display     "flex"
                 :flex-wrap   "wrap"
                 :align-items "center"}}
-    (input {:id        :rgx-or-and
-            :type      "checkbox"
-            :checked   (cF (pref :or-and-aliasing))
-            :title     "Replace 'or/and' with '||/&&' for easier mobile entry."
+    (input {:id       :rgx-or-and
+            :type     "checkbox"
+            :checked  (cF (pref :or-and-aliasing))
+            :title    "Replace 'or/and' with '||/&&' for easier mobile entry."
             :onchange #(pref-toggle! :or-and-aliasing)})
     (label {:for :rgx-or-and}
       "allow or/and")))

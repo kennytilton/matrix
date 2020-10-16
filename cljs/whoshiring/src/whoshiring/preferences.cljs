@@ -30,6 +30,7 @@
                                 job-sort
                                 max-jobs-to-show
                                 show-excluded-jobs] :as prefs}]
+  (prn :load-prefs-match match-case)
   (md/make ::preferences
     :app-help? (cI false)                                   ;; ignore last setting
     :rgx-help? (cI false)                                   ;; ignore last setting

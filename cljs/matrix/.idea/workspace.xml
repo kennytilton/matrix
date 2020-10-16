@@ -3,9 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/src/mxweb/html.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/src/mxweb/html.cljs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/control_panel.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/control_panel.cljs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/job_list.cljs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/regex_search.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/regex_search.cljs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,11 +140,11 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="816" y="182" width="1165" height="695" key="find.popup" timestamp="1602198307533">
+    <state x="816" y="182" width="1165" height="695" key="find.popup" timestamp="1602867154495">
       <screen x="0" y="23" width="2560" height="999" />
     </state>
     <state x="-1744" y="249" width="1165" height="705" key="find.popup/-2560.23.2560.1417/0.23.2560.999@-2560.23.2560.1417" timestamp="1600714124142" />
-    <state x="816" y="182" width="1165" height="695" key="find.popup/-2560.23.2560.1417/0.23.2560.999@0.23.2560.999" timestamp="1602198307533" />
+    <state x="816" y="182" width="1165" height="695" key="find.popup/-2560.23.2560.1417/0.23.2560.999@0.23.2560.999" timestamp="1602867154495" />
   </component>
   <component name="masterDetails">
     <states>

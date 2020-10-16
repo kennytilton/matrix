@@ -100,6 +100,7 @@
         noted (pref :noted)
         title-regex (mget (fmu "titlergx") :regex-tree)
         listing-regex (mget (fmu "listingrgx") :regex-tree)]
+    (prn :jlfilter listing-regex)
 
     (filter (fn [job]
               (and

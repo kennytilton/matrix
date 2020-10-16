@@ -57,7 +57,7 @@
     (or (mget me :dom-cache)
         (if-let [dom (dom/getElement (str id))]
           (backdoor-reset! me :dom-cache dom)
-          (println :html-no-element id :found)))))
+          #_ (println :benign?-html-no-element id :found)))))
 
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
