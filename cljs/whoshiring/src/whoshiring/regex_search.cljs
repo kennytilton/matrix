@@ -17,18 +17,15 @@
 
 (defn rebuild-regex-tree [me]
   (when-let [search (not-empty (mget me :regex-de-aliased))]
-    (let [newtree (map (fn [or-clause]
+    (map (fn [or-clause]
                          (map (fn [and-clause]
                                 (let [[term options] (str/split (str/trim and-clause) #",")]
-                                  (prn :rbrgx-termo term options :match-pref (pref :match-case))
                                   (when-not (str/blank? term)
                                     (js/RegExp. term (str options (when (and (not (pref :match-case))
                                                                              (not (str/includes? (or options "") "i")))
                                                                     "i"))))))
                            (str/split (str/trim or-clause) #"&&")))
-                    (str/split search #"\|\|"))]
-      (trx :srch search :rgxtree newtree)
-      newtree)))
+                    (str/split search #"\|\|"))))
 
 (defn make-listing-regex [prop lbl desc]
   (let [rgx-id (str prop "rgx")
@@ -50,7 +47,7 @@
                                     (when-let [raw (not-empty newv)]
                                       (with-cc :extend-history
                                         (let [history (pref :search-history)]
-                                          (when-not (find #{raw} history)
+                                          (when-not (some #{raw} history)
                                             (pref! :search-history
                                               (conj history raw))))))))
          :regex-de-aliased (cF (when-let [rgx-raw (not-empty (mget me :regex-raw))]
@@ -113,6 +110,11 @@
                        :cursor "pointer"}
              :title   "Show/hide RegExp help"
              :onclick #(pref-toggle! :rgx-help?)}
-        "help"))
+        "help")
+      (span {:style   {:color  "white" :margin-left "24px"
+                       :cursor "pointer"}
+             :title   "Clear RegExp search history"
+             :onclick #(pref! :search-history nil)}
+        "clear history"))
     (utl/help-list regex-help :rgx-help?)))
 

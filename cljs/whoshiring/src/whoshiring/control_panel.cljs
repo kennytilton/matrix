@@ -166,7 +166,6 @@
                           "Collapse all" "Expand all"))}
     {:expanded (cI true
                  :obs (fn [_ me newv oldv]
-                        (prn :expanded-obs newv oldv)
                         (when-not (= oldv unbound)
                           (let [jl (fmu :job-list)]
                             (with-cc :expansion

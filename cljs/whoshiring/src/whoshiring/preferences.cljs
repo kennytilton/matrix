@@ -30,7 +30,6 @@
                                 job-sort
                                 max-jobs-to-show
                                 show-excluded-jobs] :as prefs}]
-  (prn :load-prefs-match match-case)
   (md/make ::preferences
     :app-help? (cI false)                                   ;; ignore last setting
     :rgx-help? (cI false)                                   ;; ignore last setting
@@ -53,7 +52,7 @@
              ;; (ls/io-delete (preferences-key))
              (if-let [prefs (ls/io-read-json
                               (ls/io-read (preferences-key)))]
-               (do (prn :existing-prefs prefs)
+               (do #_ (prn :existing-prefs prefs)
                    (load-preferences prefs))
                (md/make ::preferences
                  :app-help? (cI false)
