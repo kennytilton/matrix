@@ -16,16 +16,19 @@
             [whoshiring.preferences :refer [pref pref! pref-toggle!]]))
 
 (defn rebuild-regex-tree [me]
-  (when-let [search (not-empty (mget me :regex-de-aliased))]
-    (map (fn [or-clause]
-                         (map (fn [and-clause]
-                                (let [[term options] (str/split (str/trim and-clause) #",")]
-                                  (when-not (str/blank? term)
-                                    (js/RegExp. term (str options (when (and (not (pref :match-case))
-                                                                             (not (str/includes? (or options "") "i")))
-                                                                    "i"))))))
-                           (str/split (str/trim or-clause) #"&&")))
-                    (str/split search #"\|\|"))))
+  (let [xtree (when-let [search (not-empty (mget me :regex-de-aliased))]
+                (map (fn [or-clause]
+                       (map (fn [and-clause]
+                              (let [[term options] (str/split (str/trim and-clause) #",")]
+                                (when-not (str/blank? term)
+                                  (js/RegExp. term
+                                    (str options (when (and (not (pref :match-case))
+                                                            (not (str/includes? (or options "") "i")))
+                                                   "i"))))))
+                         (str/split (str/trim or-clause) #"&&")))
+                  (str/split search #"\|\|")))]
+    (prn :rebuild-xtree xtree)
+    xtree))
 
 (defn make-listing-regex [prop lbl desc]
   (let [rgx-id (str prop "rgx")
