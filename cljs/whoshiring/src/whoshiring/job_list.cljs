@@ -74,7 +74,7 @@
                                      (not (pref :excluded)))
                               "none" "block")})}
     {:name     :job-listing
-     :expanded (cI false)
+     :expanded (cI true)
      :job      job}
     (job-header job)
     (job-details job)))

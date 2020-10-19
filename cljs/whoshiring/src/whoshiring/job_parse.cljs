@@ -26,15 +26,22 @@
   [spec dom]
 
   (let [cn (.-className dom)]
+    #_ (when (str/includes? (.-textContent dom) "FIVETRAN")
+      (prn :BAM!!!-five (.-className dom) (.-textContent dom)))
     (when (has-class? dom #{"c5a" "cae" "c00" "c9c" "cdd" "c73" "c88"})
       (when-let [replies (.getElementsByClassName dom "reply")]
         (map (fn [r] (.remove r)) (prim-seq replies)))
+      (when (str/includes? (.-textContent dom) "FIVETRAN")
+        (prn :BAM!!!-five-c00 cn (.-textContent dom)))
       (let [child (.-childNodes dom)
+            fiver (str/includes? (.-textContent dom) "FIVETRAN")
             c0 (aget child 0)]
         ;; pre-digest all nodes
         (swap! spec assoc :body [])                         ;; needed?
+        (when fiver (prn :c00000 (.-nodeType c0)(pos? (count (filter #{\|} (.-textContent c0))))
+                      (.-textContent c0)))
         (if (and (= 3 (.-nodeType c0))
-                 (pos? (count (filter #{\|} (.-textContent c0)))))
+                 (pos? (count (filter #{\|} (.-textContent dom)))))
           (let [s (atom {:in-header true
                          :title-seg []})]
             (doseq [n (prim-seq child)]

@@ -12,7 +12,7 @@
             [mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
-                      tagfo tag-dom
+                     tagfo tag-dom
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
             [mxweb.gen :refer [evt-mx]]
@@ -38,14 +38,14 @@
 
 (defn month-selector []
   (g/select {:name     :search-mo
-           :class    "searchMonth"
-           :onchange #(let [me (evt-mx %)
-                            pgr (fmu :progress-bar)]
-                        (mset! pgr :value 0)
-                        (mset! pgr :maxN 0)
-                        (mset! pgr :seen #{})
-                        (mset! pgr :hidden false)
-                        (mset! me :value (utl/target-val %)))}
+             :class    "searchMonth"
+             :onchange #(let [me (evt-mx %)
+                              pgr (fmu :progress-bar)]
+                          (mset! pgr :value 0)
+                          (mset! pgr :maxN 0)
+                          (mset! pgr :seen #{})
+                          (mset! pgr :hidden false)
+                          (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
             (g/option {:value hnId} desc))
@@ -54,15 +54,15 @@
 (defn hn-month-link []
   ;; An HN icon <a> tag linking to the actual HN page.
   (g/a {:href  (cF (pp/cl-format nil "https://news.ycombinator.com/item?id=~a"
-                   (mdv! :search-mo :value)))
-      :title "View on the HN site"
-      :style {:margin-right "9px"}}
+                     (mdv! :search-mo :value)))
+        :title "View on the HN site"
+        :style {:margin-right "9px"}}
     (g/img {:src "dist/hn24.png"})))
 
 (defn month-load-progress-bar []
   (g/progress {:max    (cF (str (mget me :maxN)))
-             :hidden (cI false)
-             :value  (cI 0)}
+               :hidden (cI false)
+               :value  (cI 0)}
     {:name :progress-bar
      :maxN (cI 0)
      :seen (cI #{})}))
@@ -71,10 +71,10 @@
 
 (defn month-jobs-total []
   (g/span {:style   "color: #fcfcfc; margin: 0 12px 0 12px"
-         :content (cF
-                    (if (mget (fmu :job-loader) :fini)
-                      (str "Total jobs: " (count (mget (fmu :job-loader) :jobs)))
-                      (str "Parsing: " (* 1 PARSE_CHUNK_SIZE (mget (fmu :progress-bar) :value)))))}))
+           :content (cF
+                      (if (mget (fmu :job-loader) :fini)
+                        (str "Total jobs: " (count (mget (fmu :job-loader) :jobs)))
+                        (str "Parsing: " (* 1 PARSE_CHUNK_SIZE (mget (fmu :progress-bar) :value)))))}))
 
 ;; --- pick-a-month itself ----------------------------------
 
@@ -115,6 +115,7 @@
         tot-char 0
         temp-jobs (atom nil)]
     (letfn [(cleanup []
+              (prn :pg-parse-fini pg-no (count @temp-jobs))
               (mset! loader :jobs @temp-jobs)
               (mset! loader :fini true)
               (frame-zap loader))
@@ -124,6 +125,8 @@
                   (do
                     (dotimes [jn jct]
                       (let [dom (nth listings (+ offset jn))]
+                        #_ (when (some #{(.-id dom)} (mget progress-bar :seen))
+                          (prn :dup-job pg-no (.-id dom)))
                         (when-not (some #{(.-id dom)} (mget progress-bar :seen))
                           (mswap! progress-bar :seen conj (.-id dom))
                           (let [spec (jp/job-parse loader dom)]
@@ -145,6 +148,7 @@
     (let [hn-body (aget (.getElementsByTagName cont-doc "body") 0)]
       (if-let [a-things (seq (take ATHING-PARSE-MAX (prim-seq (.querySelectorAll hn-body ".athing"))))]
         (do (set! (.-innerHTML hn-body) "")                 ;; free up memory
+            (prn :athings pg-no (count a-things))
             (let [pgr (md/mxu-find-name loader :progress-bar)]
               (mswap! pgr :maxN +
                 (Math/floor (/ (count a-things) PARSE_CHUNK_SIZE)))
@@ -154,9 +158,9 @@
 
 (defn make-page-loader [hn-id pg-no]
   (g/iframe {:src    (cF (pp/cl-format nil "scrapes/~a/~a.html"
-                         hn-id pg-no))
-           :style  "display:none"
-           :onload #(jobs-collect (evt-mx %) pg-no)}
+                           hn-id pg-no))
+             :style  "display:none"
+             :onload #(jobs-collect (evt-mx %) pg-no)}
     {:month-hn-id hn-id
      :jobs        (cI nil)
      :fini        (cI false)
