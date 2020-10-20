@@ -27,7 +27,7 @@
                                                    "i"))))))
                          (str/split (str/trim or-clause) #"&&")))
                   (str/split search #"\|\|")))]
-    (prn :rebuild-xtree xtree)
+    ;; (prn :rebuild-xtree xtree)
     xtree))
 
 (defn make-listing-regex [prop lbl desc]

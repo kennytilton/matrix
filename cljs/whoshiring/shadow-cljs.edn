@@ -5,4 +5,5 @@
  :builds {:app {:output-dir "target/"
                 :asset-path "."
                 :target :browser
+                :warnings {:undeclared-var false}
                 :modules {:main {:init-fn whoshiring.core/main!}}}}}

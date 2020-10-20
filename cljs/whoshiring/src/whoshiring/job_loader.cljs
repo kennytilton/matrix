@@ -115,7 +115,6 @@
         tot-char 0
         temp-jobs (atom nil)]
     (letfn [(cleanup []
-              (prn :pg-parse-fini pg-no (count @temp-jobs))
               (mset! loader :jobs @temp-jobs)
               (mset! loader :fini true)
               (frame-zap loader))
@@ -125,8 +124,8 @@
                   (do
                     (dotimes [jn jct]
                       (let [dom (nth listings (+ offset jn))]
-                        #_ (when (some #{(.-id dom)} (mget progress-bar :seen))
-                          (prn :dup-job pg-no (.-id dom)))
+                        #_(when (some #{(.-id dom)} (mget progress-bar :seen))
+                            (prn :dup-job pg-no (.-id dom)))
                         (when-not (some #{(.-id dom)} (mget progress-bar :seen))
                           (mswap! progress-bar :seen conj (.-id dom))
                           (let [spec (jp/job-parse loader dom)]
@@ -148,7 +147,7 @@
     (let [hn-body (aget (.getElementsByTagName cont-doc "body") 0)]
       (if-let [a-things (seq (take ATHING-PARSE-MAX (prim-seq (.querySelectorAll hn-body ".athing"))))]
         (do (set! (.-innerHTML hn-body) "")                 ;; free up memory
-            (prn :athings pg-no (count a-things))
+            ;; (prn :athings pg-no (count a-things))
             (let [pgr (md/mxu-find-name loader :progress-bar)]
               (mswap! pgr :maxN +
                 (Math/floor (/ (count a-things) PARSE_CHUNK_SIZE)))
@@ -165,6 +164,62 @@
      :jobs        (cI nil)
      :fini        (cI false)
      :pg-no       pg-no}))
+
+
+;
+;function extraJobParse(md, jobName) {
+;    md.jobs = null
+;    if (md.dom.contentDocument) {
+;        hnBody = md.dom.contentDocument.getElementsByTagName('body')[0];
+;        let chunkSize = PARSE_CHUNK_SIZE
+;            , listing = Array.prototype.slice.call(hnBody.querySelectorAll('.athing'));
+;
+;        if (listing.length > 0) {
+;            listing[0].id = jobName // todo m/b
+;            let spec = jobSpec(listing[0])
+;
+;            if (spec.OK) {
+;                let hnId = spec.hnId;
+;
+;                UNote.dict[hnId] = new UserNotes({hnId: hnId});
+;
+;                if (!UNote.dict[hnId]) {
+;                    //clg('making Unote for hnId!!!!!!', hnId)
+;                    UNote.dict[hnId] = new UserNotes({hnId: hnId});
+;                }
+;                md.jobs = [spec]
+;            } else {
+;                clg('extra not OK')
+;            }
+;        } else {
+;            clg('no job!!!!!!!!!')
+;
+;        }
+;    } else {
+;        clg('no content!!!!!!!!!')
+;    }
+;}
+
+(defn extra-job-parse [loader job-name]
+  (if-let [cont-doc (.-contentDocument (tag-dom loader))]
+    (let [hn-body (aget (.getElementsByTagName cont-doc "body") 0)
+          a-things (prim-seq (.querySelectorAll hn-body ".athing"))]
+      (if (seq a-things)
+        (do (set! (.-innerHTML hn-body) "")
+            (let [spec (jp/job-parse loader (first a-things) "triplebytefull")]
+              (mset! loader :fini true)
+              (mset! loader :jobs [spec])))
+        (mset! loader :fini true)))
+    (mset! loader :fini true)))
+
+(defn make-extra-job-loader [job-name]
+  (g/iframe {:src    (cF (pp/cl-format nil "dist/extras/~a.html"
+                           job-name))
+             :style  "display:none"
+             :onload #(extra-job-parse (evt-mx %) job-name)}
+    {:name (str job-name "loader")
+     :jobs        (cI nil)
+     :fini        (cI false)}))
 
 (defn job-listing-loader []
   (g/div {:style "visibility:collapsed;"}
@@ -184,7 +239,8 @@
     (let [hn-id (mget (fmu :search-mo) :value)
           mo-def (get-monthly-def hn-id)
           pg-ct (:pgCount mo-def)]
-      (map (fn [pg-no]
-             (make-page-loader hn-id (inc pg-no)))
-        (range pg-ct)))))
+      (conj (map (fn [pg-no]
+                   (make-page-loader hn-id (inc pg-no)))
+              (range pg-ct))
+        (make-extra-job-loader "triplebytefull")))))
 

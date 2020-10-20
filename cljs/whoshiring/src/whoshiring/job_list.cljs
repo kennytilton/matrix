@@ -10,7 +10,8 @@
     [mxweb.gen
      :refer [evt-mx]]
     [mxweb.gen-macro
-     :refer-macros [img section header h1 input footer p a span label ul li div button br]]
+     :refer-macros [img section header h1 input footer p a
+                    pre code span i label ul li div button br]]
     [whoshiring.control-panel :as ctl]
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
@@ -28,7 +29,13 @@
                  (array-seq (.-childNodes n))))
         "DIV" (div (map node-to-hiccup
                      (array-seq (.-childNodes n))))
-        (p (str "Unexpected tag = " (.-tagName n))))
+        "PRE" (pre (map node-to-hiccup
+                     (array-seq (.-childNodes n))))
+        "CODE" (code (map node-to-hiccup
+                     (array-seq (.-childNodes n))))
+        "I" (i (map node-to-hiccup
+                     (array-seq (.-childNodes n))))
+        (p (str "Unexpected tag = " (.-tagName n) :n (.-textContent n))))
     3 (span (.-textContent n))
     (p (str "Unexpected n type = " (.-nodeType n)))))
 
@@ -59,7 +66,7 @@
     (ua/user-annotations job)
     (div {:style         {:margin   "6px"
                           :overflow "auto"}
-          :ondoubleclick #(jump-to-hn (:hn-id job))}
+          :ondblclick #(jump-to-hn (:hn-id job))}
       (when (deets? me)
         (map node-to-hiccup
           (remove (fn [n] (= "reply" (.-className n)))
@@ -100,7 +107,6 @@
         noted (pref :noted)
         title-regex (mget (fmu "titlergx") :regex-tree)
         listing-regex (mget (fmu "listingrgx") :regex-tree)]
-    (prn :jl-filtering listing-regex)
     (filter (fn [job]
               (and
                 (or (not remote) (:remote job))
