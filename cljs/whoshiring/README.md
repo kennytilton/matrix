@@ -1,4 +1,4 @@
-# Hiring (Re)agent
+# Hiring ala Matrix
 
 My Javascript/mxWeb&trade; ["AskHN: Who Is Hiring"](https://github.com/kennytilton/whoshiring) browser ported to CLJS/[Matrix](https://github.com/reagent-project/reagent). Search and annotate the hundreds of jobs listed every month.
 
