@@ -5,7 +5,7 @@
      :refer [cI c-reset! make-cell]]
     [tiltontec.cell.observer :as obs]
     [tiltontec.model.core
-     :refer [make mget mset! mswap!]
+     :refer [make mget mset! #_ mswap!]
      :as md]
     [whoshiring.local-storage :as ls]))
 
@@ -75,7 +75,8 @@
 (defn pref [key] (mget prefs key))
 (defn pref! [key value] (mset! prefs key value))
 (defn pref-swap! [key & swap-args]
-  (apply mswap! prefs key swap-args))
+  ;; hhack (apply md/mswap! prefs key swap-args)
+  )
 (defn pref-toggle! [key]
   (pref-swap! key not))
 
