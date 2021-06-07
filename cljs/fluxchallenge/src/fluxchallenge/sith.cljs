@@ -48,10 +48,13 @@
       (let [app (mx-par me)
             master-id (get-in info [:master :id])
             apprentice-id (get-in info [:apprentice :id])]
+        (prn :obs master-id apprentice-id)
         (when (or master-id apprentice-id)
           (when-let [myx (.indexOf (<mget app :sith-ids) (sith-id me))]
+            (prn :myx!! myx)
             (let [mids (sith-id-inject master-id (<mget app :sith-ids) (dec myx))
                   aids (sith-id-inject apprentice-id mids (inc myx))]
+              (prn :setting-siths aids :mids mids)
               (mset!> app :sith-ids aids))))))))
 
 (defn sith-lookup-abort [me]
@@ -61,6 +64,7 @@
       (xhr-abort lku))))
 
 (defn make-sith [app sith-id]
+  (prn :making-sith! sith-id)
   (md/make ::Sith
     :par app
     :sith-id sith-id
@@ -71,6 +75,7 @@
 
     :info (cF+ [:obs obs-sith-info]
             (when-let [r (xhr-response (lookup me))]
+              (prn :response! (:body r))
               (when (= 200 (:status r))
                 (:body r))))
 

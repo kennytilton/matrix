@@ -95,14 +95,20 @@
     ; a new one. Think ReactJS "keys".
     ;
     :siths (cF+ [:obs obs-siths-lost-abort]
-             (mapv (fn [sid]
-                     (when sid
-                       (or (some (fn [s]
-                                   ;; watch out for nils
-                                   (and s (= sid (sith-id s))) s)
-                             (if (= cache unbound) [] cache))
-                         (make-sith me sid))))
-               (sith-ids me)))
+             (let [sids (sith-ids me)]
+               (prn :siths-sees-ids sids cache)
+               (mapv (fn [sid]
+                       (when sid
+                         (let [known (some (fn [s]
+                                             ;; watch out for nils
+                                             (when s
+                                               (prn :seeking sid :seeing (sith-id s)))
+                                             (and s (= sid (sith-id s)) s))
+                                       (if (= cache unbound) [] cache))]
+                           (prn :known known)
+                           (or known
+                             (make-sith me sid)))))
+                 sids)))
 
     :with-obi? (cF (some with-obi? (<mget me :siths)))
 
