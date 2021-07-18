@@ -66,7 +66,7 @@
                    :mx-dom (cFonce (with-par me
                                      [(landing-page)])))))
 
-(defn main! []
+(defn main []
   (println "[main]: loading")
   (let [root (gdom/getElement "tagroot") ;; must be defined in index.html
         app-matrix (matrix-build!)

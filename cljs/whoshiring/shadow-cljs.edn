@@ -1,9 +1,14 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src"]
+ :dev-http {8081 "public"}
+ :nrepl {:port 55554}
 
-{:source-paths ["src"]
- :dependencies [[tiltontec/mxweb "0.1.8-SNAPSHOT"]]
- :dev-http {8080 "target/"}
- :builds {:app {:output-dir "target/"
-                :asset-path "."
-                :target :browser
-                :warnings {:undeclared-var false}
-                :modules {:main {:init-fn whoshiring.core/main!}}}}}
+ :dependencies
+ [[tiltontec/mxweb "0.1.8-SNAPSHOT"]]
+
+ :builds
+ {:app { :target     :browser
+         :output-dir "public/scripts/"
+         :asset-path "/scripts/"
+         :modules    {:core {:init-fn whoshiring.core/main}}}}}
