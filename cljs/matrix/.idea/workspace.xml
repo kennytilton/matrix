@@ -2,74 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/amdefine.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/intercept.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/.npmignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/require.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/script.coffee" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-source-map-support.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-source-map-support.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.coffee" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/build.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/script.coffee" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/server.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/source-map-support.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/source-map-support.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/.npmignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/Makefile.dryice.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/assert-shim.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/mini-require.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/prefix-source-map.jsm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/prefix-utils.jsm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-browser.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-source-map.jsm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-utils.jsm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/test-prefix.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/test-suffix.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/array-set.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/base64-vlq.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/base64.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/binary-search.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-map-consumer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-map-generator.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-node.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/util.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/run-tests.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-api.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-array-set.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-base64-vlq.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-base64.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-binary-search.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-dog-fooding.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-map-consumer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-map-generator.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-node.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/util.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxweb/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxxhr/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxxhr/target/classes/META-INF/maven/tiltontec/mxxhr/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/target/classes/META-INF/maven/tiltontec/mxxhr/pom.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../mxxhr/target/stale/leiningen.core.classpath.extract-native-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/target/stale/leiningen.core.classpath.extract-native-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/project.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/shadow-cljs.edn" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/shadow-cljs.edn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tiltontec/cell/base.cljc" beforeDir="false" afterPath="$PROJECT_DIR$/src/tiltontec/cell/base.cljc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,6 +24,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1VRFZR5CIqXrhd9qQ45ItjKTZlF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -204,13 +147,6 @@
       <updated>1517165659858</updated>
     </task>
     <servers />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="816" y="182" width="1165" height="695" key="find.popup" timestamp="1603120592818">
-      <screen x="0" y="23" width="2560" height="999" />
-    </state>
-    <state x="-1744" y="249" width="1165" height="705" key="find.popup/-2560.23.2560.1417/0.23.2560.999@-2560.23.2560.1417" timestamp="1600714124142" />
-    <state x="816" y="182" width="1165" height="695" key="find.popup/-2560.23.2560.1417/0.23.2560.999@0.23.2560.999" timestamp="1603120592818" />
   </component>
   <component name="masterDetails">
     <states>
