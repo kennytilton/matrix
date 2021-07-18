@@ -222,12 +222,15 @@
 ;; --- miscellaneous components -----------------
 
 (defn std-clock []
-  (let [steps (atom 30)]
+  (let [steps (atom 60)]
     (div {:class   "std-clock"
           :content (cF (subs (.toDateString
                                (js/Date.
                                  (<mget me :clock)))
-                         4))}
+                         4))
+          :onclick #(do (reset! steps 60)
+                        (mset!> (evt-tag %) :clock (now)))
+          }
       {:clock  (cI (now))
        :ticker (cFonce (js/setInterval
                          #(when (pos? (swap! steps dec))

@@ -136,8 +136,8 @@
   (input {::tag/type "date"
 
           :class     "due-by"
-          :value     (cFn (when-let [db (rx-due-by rx)]
-                            (let [db$ (tmc/to-string (tmc/from-long db))]
+          :value     (cFn (when-let [due-by (rx-due-by rx)]
+                            (let [db$ (tmc/to-string (tmc/from-long due-by))]
                               (subs db$ 0 10))))
 
           :oninput   #(mset!> rx :due-by
@@ -145,8 +145,7 @@
                           (tmc/from-string
                             (form/getValue (.-target %)))))
 
-          :disabled (cF (println :disabled-sees (rx-completed rx))
-                      (rx-completed rx))
+          :disabled (cF (rx-completed rx))
 
           :style     (cFonce (make-css-inline me
                                :border "none"
@@ -187,11 +186,20 @@
 
     {:ae (cF+ [:obs (fn-obs
                       (when-not (or (= old unbound) (nil? old))
-                        (not-to-be old)))]
+                        (not-to-be old))
+                      (println :new-ae? new))]
            (when (<mget (mxu-find-class me "ae-autocheck") :on?)
+             (println :ae-auto-check! (rx-title rx))
+             (println :url (pp/cl-format nil ae-by-brand
+                             (js/encodeURIComponent (rx-title rx))))
              (make-xhr (pp/cl-format nil ae-by-brand
                          (js/encodeURIComponent (rx-title rx)))
-               {:name name :send? true})))}
+               {:name name :send? true})))
+     :aeresponse (cF+ [:obs (fn-obs
+                              (println :newresponse new))]
+                   (when-let [lookup (<mget me :ae)]
+                     (xhr-response lookup)))
+     }
 
     (span {:style "font-size:0.7em;margin:2px;margin-top:0;vertical-align:top"}
       "View Adverse Events")))

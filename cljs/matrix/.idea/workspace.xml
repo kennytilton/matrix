@@ -2,12 +2,74 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d6f74870-5b99-473b-b2b2-5bc6dd670308" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/../whoshiring/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/project.clj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/resources/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/resources/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/project.clj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/amdefine.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/intercept.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/amdefine/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/.npmignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/require.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/amd-test/script.coffee" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-source-map-support.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-source-map-support.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.coffee" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/browser-test/script.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/build.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/script.coffee" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/header-test/server.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/source-map-support.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/source-map-support.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map-support/test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/.npmignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/Makefile.dryice.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/assert-shim.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/mini-require.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/prefix-source-map.jsm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/prefix-utils.jsm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-browser.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-source-map.jsm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/suffix-utils.jsm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/test-prefix.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/build/test-suffix.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/array-set.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/base64-vlq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/base64.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/binary-search.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-map-consumer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-map-generator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/source-node.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/lib/source-map/util.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/node_modules/source-map/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/run-tests.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-api.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-array-set.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-base64-vlq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-base64.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-binary-search.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-dog-fooding.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-map-consumer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-map-generator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/test-source-node.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/node_modules/source-map/test/source-map/util.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxweb/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../mxweb/project.clj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxxhr/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/project.clj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxxhr/target/classes/META-INF/maven/tiltontec/mxxhr/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/target/classes/META-INF/maven/tiltontec/mxxhr/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mxxhr/target/stale/leiningen.core.classpath.extract-native-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/../mxxhr/target/stale/leiningen.core.classpath.extract-native-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../whoshiring/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/project.clj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../whoshiring/shadow-cljs.edn" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/shadow-cljs.edn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/core.cljs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/../whoshiring/src/whoshiring/preferences.cljs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +98,11 @@
     <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="cursive.last.file.extension./Users/kennethtilton/matrix/cljs/matrix/src" value="cljc" />
     <property name="cursive.last.file.extension./Users/kennethtilton/matrix/cljs/matrix/test" value="cljc" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
