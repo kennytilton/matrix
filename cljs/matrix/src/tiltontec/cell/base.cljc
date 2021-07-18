@@ -20,7 +20,7 @@
 
 (def +pulse+ (#?(:clj ref :cljs atom) 0))
 
-(defn pulse-now [] +pulse+)
+(defn pulse-now [] @+pulse+)
 
 (defn cells-init []
   #?(:cljs (reset! +pulse+ 0)
