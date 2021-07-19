@@ -10,9 +10,9 @@ Optimally efficient, truly reactive DOM programming in CLJS, without React, with
 
 ### How it works
 
-Matrix-powered CLJS typed maps are arranged in a tree corresponding to a Web page DOM tree. Each Matrix node will transparently become a DOM node, long-lived across many renderings, tho they come and go as the display reflects user interaction. 
+Matrix-powered CLJS typed maps are arranged in a tree corresponding to a Web page DOM tree. Each Matrix node will transparently become a DOM node, long-lived across many renderings, coming and going only as the display responds to user interaction. 
 
-DOM maintenance happens only when necessary; if an application state change requires only that some text turn red, the only DOM work will be to change the span's style attribute.
+DOM maintenance happens only when necessary; if an application state change requires only that some text turn red, the only DOM work will be to change the span's style attribute. Internally, the "red" decision will be made by the formula (function) for the span object style property. mxWeb includes an observer for such properties that applies them to the DOM node corresponding to the Matrix span map.
 
 ### Working Examples
 
