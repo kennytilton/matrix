@@ -1,10 +1,16 @@
 # mxweb
 
-FIXME: Write a one-line description of your library/project.
+The Matrix dataflow library applied to the Web. 
+
+Yes, MatrixRN is under construction.
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Optimally efficient DOM programming, without React.
+
+## Example
+
+[rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "To-do" on the NIH Adverse Events database.
 
 ## Setup
 
