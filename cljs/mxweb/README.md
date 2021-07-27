@@ -1,56 +1,27 @@
-# mxweb
+# mxWeb
 
-FIXME: Write a one-line description of your library/project.
+The [Matrix](https://github.com/kennytilton/matrix/tree/master/cljs/matrix) dataflow library applied to the Web. 
 
-## Overview
+Yes, MatrixRN is under construction.
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+### Overview
 
-## Setup
+Optimally efficient, truly reactive DOM programming in CLJS, without React, without _virtual dom_.
 
-Most of the following scripts require [rlwrap](http://utopia.knoware.nl/~hlub/uck/rlwrap/) (on OS X installable via brew).
+### How it works
 
-Build your project once in dev mode with the following script and then open `index.html` in your browser.
+Matrix-powered CLJS typed maps are arranged in a tree corresponding to a Web page DOM tree. Each Matrix node will transparently become a DOM node, long-lived across many renderings, coming and going only as the display responds to user interaction. 
 
-    ./scripts/build
+DOM maintenance happens only when necessary; if an application state change requires only that some text turn red, the only DOM work will be to change the span's style attribute. Internally, the "red" decision will be made by the formula (function) for the span object style property. mxWeb includes an observer for such properties that applies them to the DOM node corresponding to the Matrix span map.
 
-To auto build your project in dev mode:
+### Working Examples
 
-    ./scripts/watch
+[rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "to-do", now rX prescription, on the [FDA Drug database](https://open.fda.gov/apis/) looking adverse events with that drug. 
 
-To start an auto-building Node REPL:
+[rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) demonstrates the grace with which Matrix handles async as does the [Matrix Flux Challenge](https://github.com/kennytilton/matrix/tree/master/cljs/fluxchallenge) implementation. The [Flux Challenge](https://github.com/staltz/flux-challenge) originated from author Staltz's concern: "It's my personal belief that Flux does not provide an elegant way of coordinating multiple async data sources...".
 
-    ./scripts/repl
+### License
 
-To get source map support in the Node REPL:
-
-    lein npm install
-    
-To start a browser REPL:
-    
-1. Uncomment the following lines in src/mxweb/core.cljs:
-```clojure
-;; (defonce conn
-;;   (repl/connect "http://localhost:9000/repl"))
-```
-2. Run `./scripts/brepl`
-3. Browse to `http://localhost:9000` (you should see `Hello world!` in the web console)
-4. (back to step 3) you should now see the REPL prompt: `cljs.user=>`
-5. You may now evaluate ClojureScript statements in the browser context.
-    
-For more info using the browser as a REPL environment, see
-[this](https://github.com/clojure/clojurescript/wiki/The-REPL-and-Evaluation-Environments#browser-as-evaluation-environment).
-    
-Clean project specific out:
-
-    lein clean
-     
-Build a single release artifact with the following script and then open `index_release.html` in your browser.
-
-    ./scripts/release
-
-## License
-
-Copyright © 2016 FIXME
+Copyright © 2016 Kenneth Tilton
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
