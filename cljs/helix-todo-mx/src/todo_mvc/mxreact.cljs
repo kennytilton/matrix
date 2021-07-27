@@ -20,7 +20,6 @@
 (defn mxweb-init! []
   (reset! +tag-sid+ -1))
 
-
 (def tag-by-id (atom {}))
 
 (def ssdict (atom {}))
@@ -28,6 +27,8 @@
   (swap! ssdict assoc (mget me :sid) setter))
 
 (def refdict (atom {}))
+(defn ref-record [me ref]
+  (swap! refdict assoc (mget me :sid) ref))
 
 (def sid-latest (atom 0))
 
@@ -122,9 +123,9 @@
   (not-to-be-self me))
 
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
-  ;; (prn :obs-by-type slot newv oldv me)
+  ;;(prn :obs-by-type slot newv oldv me)
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
-    (prn :obs-by-type (mget me :name) slot)
+    ;;(prn :obs-by-type (mget me :name) slot newv oldv (c-pulse cell))
     (when-let [set-state-fn (get @ssdict (mget me :sid))]
       (prn :rnc-obs-calls-set-state! (mget me :name) slot (mget me :sid) set-state-fn (c-pulse cell))
       ;; we could just set {} as the value; React does not check for change in value at all.

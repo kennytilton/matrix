@@ -102,19 +102,20 @@
                                             :hiya      "Hiya"
                                             :rendering (cF ($ Title3 {:me       me :sid (mget me :sid) :mas (mget me :hiya)
                                                                       :on-click (fn [e]
-                                                                                  (prn :click (.. e -target))
+                                                                                  (prn :click-ctr (.. e -target))
                                                                                   ;; todo find self via ref
                                                                                   (let [ctr (mxr/mx* me :counter42)]
                                                                                     (mswap! me :counter inc)))}))}
                                            {:counter (cI 2)})
                                          (mxr/make-rnc-ex "div"
-                                           {:feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))
+                                           {:name :div-7
+                                            :feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))
                                             :rendering (cFonce ;; ($ Div6 {:me      me})
                                                          ($ (hx/fnc []
                                                               (let [[_ set-state] (hooks/use-state 0)]
                                                                 (mxr/set-state-record me set-state) ;; <-- used by Matrix on-change handler to trigger re-render
                                                                 (d/h1 {:on-click (fn [e]
-                                                                                   (prn :click (.. e -target))
+                                                                                   (prn :click-div7 (.. e -target))
                                                                                    ;; todo find self via ref
                                                                                    (mswap! (mxr/mxu! me :counter42) :counter dec))} {}
                                                                   (str "div7! " (mget me :feed)))))))}
