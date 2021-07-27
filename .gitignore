@@ -1,7 +1,14 @@
+**/.package-lock.json
 **/package-lock.json
+**/package.json
+**/.lein-failures
+**/.shadow-cljs
+**/cljs-runtime/*
 .DS_Store
 **/*.xml
 **/*.iml
+**/.idea/*
+**/node_modules
 cljs-out
 .nrepl-port
 .rebel_readline_history
