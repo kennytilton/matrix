@@ -62,31 +62,11 @@
 (defnc Title3
   [props]
   (let [[_ ss] (hooks/use-state 0)
-        ref3 (hooks/use-ref nil)]
-    (when-let [sid (:sid props)]
-      (swap! mxr/refdict assoc sid ref3)
-      (when-not (get @mxr/ssdict sid)
-        (swap! mxr/ssdict assoc sid ss)))
-    (d/h1 {:ref ref3 :on-click (:on-click props)} {}
+        ref (hooks/use-ref nil)]
+    (mxr/set-state-record (:me props) ss)
+    (mxr/ref-record (:me props) ref)
+    (d/h1 {:ref ref :on-click (:on-click props)} {}
       (str "Todos " (:mas props) ":" (rand-int 32767) ":count=" (mget (:me props) :counter)))))
-
-(defnc Div5
-  [props]
-  (let [[_ ss] (hooks/use-state 0)]
-    (when-let [sid (:sid props)]
-      (when-not (get @mxr/ssdict sid)
-        (prn :storing-div5 sid ss)
-        (swap! mxr/ssdict assoc sid ss)))
-    (let [ctr4 (mxr/mxu! (:me props) :counter42)]
-      (d/h1 {} {}
-        (str "Div5 sees counter =" (mget ctr4 :counter))))))
-
-(defnc Div6
-  [{:keys [me]}]
-  (let [[_ set-state] (hooks/use-state 0)]
-    (mxr/set-state-record me set-state)                     ;; <-- used by Matrix on-change handler to trigger re-render
-    (d/h1 {} {}
-      (str "div6 " (mget me :feed)))))
 
 (defn matrix-build! []
   (reset! mxr/ssdict {})
@@ -99,7 +79,6 @@
                                          (mxr/make-rnc-ex "button"
                                            {:name      :counter42
                                             :content   (cF (str "Boom " (mget me :counter)))
-                                            :hiya      "Hiya"
                                             :rendering (cF ($ Title3 {:me       me :sid (mget me :sid) :mas (mget me :hiya)
                                                                       :on-click (fn [e]
                                                                                   (prn :click-ctr (.. e -target))
