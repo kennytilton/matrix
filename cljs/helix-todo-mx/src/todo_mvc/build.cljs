@@ -86,6 +86,7 @@
                                                                                   (let [ctr (mxr/mx* me :counter42)]
                                                                                     (mswap! me :counter inc)))}))}
                                            {:counter (cI 2)})
+
                                          (mxr/make-rnc-ex "div"
                                            {:name :div-7
                                             :feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))
@@ -93,12 +94,19 @@
                                                          ($ (hx/fnc []
                                                               (let [[_ set-state] (hooks/use-state 0)]
                                                                 (mxr/set-state-record me set-state) ;; <-- used by Matrix on-change handler to trigger re-render
-                                                                (d/h1 {:on-click (fn [e]
+                                                                ($ "h1" {:on-click (fn [e]
                                                                                    (prn :click-div7 (.. e -target))
                                                                                    ;; todo find self via ref
                                                                                    (mswap! (mxr/mxu! me :counter42) :counter dec))} {}
                                                                   (str "div7! " (mget me :feed)))))))}
                                            {})
+                                         #_ (rnx/h1
+                                           {:on-click (fn [e]
+                                                        (prn :click-div7 (.. e -target))
+                                                        ;; todo find self via ref
+                                                        (mswap! (mxr/mxu! me :counter42) :counter dec))}
+                                           {:feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))}
+                                           (str "div7! " (mget me :feed)))
                                          (mxr/make-rnc-ex "div"
                                            {:name :multi-parent
                                             :rendering (cF
