@@ -75,11 +75,29 @@
                                          (mxr/make-rnc-ex "text"
                                            {:name      :counter42
                                             :content   "baby steps" ;; (cF (str "Boom " (mget me :counter)))
+                                            :title     (cF (str "Better " (mget me :counter)))
                                             :rendering (cF ($ (hx/fnc []
                                                                 (let [[_ set-state] (hooks/use-state 0)]
                                                                   (mxr/set-state-record me set-state)
-                                                                  (apply $ rn/Text
-                                                                    {:style #js {:fontSize 36}} {} "new BAM BAM text")))))})
+                                                                  (prn "prn")
+                                                                  (println "println")
+
+                                                                  (apply $ rn/Button
+                                                                    {:style   #js {:fontSize 36}
+                                                                     :title   (mget me :title)
+                                                                     :onPress ;; #(prn :press %)
+                                                                     #(do ;; let [ctr (mxr/mx* me :counter42)]
+                                                                          (prn :pressed! (mget me :counter))
+                                                                          (mswap! me :counter inc))}
+                                                                    {})))))}
+                                           {:counter (cI 42)})
+                                         #_(mxr/make-rnc-ex "button"
+                                             {:name      :counter42
+                                              :content   (cF (str "Boom " (mget me :counter)))
+                                              :rendering (cF ($ Title3 {:me       me :sid (mget me :sid) :mas (mget me :hiya)
+                                                                        :on-click #(let [ctr (mxr/mx* me :counter42)]
+                                                                                     (mswap! me :counter inc))}))}
+                                             {:counter (cI 42)})
                                          (mxr/make-rnc-ex "text"
                                            {:name      :counter42
                                             :content   "baby steps" ;; (cF (str "Boom " (mget me :counter)))
