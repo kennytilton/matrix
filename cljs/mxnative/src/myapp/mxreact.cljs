@@ -1,4 +1,4 @@
-(ns todo-mvc.mxreact
+(ns myapp.mxreact
   (:refer-clojure :exclude [meta time])
   (:require
     [helix.hooks :as hooks]

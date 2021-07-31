@@ -1,0 +1,7 @@
+{:deps true
+ :builds {:dev {:target :react-native,
+                :init-fn myapp.main/init,
+                :output-dir "react-native/target",
+                :devtools {:preloads [helix.experimental.refresh]
+                           :reload-strategy :full}
+                :js-options {:js-package-dirs ["react-native/node_modules"]}}}}

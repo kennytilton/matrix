@@ -68,6 +68,17 @@
     (d/h1 {:ref ref :on-click (:on-click props)} {}
       (str "Todos " (:mas props) ":" (rand-int 32767) ":count=" (mget (:me props) :counter)))))
 
+#_(mxr/make-rnc
+    {:counter   (cI 42)
+     :label     (cF (str "The counter is at "
+                      (mget me :counter)))
+     :rendering (cFonce
+                  ($ (hx/fnc []
+                       (let [[_ set-state] (hooks/use-state 0)]
+                         (mxr/set-state-record me set-state)
+                         (d/button {:on-click #(mswap! me :counter inc)} {}
+                           (mget me :label))))))})
+
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
@@ -80,35 +91,30 @@
                                            {:name      :counter42
                                             :content   (cF (str "Boom " (mget me :counter)))
                                             :rendering (cF ($ Title3 {:me       me :sid (mget me :sid) :mas (mget me :hiya)
-                                                                      :on-click (fn [e]
-                                                                                  (prn :click-ctr (.. e -target))
-                                                                                  ;; todo find self via ref
-                                                                                  (let [ctr (mxr/mx* me :counter42)]
-                                                                                    (mswap! me :counter inc)))}))}
-                                           {:counter (cI 2)})
+                                                                      :on-click #(let [ctr (mxr/mx* me :counter42)]
+                                                                                   (mswap! me :counter inc))}))}
+                                           {:counter (cI 42)})
 
                                          (mxr/make-rnc-ex "div"
-                                           {:name :div-7
-                                            :feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))
-                                            :rendering (cFonce ;; ($ Div6 {:me      me})
+                                           {:feed      (cF (str "The counter is at "
+                                                             (mget (mxr/mxu! me :counter42) :counter)))
+                                            :rendering (cFonce
                                                          ($ (hx/fnc []
                                                               (let [[_ set-state] (hooks/use-state 0)]
-                                                                (mxr/set-state-record me set-state) ;; <-- used by Matrix on-change handler to trigger re-render
-                                                                ($ "h1" {:on-click (fn [e]
-                                                                                   (prn :click-div7 (.. e -target))
-                                                                                   ;; todo find self via ref
-                                                                                   (mswap! (mxr/mxu! me :counter42) :counter dec))} {}
-                                                                  (str "div7! " (mget me :feed)))))))}
+                                                                (mxr/set-state-record me set-state)
+                                                                (d/h1 {:on-click #(mswap! (mxr/mxu! me :counter42)
+                                                                                      :counter dec)} {}
+                                                                  (mget me :feed))))))}
                                            {})
-                                         #_ (rnx/h1
-                                           {:on-click (fn [e]
-                                                        (prn :click-div7 (.. e -target))
-                                                        ;; todo find self via ref
-                                                        (mswap! (mxr/mxu! me :counter42) :counter dec))}
-                                           {:feed      (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))}
-                                           (str "div7! " (mget me :feed)))
+                                         #_(rnx/h1
+                                             {:on-click (fn [e]
+                                                          (prn :click-div7 (.. e -target))
+                                                          ;; todo find self via ref
+                                                          (mswap! (mxr/mxu! me :counter42) :counter dec))}
+                                             {:feed (cF (str "FNC " (mget (mxr/mxu! me :counter42) :counter)))}
+                                             (str "div7! " (mget me :feed)))
                                          (mxr/make-rnc-ex "div"
-                                           {:name :multi-parent
+                                           {:name      :multi-parent
                                             :rendering (cF
                                                          ($ (hx/fnc []
                                                               (let [[_ set-state] (hooks/use-state 0)]
@@ -118,7 +124,7 @@
                                                                 (mxr/set-state-record me set-state)
                                                                 (apply $ "div" {} {}
                                                                   (doall (map #(mget % :rendering)
-                                                                             (mget me :kids))))))))}
+                                                                           (mget me :kids))))))))}
                                            {}
                                            (cFkids
                                              (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
@@ -126,7 +132,7 @@
                                                  {:rendering (cFonce
                                                                ($ (hx/fnc []
                                                                     (d/p {} {}
-                                                                        (str "pgr " n)))))}
+                                                                      (str "pgr " n)))))}
                                                  {}))))
                                          )))))))
 

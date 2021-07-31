@@ -1,0 +1,5 @@
+/.cpcache/
+/.shadow-cljs/
+/react-native/target/
+.idea/
+*.iml
