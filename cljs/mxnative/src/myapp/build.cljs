@@ -72,6 +72,13 @@
                                                      {}))))}
                               {:counter (cI 3)})
 
+                            (mkx rn/Button
+                              :name :ctrmkx
+                              :title (cF (str "BoomBad " (mget (mxr/mxu! me :counter42) :counter)))
+                              :jsx {:style   #js {:fontSize 36}
+                                    :title   (mget me :title)
+                                    :onPress #(mswap! (mxr/mx* me :counter42) :counter inc)})
+
                             (mkrx
                               {:title     (cF (str "WorserX " (mget (mxr/mxu! me :counter42) :counter)))
                                :rendering (cF ($ (mxfnc
@@ -80,7 +87,7 @@
                                                       :title (mget me :title)
                                                       :onPress ;; #(prn :press %)
                                                              #(let [ctr (mxr/mx* me :counter42)]
-                                                                (prn :pressed! (mget ctr :counter))
+                                                                ;;(prn :pressed! (mget ctr :counter))
                                                                 (mswap! ctr :counter dec))}))))})
                             (mkrx
                               {:name      :multi-parent

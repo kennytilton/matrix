@@ -8,7 +8,7 @@
 
 (defmacro mkx [component & key-vals]
   (let [kv-map (apply hash-map key-vals)]
-    `(myapp.mxreact/mkrx ~component
+    `(myapp.mxreact/mkrx
        ~(assoc (dissoc kv-map :jsx)
           :rendering `(tiltontec.cell.core/cF
                         (helix.core/$
