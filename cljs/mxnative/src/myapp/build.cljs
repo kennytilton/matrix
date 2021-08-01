@@ -47,18 +47,6 @@
   (reset! mxr/refdict {})
   (reset! matrix (md/make ::hxApp
                    :rx-dom (cFonce (with-par me
-                                     ;; OK (mxr/make-rnc "p" {} {:content "Just P"} nil)
-                                     ;;{:style #js {:fontSize 36}}
-                                     #_(mxr/make-rnc-ex "text"
-                                         {:name      :counter42
-                                          :content   "baby steps" ;; (cF (str "Boom " (mget me :counter)))
-                                          :rendering (cF (hx/fnc []
-                                                           (let [[_ set-state] (hooks/use-state 0)]
-                                                             (mxr/set-state-record me set-state)
-                                                             (apply $ rn/Text
-                                                               {:style #js {:fontSize 36}} {} "xx BAM BAM text"))))}
-                                         {})
-
                                      (mxr/make-rnc-ex "dummy"
                                        {:name      :root
                                         :rendering (cF (do #_$
@@ -79,9 +67,6 @@
                                             :rendering (cF ($ (hx/fnc []
                                                                 (let [[_ set-state] (hooks/use-state 0)]
                                                                   (mxr/set-state-record me set-state)
-                                                                  (prn "prn")
-                                                                  (println "println")
-
                                                                   (apply $ rn/Button
                                                                     {:style   #js {:fontSize 36}
                                                                      :title   (mget me :title)
@@ -90,35 +75,41 @@
                                                                           (prn :pressed! (mget me :counter))
                                                                           (mswap! me :counter inc))}
                                                                     {})))))}
-                                           {:counter (cI 42)})
-                                         #_(mxr/make-rnc-ex "button"
-                                             {:name      :counter42
-                                              :content   (cF (str "Boom " (mget me :counter)))
-                                              :rendering (cF ($ Title3 {:me       me :sid (mget me :sid) :mas (mget me :hiya)
-                                                                        :on-click #(let [ctr (mxr/mx* me :counter42)]
-                                                                                     (mswap! me :counter inc))}))}
-                                             {:counter (cI 42)})
+                                           {:counter (cI 3)})
+                                         (mxr/make-rnc-ex "view"
+                                           {:name      :multi-parent
+                                            :rendering (cF ($ (hx/fnc []
+                                                              (let [[_ set-state] (hooks/use-state 0)]
+                                                                (prn :recording-multi-par-ss
+                                                                  (mget me :name)
+                                                                  (mget me :sid))
+                                                                (mxr/set-state-record me set-state)
+                                                                (apply $ rn/View {} {}
+                                                                  (doall (map #(mget % :rendering)
+                                                                           (mget me :kids))))))))}
+                                           {}
+                                           (cFkids
+                                             (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                               (mxr/make-rnc-ex "p"
+                                                 {:rendering (cFonce
+                                                               ($ (hx/fnc []
+                                                                    ($ rn/Text {} {}
+                                                                      (str "pgr " n)))))}
+                                                 {}))))
                                          (mxr/make-rnc-ex "text"
-                                           {:name      :counter42
-                                            :content   "baby steps" ;; (cF (str "Boom " (mget me :counter)))
+                                           {:title     (cF (str "Worser " (mget me :counter)))
                                             :rendering (cF ($ (hx/fnc []
                                                                 (let [[_ set-state] (hooks/use-state 0)]
                                                                   (mxr/set-state-record me set-state)
-                                                                  (apply $ rn/Text
-                                                                    {:style #js {:fontSize 18}} {} "baby steps rizing")))))})
-                                         #_(mxr/make-rnc-ex "button"
-                                             {:name      :counter42
-                                              :content   (cF (str "Boom " (mget me :counter)))
-                                              :rendering (cF ($ (hx/fnc []
-                                                                  (let [[_ set-state] (hooks/use-state 0)]
-                                                                    (mxr/set-state-record me set-state)
-                                                                    (apply $ rn/Button
-                                                                      {:title               (mget me :content)
-                                                                       :color               "#841584"
-                                                                       :accessibility-label "Increment this purple counter"
-                                                                       :on-press            #(mswap! me :counter inc)}
-                                                                      {})))))}
-                                             {:counter (cI 42)}))))))))
+                                                                  (apply $ rn/Button
+                                                                    {:style   #js {:fontSize 36}
+                                                                     :title   (mget me :title)
+                                                                     :onPress ;; #(prn :press %)
+                                                                              #(let [ctr (mxr/mx* me :counter42)]
+                                                                                 (prn :pressed! (mget ctr :counter))
+                                                                                 (mswap! ctr :counter dec))}
+                                                                    {})))))}
+                                           {}))))))))
 
 (comment
   (mxr/make-rx
