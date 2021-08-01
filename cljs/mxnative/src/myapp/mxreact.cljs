@@ -49,7 +49,7 @@
      :must? must-find?)))
 
 (defn make-rnc [tag attrs aux cFkids]
-   (prn :make-rnc1 tag cFkids)
+   (prn :make-rnc1 tag attrs cFkids)
    (let [tag-id (str (or (:id attrs)
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
          #_(prn :aux-raw aux)

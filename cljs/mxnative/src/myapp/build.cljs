@@ -59,10 +59,10 @@
                                     :onPress #(mswap! me :counter inc)})
 
                             (mkx rn/Button
-                              :title (cF (str "Downer " (mget (mxr/mxu! me :counter42) :counter)))
+                              :title (cF (str "Downer! " (mget (mxr/mxu! me :counter42) :counter)))
                               :jsx {:style   #js {:fontSize 36}
                                     :title   (mget me :title)
-                                    :onPress #(mswap! (mxr/mx* me :counter42) :counter inc)})
+                                    :onPress #(mswap! (mxr/mx* me :counter42) :counter dec)})
 
 
                             (mkrx
@@ -74,12 +74,9 @@
                               {}
                               (cFkids
                                 (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                  (mkrx ;;mxr/make-rnc-ex "p"
-                                    {:rendering (cFonce
-                                                  ($ (mxfnc
-                                                       ($ rn/Text {} {}
-                                                         (str "Text " n)))))}
-                                    {}))))
+                                  (mkrx
+                                    {:rendering (cF ($ rn/Text {} {}
+                                                      (str "Text " n)))}))))
                             )))))))
 
 (comment
