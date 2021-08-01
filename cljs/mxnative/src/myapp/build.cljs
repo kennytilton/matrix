@@ -29,7 +29,7 @@
             [helix.hooks :as hooks]
 
             [myapp.mxreact :as mxr :refer [mkrx]]
-            [myapp.mxr-gen :refer [with-mxr]]
+            [myapp.mxr-gen :refer [mxfnc mkx]]
             ))
 
 (declare mx-find-matrix)
@@ -42,7 +42,7 @@
       :rx-dom (cFonce (with-par me
                         (mkrx
                           {:name      :root
-                           :rendering (cF (with-mxr
+                           :rendering (cF (mxfnc
                                             (apply $ rn/View
                                               {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
                                               {}
@@ -50,22 +50,41 @@
                                                        (mget me :kids))))))}
                           {}
                           (cFkids
+
+                            #_ (mkx rn/Button
+                              :name :counter42
+                              :title (cF (str "Boom " (mget me :counter)))
+                              :counter (cI 3)
+                              :jsx {:style   #js {:fontSize 36}
+                                     :title   (mget me :title)
+                                     :onPress #(mswap! me :counter inc)})
                             (mkrx
                               {:name      :counter42
-                               :title     (cF (str "Better " (mget me :counter)))
-                               :rendering (cF ($ (with-mxr
-                                                   (apply $ rn/Button
-                                                       {:style #js {:fontSize 36}
-                                                        :title (mget me :title)
-                                                        :onPress ;; #(prn :press %)
-                                                               #(do ;; let [ctr (mxr/mx* me :counter42)]
-                                                                  (prn :pressed! (mget me :counter))
-                                                                  (mswap! me :counter inc))}
-                                                       {}))))}
+                               :title     (cF (str "MKRX " (mget me :counter)))
+                               :rendering (cF ($ (mxfnc
+                                                   ($ rn/Button
+                                                     {:style #js {:fontSize 36}
+                                                      :title (mget me :title)
+                                                      :onPress ;; #(prn :press %)
+                                                             #(do ;; let [ctr (mxr/mx* me :counter42)]
+                                                                (prn :pressed! (mget me :counter))
+                                                                (mswap! me :counter inc))}
+                                                     {}))))}
                               {:counter (cI 3)})
+
+                            (mkrx
+                              {:title     (cF (str "WorserX " (mget (mxr/mxu! me :counter42) :counter)))
+                               :rendering (cF ($ (mxfnc
+                                                   ($ rn/Button
+                                                     {:style #js {:fontSize 36}
+                                                      :title (mget me :title)
+                                                      :onPress ;; #(prn :press %)
+                                                             #(let [ctr (mxr/mx* me :counter42)]
+                                                                (prn :pressed! (mget ctr :counter))
+                                                                (mswap! ctr :counter dec))}))))})
                             (mkrx
                               {:name      :multi-parent
-                               :rendering (cF ($ (with-mxr
+                               :rendering (cF ($ (mxfnc
                                                    (apply $ rn/View {} {}
                                                      (doall (map #(mget % :rendering)
                                                               (mget me :kids)))))))}
@@ -74,21 +93,11 @@
                                 (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
                                   (mxr/make-rnc-ex "p"
                                     {:rendering (cFonce
-                                                  ($ (hx/fnc []
+                                                  ($ (mxfnc
                                                        ($ rn/Text {} {}
                                                          (str "pgr " n)))))}
                                     {}))))
-                            (mkrx
-                              {:title     (cF (str "Worser " (mget me :counter)))
-                               :rendering (cF ($ (with-mxr
-                                                   (apply $ rn/Button
-                                                     {:style #js {:fontSize 36}
-                                                      :title (mget me :title)
-                                                      :onPress ;; #(prn :press %)
-                                                             #(let [ctr (mxr/mx* me :counter42)]
-                                                                (prn :pressed! (mget ctr :counter))
-                                                                (mswap! ctr :counter dec))}
-                                                     {}))))}))))))))
+                            )))))))
 
 (comment
   (mxr/make-rx
