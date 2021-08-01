@@ -48,14 +48,7 @@
      :up? true
      :must? must-find?)))
 
-(defn make-rnc
-  ([tag]
-   (make-rnc tag {} {} nil))
-  ([tag attributes]
-   (make-rnc tag attributes {} nil))
-  ([tag attributes aux]
-   (make-rnc tag attributes aux nil))
-  ([tag attrs aux cFkids]
+(defn make-rnc [tag attrs aux cFkids]
    (prn :make-rnc1 tag cFkids)
    (let [tag-id (str (or (:id attrs)
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
@@ -80,8 +73,7 @@
                     (vec (apply concat (seq aux)))))]
      ;;(println :made-mxweb!! mxweb-id (keys @mx-mxweb))
      (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag)))
-
+     mx-tag))
 
 (defn mkrx
   ([attributes]
@@ -93,29 +85,6 @@
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
-                  :id tag-id
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux)))))]
-     (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag)))
-
-
-
-(defn make-rnc-ex
-  ([tag]
-   (make-rnc tag {} {} nil))
-  ([tag attributes]
-   (make-rnc tag attributes {} nil))
-  ([tag attributes aux]
-   (make-rnc tag attributes aux nil))
-  ([tag attrs aux cFkids]
-   (prn :make-rnc2 tag cFkids)
-   (let [tag-id (str (or (:id attrs)
-                       (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         mx-tag (apply make ::mxrn.elt
-                  :tag tag
                   :id tag-id
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
