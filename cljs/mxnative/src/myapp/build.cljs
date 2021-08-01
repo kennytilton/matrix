@@ -50,15 +50,7 @@
                                                        (mget me :kids))))))}
                           {}
                           (cFkids
-
-                            #_ (mkx rn/Button
-                              :name :counter42
-                              :title (cF (str "Boom " (mget me :counter)))
-                              :counter (cI 3)
-                              :jsx {:style   #js {:fontSize 36}
-                                     :title   (mget me :title)
-                                     :onPress #(mswap! me :counter inc)})
-                            (mkrx
+                            #_ (mkrx
                               {:name      :counter42
                                :title     (cF (str "MKRX " (mget me :counter)))
                                :rendering (cF ($ (mxfnc
@@ -71,6 +63,14 @@
                                                                 (mswap! me :counter inc))}
                                                      {}))))}
                               {:counter (cI 3)})
+
+                            (mkx rn/Button
+                              :name :counter42
+                              :title (cF (str "Counter " (mget me :counter)))
+                              :counter (cI 3)
+                              :jsx {:style   #js {:fontSize 36}
+                                    :title   (mget me :title)
+                                    :onPress #(mswap! me :counter inc)})
 
                             (mkx rn/Button
                               :name :ctrmkx
