@@ -82,6 +82,25 @@
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag)))
 
+
+(defn mkrx
+  ([attributes]
+   (make-rnc "vstg" attributes {} nil))
+  ([attributes aux]
+   (make-rnc "vstg" attributes aux nil))
+  ([attrs aux cFkids]
+   (let [tag-id (str (or (:id attrs)
+                       (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
+         mx-tag (apply make ::mxrn.elt
+                  :tag "vstg"
+                  :id tag-id
+                  :attr-keys (distinct (conj (keys attrs) :id))
+                  :kids cFkids
+                  (concat (vec (apply concat (seq (dissoc attrs :id))))
+                    (vec (apply concat (seq aux)))))]
+     (swap! tag-by-id assoc tag-id mx-tag)
+     mx-tag)))
+
 (defn make-rnc-ex
   ([tag]
    (make-rnc tag {} {} nil))

@@ -28,7 +28,7 @@
     ;;[helix.dom :as d]
             [helix.hooks :as hooks]
 
-            [myapp.mxreact :as mxr]
+            [myapp.mxreact :as mxr :refer [mkrx]]
             [myapp.mxr-gen :refer [with-mxr]]
             ))
 
@@ -40,51 +40,35 @@
   (reset! matrix
     (md/make ::hxApp
       :rx-dom (cFonce (with-par me
-                        (mxr/make-rnc-ex "dummy"
+                        (mkrx
                           {:name      :root
                            :rendering (cF (with-mxr
                                             (apply $ rn/View
                                               {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
                                               {}
                                               (doall (map #(mget % :rendering)
-                                                       (mget me :kids)))))
-                                        #_ (hx/fnc []
-                                            (let [[_ set-state] (hooks/use-state 0)]
-                                              (mxr/set-state-record me set-state)
-                                              (apply $ rn/View
-                                                {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
-                                                {}
-                                                (doall (map #(mget % :rendering)
-                                                         (mget me :kids)))))))}
+                                                       (mget me :kids))))))}
                           {}
                           (cFkids
-                            (mxr/make-rnc-ex "text"
+                            (mkrx
                               {:name      :counter42
-                               :content   "baby steps"      ;; (cF (str "Boom " (mget me :counter)))
                                :title     (cF (str "Better " (mget me :counter)))
-                               :rendering (cF ($ (hx/fnc []
-                                                   (let [[_ set-state] (hooks/use-state 0)]
-                                                     (mxr/set-state-record me set-state)
-                                                     (apply $ rn/Button
+                               :rendering (cF ($ (with-mxr
+                                                   (apply $ rn/Button
                                                        {:style #js {:fontSize 36}
                                                         :title (mget me :title)
                                                         :onPress ;; #(prn :press %)
                                                                #(do ;; let [ctr (mxr/mx* me :counter42)]
                                                                   (prn :pressed! (mget me :counter))
                                                                   (mswap! me :counter inc))}
-                                                       {})))))}
+                                                       {}))))}
                               {:counter (cI 3)})
-                            (mxr/make-rnc-ex "view"
+                            (mkrx
                               {:name      :multi-parent
-                               :rendering (cF ($ (hx/fnc []
-                                                   (let [[_ set-state] (hooks/use-state 0)]
-                                                     (prn :recording-multi-par-ss
-                                                       (mget me :name)
-                                                       (mget me :sid))
-                                                     (mxr/set-state-record me set-state)
-                                                     (apply $ rn/View {} {}
-                                                       (doall (map #(mget % :rendering)
-                                                                (mget me :kids))))))))}
+                               :rendering (cF ($ (with-mxr
+                                                   (apply $ rn/View {} {}
+                                                     (doall (map #(mget % :rendering)
+                                                              (mget me :kids)))))))}
                               {}
                               (cFkids
                                 (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
@@ -94,20 +78,17 @@
                                                        ($ rn/Text {} {}
                                                          (str "pgr " n)))))}
                                     {}))))
-                            (mxr/make-rnc-ex "text"
+                            (mkrx
                               {:title     (cF (str "Worser " (mget me :counter)))
-                               :rendering (cF ($ (hx/fnc []
-                                                   (let [[_ set-state] (hooks/use-state 0)]
-                                                     (mxr/set-state-record me set-state)
-                                                     (apply $ rn/Button
-                                                       {:style #js {:fontSize 36}
-                                                        :title (mget me :title)
-                                                        :onPress ;; #(prn :press %)
-                                                               #(let [ctr (mxr/mx* me :counter42)]
-                                                                  (prn :pressed! (mget ctr :counter))
-                                                                  (mswap! ctr :counter dec))}
-                                                       {})))))}
-                              {}))))))))
+                               :rendering (cF ($ (with-mxr
+                                                   (apply $ rn/Button
+                                                     {:style #js {:fontSize 36}
+                                                      :title (mget me :title)
+                                                      :onPress ;; #(prn :press %)
+                                                             #(let [ctr (mxr/mx* me :counter42)]
+                                                                (prn :pressed! (mget ctr :counter))
+                                                                (mswap! ctr :counter dec))}
+                                                     {}))))}))))))))
 
 (comment
   (mxr/make-rx
