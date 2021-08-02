@@ -17,6 +17,16 @@
                               ~(:jsx kv-map)
                               {}))))))))
 
+(comment
+  (apply concat (into [] {:a 1 :b 2}))
+  (macroexpand `(mkbox rn/View
+                  :name :multi-parent
+                  :style {:flex 1, :alignItems "center", :justifyContent "center"}
+                  :of-kids ($ (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                (mkrx
+                                  {:rendering (cF ($ rn/Text {} {}
+                                                    (str "Text " n)))}))))))
+
 (defmacro mkbox [container-component & key-vals]
   (let [kv-map (apply hash-map key-vals)
         of-kids (:of-kids kv-map)
@@ -36,3 +46,4 @@
                                  (tiltontec.model.core/mget me :kids))))))
        {}
        (tiltontec.model.core/cFkids ~of-kids))))
+
