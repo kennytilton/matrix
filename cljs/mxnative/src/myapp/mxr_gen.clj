@@ -17,10 +17,22 @@
                               ~(:jsx kv-map)
                               {}))))))))
 
-#_(defmacro mkx [component & key-vals]
-    (let [opts (into {} (partition 2 key-vals))])
-    `(mkrx
-       {~@(concat (for [[k v] (dissoc opts :opts)]
-                    [k v]))
-        :rendering (cF ($ (mxfnc
-                            (apply $ ~component ~(:opts opts) {}))))}))
+(defmacro mkbox [container-component & key-vals]
+  (let [kv-map (apply hash-map key-vals)
+        of-kids (:of-kids kv-map)
+        rendering (:rendering kv-map)
+        container-attrs (apply concat
+                          (into []
+                            (dissoc kv-map :jsx :of :rendering)))]
+    (prn :kvmap kv-map)
+    (prn :comp container-component)
+    (prn :contattrs container-attrs)
+    (prn :of-kids of-kids)
+    `(myapp.mxreact/mkrx ~container-component
+       (assoc (hash-map ~@container-attrs)
+         :rendering (tiltontec.cell.core/cF
+                      (apply helix.core/$ ~container-component {} {}
+                        (doall (map #(tiltontec.model.core/mget % :rendering)
+                                 (tiltontec.model.core/mget me :kids))))))
+       {}
+       (tiltontec.model.core/cFkids ~of-kids))))

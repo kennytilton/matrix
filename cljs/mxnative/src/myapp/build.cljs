@@ -64,13 +64,21 @@
                                     :title   (mget me :title)
                                     :onPress #(mswap! (mxr/mx* me :counter42) :counter dec)})
 
+                            #_ (mkbox rn/View
+                                 :name :multi-parent
+                                 :style #js {:flex 1, :alignItems "center", :justifyContent "center"}
+                                 :of ($ (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                          (mkrx
+                                            {:rendering (cF ($ rn/Text {} {}
+                                                              (str "Text " n)))}))))
+
+
 
                             (mkrx
                               {:name      :multi-parent
-                               :rendering (cF ($ (mxfnc
-                                                   (apply $ rn/View {} {}
-                                                     (doall (map #(mget % :rendering)
-                                                              (mget me :kids)))))))}
+                               :rendering (cF (apply $ rn/View {} {}
+                                                (doall (map #(mget % :rendering)
+                                                         (mget me :kids)))))}
                               {}
                               (cFkids
                                 (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
@@ -79,13 +87,5 @@
                                                       (str "Text " n)))}))))
                             )))))))
 
-(comment
-  (mxr/make-rx
-    :feed (cF (str "Fed Content " (mget (mxr/mxu! me :counter42) :counter)))
-    :rendering (cFonce ($ (lambdac [{:keys [me]}]
-                            (let [[_ set-state] (hooks/use-state 0)]
-                              (mxr/set-state-record me set-state) ;; <-- used by Matrix on-change handler to trigger re-render
-                              (d/h1 {} {}
-                                (str "div6 " (mget me :feed))))) {:me me}))))
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
