@@ -1,4 +1,4 @@
-(ns myapp.mxr-gen)
+(ns myapp.mxrgen)
 
 (defmacro mxfnc [& body]
   `(helix.core/fnc []
