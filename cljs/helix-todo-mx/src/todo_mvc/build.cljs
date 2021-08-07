@@ -96,7 +96,7 @@
                                            {:counter (cI 42)})
 
                                          (mxr/make-rnc-ex "div"
-                                           {:feed      (cF (str "The counter is at "
+                                           {:banner      (cF (str "The counter is at "
                                                              (mget (mxr/mxu! me :counter42) :counter)))
                                             :rendering (cFonce
                                                          ($ (hx/fnc []
@@ -104,9 +104,9 @@
                                                                 (mxr/set-state-record me set-state)
                                                                 (d/h1 {:on-click #(mswap! (mxr/mxu! me :counter42)
                                                                                       :counter dec)} {}
-                                                                  (mget me :feed))))))}
+                                                                  (mget me :banner))))))}
                                            {})
-                                         #_(rnx/h1
+                                         #_ (rnx/h1
                                              {:on-click (fn [e]
                                                           (prn :click-div7 (.. e -target))
                                                           ;; todo find self via ref
@@ -118,9 +118,6 @@
                                             :rendering (cF
                                                          ($ (hx/fnc []
                                                               (let [[_ set-state] (hooks/use-state 0)]
-                                                                (prn :recording-multi-par-ss
-                                                                  (mget me :name)
-                                                                  (mget me :sid))
                                                                 (mxr/set-state-record me set-state)
                                                                 (apply $ "div" {} {}
                                                                   (doall (map #(mget % :rendering)
