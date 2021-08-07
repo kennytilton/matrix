@@ -54,7 +54,7 @@
     (prn :matrix @app-matrix)
     (prn :Root Root)
     (prn :rrot root)
-    (prn :rendering rendering)
+
     (rn/AppRegistry.registerComponent "MyApp"
       ;; rendering
       (fn [] rendering)
