@@ -34,6 +34,12 @@
 
 (declare mx-find-matrix)
 
+(defn mx-js-obj [& key-vals]
+  (apply js-obj
+    (apply concat
+      (for [[k v] (partition 2 key-vals)]
+        [(name k) v]))))
+
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
@@ -44,10 +50,11 @@
                           {:name      :root
                            :rendering (cF (mxfnc
                                             (apply $ rn/View
-                                              {:style #js {:flex 1,
-                                                           :alignItems "center",
-                                                           :justifyContent "center"
-                                                           :backgroundColor "cyan"}}
+                                              {:style (mx-js-obj
+                                                        :flex 1,
+                                                        :alignItems "center",
+                                                        :justifyContent "center"
+                                                        :backgroundColor "yellow")}
                                               {}
                                               (doall (map #(mget % :rendering)
                                                        (mget me :kids))))))}
@@ -55,25 +62,25 @@
                           (cFkids
                             (mkx rn/Button
                               :name :counter42
-                              :title (cF (str "Bumper " (mget me :counter)))
+                              :title (cF (str "Bumpr " (mget me :counter)))
                               :counter (cI 3)
-                              :jsx {:style   #js {:fontSize 36}
+                              :jsx {:style   (mx-js-obj :fontSize 36 :color "red")
                                     :title   (mget me :title)
                                     :onPress #(mswap! me :counter inc)})
 
                             (mkx rn/Button
                               :title (cF (str "Downer! " (mget (mxr/mxu! me :counter42) :counter)))
-                              :jsx {:style   #js {:fontSize 36}
+                              :jsx {:style   (mx-js-obj :fontSize 48)
                                     :title   (mget me :title)
                                     :onPress #(mswap! (mxr/mx* me :counter42) :counter dec)})
 
                             (mkbox rn/View
-                                :name :multi-parent
-                              :style (js-obj :flex 1, :alignItems "left", :justifyContent "top")
-                                :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                           (mkrx
-                                             {:rendering (cF ($ rn/Text {} {}
-                                                               (str "Textoxo " n)))})))
+                              :name :multi-parent
+                              :style (mx-js-obj :flex 1, :alignItems "left", :justifyContent "top")
+                              :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                         (mkrx
+                                           {:rendering (cF ($ rn/Text {} {}
+                                                             (str "Textoxo " n)))})))
 
                             #_(mkrx
                                 {:name      :multi-parent
