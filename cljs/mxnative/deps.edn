@@ -4,4 +4,4 @@
          lilactown/helix             {:mvn/version "0.1.2-SNAPSHOT"}
          com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
          com.taoensso/tufte          {:mvn/version "2.2.0"}
-         tiltontec/matrix            {:mvn/version "4.1.2-SNAPSHOT"}}}
+         tiltontec/matrix            {:mvn/version "4.1.1-SNAPSHOT"}}}
