@@ -44,7 +44,10 @@
                           {:name      :root
                            :rendering (cF (mxfnc
                                             (apply $ rn/View
-                                              {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
+                                              {:style #js {:flex 1,
+                                                           :alignItems "center",
+                                                           :justifyContent "center"
+                                                           :backgroundColor "cyan"}}
                                               {}
                                               (doall (map #(mget % :rendering)
                                                        (mget me :kids))))))}
@@ -64,36 +67,13 @@
                                     :title   (mget me :title)
                                     :onPress #(mswap! (mxr/mx* me :counter42) :counter dec)})
 
-                            #_
-                            (mkrx
-                              (assoc
-                                (hash-map :name :multi-parent)
-                                :rendering
-                                (cF
-                                  (apply
-                                    helix.core/$
-                                    rn/View
-                                    {}
-                                    {}
-                                    (doall
-                                      (map
-                                        (fn
-                                          [k]
-                                          (mget k :rendering))
-                                          (mget me :kids))))))
-                              {}
-                              (cFkids
-                                (for
-                                  [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                  (mkrx
-                                    {:rendering (cF ($ rn/Text {} {} (str "Texto " n)))}))))
-
                             (mkbox rn/View
                                 :name :multi-parent
+                              :style (js-obj :flex 1, :alignItems "left", :justifyContent "top")
                                 :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
                                            (mkrx
                                              {:rendering (cF ($ rn/Text {} {}
-                                                               (str "Textox " n)))})))
+                                                               (str "Textoxo " n)))})))
 
                             #_(mkrx
                                 {:name      :multi-parent

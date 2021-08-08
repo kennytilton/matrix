@@ -33,6 +33,7 @@
                                                    (str "Texto " n)))})))))
 
 (defmacro mkbox [container-component & key-vals]
+  ;; todo test with non-standard parent rendering
   (let [kv-map (apply hash-map key-vals)
         of-kids (:of-kids kv-map)
         rendering (:rendering kv-map)
@@ -46,7 +47,11 @@
     `(myapp.mxreact/mkrx ;; ~container-component
        (assoc (hash-map ~@container-attrs)
          :rendering (tiltontec.cell.core/cF
-                      (apply helix.core/$ ~container-component {} {}
+                      (apply helix.core/$ ~container-component
+                        {:style (cljs.core/js-obj :flex 1, :alignItems "left", :justifyContent "top"
+                                  :backgroundColor "yellow")}
+                        {}
+                        ;; todo ^^^ pick up parent attrs such as styling
                         (doall (map (fn [kid#] (tiltontec.model.core/mget kid# :rendering))
                                  (tiltontec.model.core/mget ~'me :kids))))))
        {}
