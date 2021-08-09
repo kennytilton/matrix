@@ -76,6 +76,7 @@
      mx-tag))
 
 (defn mkrx
+  ;; todo lose vstg/tag altogether
   ([attributes]
    (make-rnc "vstg" attributes {} nil))
   ([attributes aux]
