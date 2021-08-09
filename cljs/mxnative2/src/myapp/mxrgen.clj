@@ -14,7 +14,9 @@
                         (helix.core/$
                           (mxfnc
                             (helix.core/$ ~component
-                              ~(:jsx kv-map)
+                              (let [mkx-attrs#  ~(apply concat (into [] (:jsx kv-map)))]
+                                (prn :mkx-attrs!!!! mkx-attrs#)
+                                (apply hash-map mkx-attrs#))
                               {}))))))))
 
 (comment
