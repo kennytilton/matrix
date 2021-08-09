@@ -29,8 +29,7 @@
             [helix.hooks :as hooks]
 
             [myapp.mxreact :as mxr :refer [mkrx]]
-            [myapp.mxrgen :refer-macros [mkbox]
-             :refer [mxfnc mkx]]
+            [myapp.mxrgen :refer-macros [mkbox mkx mxfnc]]
             ))
 
 (declare mx-find-matrix)
@@ -45,7 +44,10 @@
                           {:name      :root
                            :rendering (cF (mxfnc
                                             (apply $ rn/View
-                                              {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
+                                              {:style #js {:flex 1
+                                                           :alignItems "center"
+                                                           :justifyContent "center"
+                                                           :backgroundColor "cyan"}}
                                               {}
                                               (doall (map #(mget % :rendering)
                                                        (mget me :kids))))))}
@@ -58,6 +60,12 @@
                               :jsx {:title   (mget me :title)
                                     :onPress #(mswap! me :counter inc)})
 
+                            #_ (mkx-button
+                              :name :counter42
+                              :counter (cI 3)
+                              :title (cF (str "Bumper " (mget me :counter)))
+                              :onPress #(mswap! me :counter inc))
+
                             (mkx rn/Button
                               :title (cF (str "Downer! " (mget (mxr/mxu! me :counter42) :counter)))
                               :jsx {:title   (mget me :title)
@@ -65,23 +73,11 @@
 
                             (mkbox rn/View
                               :name :multi-parent
-                              :style #js {:flex 1, :alignItems "center", :justifyContent "center"}
+                              :style (js-obj "backgroundColor" "yellow")
                               :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
                                          (mkrx
                                            {:rendering (cF ($ rn/Text {} {}
                                                              (str "Text " n)))})))
-
-                            #_(mkrx
-                                {:name      :multi-parent
-                                 :rendering (cF (apply $ rn/View {} {}
-                                                  (doall (map #(mget % :rendering)
-                                                           (mget me :kids)))))}
-                                {}
-                                (cFkids
-                                  (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                    (mkrx
-                                      {:rendering (cF ($ rn/Text {} {}
-                                                        (str "Text " n)))}))))
                             )))))))
 
 #_(defn mx-find-matrix [mx]
