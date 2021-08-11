@@ -34,6 +34,20 @@
 
 (declare mx-find-matrix)
 
+;; (mkrx
+;                          {:name      :root
+;                           :rendering (cF (mxfnc
+;                                            (apply $ rn/View
+;                                              {:style (clj->js {:flex 1
+;                                                           :alignItems "center"
+;                                                           :justifyContent "center"
+;                                                           :backgroundColor "white"})}
+;                                              {}
+;                                              (doall (map #(mget % :rendering)
+;                                                       (mget me :kids))))))}
+;                          {}
+;                          (cFkids
+
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
@@ -44,10 +58,10 @@
                           {:name      :root
                            :rendering (cF (mxfnc
                                             (apply $ rn/View
-                                              {:style #js {:flex 1
+                                              {:style (clj->js {:flex 1
                                                            :alignItems "center"
                                                            :justifyContent "center"
-                                                           :backgroundColor "cyan"}}
+                                                           :backgroundColor "white"})}
                                               {}
                                               (doall (map #(mget % :rendering)
                                                        (mget me :kids))))))}
@@ -60,22 +74,19 @@
                               :jsx {:title   (mget me :title)
                                     :onPress #(mswap! me :counter inc)})
 
-                            (mkx rn/Button
-                              :title (cF (str "Downer! " (mget (mxr/mxu! me :counter42) :counter)))
-                              :jsx {:title   (mget me :title)
-                                    :onPress #(mswap! (mxr/mx* me :counter42) :counter dec)})
 
-                            (mkbox rn/View
-                              :name :multi-parent
-                              :style (js-obj "backgroundColor" "yellow")
-                              :of-kids [(mkrx
-                                         {:rendering (cF ($ rn/Text {} {}
-                                                           (str "Text " 42)))})]
-                              #_ (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                         (mkrx
-                                           {:rendering (cF ($ rn/Text {} {}
-                                                             (str "Text " n)))})))
                             )))))))
+
+#_ (mkbox rn/View
+     :name :multi-parent
+     :style (js-obj "backgroundColor" "yellow")
+     :of-kids [(mkrx
+                 {:rendering (cF ($ rn/Text {} {}
+                                   (str "Text " 42)))})]
+     #_ (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+          (mkrx
+            {:rendering (cF ($ rn/Text {} {}
+                              (str "Text " n)))})))
 
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
