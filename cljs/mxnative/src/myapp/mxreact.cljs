@@ -52,6 +52,9 @@
    (prn :make-rnc1 tag attrs cFkids)
    (let [tag-id (str (or (:id attrs)
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
+         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
+                    (vec (apply concat (seq aux))))
+         _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
          #_(prn :aux-raw aux)
          #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
                               (vec (apply concat (seq aux)))))
@@ -69,9 +72,8 @@
                                                                (mget me :kids)))
                                        (doall (map #(mget % :rendering)
                                                 (mget me :kids)))))))
-                  (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux)))))]
-     ;;(println :made-mxweb!! mxweb-id (keys @mx-mxweb))
+                  rest-kvs)]
+     (prn :make-rnc-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag))
 
@@ -84,13 +86,16 @@
   ([attrs aux cFkids]
    (let [tag-id (str (or (:id attrs)
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
+         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
+                    (vec (apply concat (seq aux))))
+         _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
                   :id tag-id
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
-                  (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux)))))]
+                  rest-kvs)]
+     (prn :mkrx-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag)))
 

@@ -72,10 +72,7 @@
                               :title (cF (str "Bumper " (mget me :counter)))
                               :counter (cI 3)
                               :jsx {:title   (mget me :title)
-                                    :onPress #(mswap! me :counter inc)})
-
-
-                            )))))))
+                                    :onPress #(mswap! me :counter inc)}))))))))
 
 #_ (mkbox rn/View
      :name :multi-parent
