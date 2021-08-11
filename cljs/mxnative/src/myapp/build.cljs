@@ -54,6 +54,16 @@
   (reset! matrix
     (md/make ::hxApp
       :rx-dom (cFonce (with-par me
+                        #_ (mkbox
+                             :name      :root
+                             :style (clj->js {:flex 1
+                                              :alignItems "center"
+                                              :justifyContent "center"
+                                              :backgroundColor "white"})
+                             :of-kids
+                               [(mkrx
+                                  {:rendering (cF ($ rn/Text {} {}
+                                                    (str "Text " 42)))})])
                         (mkrx
                           {:name      :root
                            :rendering (cF (mxfnc
