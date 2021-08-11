@@ -24,7 +24,7 @@
 
 (defn mx-to-rx [mx-dom]
   ;; mx-dom s/b a ::mxrn.elt product  of make-rnc
-  (prn :rendering (mget mx-dom :rendering))
+  (prn :mx2rx-rendering (mget mx-dom :rendering))
   (mget mx-dom :rendering))
 
 (defn init []
@@ -34,7 +34,7 @@
     (prn :matrix @app-matrix)
     (prn :Root Root)
     (prn :rrot root)
-    (prn :rendering rendering)
+    (prn :init-rendering rendering)
     (rn/AppRegistry.registerComponent "MyApp"
       ;; rendering
       (fn [] rendering)
