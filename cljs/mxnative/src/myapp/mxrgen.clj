@@ -61,3 +61,24 @@
        {}
        (tiltontec.model.core/cFkids ~of-kids))))
 
+(defmacro mkview [& key-vals]
+  (let [kv-map (apply hash-map key-vals)
+        of-kids (:of-kids kv-map)
+        container-attrs (apply concat
+                          (into []
+                            (dissoc kv-map :jsx :of-kids :rendering)))]
+    (prn :kvmap kv-map)
+
+    (prn :contattrs container-attrs)
+    (prn :of-kids of-kids)
+    `(myapp.mxreact/mkrx
+       (assoc (hash-map ~@container-attrs)
+         :rendering (tiltontec.cell.core/cF
+                      (apply helix.core/$ rn/View
+                        {:style ~(:style kv-map)}
+                        {}
+                        (doall (map #(tiltontec.model.core/mget % :rendering)
+                                 (tiltontec.model.core/mget ~'me :kids))))))
+       {}
+       (tiltontec.model.core/cFkids ~of-kids))))
+

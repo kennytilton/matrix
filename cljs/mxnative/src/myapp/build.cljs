@@ -54,16 +54,29 @@
   (reset! matrix
     (md/make ::hxApp
       :rx-dom (cFonce (with-par me
-                        #_ (mkbox
-                             :name      :root
-                             :style (clj->js {:flex 1
-                                              :alignItems "center"
-                                              :justifyContent "center"
-                                              :backgroundColor "white"})
-                             :of-kids
-                               [(mkrx
-                                  {:rendering (cF ($ rn/Text {} {}
-                                                    (str "Text " 42)))})])
+                        #_
+                        (mkbox rn/View
+                          :name :multi-parent
+                          :style (js-obj "backgroundColor" "yellow")
+                          :of-kids [(mkrx
+                                      {:rendering (cF ($ rn/Text {} {}
+                                                        (str "BoxText " 42)))})
+                                    (mkrx
+                                      {:rendering (cF ($ rn/Text {} {}
+                                                        (str "BoxText " 42)))})])
+
+                         #_ (mkx rn/Button
+                             :name :counter42
+                             :title (cF (str "Bumper " (mget me :counter)))
+                             :counter (cI 3)
+                             :jsx {:title   (mget me :title)
+                                   :onPress #(mswap! me :counter inc)})
+
+                        (mkrx
+                             {:rendering (cF (mxfnc
+                                               ($ rn/Text {} {}
+                                               (str "BoxText " 42))))})
+                        #_
                         (mkrx
                           {:name      :root
                            :rendering (cF (mxfnc
@@ -71,7 +84,7 @@
                                               {:style (clj->js {:flex 1
                                                            :alignItems "center"
                                                            :justifyContent "center"
-                                                           :backgroundColor "white"})}
+                                                           :backgroundColor "coral"})}
                                               {}
                                               (doall (map #(mget % :rendering)
                                                        (mget me :kids))))))}
@@ -82,7 +95,16 @@
                               :title (cF (str "Bumper " (mget me :counter)))
                               :counter (cI 3)
                               :jsx {:title   (mget me :title)
-                                    :onPress #(mswap! me :counter inc)}))))))))
+                                    :onPress #(mswap! me :counter inc)})
+                            (mkbox rn/View
+                              :name :multi-parent
+                              :style (js-obj "backgroundColor" "yellow")
+                              :of-kids [(mkrx
+                                          {:rendering (cF ($ rn/Text {} {}
+                                                            (str "BoxText " 42)))})
+                                        (mkrx
+                                          {:rendering (cF ($ rn/Text {} {}
+                                                            (str "BoxText " 42)))})]))))))))
 
 #_ (mkbox rn/View
      :name :multi-parent
