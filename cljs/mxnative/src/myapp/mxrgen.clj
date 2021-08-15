@@ -11,11 +11,9 @@
     `(myapp.mxreact/mkrx
        ~(assoc (dissoc kv-map :jsx)
           :rendering `(tiltontec.cell.core/cF
-                        (helix.core/$
-                          (mxfnc
-                            (helix.core/$ ~component
-                              ~(:jsx kv-map)
-                              {}))))))))
+                        (helix.core/$ ~component
+                          ~(:jsx kv-map)
+                          {}))))))
 
 (defmacro mkbox [container-component & key-vals]
   (let [kv-map (apply hash-map key-vals)
