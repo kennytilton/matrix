@@ -65,6 +65,7 @@
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
                   :rendering (cF (apply $ (mget me :tag) attrs
+                                   ;; todo where is the useState?
                                    (or (when-let [c (mget me :content)]
                                          [c])
                                      (let [kids (mget me :kids)]
@@ -92,6 +93,7 @@
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
                   :id tag-id
+                  ;; todo why no sid
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
                   rest-kvs)]
