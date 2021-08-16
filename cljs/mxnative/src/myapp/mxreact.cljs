@@ -93,7 +93,7 @@
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
                   :id tag-id
-                  ;; todo why no sid
+                  :sid (swap! sid-latest inc)
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
                   rest-kvs)]

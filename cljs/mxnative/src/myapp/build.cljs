@@ -28,7 +28,7 @@
     ;;[helix.dom :as d]
             [helix.hooks :as hooks]
 
-            [myapp.mxreact :as mxr :refer [mkrx]]
+            [myapp.mxreact :as mxr :refer [mkrx mxu!]]
             [myapp.mxrgen :refer-macros [mkbox mkx mxfnc]]
             ))
 
@@ -96,6 +96,11 @@
                                 :counter (cI 3)
                                 :jsx {:title   (mget me :title)
                                       :onPress #(mswap! me :counter inc)})
+                              (mkx rn/Button
+                                :name :counter42
+                                :title (cF (str "Dumper "))
+                                :jsx {:title   (mget me :title)
+                                      :onPress #(mswap! (mxu! me :counter42) :counter dec)})
                               #_
                               (mkbox rn/View
                                 :name :multi-parent
