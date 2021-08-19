@@ -29,7 +29,7 @@
             [helix.hooks :as hooks]
 
             [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-            [myapp.mxrgen :refer-macros [mkbox mkx mkxdebug mxfnc props]]
+            [myapp.mxrgen :refer-macros [mkbox mkx mkxdebug mxfnc with-props props]]
             ))
 
 (declare mx-find-matrix)
@@ -76,30 +76,28 @@
                               :value (cI true)
                               :thumbColor (cF (if (mget me :value)
                                                 "#f5dd4b" "#f4f3f4"))
-                              :jsx {:& (props :value :thumbColor)
+                              :jsx {:&                   (props :value :thumbColor)
                                     :onValueChange       #(mswap! me :value not)
                                     :ios_backgroundColor "#3e3e3e"
                                     :trackColor          (js-obj "false" "#767577" "true" "#81b0ff")})
 
                             (mkx rn/Button
-                              :name :counter42
-                              :title (cF (str "Counter = " (mget me :counter)))
-                              :counter (cI 3)
-                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
-                              :jsx {:&       (props :title :disabled)
-                                    :color   "black"
-                                    :onPress #(when (mget (mxu! me :counting?) :value)
-                                                (mswap! me :counter inc))})
-
-
-
-
+                                :name :counter42
+                                :title (cF (str "Counter = " (mget me :counter)))
+                                :counter (cI 3)
+                                :disabled (cF (not (mget (mxu! me :counting?) :value)))
+                                :jsx {:&       (props :title :disabled)
+                                      :color   "green"
+                                      :onPress #(when (mget (mxu! me :counting?) :value)
+                                                  (mswap! me :counter inc))})
 
                             (mkx rn/Button
                               :name :dumper
                               :title (cF (str "Downer " (mget (mxu! me :counter42) :counter)))
-                              :jsx {:title   (mget me :title)
+                              :jsx {:&   (props :title)
+                                    :color "red"
                                     :onPress #(mswap! (mxu! me :counter42) :counter dec)})
+
                             (mkbox rn/SafeAreaView
                               :name :item-list
                               :style (js-obj "backgroundColor" "yellow")
@@ -108,6 +106,11 @@
                                            {:name      :an-item
                                             :rendering (cF ($ rn/Text {} {}
                                                              (str "Text " n)))})))
+                            (mkrx
+                              {:name      :an-item
+                               :rendering (cF ($ rn/Text {:style (js-obj "backgroundColor" "cyan")} {}
+                                                "Booya"))})
+                            #_
                             (mkx rn/TextInput
                               :name :new-todo
                               :value (cI "hi mom!")
@@ -118,20 +121,17 @@
                                                                 (if (even? (mget (mxr/mxu! me :counter42) :counter))
                                                                   "linen" "red")
                                                    :borderWidth 1}))
-                              :jsx {:placeHolder    "What needs doing?"
+                              :jsx {:& [:style]
+                                    :placeHolder    "What needs doing?"
                                     :value          (mget me :value)
                                     :autoFocus      true
                                     :autoCapitalize "words"
                                     :multiline      true
                                     :numberOfLines  2
-                                    :style          (mget me :style)
-                                    :onChange       #(do (prn :bam-change
-                                                           (goog.object/getAllPropertyNames %))
-                                                         (prn :bam-change
-                                                           (goog.object/get % "nativeEvent"))
-                                                         (prn :bam-change
-                                                           (js->clj (goog.object/get % "nativeEvent")
-                                                             :keywordize-keys true)))
+                                    ;; :style          (mget me :style)
+                                    :onChange       #(prn :on-change
+                                                       (js->clj (goog.object/get % "nativeEvent")
+                                                         :keywordize-keys true))
                                     :onChangeText   #(do (prn :bam-changetext %)
                                                          (mset! me :value %))}
                               )
@@ -151,3 +151,21 @@
 
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
+
+; #_ (mkx rn/Button
+;                              :name :counter42
+;                              :title (cF (str "Counter = " (mget me :counter)))
+;                              :counter (cI 3)
+;                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
+;                              :jsx {:& (with-props [:title :disabled]
+;                                         :color "cyan"
+;                                         :onPress #(when (mget (mxu! me :counting?) :value)
+;                                                     (mswap! me :counter inc)))})
+
+; #(do (prn :bam-change
+;                                                           (goog.object/getAllPropertyNames %))
+;                                                         (prn :bam-change
+;                                                           (goog.object/get % "nativeEvent"))
+;                                                         (prn :bam-change
+;                                                           (js->clj (goog.object/get % "nativeEvent")
+;                                                             :keywordize-keys true)))
