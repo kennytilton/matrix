@@ -24,7 +24,7 @@
 
 (defn mx-to-rx [mx-dom]
   ;; mx-dom s/b a ::mxrn.elt product  of make-rnc
-  (prn :mx2rx-rendering (mget mx-dom :rendering))
+  ;;(prn :mx2rx-rendering (mget mx-dom :rendering))
   (mget mx-dom :rendering))
 
 (defn init []

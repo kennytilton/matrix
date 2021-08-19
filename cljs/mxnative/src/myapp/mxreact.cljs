@@ -54,7 +54,7 @@
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
          rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
                     (vec (apply concat (seq aux))))
-         _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
+         ;; _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
          #_(prn :aux-raw aux)
          #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
                               (vec (apply concat (seq aux)))))
@@ -69,27 +69,29 @@
                                    (or (when-let [c (mget me :content)]
                                          [c])
                                      (let [kids (mget me :kids)]
-                                       (prn :rnc-kid-render! (map #(mget % :rendering)
+                                       #_ (prn :rnc-kid-render! (map #(mget % :rendering)
                                                                (mget me :kids)))
                                        (doall (map #(mget % :rendering)
                                                 (mget me :kids)))))))
                   rest-kvs)]
-     (prn :make-rnc-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag))
 
 (defn mkrx
   ;; todo lose vstg/tag altogether
   ([attributes]
+   (prn :mkrx-1!!!!!!!!!)
    (make-rnc "vstg" attributes {} nil))
   ([attributes aux]
+   (prn :mkrx-2!!!!!!!!!!!!!)
    (make-rnc "vstg" attributes aux nil))
   ([attrs aux cFkids]
+   (prn :mkrx-3!!!!!!!!!!! attrs aux)
    (let [tag-id (str (or (:id attrs)
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
          rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
                     (vec (apply concat (seq aux))))
-         _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
+         ;; _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
                   :id tag-id
@@ -97,7 +99,7 @@
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
                   rest-kvs)]
-     (prn :mkrx-built mx-tag)
+     ;;(prn :mkrx-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag)))
 
@@ -113,5 +115,7 @@
 
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
+    (prn :obs????????? (mget me :name)(mget me :sid)(mget me :id))
     (when-let [set-state-fn (get @ssdict (mget me :sid))]
+      (prn :obs!!!!!!!!! (mget me :name)(mget me :sid))
       (set-state-fn (pulse-now)))))

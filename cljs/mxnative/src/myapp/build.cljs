@@ -57,33 +57,57 @@
                         (mkrx
                             {:name      :root
                              :rendering (cF (mxfnc
-                                              (apply $ rn/View
-                                                {:style (clj->js {:flex            1
-                                                                  :marginTop 96
-                                                                  :padding 24
-                                                                  :alignItems      "flex-start"
-                                                                  ;;:justifyContent  "center"
-                                                                  :backgroundColor "coral"})}
-                                                {}
-                                                (doall (map #(mget % :rendering)
-                                                         (mget me :kids))))))}
+                                              (do
+                                                (prn :root-render-wins!!!!!!!!!)
+                                                (apply $ rn/View
+                                                  {:style (clj->js {:flex            1
+                                                                    :marginTop 96
+                                                                    :padding 24
+                                                                    :alignItems      "flex-start"
+                                                                    ;;:justifyContent  "center"
+                                                                    :backgroundColor "coral"})}
+                                                  {}
+                                                  (doall (map #(mget % :rendering)
+                                                           (mget me :kids)))))))}
                             {}
                             (cFkids
+                              ; <Switch
+                              ;        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                              ;        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                              ;        ios_backgroundColor="#3e3e3e"
+                              ;        onValueChange={toggleSwitch}
+                              ;        value={isEnabled}
+                              ;      />
+                              (mkx rn/Switch
+                                :name :counting?
+                                :value (cI true)
+                                :thumbColor (cF (if (mget me :value)
+                                                  "#f5dd4b" "#f4f3f4"))
+                                :jsx {:value (mget me :value)
+                                      :thumbColor (mget me :thumbColor)
+                                      :onValueChange #(do (prn :bam %)
+                                                          (mswap! me :value not))
+                                      :ios_backgroundColor "#3e3e3e"
+                                      :trackColor (js-obj "false" "#767577" "true" "#81b0ff")})
                               (mkx rn/Button
                                 :name :counter42
                                 :title (cF (str "Bumper " (mget me :counter)))
                                 :counter (cI 3)
                                 :jsx {:title   (mget me :title)
-                                      :onPress #(mswap! me :counter inc)})
+                                      :onPress #(when (mget (mxu! me :counting?) :value)
+                                                  (mswap! me :counter inc))})
                               (mkx rn/Button
+                                :name :dumper
                                 :title "Dumper"
                                 :jsx {:title   (mget me :title)
                                       :onPress #(mswap! (mxu! me :counter42) :counter dec)})
                               (mkbox rn/View
+                                :name :item-list
                                 :style (js-obj "backgroundColor" "yellow")
                                 :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
                                            (mkrx
-                                             {:rendering (cF ($ rn/Text {} {}
+                                             {:name :an-item
+                                              :rendering (cF ($ rn/Text {} {}
                                                                (str "Text " n)))})))
 
                               ;; ---- GOALS --------------

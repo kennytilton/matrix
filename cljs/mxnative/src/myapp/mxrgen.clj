@@ -24,10 +24,10 @@
         container-attrs (apply concat
                           (into []
                             (dissoc kv-map :jsx :of-kids :rendering)))]
-    (prn :kvmap kv-map)
-    (prn :comp container-component)
-    (prn :contattrs container-attrs)
-    (prn :of-kids of-kids)
+    ;(prn :kvmap kv-map)
+    ;(prn :comp container-component)
+    ;(prn :contattrs container-attrs)
+    ;(prn :of-kids of-kids)
     `(myapp.mxreact/mkrx
        (assoc (hash-map ~@container-attrs)
          :rendering (tiltontec.cell.core/cF
