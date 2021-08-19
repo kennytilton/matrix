@@ -91,29 +91,16 @@
                                     :onPress #(when (mget (mxu! me :counting?) :value)
                                                 (mswap! me :counter inc))})
 
-                            #_ (mkx rn/Button
-                              :name :counter42
-                              :title (cF (str "Counter = " (mget me :counter)))
-                              :counter (cI 3)
-                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
-                              :jsx (js-obj "color"    "black"
-                                    "onPress"  #(mswap! me :counter inc)))
 
-                            #_ (mkx rn/Button
-                              :name :counter42
-                              :counter (cI 3)
-                              :title (cF (str "Counter = " (mget me :counter)))
-                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
-                              :jsx (with-props [:title :disabled]
-                                    :color    "black"
-                                    :onPress  #(mswap! me :counter inc)))
 
-                            #_ (mkx rn/Button
+
+
+                            (mkx rn/Button
                               :name :dumper
                               :title (cF (str "Downer " (mget (mxu! me :counter42) :counter)))
                               :jsx {:title   (mget me :title)
                                     :onPress #(mswap! (mxu! me :counter42) :counter dec)})
-                            #_ (mkbox rn/SafeAreaView
+                            (mkbox rn/SafeAreaView
                               :name :item-list
                               :style (js-obj "backgroundColor" "yellow")
                               :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
@@ -121,9 +108,9 @@
                                            {:name      :an-item
                                             :rendering (cF ($ rn/Text {} {}
                                                              (str "Text " n)))})))
-                            #_ (mkx rn/TextInput
+                            (mkx rn/TextInput
                               :name :new-todo
-                              :to-do (cI "hi mom!")
+                              :value (cI "hi mom!")
                               :style (cF (clj->js {:height      40
                                                    :margin      12
                                                    :padding     10
@@ -132,7 +119,7 @@
                                                                   "linen" "red")
                                                    :borderWidth 1}))
                               :jsx {:placeHolder    "What needs doing?"
-                                    :value          (mget me :to-do)
+                                    :value          (mget me :value)
                                     :autoFocus      true
                                     :autoCapitalize "words"
                                     :multiline      true
@@ -146,7 +133,7 @@
                                                            (js->clj (goog.object/get % "nativeEvent")
                                                              :keywordize-keys true)))
                                     :onChangeText   #(do (prn :bam-changetext %)
-                                                         (mset! me :to-do %))}
+                                                         (mset! me :value %))}
                               )
 
                             ;; ---- GOALS --------------
