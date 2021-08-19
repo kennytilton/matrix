@@ -115,7 +115,7 @@
 
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
-    (prn :obs????????? (mget me :name)(mget me :sid)(mget me :id))
+    ;;(prn :obs????????? (mget me :name)(mget me :sid)(mget me :id))
     (when-let [set-state-fn (get @ssdict (mget me :sid))]
-      (prn :obs!!!!!!!!! (mget me :name)(mget me :sid))
+      ;;(prn :obs!!!!!!!!! (mget me :name)(mget me :sid))
       (set-state-fn (pulse-now)))))

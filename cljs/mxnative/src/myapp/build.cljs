@@ -71,13 +71,6 @@
                                                            (mget me :kids)))))))}
                             {}
                             (cFkids
-                              ; <Switch
-                              ;        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                              ;        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                              ;        ios_backgroundColor="#3e3e3e"
-                              ;        onValueChange={toggleSwitch}
-                              ;        value={isEnabled}
-                              ;      />
                               (mkx rn/Switch
                                 :name :counting?
                                 :value (cI true)
@@ -93,15 +86,17 @@
                                 :name :counter42
                                 :title (cF (str "Bumper " (mget me :counter)))
                                 :counter (cI 3)
+                                :disabled (cF (not (mget (mxu! me :counting?) :value)))
                                 :jsx {:title   (mget me :title)
-                                      :onPress #(when (mget (mxu! me :counting?) :value)
+                                      :disabled (mget me :disabled)
+                                      :onPress #(when true (mget (mxu! me :counting?) :value)
                                                   (mswap! me :counter inc))})
                               (mkx rn/Button
                                 :name :dumper
-                                :title "Dumper"
+                                :title (cF (str "Downer " (mget (mxu! me :counter42) :counter)))
                                 :jsx {:title   (mget me :title)
                                       :onPress #(mswap! (mxu! me :counter42) :counter dec)})
-                              (mkbox rn/View
+                              (mkbox rn/SafeAreaView
                                 :name :item-list
                                 :style (js-obj "backgroundColor" "yellow")
                                 :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
@@ -109,6 +104,33 @@
                                              {:name :an-item
                                               :rendering (cF ($ rn/Text {} {}
                                                                (str "Text " n)))})))
+                              (mkx rn/TextInput
+                                :name :new-todo
+                                :to-do (cI "hi mom!")
+                                :style (cF (clj->js {:height 40
+                                                 :margin 12
+                                                 :padding 10
+                                                 :backgroundColor
+                                                             (if (even? (mget (mxr/mxu! me :counter42) :counter))
+                                                               "linen" "red")
+                                                 :borderWidth 1}))
+                                :jsx {:placeHolder "What needs doing?"
+                                      :value (mget me :to-do)
+                                      :autoFocus true
+                                      :autoCapitalize "words"
+                                      :multiline true
+                                      :numberOfLines 2
+                                      :style (mget me :style)
+                                      :onChange #(do (prn :bam-change
+                                                       (goog.object/getAllPropertyNames %))
+                                                     (prn :bam-change
+                                                       (goog.object/get % "nativeEvent"))
+                                                     (prn :bam-change
+                                                       (js->clj (goog.object/get % "nativeEvent")
+                                                         :keywordize-keys true)))
+                                      :onChangeText #(do (prn :bam-changetext %)
+                                                         (mset! me :to-do %))}
+                                )
 
                               ;; ---- GOALS --------------
                               #_ (mx/button
