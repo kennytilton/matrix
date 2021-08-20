@@ -57,15 +57,7 @@
        {}
        (tiltontec.model.core/cFkids ~of-kids))))
 
-(defmacro with-props [inherited & key-vals]
-  (prn :inh inherited)
-  (prn :kvs key-vals)
-  `(merge (into {} (for [prop# ~inherited]
-                     [prop# (tiltontec.model.core/mget ~'me prop#)]))
-     (hash-map ~@key-vals)))
-
 (defmacro props [& inherited]
-  (prn :inh inherited)
   `(into {} (for [prop# [~@inherited]]
               (let [[pkey# pget#] (if (vector? prop#)
                                     prop#
