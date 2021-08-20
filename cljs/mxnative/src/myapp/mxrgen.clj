@@ -67,10 +67,13 @@
 (defmacro props [& inherited]
   (prn :inh inherited)
   `(into {} (for [prop# [~@inherited]]
-              [prop# (tiltontec.model.core/mget ~'me prop#)])))
+              (let [[pkey# pget#] (if (vector? prop#)
+                                    prop#
+                                    [prop# prop#])]
+                [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
 
 (comment
 
-  (macroexpand `(me-props :a :b))
+  (macroexpand-1 `(props :a :b))
   (macroexpand `(with-props [:a :b] :c 42))
   )

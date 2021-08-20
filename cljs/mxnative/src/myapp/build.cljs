@@ -23,7 +23,7 @@
     ;[goog.dom.forms :as form]
 
             ["react-native" :as rn]
-            [helix.core :as hx :refer [defnc $ <>]]
+            [helix.core :as hx :refer [defnc fnc $ <>]]
 
     ;;[helix.dom :as d]
             [helix.hooks :as hooks]
@@ -33,20 +33,6 @@
             ))
 
 (declare mx-find-matrix)
-
-;; (mkrx
-;                          {:name      :root
-;                           :rendering (cF (mxfnc
-;                                            (apply $ rn/View
-;                                              {:style (clj->js {:flex 1
-;                                                           :alignItems "center"
-;                                                           :justifyContent "center"
-;                                                           :backgroundColor "white"})}
-;                                              {}
-;                                              (doall (map #(mget % :rendering)
-;                                                       (mget me :kids))))))}
-;                          {}
-;                          (cFkids
 
 (defn matrix-build! []
   (reset! mxr/ssdict {})
@@ -81,7 +67,60 @@
                                     :ios_backgroundColor "#3e3e3e"
                                     :trackColor          (js-obj "false" "#767577" "true" "#81b0ff")})
 
-                            (mkx rn/Button
+                            (mkrx
+                              {:name       :todos-container
+                               :todo-items (cI ["make dinner" "eat dinner" "clean dishes"])
+                               :rendering  (cF ($ rn/SafeAreaView
+                                                 {:style (clj->js {:flex      1
+                                                                   :marginTop 0})}
+                                                 ($ rn/FlatList
+                                                   {:data         (clj->js (mget me :todo-items))
+                                                    :keyExtractor (fn [item]
+                                                                    (prn :extract-key!!! item)
+                                                                    item)
+                                                    :renderItem   (fn [i]
+                                                                    (let [item (js->clj i :keywordize-keys true)]
+                                                                      (prn :render!!!-todo (:item item))
+                                                                      (do ;; fnc []
+                                                                        ($ rn/Text {} (:item item)))))
+                                                    })))})
+
+                            )))))))
+
+#_(defn matrix-build! []
+    (reset! mxr/ssdict {})
+    (reset! mxr/refdict {})
+    (reset! matrix
+      (md/make ::hxApp
+        :rx-dom (cFonce (with-par me
+                          (mkrx
+                            {:name      :root
+                             :rendering (cF (mxfnc
+                                              (do
+                                                (prn :root-render-wins!!!!!!!!!)
+                                                (apply $ rn/View
+                                                  {:style (clj->js {:flex            1
+                                                                    :marginTop       96
+                                                                    :padding         24
+                                                                    :alignItems      "flex-start"
+                                                                    ;;:justifyContent  "center"
+                                                                    :backgroundColor "coral"})}
+                                                  {}
+                                                  (doall (map #(mget % :rendering)
+                                                           (mget me :kids)))))))}
+                            {}
+                            (cFkids
+                              (mkx rn/Switch
+                                :name :counting?
+                                :value (cI true)
+                                :thumbColor (cF (if (mget me :value)
+                                                  "#f5dd4b" "#f4f3f4"))
+                                :jsx {:&                   (props :value :thumbColor)
+                                      :onValueChange       #(mswap! me :value not)
+                                      :ios_backgroundColor "#3e3e3e"
+                                      :trackColor          (js-obj "false" "#767577" "true" "#81b0ff")})
+
+                              (mkx rn/Button
                                 :name :counter42
                                 :title (cF (str "Counter = " (mget me :counter)))
                                 :counter (cI 3)
@@ -91,63 +130,80 @@
                                       :onPress #(when (mget (mxu! me :counting?) :value)
                                                   (mswap! me :counter inc))})
 
-                            (mkx rn/Button
-                              :name :dumper
-                              :title (cF (str "Downer " (mget (mxu! me :counter42) :counter)))
-                              :jsx {:&   (props :title)
-                                    :color "red"
-                                    :onPress #(mswap! (mxu! me :counter42) :counter dec)})
+                              (mkx rn/Button
+                                :name :dumper
+                                :title (cF (str "Downer " (mget (mxu! me :counter42) :counter)))
+                                :jsx {:&       (props :title)
+                                      :color   "red"
+                                      :onPress #(mswap! (mxu! me :counter42) :counter dec)})
 
-                            (mkbox rn/SafeAreaView
-                              :name :item-list
-                              :style (js-obj "backgroundColor" "yellow")
-                              :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                         (mkrx
-                                           {:name      :an-item
-                                            :rendering (cF ($ rn/Text {} {}
-                                                             (str "Text " n)))})))
-                            (mkrx
-                              {:name      :an-item
-                               :rendering (cF ($ rn/Text {:style (js-obj "backgroundColor" "cyan")} {}
-                                                "Booya"))})
-                            #_
-                            (mkx rn/TextInput
-                              :name :new-todo
-                              :value (cI "hi mom!")
-                              :style (cF (clj->js {:height      40
-                                                   :margin      12
-                                                   :padding     10
-                                                   :backgroundColor
-                                                                (if (even? (mget (mxr/mxu! me :counter42) :counter))
-                                                                  "linen" "red")
-                                                   :borderWidth 1}))
-                              :jsx {:& [:style]
-                                    :placeHolder    "What needs doing?"
-                                    :value          (mget me :value)
-                                    :autoFocus      true
-                                    :autoCapitalize "words"
-                                    :multiline      true
-                                    :numberOfLines  2
-                                    ;; :style          (mget me :style)
-                                    :onChange       #(prn :on-change
-                                                       (js->clj (goog.object/get % "nativeEvent")
-                                                         :keywordize-keys true))
-                                    :onChangeText   #(do (prn :bam-changetext %)
-                                                         (mset! me :value %))}
-                              )
+                              (mkbox rn/SafeAreaView
+                                :name :item-list
+                                :style (js-obj "backgroundColor" "yellow")
+                                :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                           (mkrx
+                                             {:name      :an-item
+                                              :rendering (cF ($ rn/Text {} {}
+                                                               (str "Text " n)))})))
+                              (mkrx
+                                {:name      :an-item
+                                 :rendering (cF ($ rn/Text {:style (js-obj "backgroundColor" "cyan")} {}
+                                                  "Booya"))})
 
-                            ;; ---- GOALS --------------
-                            #_(mx/button
-                                :name :counter42
-                                :title (cF (str "Bumper " (mget me :counter)))
-                                :counter (cI 3)
-                                :jsx (with-props [:title :title] ;; {... :title (mget me :title ... }
-                                       {:onPress #(mswap! me :counter inc)})
 
-                                #_(mx/view {:style (js-obj "backgroundColor" "yellow")}
-                                    (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
-                                      (mktext (str "Text " n))))
-                                ))))))))
+                              (mkx rn/TextInput
+                                :name :new-undo
+                                :to-do (cI "hi undo mom!")
+                                :style (cF (clj->js {:height      40
+                                                     :margin      12
+                                                     :padding     10
+                                                     :backgroundColor
+                                                                  (if (even? (mget (mxr/mxu! me :counter42) :counter))
+                                                                    "linen" "red")
+                                                     :borderWidth 1}))
+                                :jsx {:&               (props [:value :to-do] :style)
+                                      :placeHolder     "What needs doing?"
+                                      :autoFocus       true
+                                      :autoCapitalize  "sentences"
+                                      :multiline       false
+                                      :onEndEditing    #(prn :undo-on-end-editing
+                                                          (goog.object/getAllPropertyNames %))
+                                      :onSubmitEditing #(prn :undo-on-submit-editing
+                                                          (goog.object/getAllPropertyNames %))
+                                      :onChange        #(prn :undo-on-change
+                                                          (js->clj (goog.object/get % "nativeEvent")
+                                                            :keywordize-keys true))
+                                      :onChangeText    #(do (prn :undo-bam-changetext %)
+                                                            (mset! me :to-do %))
+
+                                      }
+                                )
+                              (mkrx
+                                {:name       :todos-container
+                                 :todo-items (cI ["make dinner" "eat dinner" "clean dishes"])
+                                 :rendering  (cF ($ rn/SafeAreaView
+                                                   {:style (clj->js {:flex      1
+                                                                     :marginTop 0})}
+                                                   ($ rn/FlatList
+                                                     {:data         (mget me :todo-items)
+                                                      :keyExtractor identity
+                                                      :renderItem   #($ rn/Item
+                                                                       {:title %})})))})
+
+
+
+                              ;; ---- GOALS --------------
+                              #_(mx/button
+                                  :name :counter42
+                                  :title (cF (str "Bumper " (mget me :counter)))
+                                  :counter (cI 3)
+                                  :jsx (with-props [:title :title] ;; {... :title (mget me :title ... }
+                                         {:onPress #(mswap! me :counter inc)})
+
+                                  #_(mx/view {:style (js-obj "backgroundColor" "yellow")}
+                                      (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+                                        (mktext (str "Text " n))))
+                                  ))))))))
 
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
