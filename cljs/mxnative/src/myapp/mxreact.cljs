@@ -80,13 +80,13 @@
 (defn mkrx
   ;; todo lose vstg/tag altogether
   ([attributes]
-   (prn :mkrx-1!!!!!!!!!)
+   ;(prn :mkrx-1!!!!!!!!!)
    (make-rnc "vstg" attributes {} nil))
   ([attributes aux]
-   (prn :mkrx-2!!!!!!!!!!!!!)
+   ;(prn :mkrx-2!!!!!!!!!!!!!)
    (make-rnc "vstg" attributes aux nil))
   ([attrs aux cFkids]
-   (prn :mkrx-3!!!!!!!!!!! attrs aux)
+   ;(prn :mkrx-3!!!!!!!!!!! attrs aux)
    (let [tag-id (str (or (:id attrs)
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
          rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))

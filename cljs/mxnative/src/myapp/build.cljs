@@ -44,7 +44,6 @@
                           {:name      :root
                            :rendering (cF (mxfnc
                                             (do
-                                              (prn :root-render-wins!!!!!!!!!)
                                               (apply $ rn/View
                                                 {:style (clj->js {:flex            1
                                                                   :marginTop       96
@@ -67,21 +66,57 @@
                                     :ios_backgroundColor "#3e3e3e"
                                     :trackColor          (js-obj "false" "#767577" "true" "#81b0ff")})
 
+                            (mkx rn/TextInput
+                              :name :new-undo
+                              :to-do (cI "")
+                              :style #js {:height          40
+                                          :margin          12
+                                          :padding         10
+                                          :backgroundColor "linen"
+                                          :borderWidth     1}
+                              :jsx {:&               (props [:value :to-do] :style)
+                                    :placeHolder     "What needs doing?"
+                                    :autoFocus       true
+                                    :autoCapitalize  "sentences"
+                                    :onChangeText    #(do (prn :undo-bam-changetext %)
+                                                          (mset! me :to-do %))
+                                    :onSubmitEditing #(let [n (js->clj (goog.object/get % "nativeEvent")
+                                                                :keywordize-keys true)]
+                                                        (prn :undo-on-submit-editing n)
+                                                        (when-not (str/blank? (:text n))
+                                                          (mswap! (mxu! me :todos-container) :todo-items
+                                                            conj (:text n))))
+                                    }
+                              )
+
                             (mkrx
                               {:name       :todos-container
-                               :todo-items (cI ["make dinner" "eat dinner" "clean dishes"])
-                               :rendering  (cF ($ rn/SafeAreaView
-                                                 {:style (clj->js {:flex      1
-                                                                   :marginTop 0})}
-                                                 ($ rn/FlatList
-                                                   {:data         (clj->js (mget me :todo-items))
-                                                    :keyExtractor identity
-                                                    :renderItem   (fn [i]
-                                                                    (let [item (js->clj i :keywordize-keys true)]
-                                                                      (prn :render!!!-todo (:item item))
-                                                                      ($ rn/Text {:style #js {:fontSize 32}}
-                                                                        (:item item))))
-                                                    })))})
+                               :todo-items (cI ["make dinner" "eat dinner" "clean dishes"]
+                                             :obs (fn [slot me info]
+                                                    (prn :obs-todos!!!!!!!! slot info)))
+                               :rendering  (cF (let [items (mget me :todo-items)]
+                                                 (prn :new-rendering!!!!!! items)
+                                                 ($
+                                                   (mxfnc
+                                                     ($ rn/SafeAreaView
+                                                       {:style (clj->js {:flex      1
+                                                                         :marginTop 0})}
+                                                       ($ rn/FlatList
+                                                         {:data         (do (prn :FLATLIST-new!!! items)
+                                                                            (clj->js (mget me :todo-items)))
+                                                          :extraData (count items)
+                                                          :keyExtractor identity
+                                                          :renderItem   (fn [i]
+                                                                          (let [item (js->clj i :keywordize-keys true)]
+                                                                            (prn :render!!!-todo (:item item))
+                                                                            ($ rn/View
+                                                                              {:style #js {:backgroundColor  "#f9c2ff"
+                                                                                           :padding          9
+                                                                                           :marginVertical   8
+                                                                                           :marginHorizontal 16}}
+                                                                              ($ rn/Text {:style #js {:fontSize 32}}
+                                                                                (:item item)))))
+                                                          }))))))})
 
                             )))))))
 
@@ -95,7 +130,6 @@
                             {:name      :root
                              :rendering (cF (mxfnc
                                               (do
-                                                (prn :root-render-wins!!!!!!!!!)
                                                 (apply $ rn/View
                                                   {:style (clj->js {:flex            1
                                                                     :marginTop       96

@@ -23,7 +23,7 @@
     `(myapp.mxreact/mkrx
        ~(assoc (dissoc kv-map :jsx)
           :rendering `(tiltontec.cell.core/cF
-                        (prn :jsx-rendering!!!!!!!! ~(:jsx kv-map)
+                        #_ (prn :jsx-rendering!!!!!!!! ~(:jsx kv-map)
                           ;; :js (clj->js ~(:jsx kv-map))
                           :typ (type ~(:jsx kv-map))
                           :title (:title ~(:jsx kv-map)))
