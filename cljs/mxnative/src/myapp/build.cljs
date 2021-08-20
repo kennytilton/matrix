@@ -91,32 +91,25 @@
 
                             (mkrx
                               {:name       :todos-container
-                               :todo-items (cI ["make dinner" "eat dinner" "clean dishes"]
-                                             :obs (fn [slot me info]
-                                                    (prn :obs-todos!!!!!!!! slot info)))
+                               :todo-items (cI nil)
                                :rendering  (cF (let [items (mget me :todo-items)]
-                                                 (prn :new-rendering!!!!!! items)
-                                                 ($
-                                                   (mxfnc
-                                                     ($ rn/SafeAreaView
-                                                       {:style (clj->js {:flex      1
-                                                                         :marginTop 0})}
-                                                       ($ rn/FlatList
-                                                         {:data         (do
-                                                                            (clj->js (mget me :todo-items)))
-                                                          :keyExtractor identity
-                                                          :renderItem   (fn [i]
-                                                                          (let [item (js->clj i :keywordize-keys true)]
-                                                                            ($ rn/View
-                                                                              {:style #js {:backgroundColor  "#f9c2ff"
-                                                                                           :padding          9
-                                                                                           :marginVertical   8
-                                                                                           :marginHorizontal 16}}
-                                                                              ($ rn/Text {:style #js {:fontSize 32}}
-                                                                                (:item item))
-                                                                              ($ rn/Text {:style #js {:fontSize 32}}
-                                                                                (.-item i)))))
-                                                          }))))))})
+                                                 ;; need to ^^ establish dependency
+                                                 ;; todo can we just do (fnc [(mget me :todo-items)]??
+                                                 ($ (mxfnc
+                                                      ($ rn/SafeAreaView
+                                                        {:style (clj->js {:flex      1
+                                                                          :marginTop 0})}
+                                                        ($ rn/FlatList
+                                                          {:data         (clj->js (mget me :todo-items))
+                                                           :keyExtractor identity
+                                                           :renderItem   (fn [i]
+                                                                           ($ rn/View
+                                                                             {:style #js {:backgroundColor  "#f9c2ff"
+                                                                                          :padding          9
+                                                                                          :marginVertical   8
+                                                                                          :marginHorizontal 16}}
+                                                                             ($ rn/Text {:style #js {:fontSize 32}}
+                                                                               (.-item i))))}))))))})
 
                             )))))))
 
