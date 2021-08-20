@@ -75,14 +75,12 @@
                                                                    :marginTop 0})}
                                                  ($ rn/FlatList
                                                    {:data         (clj->js (mget me :todo-items))
-                                                    :keyExtractor (fn [item]
-                                                                    (prn :extract-key!!! item)
-                                                                    item)
+                                                    :keyExtractor identity
                                                     :renderItem   (fn [i]
                                                                     (let [item (js->clj i :keywordize-keys true)]
                                                                       (prn :render!!!-todo (:item item))
-                                                                      (do ;; fnc []
-                                                                        ($ rn/Text {} (:item item)))))
+                                                                      ($ rn/Text {:style #js {:fontSize 32}}
+                                                                        (:item item))))
                                                     })))})
 
                             )))))))
