@@ -102,20 +102,20 @@
                                                        {:style (clj->js {:flex      1
                                                                          :marginTop 0})}
                                                        ($ rn/FlatList
-                                                         {:data         (do (prn :FLATLIST-new!!! items)
+                                                         {:data         (do
                                                                             (clj->js (mget me :todo-items)))
-                                                          :extraData (count items)
                                                           :keyExtractor identity
                                                           :renderItem   (fn [i]
                                                                           (let [item (js->clj i :keywordize-keys true)]
-                                                                            (prn :render!!!-todo (:item item))
                                                                             ($ rn/View
                                                                               {:style #js {:backgroundColor  "#f9c2ff"
                                                                                            :padding          9
                                                                                            :marginVertical   8
                                                                                            :marginHorizontal 16}}
                                                                               ($ rn/Text {:style #js {:fontSize 32}}
-                                                                                (:item item)))))
+                                                                                (:item item))
+                                                                              ($ rn/Text {:style #js {:fontSize 32}}
+                                                                                (.-item i)))))
                                                           }))))))})
 
                             )))))))
