@@ -18,6 +18,58 @@
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
     [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]))
 
+(defn search-input []
+  (mkx rn/TextInput
+    ;; todo make this a defnc
+    :name :lookup-value
+    :to-do (cI "")
+    :lookup-go? (cI false :ephemeral? true)
+    :lookup-response (cI nil)
+    :lookup (cF+ [:obs (fn [_ me chan _]
+                         (when chan
+                           (go (let [response (<! chan)
+                                     search (mget me :to-do)
+                                     rs (map :login (:body response))
+                                     hits (filter (fn [ostr]
+                                                    (prn :candy ostr)
+                                                    (clojure.string/includes? (str ostr)
+                                                      search))
+                                            rs)]
+                                 (with-cc
+                                   (mset! me :lookup-response
+                                     (or (seq hits) (vector (str "no matches for " search)))))))))]
+              (when (mget (mxu! me :lookup?) :value)
+                (when (not (str/blank? (mget me :to-do)))
+                  (when (mget me :lookup-go?)
+                    (http/get "https://api.github.com/users"
+                      {:with-credentials? false
+                       :query-params      {"since" 135}})))))
+    :style (cF (clj->js {:height          40
+                         :width           192
+                         :margin          12
+                         :padding         10
+                         :backgroundColor "linen"
+                         :borderWidth     1}))
+    :jsx {:&               (props [:value :to-do] :style)
+          :placeholder     "whassup?"
+          :autoCapitalize  "none"
+          :autoCorrect     false
+          :autoFocus       true
+          :onChangeText    #(do (prn :bam-changetext %)
+                                (mset! me :to-do %))
+          :onSubmitEditing #(mset! me :lookup-go? true)}))
+
+(defn search-output []
+  (mkx rn/Button
+    :name :dumper
+    :users (cF (mget (mxu! me :lookup-value) :lookup-response))
+    :title (cF (prn :title-sees (type (first (mget me :users)))
+                 (type (cljs.reader/read-string (first (mget me :users)))))
+             (str (first (mget me :users))))
+    :jsx {:&       (props :title)
+          :color   "cyan"
+          :onPress #(prn %)}))
+
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
@@ -49,55 +101,9 @@
                                                       :true  "#81b0ff"}
                             #_(js-obj "false" "#767577" "true" "#81b0ff")})
 
-                    (mkx rn/TextInput
-                      ;; todo make this a defnc
-                      :name :lookup-value
-                      :to-do (cI "")
-                      :lookup-go? (cI false :ephemeral? true)
-                      :lookup-response (cI nil)
-                      :lookup (cF+ [:obs (fn [_ me chan _]
-                                           (when chan
-                                             (go (let [response (<! chan)
-                                                       search (mget me :to-do)
-                                                       rs (map :login (:body response))
-                                                       hits (filter (fn [ostr]
-                                                                      (prn :candy ostr)
-                                                                      (clojure.string/includes? (str ostr)
-                                                                        search))
-                                                              rs)]
-                                                   (with-cc
-                                                     (mset! me :lookup-response
-                                                       (or (seq hits) (vector (str "no matches for " search)))))))))]
-                                (when (mget (mxu! me :lookup?) :value)
-                                  (when (not (str/blank? (mget me :to-do)))
-                                    (when (mget me :lookup-go?)
-                                      (http/get "https://api.github.com/users"
-                                        {:with-credentials? false
-                                         :query-params      {"since" 135}})))))
-                      :style (cF (clj->js {:height          40
-                                           :width           192
-                                           :margin          12
-                                           :padding         10
-                                           :backgroundColor "linen"
-                                           :borderWidth     1}))
-                      :jsx {:&               (props [:value :to-do] :style)
-                            :placeholder     "sup?"
-                            :autoCapitalize  "none"
-                            :autoCorrect     false
-                            :autoFocus       true
-                            :onChangeText    #(do (prn :bam-changetext %)
-                                                  (mset! me :to-do %))
-                            :onSubmitEditing #(mset! me :lookup-go? true)})
+                    (search-input)
 
-                    (mkx rn/Button
-                      :name :dumper
-                      :users (cF (mget (mxu! me :lookup-value) :lookup-response))
-                      :title (cF (prn :title-sees (type (first (mget me :users)))
-                                   (type (cljs.reader/read-string (first (mget me :users)))))
-                               (str (first (mget me :users))))
-                      :jsx {:&       (props :title)
-                            :color   "white"
-                            :onPress #(prn %)})
+                    (search-output)
                     ))))))
 
 
