@@ -58,17 +58,15 @@
                       :lookup (cF+ [:obs (fn [_ me chan _]
                                            (when chan
                                              (go (let [response (<! chan)
+                                                       search (mget me :to-do)
                                                        rs (map :login (:body response))
-                                                       kennys (filter (fn [ostr]
-                                                                        (clojure.string/includes? (str ostr)
-                                                                          (mget me :to-do)))
-                                                                rs)]
-                                                   (prn :obs-sees (first rs) (type (first rs))
-                                                     (type (str (first rs)))
-                                                     kennys)
+                                                       hits (filter (fn [ostr]
+                                                                      (clojure.string/includes? (str ostr)
+                                                                        search))
+                                                              rs)]
                                                    (with-cc
                                                      (mset! me :lookup-response
-                                                       kennys))))))]
+                                                       (or (seq hits) (vector (str "no matches for " search)))))))))]
                                 (when (mget (mxu! me :lookup?) :value)
                                   (when (not (str/blank? (mget me :to-do)))
                                     (when (mget me :lookup-go?)
@@ -83,7 +81,8 @@
                                            :borderWidth     1}))
                       :jsx {:&               (props [:value :to-do] :style)
                             :placeholder     "sup?"
-                            :autoCapitalize "none"s
+                            :autoCapitalize  "none"
+                            :autoCorrect     false
                             :autoFocus       true
                             :onChangeText    #(do (prn :bam-changetext %)
                                                   (mset! me :to-do %))
