@@ -61,6 +61,7 @@
                                                        search (mget me :to-do)
                                                        rs (map :login (:body response))
                                                        hits (filter (fn [ostr]
+                                                                      (prn :candy ostr)
                                                                       (clojure.string/includes? (str ostr)
                                                                         search))
                                                               rs)]
