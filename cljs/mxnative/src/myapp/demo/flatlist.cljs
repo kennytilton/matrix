@@ -7,11 +7,10 @@
      :refer [matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
-
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :refer-macros [mkbox mkx mkxdebug mxfnc with-props props]]))
+    [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]))
 
 (defn demo []
   (md/make ::hxApp
@@ -51,7 +50,7 @@
                                   :backgroundColor "linen"
                                   :borderWidth     1}
                       :jsx {:&               (props [:value :to-do] :style)
-                            :placeHolder     "What needs doing?"
+                            :placeholder     "What needs doing?"
                             :autoFocus       true
                             :autoCapitalize  "sentences"
                             :onChangeText    #(do (prn :undo-bam-changetext %)

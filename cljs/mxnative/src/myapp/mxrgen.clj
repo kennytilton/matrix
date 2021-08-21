@@ -17,22 +17,6 @@
                               ~(:jsx kv-map)
                               {}))))))))
 
-
-(defmacro mkxdebug [component & key-vals]
-  (let [kv-map (apply hash-map key-vals)]
-    `(myapp.mxreact/mkrx
-       ~(assoc (dissoc kv-map :jsx)
-          :rendering `(tiltontec.cell.core/cF
-                        #_ (prn :jsx-rendering!!!!!!!! ~(:jsx kv-map)
-                          ;; :js (clj->js ~(:jsx kv-map))
-                          :typ (type ~(:jsx kv-map))
-                          :title (:title ~(:jsx kv-map)))
-                        (helix.core/$
-                          (mxfnc
-                            (helix.core/$ ~component
-                              ~(:jsx kv-map)
-                              {}))))))))
-
 (defmacro mkbox [container-component & key-vals]
   (let [kv-map (apply hash-map key-vals)
         of-kids (:of-kids kv-map)
@@ -40,10 +24,6 @@
         container-attrs (apply concat
                           (into []
                             (dissoc kv-map :jsx :of-kids :rendering)))]
-    ;(prn :kvmap kv-map)
-    ;(prn :comp container-component)
-    ;(prn :contattrs container-attrs)
-    ;(prn :of-kids of-kids)
     `(myapp.mxreact/mkrx
        (assoc (hash-map ~@container-attrs)
          :rendering (tiltontec.cell.core/cF
@@ -63,9 +43,3 @@
                                     prop#
                                     [prop# prop#])]
                 [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
-
-(comment
-
-  (macroexpand-1 `(props :a :b))
-  (macroexpand `(with-props [:a :b] :c 42))
-  )

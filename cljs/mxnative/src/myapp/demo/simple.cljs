@@ -11,7 +11,7 @@
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :refer-macros [mkbox mkx mkxdebug mxfnc with-props props]]))
+    [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]))
 
 (defn demo []
   (md/make ::hxApp
@@ -22,12 +22,11 @@
                    :rendering (cF (mxfnc
                                     (do
                                       (apply $ rn/View
-                                        {:style (clj->js {:flex            1
-                                                          :marginTop       96
-                                                          :padding         24
-                                                          :alignItems      "flex-start"
-                                                          ;;:justifyContent  "center"
-                                                          :backgroundColor "coral"})}
+                                        {:style #js {:flex            1
+                                                     :marginTop       96
+                                                     :padding         24
+                                                     :alignItems      "flex-start"
+                                                     :backgroundColor "coral"}}
                                         {}
                                         (doall (map #(mget % :rendering)
                                                  (mget me :kids)))))))}
@@ -41,7 +40,9 @@
                       :jsx {:&                   (props :value :thumbColor)
                             :onValueChange       #(mswap! me :value not)
                             :ios_backgroundColor "#3e3e3e"
-                            :trackColor          (js-obj "false" "#767577" "true" "#81b0ff")})
+                            :trackColor          #js {:false "#767577"
+                                                      :true "#81b0ff"}
+                            #_ (js-obj "false" "#767577" "true" "#81b0ff")})
 
                     (mkx rn/Button
                       :name :counter42
@@ -62,7 +63,7 @@
 
                     (mkbox rn/SafeAreaView
                       :name :item-list
-                      :style (js-obj "backgroundColor" "yellow")
+                      :style #js {:backgroundColor "yellow"}
                       :of-kids (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
                                  (mkrx
                                    {:name      :an-item
@@ -70,13 +71,15 @@
                                                      (str "Text " n)))})))
                     (mkrx
                       {:name      :an-item
-                       :rendering (cF ($ rn/Text {:style (js-obj "backgroundColor" "cyan")} {}
+                       :rendering (cF ($ rn/Text {:style #js {:backgroundColor "cyan"
+                                                              :margin 4
+                                                              :padding 8}} {}
                                         "Booya"))})
 
 
                     (mkx rn/TextInput
                       :name :new-undo
-                      :to-do (cI "hi undo mom!")
+                      :to-do (cI "")
                       :style (cF (clj->js {:height      40
                                            :margin      12
                                            :padding     10
@@ -85,7 +88,7 @@
                                                           "linen" "red")
                                            :borderWidth 1}))
                       :jsx {:&               (props [:value :to-do] :style)
-                            :placeHolder     "What needs doing?"
+                            :placeholder     "What needs doing?"
                             :autoFocus       true
                             :autoCapitalize  "sentences"
                             :multiline       false

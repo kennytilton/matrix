@@ -1,8 +1,6 @@
 (ns myapp.mxreact
   (:refer-clojure :exclude [meta time])
   (:require
-    [helix.hooks :as hooks]
-    [goog.dom.forms :as form]
     [cljs.pprint :refer [pprint cl-format]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound c-pulse pulse-now]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]

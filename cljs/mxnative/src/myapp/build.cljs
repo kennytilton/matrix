@@ -28,9 +28,10 @@
             [helix.hooks :as hooks]
 
             [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-            [myapp.mxrgen :refer-macros [mkbox mkx mkxdebug mxfnc with-props props]]
+            [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]
             [myapp.demo.flatlist :as flat]
             [myapp.demo.simple :as simple]
+            [myapp.demo.http :as htpx]
             ))
 
 (declare mx-find-matrix)
@@ -39,7 +40,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (htpx/demo)))
 
 ;; ---- GOALS --------------
 #_(mx/button
