@@ -1,8 +1,6 @@
 (ns myapp.mxreact
   (:refer-clojure :exclude [meta time])
   (:require
-    [helix.hooks :as hooks]
-    [goog.dom.forms :as form]
     [cljs.pprint :refer [pprint cl-format]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound c-pulse pulse-now]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
@@ -48,13 +46,12 @@
      :up? true
      :must? must-find?)))
 
-(defn make-rnc [tag attrs aux cFkids]
-   (prn :make-rnc1 tag attrs cFkids)
+(defn make-rnc [tag attrs cFkids]
+   (prn :make-rnc!!!!!!!!! tag attrs cFkids)
    (let [tag-id (str (or (:id attrs)
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux))))
-         _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
+         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
+         ;; _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
          #_(prn :aux-raw aux)
          #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
                               (vec (apply concat (seq aux)))))
@@ -69,35 +66,33 @@
                                    (or (when-let [c (mget me :content)]
                                          [c])
                                      (let [kids (mget me :kids)]
-                                       (prn :rnc-kid-render! (map #(mget % :rendering)
+                                       #_ (prn :rnc-kid-render! (map #(mget % :rendering)
                                                                (mget me :kids)))
                                        (doall (map #(mget % :rendering)
                                                 (mget me :kids)))))))
                   rest-kvs)]
-     (prn :make-rnc-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag))
 
 (defn mkrx
   ;; todo lose vstg/tag altogether
   ([attributes]
-   (make-rnc "vstg" attributes {} nil))
-  ([attributes aux]
-   (make-rnc "vstg" attributes aux nil))
-  ([attrs aux cFkids]
+   (prn :mkrx-1!)
+   (make-rnc "vstg" attributes nil))
+  ([attrs cFkids]
+   (prn :mkrx-3!!!!!!!!!!! attrs )
    (let [tag-id (str (or (:id attrs)
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux))))
-         _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
+         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
+         ;; _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"
                   :id tag-id
-                  ;; todo why no sid
+                  :sid (swap! sid-latest inc)
                   :attr-keys (distinct (conj (keys attrs) :id))
                   :kids cFkids
                   rest-kvs)]
-     (prn :mkrx-built mx-tag)
+     ;;(prn :mkrx-built mx-tag)
      (swap! tag-by-id assoc tag-id mx-tag)
      mx-tag)))
 
@@ -113,5 +108,7 @@
 
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
+    ;;(prn :obs????????? (mget me :name)(mget me :sid)(mget me :id))
     (when-let [set-state-fn (get @ssdict (mget me :sid))]
+      ;;(prn :obs!!!!!!!!! (mget me :name)(mget me :sid))
       (set-state-fn (pulse-now)))))

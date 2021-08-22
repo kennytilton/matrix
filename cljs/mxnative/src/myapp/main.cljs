@@ -1,6 +1,6 @@
 (ns myapp.main
   (:require ["react-native" :as rn]
-            [helix.core :refer [defnc $ fnc]]
+            [helix.core :refer [defnc fnc $]]
             [helix.experimental.refresh :as refresh]
             [tiltontec.model.core
              :refer-macros [cFkids with-par]
@@ -24,21 +24,13 @@
 
 (defn mx-to-rx [mx-dom]
   ;; mx-dom s/b a ::mxrn.elt product  of make-rnc
-  (prn :mx2rx-rendering (mget mx-dom :rendering))
+  ;;(prn :mx2rx-rendering (mget mx-dom :rendering))
   (mget mx-dom :rendering))
 
 (defn init []
   (let [app-matrix (build/matrix-build!)
         root (mget app-matrix :rx-dom)
-        rendering (helix.core/fnc []
-                    (mx-to-rx root))]
-    (prn :matrix @app-matrix)
-    (prn :Root Root)
-    (prn :rrot root)
-    (prn :init-rendering rendering)
+        rendering (fnc [] (mx-to-rx root))]
     (rn/AppRegistry.registerComponent "MyApp"
-      ;; rendering
-      (fn [] rendering #_ (helix.core/fnc rendering))
-      ;; (fn [] Root2)
-      #_ (fn [] Root))
+       (fn [] rendering)
     (refresh/inject-hook!)))

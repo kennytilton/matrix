@@ -26,13 +26,18 @@
     `(myapp.mxreact/mkrx
        (assoc (hash-map ~@container-attrs)
          :rendering (tiltontec.cell.core/cF
-                      (apply helix.core/$ ~container-component
-                        {:style ~(:style kv-map)}
-                        {}
-                        (doall (map #(tiltontec.model.core/mget % :rendering)
-                                 (tiltontec.model.core/mget ~'me :kids))))))
-       {}
+                      (helix.core/$
+                        (mxfnc
+                          (apply helix.core/$ ~container-component
+                            {:style ~(:style kv-map)}
+                            {}
+                            (doall (map #(tiltontec.model.core/mget % :rendering)
+                                     (tiltontec.model.core/mget ~'me :kids))))))))
        (tiltontec.model.core/cFkids ~of-kids))))
 
-
-
+(defmacro props [& inherited]
+  `(into {} (for [prop# [~@inherited]]
+              (let [[pkey# pget#] (if (vector? prop#)
+                                    prop#
+                                    [prop# prop#])]
+                [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
