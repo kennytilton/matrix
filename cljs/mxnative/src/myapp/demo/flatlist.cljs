@@ -18,18 +18,17 @@
               (with-par me
                 (mkrx
                   {:name      :root
-                   :rendering (cF (mxfnc
-                                    (do
-                                      (apply $ rn/View
-                                        {:style (clj->js {:flex            1
-                                                          :marginTop       96
-                                                          :padding         24
-                                                          :alignItems      "flex-start"
-                                                          :backgroundColor "coral"})}
-                                        {}
-                                        (doall (map #(mget % :rendering)
-                                                 (mget me :kids)))))))}
-                  {}
+                   :rendering (cF ($ (mxfnc
+                                       (do
+                                         (apply $ rn/View
+                                           {:style (clj->js {:flex            1
+                                                             :marginTop       96
+                                                             :padding         24
+                                                             :alignItems      "flex-start"
+                                                             :backgroundColor "coral"})}
+                                           {}
+                                           (doall (map #(mget % :rendering)
+                                                    (mget me :kids))))))))}
                   (cFkids
                     (mkx rn/Switch
                       :name :counting?

@@ -46,12 +46,11 @@
      :up? true
      :must? must-find?)))
 
-(defn make-rnc [tag attrs aux cFkids]
-   (prn :make-rnc1 tag attrs cFkids)
+(defn make-rnc [tag attrs cFkids]
+   (prn :make-rnc!!!!!!!!! tag attrs cFkids)
    (let [tag-id (str (or (:id attrs)
                        (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux))))
+         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
          ;; _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
          #_(prn :aux-raw aux)
          #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
@@ -78,17 +77,13 @@
 (defn mkrx
   ;; todo lose vstg/tag altogether
   ([attributes]
-   ;(prn :mkrx-1!!!!!!!!!)
-   (make-rnc "vstg" attributes {} nil))
-  ([attributes aux]
-   ;(prn :mkrx-2!!!!!!!!!!!!!)
-   (make-rnc "vstg" attributes aux nil))
-  ([attrs aux cFkids]
-   ;(prn :mkrx-3!!!!!!!!!!! attrs aux)
+   (prn :mkrx-1!)
+   (make-rnc "vstg" attributes nil))
+  ([attrs cFkids]
+   (prn :mkrx-3!!!!!!!!!!! attrs )
    (let [tag-id (str (or (:id attrs)
                        (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux))))
+         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
          ;; _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
          mx-tag (apply make ::mxrn.elt
                   :tag "vstg"

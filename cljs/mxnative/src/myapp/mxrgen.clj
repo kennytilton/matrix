@@ -34,7 +34,6 @@
                             {}
                             (doall (map #(tiltontec.model.core/mget % :rendering)
                                      (tiltontec.model.core/mget ~'me :kids))))))))
-       {}
        (tiltontec.model.core/cFkids ~of-kids))))
 
 (defmacro props [& inherited]

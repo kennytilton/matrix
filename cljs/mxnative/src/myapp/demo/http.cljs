@@ -22,7 +22,7 @@
   (mkx rn/TextInput
     ;; todo make this a defnc
     :name :lookup-value
-    :to-do (cI "")
+    :to-do (cI "simon")
     :lookup-go? (cI false :ephemeral? true)
     :lookup-response (cI nil)
     :lookup (cF+ [:obs (fn [_ me chan _]
@@ -31,8 +31,7 @@
                                      search (mget me :to-do)
                                      rs (map :login (:body response))
                                      hits (filter (fn [ostr]
-                                                    (prn :candy ostr)
-                                                    (clojure.string/includes? (str ostr)
+                                                    (clojure.string/includes? ostr
                                                       search))
                                             rs)]
                                  (with-cc
@@ -76,18 +75,16 @@
               (with-par me
                 (mkrx
                   {:name      :root
-                   :rendering (cF (mxfnc
-                                    (do
-                                      (apply $ rn/View
-                                        {:style #js {:flex            1
-                                                     :marginTop       96
-                                                     :padding         24
-                                                     :alignItems      "flex-start"
-                                                     :backgroundColor "coral"}}
-                                        {}
-                                        (doall (map #(mget % :rendering)
-                                                 (mget me :kids)))))))}
-                  {}
+                   :rendering (cF ($ (mxfnc
+                                       (apply $ rn/View
+                                         {:style #js {:flex            1
+                                                      :marginTop       96
+                                                      :padding         24
+                                                      :alignItems      "flex-start"
+                                                      :backgroundColor "coral"}}
+                                         {}
+                                         (doall (map #(mget % :rendering)
+                                                  (mget me :kids)))))))}
                   (cFkids
                     (mkx rn/Switch
                       :name :lookup?
