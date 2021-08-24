@@ -12,6 +12,32 @@
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
     [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]))
 
+#_ (defn input-new-todo []
+     (mkx rn/TextInput
+       :name :new-undo
+       :to-do (cI "")
+       :style (cF (clj->js {:height      40
+                            :margin      12
+                            :padding     10
+                            :backgroundColor
+                                         (if (even? (mget (mxr/mxu! me :my-counter) :counter))
+                                           "linen" "red")
+                            :borderWidth 1}))
+       :jsx {:&               (props [:value :to-do] :style)
+             :placeholder     "What needs doing?"
+             :autoFocus       true
+             :autoCapitalize  "sentences"
+             :multiline       false
+             :onEndEditing    #(prn :undo-on-end-editing
+                                 (goog.object/getAllPropertyNames %))
+             :onSubmitEditing #(prn :undo-on-submit-editing
+                                 (goog.object/getAllPropertyNames %))
+             :onChange        #(prn :undo-on-change
+                                 (js->clj (goog.object/get % "nativeEvent")
+                                   :keywordize-keys true))
+             :onChangeText    #(do (prn :undo-bam-changetext %)
+                                   (mset! me :to-do %))}))
+
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
@@ -60,7 +86,8 @@
                                                 (when-not (str/blank? (:text n))
                                                   (mswap! (mxu! me :todos-container) :todo-items
                                                     conj {:key   (str (.now js/Date))
-                                                          :title (:text n)})))})
+                                                          :title (:text n)})
+                                                  (mset! me :to-do "")))})
 
                     (mkrx
                       {:name       :todos-container

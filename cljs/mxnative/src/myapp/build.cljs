@@ -33,7 +33,6 @@
 
 (declare mx-find-matrix)
 
-
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
@@ -43,14 +42,14 @@
 ;; ---- GOALS --------------
 
 #_(mx/button
-    :name :counter42
+    :name :my-counter
     :title (cF (str "Bumper " (mget me :counter)))
     :counter (cI 3)
     :jsx (with-props [:title :title]                        ;; {... :title (mget me :title ... }
            {:onPress #(mswap! me :counter inc)})
 
     #_(mx/view {:style (js-obj "backgroundColor" "yellow")}
-        (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+        (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
           (mktext (str "Text " n))))
     )
 
@@ -59,7 +58,7 @@
     (mxu-find-type mx ::hxApp))
 
 ; #_ (mkx rn/Button
-;                              :name :counter42
+;                              :name :my-counter
 ;                              :title (cF (str "Counter = " (mget me :counter)))
 ;                              :counter (cI 3)
 ;                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
