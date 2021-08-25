@@ -86,8 +86,7 @@
                 :f222 ~'~rntex
                 :kids ~@~kids)))))
 
-(defmacro dvm [type rn-type]
-  (prn :dvm-sees type rn-type)
+(defmacro define-view-macro [type rn-type]
   (let [rntex (gensym "rntex")
         self (gensym "self")
         mx-props (gensym "mx-props")
@@ -95,12 +94,9 @@
         kids (gensym "kids")
         kid-renders (gensym "kid-renders")
         mapkid (gensym "mapkid")]
-    (prn :rntex rntex)
     `(defmacro ~type [~mx-props ~jsx-props & ~kids]
-       `(let [~'~rntex (get {:View rn/View} ~~rn-type)]
-          #_(prn :mxp ~~mx-props :jsx ~~jsx-props
-              :f222 ~'~rntex
-              :kids ~@~kids)
+       `(let [~'~rntex (get {:View rn/View
+                             :SafeAreaView rn/SafeAreaView} ~~rn-type)]
           (tiltontec.model.core/make :myapp.mxreact/mxrn.elt
             :sid (swap! myapp.mxreact/sid-latest inc)
             :kids (tiltontec.model.core/cFkids ~@~kids)
@@ -110,9 +106,6 @@
                                                 (map (fn [~'~mapkid]
                                                        (tiltontec.model.core/mget ~'~mapkid :rendering))
                                                   (tiltontec.model.core/mget ~'~self :kids)))]
-                           (prn :self?! ~'~self)
-                           (prn :selfkids?? (tiltontec.model.core/mget ~'~self :kids))
-                           (prn :kidrenders???  ~'~kid-renders)
                            (helix.core/$ (myapp.mxrgen/mxfnc
                                            (apply helix.core/$
                                              ~'~rntex       ;; rn/View
@@ -122,7 +115,7 @@
           ~@(apply concat
               (into [] ~mx-props)))))) )
 
-(dvm xView :View)
+(define-view-macro View :View)
 
 (comment
   (macroexpand-1 '(dvm xView :View)))
@@ -156,6 +149,7 @@
   (macroexpand '(dvm xView :View))
   (macroexpand `(def-view-macro View :View)))
 
+#_
 (defmacro View [mx-props jsx-props & children]
   (let [rnc (gensym "rnclass")]
     `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt

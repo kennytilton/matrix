@@ -86,17 +86,10 @@
                                :true  "#81b0ff"}}))
 
 (defn demo []
-  #_ (mxn/xView {:name :root}{:style #js {:flex            1
-                                       :marginTop       96
-                                       :padding         24
-                                       :alignItems      "flex-start"
-                                       :backgroundColor "coral"}}
-    :k1 :k2)
-  ;; (prn :react!!!! (get-react))
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/xView
+                (mxn/View
                   {:name :root}                             ;; unnecessary for now since never searched for
                   {:style #js {:flex            1
                                :marginTop       96
@@ -105,5 +98,4 @@
                                :backgroundColor "coral"}}
                   (lookup?)
                   (search-input)
-                  (search-output)
-                  )))))
+                  (search-output))))))
