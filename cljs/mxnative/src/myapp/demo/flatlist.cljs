@@ -38,6 +38,18 @@
              :onChangeText    #(do (prn :undo-bam-changetext %)
                                    (mset! me :to-do %))}))
 
+;;;
+;;; Use this so SafeAreaView on Android stays away from status bar
+;;;
+; import { StyleSheet, Platform } from 'react-native';
+;export default StyleSheet.create({
+;    droidSafeArea: {
+;        flex: 1,
+;        backgroundColor: npLBlue,
+;        paddingTop: Platform.OS === 'android' ? 25 : 0
+;    },
+;});
+
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce

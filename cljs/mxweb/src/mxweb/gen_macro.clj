@@ -30,6 +30,13 @@
                        ~~tag-name {} {}
                        (tiltontec.model.core/cFkids ~@~vargs)))))))
 
+#_(defmacro deftag [tag]
+    `(defmacro ~tag [& vargs#]
+       (let [tag-name# (str '~tag)]
+         `(mxweb.gen/make-tag
+            tag-name# {} {}
+            (tiltontec.model.core/cFkids ~@vargs#)))))
+
 (defmacro deftags [& tags]
   `(do ~@(for [tag tags]
            `(deftag ~tag))))

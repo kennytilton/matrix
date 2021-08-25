@@ -13,10 +13,13 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
 
+    ["react" :as react]
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
     [myapp.mxrgen :as mxn :refer-macros [mkbox mkx mxfnc props]]))
+
+(defn ^js/React get-react [] react)
 
 (defn search-input []
   (mxn/TextInput
@@ -83,10 +86,17 @@
                                :true  "#81b0ff"}}))
 
 (defn demo []
+  #_ (mxn/xView {:name :root}{:style #js {:flex            1
+                                       :marginTop       96
+                                       :padding         24
+                                       :alignItems      "flex-start"
+                                       :backgroundColor "coral"}}
+    :k1 :k2)
+  ;; (prn :react!!!! (get-react))
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/View
+                (mxn/xView
                   {:name :root}                             ;; unnecessary for now since never searched for
                   {:style #js {:flex            1
                                :marginTop       96
@@ -95,4 +105,5 @@
                                :backgroundColor "coral"}}
                   (lookup?)
                   (search-input)
-                  (search-output))))))
+                  (search-output)
+                  )))))

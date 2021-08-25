@@ -110,12 +110,12 @@
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
       (do
-        (prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
+        ;(prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
-  (prn :obs-type-mxrn-elt-entry slot (mget me :name)(mget me :sid))
+  ; (prn :obs-type-mxrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
     (state-hook-set! me slot)))
