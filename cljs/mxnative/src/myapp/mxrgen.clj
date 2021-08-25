@@ -86,34 +86,26 @@
                 :f222 ~'~rntex
                 :kids ~@~kids)))))
 
-(defmacro define-view-macro [type rn-type]
-  (let [rntex (gensym "rntex")
-        self (gensym "self")
-        mx-props (gensym "mx-props")
-        jsx-props (gensym "jsx-props")
-        kids (gensym "kids")
-        kid-renders (gensym "kid-renders")
-        mapkid (gensym "mapkid")]
-    `(defmacro ~type [~mx-props ~jsx-props & ~kids]
-       `(let [~'~rntex (get {:View rn/View
-                             :SafeAreaView rn/SafeAreaView} ~~rn-type)]
-          (tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-            :sid (swap! myapp.mxreact/sid-latest inc)
-            :kids (tiltontec.model.core/cFkids ~@~kids)
-            :rendering (tiltontec.cell.core/cF
-                         (helix.core/$ (myapp.mxrgen/mxfnc
-                                         (apply helix.core/$
-                                           ~'~rntex       ;; rn/View
-                                           ~~jsx-props
-                                           {}
-                                           (doall
-                                             (map (fn [~'~mapkid]
-                                                    (tiltontec.model.core/mget ~'~mapkid :rendering))
-                                               (tiltontec.model.core/mget ~'~'me :kids)))))))
-          ~@(apply concat
-              (into [] ~mx-props)))))) )
+(defmacro define-view-macro [gen-type]
+  `(defmacro ~gen-type [mx-props# jsx-props# & kids#]
+     `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+        :sid (swap! myapp.mxreact/sid-latest inc)
+        :kids (tiltontec.model.core/cFkids ~@kids#)
+        :rendering (tiltontec.cell.core/cF
+                     (helix.core/$ (myapp.mxrgen/mxfnc
+                                     (apply helix.core/$
+                                       (get {:View         rn/View
+                                             :SafeAreaView rn/SafeAreaView} ~~(keyword gen-type))
+                                       ~jsx-props#
+                                       {}
+                                       (doall
+                                         (map (fn [~'mapkid#]
+                                                (tiltontec.model.core/mget ~'mapkid# :rendering))
+                                           (tiltontec.model.core/mget ~'~'me :kids)))))))
+        ~@(apply concat
+            (into [] mx-props#)))))
 
-(define-view-macro View :View)
+(define-view-macro View)
 
 (comment
   (macroexpand-1 '(dvm xView :View)))
@@ -147,23 +139,22 @@
   (macroexpand '(dvm xView :View))
   (macroexpand `(def-view-macro View :View)))
 
-#_
-(defmacro View [mx-props jsx-props & children]
-  (let [rnc (gensym "rnclass")]
-    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-       :sid (swap! myapp.mxreact/sid-latest inc)
-       :kids (tiltontec.model.core/cFkids ~@children)
-       :rendering (tiltontec.cell.core/cF
-                    (let [~rnc rn/View]
-                      (helix.core/$ (mxfnc
-                                      (apply helix.core/$
-                                        ~rnc                ;; (get {:View rn/View} :View) ;; (when true rn/View)
-                                        ~jsx-props
-                                        {}
-                                        (doall (map #(tiltontec.model.core/mget % :rendering)
-                                                 (tiltontec.model.core/mget ~'me :kids))))))))
-       ~@(apply concat
-           (into [] mx-props)))))
+#_(defmacro View [mx-props jsx-props & children]
+    (let [rnc (gensym "rnclass")]
+      `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+         :sid (swap! myapp.mxreact/sid-latest inc)
+         :kids (tiltontec.model.core/cFkids ~@children)
+         :rendering (tiltontec.cell.core/cF
+                      (let [~rnc rn/View]
+                        (helix.core/$ (mxfnc
+                                        (apply helix.core/$
+                                          ~rnc              ;; (get {:View rn/View} :View) ;; (when true rn/View)
+                                          ~jsx-props
+                                          {}
+                                          (doall (map #(tiltontec.model.core/mget % :rendering)
+                                                   (tiltontec.model.core/mget ~'me :kids))))))))
+         ~@(apply concat
+             (into [] mx-props)))))
 ;; xx
 
 (defmacro Button [mx-props jsx-props]

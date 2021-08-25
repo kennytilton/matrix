@@ -68,9 +68,8 @@
                   (first (mget me :users)))
               (if-let [u1 (first (mget me :users))]
                 (str u1)
-                "no user"))}
+                (str "no user " (rand-int 9999))))}
     {:&       (props :title)
-     ;; :title (mget me :title)
      :color   "green"}))
 
 (defn lookup? []
@@ -95,7 +94,7 @@
                                :marginTop       96
                                :padding         24
                                :alignItems      "flex-start"
-                               :backgroundColor "coral"}}
+                               :backgroundColor "cyan"}}
                   (lookup?)
                   (search-input)
                   (search-output))))))
