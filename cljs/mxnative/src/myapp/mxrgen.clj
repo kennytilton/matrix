@@ -101,17 +101,15 @@
             :sid (swap! myapp.mxreact/sid-latest inc)
             :kids (tiltontec.model.core/cFkids ~@~kids)
             :rendering (tiltontec.cell.core/cF
-                         (let [~'~self ~'~'me
-                               ~'~kid-renders (doall
-                                                (map (fn [~'~mapkid]
-                                                       (tiltontec.model.core/mget ~'~mapkid :rendering))
-                                                  (tiltontec.model.core/mget ~'~self :kids)))]
-                           (helix.core/$ (myapp.mxrgen/mxfnc
-                                           (apply helix.core/$
-                                             ~'~rntex       ;; rn/View
-                                             ~~jsx-props
-                                             {}
-                                             ~'~kid-renders)))))
+                         (helix.core/$ (myapp.mxrgen/mxfnc
+                                         (apply helix.core/$
+                                           ~'~rntex       ;; rn/View
+                                           ~~jsx-props
+                                           {}
+                                           (doall
+                                             (map (fn [~'~mapkid]
+                                                    (tiltontec.model.core/mget ~'~mapkid :rendering))
+                                               (tiltontec.model.core/mget ~'~'me :kids)))))))
           ~@(apply concat
               (into [] ~mx-props)))))) )
 
