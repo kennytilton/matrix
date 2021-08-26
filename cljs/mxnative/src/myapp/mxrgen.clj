@@ -57,8 +57,9 @@
                                      (helix.core/$
                                        (or (get {:Button    rn/Button
                                                  :Switch    rn/Switch
-                                                 :TextInput rn/TextInput} ~~(keyword gen-type))
-                                         (throw (js/Error. (str "No RN atom mapping for " ~~(keyword gen-type)))))
+                                                 :TextInput rn/TextInput
+                                                 :FlatList rn/FlatList} ~~(keyword gen-type))
+                                         (throw (js/Error. (str "No RN atom mapping for: " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}))))
         ~@(apply concat
@@ -68,7 +69,7 @@
   `(do ~@(for [atom atoms]
            `(define-atom-macro ~atom))))
 
-(define-atom-macros Button Switch TextInput)
+(define-atom-macros Button Switch TextInput FlatList)
 
 (defmacro strng [textFormulaBody]
   (let [content-kwd (keyword (gensym "content"))]
