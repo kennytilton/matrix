@@ -26,9 +26,11 @@
         :rendering (tiltontec.cell.core/cF
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (apply helix.core/$
-                                       (get {:View         rn/View
-                                             :SafeAreaView rn/SafeAreaView
-                                             :ScrollView   rn/ScrollView} ~~(keyword gen-type))
+                                       (or (get {:Text         rn/Text
+                                                 :View         rn/View
+                                                 :SafeAreaView rn/SafeAreaView
+                                                 :ScrollView   rn/ScrollView} ~~(keyword gen-type))
+                                         (throw (js/Error. (str "No RN view mapping for " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}
                                        (doall
@@ -53,10 +55,10 @@
         :rendering (tiltontec.cell.core/cF
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (helix.core/$
-                                       (or (get {:Button rn/Button
-                                                 :Switch rn/Switch
+                                       (or (get {:Button    rn/Button
+                                                 :Switch    rn/Switch
                                                  :TextInput rn/TextInput} ~~(keyword gen-type))
-                                         (throw (js/Error. (str "No RN mapping for " ~~(keyword gen-type)))))
+                                         (throw (js/Error. (str "No RN atom mapping for " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}))))
         ~@(apply concat
@@ -68,23 +70,20 @@
 
 (define-atom-macros Button Switch TextInput)
 
-(defmacro Text [mx-props jsx-props & kids]
-  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-     :sid (swap! myapp.mxreact/sid-latest inc)
-     :kids (tiltontec.model.core/cFkids ~@kids)
-     :rendering (tiltontec.cell.core/cF
-                  (prn :textinput-rendering-formula-runs!! ~jsx-props)
-                  (helix.core/$ (mxfnc
-                                  (helix.core/$ rn/Text
-                                    ~jsx-props {}
-                                    #_"hardcoded"
-
-                                    (doall
-                                      (map (fn [~'mapkid#]
-                                             (tiltontec.model.core/mget ~'mapkid# :rendering))
-                                        (tiltontec.model.core/mget ~'me :kids)))))))
-     ~@(apply concat
-         (into [] mx-props))))
+#_(defmacro Text [mx-props jsx-props & kids]
+    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+       :sid (swap! myapp.mxreact/sid-latest inc)
+       :kids (tiltontec.model.core/cFkids ~@kids)
+       :rendering (tiltontec.cell.core/cF
+                    (helix.core/$ (mxfnc
+                                    (helix.core/$ rn/Text
+                                      ~jsx-props {}
+                                      (doall
+                                        (map (fn [~'mapkid#]
+                                               (tiltontec.model.core/mget ~'mapkid# :rendering))
+                                          (tiltontec.model.core/mget ~'me :kids)))))))
+       ~@(apply concat
+           (into [] mx-props))))
 
 (defmacro strng [textFormulaBody]
   (let [content-kwd (keyword (gensym "content"))]
@@ -96,8 +95,7 @@
                     (helix.core/$ rn/Text {:key (rand-int 9999)} {}
                       (tiltontec.model.core/mget ~'me ~content-kwd))))))
 
-#_
-(defmacro View [mx-props jsx-props & children]
+#_(defmacro View [mx-props jsx-props & children]
     (let [rnc (gensym "rnclass")]
       `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
          :sid (swap! myapp.mxreact/sid-latest inc)
@@ -105,7 +103,7 @@
          :rendering (tiltontec.cell.core/cF
                       (helix.core/$ (mxfnc
                                       (apply helix.core/$
-                                        rn/View ;; (get {:View rn/View} :View) ;; (when true rn/View)
+                                        rn/View             ;; (get {:View rn/View} :View) ;; (when true rn/View)
                                         ~jsx-props
                                         {}
                                         (doall (map #(tiltontec.model.core/mget % :rendering)
@@ -114,28 +112,26 @@
              (into [] mx-props)))))
 ;; xx
 
-#_
-(defmacro Switch [mx-props jsx-props]
-  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-     :sid (swap! myapp.mxreact/sid-latest inc)
-     :rendering (tiltontec.cell.core/cF
-                  (helix.core/$ (mxfnc
-                                  (helix.core/$ rn/Switch
-                                    ~jsx-props {}))))
-     ~@(apply concat
-         (into [] mx-props))))
+#_(defmacro Switch [mx-props jsx-props]
+    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+       :sid (swap! myapp.mxreact/sid-latest inc)
+       :rendering (tiltontec.cell.core/cF
+                    (helix.core/$ (mxfnc
+                                    (helix.core/$ rn/Switch
+                                      ~jsx-props {}))))
+       ~@(apply concat
+           (into [] mx-props))))
 
-#_
-(defmacro TextInput [mx-props jsx-props]
-  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-     :sid (swap! myapp.mxreact/sid-latest inc)
-     :rendering (tiltontec.cell.core/cF
-                  (prn :textinput-rendering-formula-runs!! ~jsx-props)
-                  (helix.core/$ (mxfnc
-                                  (helix.core/$ rn/TextInput
-                                    ~jsx-props {}))))
-     ~@(apply concat
-         (into [] mx-props))))
+#_(defmacro TextInput [mx-props jsx-props]
+    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+       :sid (swap! myapp.mxreact/sid-latest inc)
+       :rendering (tiltontec.cell.core/cF
+                    (prn :textinput-rendering-formula-runs!! ~jsx-props)
+                    (helix.core/$ (mxfnc
+                                    (helix.core/$ rn/TextInput
+                                      ~jsx-props {}))))
+       ~@(apply concat
+           (into [] mx-props))))
 
 (defmacro my-counter []
   `(tiltontec.model.core/mget ~'me :counter))

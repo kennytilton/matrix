@@ -30,93 +30,96 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mkrx
-                  {:name      :root
-                   :rendering (compute-kids)}
-                  (cFkids
-                    (mxn/Button
-                      {:counter (cI 3)
-                       #_#_:bozo (cF (case (mod (my-counter) 3)
-                                       0 "red"
-                                       1 "yellow"
-                                       2 "aquamarine"))
-                       :title   "Test" #_(cF (str "Counter = " (my-counter)))}
-                      {:&       (props #_[:color :bozo] :title)
-                       :onPress #(mswap! me :counter inc)})
+                (mxn/View
+                  {:name :root}
+                  {:style #js {:flex            1
+                               :marginTop       96
+                               :padding         24
+                               :alignItems      "flex-start"
+                               :backgroundColor "cyan"}}
+                  (mxn/Button
+                    {:counter (cI 3)
+                     :bozo    (cF (case (mod (my-counter) 3)
+                                    0 "red"
+                                    1 "yellow"
+                                    2 "aquamarine"))
+                     :style   (cF (clj->js {:color (mget me :bozo)}))
+                     :title   "Test Button" #_(cF (str "Counter = " (my-counter)))}
+                    {:&       (props :style :title)
+                     :onPress #(mswap! me :counter inc)})
 
-                    (mxn/Switch
-                      {:name       :counting?
-                       :value      (cI true)
-                       :thumbColor (cF (if (mget me :value)
-                                         "#f5dd4b" "#f4f3f4"))
-                       }
-                      {:&                   (props :value :thumbColor)
-                       :onValueChange       #(mswap! me :value not)
-                       :ios_backgroundColor "#3e3e3e"
-                       :style               #js {:margin 9}
-                       :trackColor          #js {:false "#767577"
-                                                 :true  "#81b0ff"}
-                       #_(js-obj "false" "#767577" "true" "#81b0ff")})
+                  (mxn/Switch
+                    {:name       :counting?
+                     :value      (cI true)
+                     :thumbColor (cF (if (mget me :value)
+                                       "#f5dd4b" "#f4f3f4"))}
+                    {:&                   (props :value :thumbColor)
+                     :onValueChange       #(mswap! me :value not)
+                     :ios_backgroundColor "#3e3e3e"
+                     :style               #js {:margin 9}
+                     :trackColor          #js {:false "#767577"
+                                               :true  "#81b0ff"}
+                     #_(js-obj "false" "#767577" "true" "#81b0ff")})
 
-                    (mxn/Button
-                      {:name     :my-counter
-                       :title    (cF (str "Counter = " (mget me :counter)))
-                       :counter  (cI 3)
-                       :disabled (cF (not (mget (mxu! me :counting?) :value)))}
-                      {:&       (props :title :disabled)
-                       :color   "cyan"
-                       :onPress #(mswap! me :counter inc)})
+                  (mxn/Button
+                    {:name     :my-counter
+                     :title    (cF (str "Counter = " (mget me :counter)))
+                     :counter  (cI 3)
+                     :disabled (cF (not (mget (mxu! me :counting?) :value)))}
+                    {:&       (props :title :disabled)
+                     :color   "black"
+                     :onPress #(mswap! me :counter inc)})
 
-                    (mxn/Button
-                      {:name  :dumper
-                       :title (cF (str "Downer " (mget (mxu! me :my-counter) :counter)))}
-                      {:&       (props :title)
-                       :color   "red"
-                       :onPress #(mswap! (mxu! me :my-counter) :counter dec)})
+                  (mxn/Button
+                    {:name  :dumper
+                     :title (cF (str "Downer " (mget (mxu! me :my-counter) :counter)))}
+                    {:&       (props :title)
+                     :color   "red"
+                     :onPress #(mswap! (mxu! me :my-counter) :counter dec)})
 
-                    (mxn/SafeAreaView
-                      {:name :item-list}
-                      {:style #js {:backgroundColor "yellow"}}
+                  (mxn/SafeAreaView
+                    {:name :item-list}
+                    {:style #js {:backgroundColor "yellow"}}
+                    (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
+                      (mxn/Text
+                        {:name :an-item}
+                        {:key   n
+                         :style #js {:padding 4 :margin 5}}
+                        (mxn/strng (str "Text " n)))))
+
+                  #_(myapp.mxreact/mkrx
+                      (assoc (hash-map ~@container-attrs)
+                        :rendering (tiltontec.cell.core/cF
+                                     (helix.core/$
+                                       (mxfnc
+                                         (apply helix.core/$ rn/SafeAreaView
+                                           {:style ~(:style kv-map)}
+                                           {}
+                                           (doall (map #(tiltontec.model.core/mget % :rendering)
+                                                    (tiltontec.model.core/mget ~'me :kids))))))))
+                      (tiltontec.model.core/cFkids ~of-kids))
+
+                  #_(mkbox rn/SafeAreaView
+                      :name :item-list
+                      :style #js {:backgroundColor "yellow"}
+                      :of-kids (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
+                                 (mkrx
+                                   {:name      :an-item
+                                    :rendering (cF ($ rn/Text {} {}
+                                                     (str "Text " n)))})))
+                  #_(mxn/View
+                      {}
+                      {:style (js-obj "backgroundColor" "yellow")}
                       (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-                        (mxn/Text
-                          {:name      :an-item}
-                          {:key n
-                           :style #js {:padding 4 :margin 5}}
-                          (mxn/strng (str "Text " n)))))
+                        (mktext (str "Text " n))))
+                  #_(mkrx
+                      {:name      :an-item
+                       :rendering (cF ($ rn/Text {:style #js {:backgroundColor "cyan"
+                                                              :margin          4
+                                                              :padding         8}} {}
+                                        "Booya"))})
 
-                    #_(myapp.mxreact/mkrx
-                        (assoc (hash-map ~@container-attrs)
-                          :rendering (tiltontec.cell.core/cF
-                                       (helix.core/$
-                                         (mxfnc
-                                           (apply helix.core/$ rn/SafeAreaView
-                                             {:style ~(:style kv-map)}
-                                             {}
-                                             (doall (map #(tiltontec.model.core/mget % :rendering)
-                                                      (tiltontec.model.core/mget ~'me :kids))))))))
-                        (tiltontec.model.core/cFkids ~of-kids))
-
-                    #_(mkbox rn/SafeAreaView
-                        :name :item-list
-                        :style #js {:backgroundColor "yellow"}
-                        :of-kids (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-                                   (mkrx
-                                     {:name      :an-item
-                                      :rendering (cF ($ rn/Text {} {}
-                                                       (str "Text " n)))})))
-                    #_(mxn/View
-                        {}
-                        {:style (js-obj "backgroundColor" "yellow")}
-                        (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-                          (mktext (str "Text " n))))
-                    #_(mkrx
-                        {:name      :an-item
-                         :rendering (cF ($ rn/Text {:style #js {:backgroundColor "cyan"
-                                                                :margin          4
-                                                                :padding         8}} {}
-                                          "Booya"))})
-
-                    #_(input-new-todo)))))))
+                  #_(input-new-todo))))))
 
 #_(defn demo []
     (md/make ::hxApp
