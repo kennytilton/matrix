@@ -32,5 +32,5 @@
         root (mget app-matrix :rx-dom)
         rendering (fnc [] (mx-to-rx root))]
     (rn/AppRegistry.registerComponent "MyApp"
-       (fn [] rendering)
+       (fn [] rendering))
     (refresh/inject-hook!)))
