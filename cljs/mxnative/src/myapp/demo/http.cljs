@@ -95,10 +95,10 @@
                                :padding         24
                                :alignItems      "flex-start"
                                :backgroundColor "cyan"}}
-                  #_ (mxn/Text
+                  (mxn/Text
                     {:name :stringTest}
                     {}
-                    (mxn/strng))
+                    (mxn/strng "Hi Mom"))
                   (mxn/Button
                     {:name :yaya}
                     {:title "Bingo"})

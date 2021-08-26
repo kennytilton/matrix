@@ -27,7 +27,6 @@
 
 
 (defn demo []
-  #_
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me

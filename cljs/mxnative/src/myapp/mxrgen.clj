@@ -44,7 +44,7 @@
   `(do ~@(for [view views]
            `(define-view-macro ~view))))
 
-(define-view-macros View SafeAreaView)
+(define-view-macros Text View SafeAreaView)
 
 (defmacro define-atom-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props#]
@@ -68,6 +68,26 @@
 
 (define-atom-macros Button Switch TextInput)
 
+(defmacro Text [mx-props jsx-props kid]
+  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+     :sid (swap! myapp.mxreact/sid-latest inc)
+     :rendering (tiltontec.cell.core/cF
+                  (prn :textinput-rendering-formula-runs!! ~jsx-props)
+                  (helix.core/$ (mxfnc
+                                  (helix.core/$ rn/Text
+                                    ~jsx-props {}
+                                    "hardcoded Text string"))))
+     ~@(apply concat
+         (into [] mx-props))))
+
+(defmacro strng [textFormulaBody]
+  (let [content-kwd (keyword (gensym "content"))]
+    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+       :sid (swap! myapp.mxreact/sid-latest inc)
+       ;; ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
+       :rendering (tiltontec.cell.core/cF
+                    (helix.core/$ rn/Text {} {}
+                      "hardcoded" #_ (tiltontec.model.core/mget ~'me ~content-kwd))))))
 
 #_
 (defmacro View [mx-props jsx-props & children]
