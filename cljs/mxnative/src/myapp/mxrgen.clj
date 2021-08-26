@@ -6,18 +6,6 @@
        (myapp.mxreact/set-state-record ~'me set-state#)
        ~@body)))
 
-(defmacro mkx [component & key-vals]
-  (let [kv-map (apply hash-map key-vals)]
-    `(myapp.mxreact/mkrx
-       ~(assoc (dissoc kv-map :jsx)
-          :rendering `(tiltontec.cell.core/cF
-                        (helix.core/$
-                          (mxfnc                            ;; sneak in the useState hack
-                            (helix.core/$ ~component
-                              ~(:jsx kv-map)
-                              {}))))))))
-
-
 (defmacro define-view-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props# & kids#]
      `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
@@ -39,8 +27,6 @@
                                            (tiltontec.model.core/mget ~'~'me :kids)))))))
         ~@(apply concat
             (into [] mx-props#)))))
-
-;(define-view-macro View)
 
 (defmacro define-view-macros [& views]
   `(do ~@(for [view views]
@@ -80,38 +66,6 @@
                     ;; todo better key
                     (helix.core/$ rn/Text {:key (rand-int 9999)} {}
                       (tiltontec.model.core/mget ~'me ~content-kwd))))))
-
-#_(defmacro TextInput [mx-props jsx-props]
-    `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-       :sid (swap! myapp.mxreact/sid-latest inc)
-       :rendering (tiltontec.cell.core/cF
-                    (prn :textinput-rendering-formula-runs!! ~jsx-props)
-                    (helix.core/$ (mxfnc
-                                    (helix.core/$ rn/TextInput
-                                      ~jsx-props {}))))
-       ~@(apply concat
-           (into [] mx-props))))
-
-(defmacro my-counter []
-  `(tiltontec.model.core/mget ~'me :counter))
-
-(defmacro mkbox [container-component & key-vals]
-  (let [kv-map (apply hash-map key-vals)
-        of-kids (:of-kids kv-map)
-        container-attrs (apply concat
-                          (into []
-                            (dissoc kv-map :jsx :of-kids :rendering)))]
-    `(myapp.mxreact/mkrx
-       (assoc (hash-map ~@container-attrs)
-         :rendering (tiltontec.cell.core/cF
-                      (helix.core/$
-                        (mxfnc
-                          (apply helix.core/$ ~container-component
-                            {:style ~(:style kv-map)}
-                            {}
-                            (doall (map #(tiltontec.model.core/mget % :rendering)
-                                     (tiltontec.model.core/mget ~'me :kids))))))))
-       (tiltontec.model.core/cFkids ~of-kids))))
 
 (defmacro props [& inherited]
   `(into {} (for [prop# [~@inherited]]

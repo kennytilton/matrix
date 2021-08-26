@@ -46,56 +46,6 @@
      :up? true
      :must? must-find?)))
 
-(defn make-rnc [tag attrs cFkids]
-   (prn :make-rnc!!!!!!!!! tag attrs cFkids)
-   (let [tag-id (str (or (:id attrs)
-                       (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
-         ;; _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
-         #_(prn :aux-raw aux)
-         #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
-                              (vec (apply concat (seq aux)))))
-         mx-tag (apply make ::mxrn.elt
-                  :tag tag
-                  :id tag-id
-                  :sid (swap! sid-latest inc)
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  :rendering (cF (apply $ (mget me :tag) attrs
-                                   ;; todo where is the useState?
-                                   (or (when-let [c (mget me :content)]
-                                         [c])
-                                     (let [kids (mget me :kids)]
-                                       #_ (prn :rnc-kid-render! (map #(mget % :rendering)
-                                                               (mget me :kids)))
-                                       (doall (map #(mget % :rendering)
-                                                (mget me :kids)))))))
-                  rest-kvs)]
-     (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag))
-
-(defn mkrx
-  ;; todo lose vstg/tag altogether
-  ([attributes]
-   (prn :mkrx-1!)
-   (make-rnc "vstg" attributes nil))
-  ([attrs cFkids]
-   (prn :mkrx-3!!!!!!!!!!! attrs )
-   (let [tag-id (str (or (:id attrs)
-                       (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
-         ;; _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
-         mx-tag (apply make ::mxrn.elt
-                  :tag "vstg"
-                  :id tag-id
-                  :sid (swap! sid-latest inc)
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  rest-kvs)]
-     ;;(prn :mkrx-built mx-tag)
-     (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag)))
-
 (defmethod not-to-be [::mxrn.elt] [me]
   ;; todo: worry about leaks
   (doseq [k (:kids @me)]

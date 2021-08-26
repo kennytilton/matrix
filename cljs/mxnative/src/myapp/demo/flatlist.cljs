@@ -9,8 +9,8 @@
              kid-values-kids] :as md]
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
-    [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :as mxn :refer-macros [mkbox mxfnc props]]))
+    [myapp.mxreact :as mxr :refer [ mxu!]]
+    [myapp.mxrgen :as mxn :refer-macros [ mxfnc props]]))
 
 ;;;
 ;;; Use this so SafeAreaView on Android stays away from status bar
@@ -47,13 +47,8 @@
                   (mxn/TextInput
                     {:name     :new-undo
                      :to-do    (cI "")
-                     :style    #js {:height          40
-                                    :margin          12
-                                    :padding         10
-                                    :backgroundColor "linen"
-                                    :borderWidth     1}
-                     :disabled (cF (not (mget (mxu! me :counting?) :value)))}
-                    {:&               (props [:value :to-do] :disabled :style)
+                     :editable (cF (mget (mxu! me :counting?) :value))}
+                    {:&               (props [:value :to-do] :editable)
                      :placeholder     "What to do?"
                      :autoFocus       true
                      :autoCapitalize  "sentences"
@@ -65,7 +60,12 @@
                                              conj {:key   (str (.now js/Date))
                                                    :title (:text n)})
                                            ;; now clear input...
-                                           (mset! me :to-do "")))})
+                                           (mset! me :to-do "")))
+                     :style    #js {:height          40
+                                    :margin          12
+                                    :padding         10
+                                    :backgroundColor "linen"
+                                    :borderWidth     1}})
 
                   (mxn/SafeAreaView
                     {:name       :todos-container

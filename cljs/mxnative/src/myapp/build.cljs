@@ -24,8 +24,8 @@
     ;;[helix.dom :as d]
             [helix.hooks :as hooks]
 
-            [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-            [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]
+            [myapp.mxreact :as mxr :refer [ mxu!]]
+            [myapp.mxrgen :refer-macros [ mxfnc props]]
             [myapp.demo.flatlist :as flat]
             [myapp.demo.simple :as simple]
             [myapp.demo.http :as htpx]
@@ -56,21 +56,3 @@
 
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
-
-; #_ (mkx rn/Button
-;                              :name :my-counter
-;                              :title (cF (str "Counter = " (mget me :counter)))
-;                              :counter (cI 3)
-;                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
-;                              :jsx {:& (with-props [:title :disabled]
-;                                         :color "cyan"
-;                                         :onPress #(when (mget (mxu! me :counting?) :value)
-;                                                     (mswap! me :counter inc)))})
-
-; #(do (prn :bam-change
-;                                                           (goog.object/getAllPropertyNames %))
-;                                                         (prn :bam-change
-;                                                           (goog.object/get % "nativeEvent"))
-;                                                         (prn :bam-change
-;                                                           (js->clj (goog.object/get % "nativeEvent")
-;                                                             :keywordize-keys true)))

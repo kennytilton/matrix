@@ -10,8 +10,8 @@
 
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
-    [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :as mxn :refer-macros [my-counter mkbox mkx mxfnc props]]))
+    [myapp.mxreact :as mxr :refer [ mxu!]]
+    [myapp.mxrgen :as mxn :refer-macros [my-counter mxfnc props]]))
 
 (defn demo []
   (md/make ::hxApp

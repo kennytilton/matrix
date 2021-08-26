@@ -17,8 +17,8 @@
     ["react-native" :as rn]
 
     [helix.core :as hx :refer [defnc fnc $ <>]]
-    [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :as mxn :refer-macros [mkbox mkx mxfnc props]]))
+    [myapp.mxreact :as mxr :refer [ mxu!]]
+    [myapp.mxrgen :as mxn :refer-macros [  mxfnc props]]))
 
 (defn search-input []
   (mxn/TextInput
