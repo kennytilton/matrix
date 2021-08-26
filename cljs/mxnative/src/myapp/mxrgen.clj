@@ -68,15 +68,21 @@
 
 (define-atom-macros Button Switch TextInput)
 
-(defmacro Text [mx-props jsx-props kid]
+(defmacro Text [mx-props jsx-props & kids]
   `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
      :sid (swap! myapp.mxreact/sid-latest inc)
+     :kids (tiltontec.model.core/cFkids ~@kids)
      :rendering (tiltontec.cell.core/cF
                   (prn :textinput-rendering-formula-runs!! ~jsx-props)
                   (helix.core/$ (mxfnc
                                   (helix.core/$ rn/Text
                                     ~jsx-props {}
-                                    "hardcoded Text string"))))
+                                    #_"hardcoded"
+
+                                    (doall
+                                      (map (fn [~'mapkid#]
+                                             (tiltontec.model.core/mget ~'mapkid# :rendering))
+                                        (tiltontec.model.core/mget ~'me :kids)))))))
      ~@(apply concat
          (into [] mx-props))))
 
@@ -84,10 +90,10 @@
   (let [content-kwd (keyword (gensym "content"))]
     `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
        :sid (swap! myapp.mxreact/sid-latest inc)
-       ;; ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
+       ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :rendering (tiltontec.cell.core/cF
                     (helix.core/$ rn/Text {} {}
-                      "hardcoded" #_ (tiltontec.model.core/mget ~'me ~content-kwd))))))
+                      (tiltontec.model.core/mget ~'me ~content-kwd))))))
 
 #_
 (defmacro View [mx-props jsx-props & children]
