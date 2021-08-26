@@ -46,56 +46,6 @@
      :up? true
      :must? must-find?)))
 
-(defn make-rnc [tag attrs cFkids]
-   (prn :make-rnc!!!!!!!!! tag attrs cFkids)
-   (let [tag-id (str (or (:id attrs)
-                       (str tag "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
-         ;; _ (prn :make-rnc-rkvs!! (count rest-kvs) rest-kvs)
-         #_(prn :aux-raw aux)
-         #_(prn :addl-slots (concat (vec (apply concat (seq (dissoc attrs :id))))
-                              (vec (apply concat (seq aux)))))
-         mx-tag (apply make ::mxrn.elt
-                  :tag tag
-                  :id tag-id
-                  :sid (swap! sid-latest inc)
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  :rendering (cF (apply $ (mget me :tag) attrs
-                                   ;; todo where is the useState?
-                                   (or (when-let [c (mget me :content)]
-                                         [c])
-                                     (let [kids (mget me :kids)]
-                                       #_ (prn :rnc-kid-render! (map #(mget % :rendering)
-                                                               (mget me :kids)))
-                                       (doall (map #(mget % :rendering)
-                                                (mget me :kids)))))))
-                  rest-kvs)]
-     (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag))
-
-(defn mkrx
-  ;; todo lose vstg/tag altogether
-  ([attributes]
-   (prn :mkrx-1!)
-   (make-rnc "vstg" attributes nil))
-  ([attrs cFkids]
-   (prn :mkrx-3!!!!!!!!!!! attrs )
-   (let [tag-id (str (or (:id attrs)
-                       (str "vstg" "-" (swap! +tag-sid+ inc)))) ;; todo GUID
-         rest-kvs (vec (apply concat (seq (dissoc attrs :id))))
-         ;; _ (prn :mkrx-sees (count rest-kvs) rest-kvs)
-         mx-tag (apply make ::mxrn.elt
-                  :tag "vstg"
-                  :id tag-id
-                  :sid (swap! sid-latest inc)
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  rest-kvs)]
-     ;;(prn :mkrx-built mx-tag)
-     (swap! tag-by-id assoc tag-id mx-tag)
-     mx-tag)))
-
 (defmethod not-to-be [::mxrn.elt] [me]
   ;; todo: worry about leaks
   (doseq [k (:kids @me)]
@@ -106,9 +56,16 @@
   (swap! tag-by-id dissoc (mget me :ref))
   (not-to-be-self me))
 
+(defn state-hook-set! [me slot]
+  (if-let [sid (mget me :sid)]
+    (if-let [set-state-fn (get @ssdict sid)]
+      (do
+        ;(prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
+        (set-state-fn (pulse-now)))
+      (prn :shs-no-state-fn!!! (mget me :name) sid))
+    (prn :shs-no-sid!! (mget me :name) me)))
+
 (defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
+  ; (prn :obs-type-mxrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
-    ;;(prn :obs????????? (mget me :name)(mget me :sid)(mget me :id))
-    (when-let [set-state-fn (get @ssdict (mget me :sid))]
-      ;;(prn :obs!!!!!!!!! (mget me :name)(mget me :sid))
-      (set-state-fn (pulse-now)))))
+    (state-hook-set! me slot)))

@@ -23,14 +23,12 @@
   (refresh/refresh!))
 
 (defn mx-to-rx [mx-dom]
-  ;; mx-dom s/b a ::mxrn.elt product  of make-rnc
-  ;;(prn :mx2rx-rendering (mget mx-dom :rendering))
   (mget mx-dom :rendering))
 
 (defn init []
   (let [app-matrix (build/matrix-build!)
         root (mget app-matrix :rx-dom)
-        rendering (fnc [] (mx-to-rx root))]
+        rendering (fnc [] (mget root :rendering))]
     (rn/AppRegistry.registerComponent "MyApp"
        (fn [] rendering))
     (refresh/inject-hook!)))

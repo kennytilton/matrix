@@ -13,106 +13,95 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
 
+    ["react" :as react]
     ["react-native" :as rn]
+
     [helix.core :as hx :refer [defnc fnc $ <>]]
-    [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-    [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]))
+    [myapp.mxreact :as mxr :refer [ mxu!]]
+    [myapp.mxrgen :as mxn :refer-macros [  mxfnc props]]))
 
 (defn search-input []
-  (mkx rn/TextInput
-    ;; todo make this a defnc
-    :name :lookup-value
-    :to-do (cI "simon")
-    :lookup-go? (cI false :ephemeral? true)
-    :lookup-response (cI nil)
-    :lookup (cF+ [:obs (fn [_ me chan _]
-                         (when chan
-                           (go (let [response (<! chan)
-                                     search (mget me :to-do)
-                                     rs (map :login (:body response))
-                                     hits (filter (fn [ostr]
-                                                    (clojure.string/includes? ostr
-                                                      search))
-                                            rs)]
-                                 (with-cc
-                                   (mset! me :lookup-response
-                                     (or (seq hits) (vector (str "no matches for " search)))))))))]
-              (when (mget (mxu! me :lookup?) :value)
-                (when (not (str/blank? (mget me :to-do)))
-                  (when (mget me :lookup-go?)
-                    (http/get "https://api.github.com/users"
-                      {:with-credentials? false
-                       :query-params      {"since" 135}})))))
-    :style (cF (clj->js {:height          40
-                         :width           192
-                         :margin          12
-                         :padding         10
-                         :backgroundColor "linen"
-                         :borderWidth     1}))
-    :jsx {:&               (props [:value :to-do] :style)
-          :placeholder     "whassup?"
-          :autoCapitalize  "none"
-          :autoCorrect     false
-          :autoFocus       true
-          :onChangeText    #(do (prn :bam-changetext %)
-                                (mset! me :to-do %))
-          :onSubmitEditing #(mset! me :lookup-go? true)}))
+  (mxn/TextInput
+    {:name            :search-input
+     :searchstring   (cI "simo")
+     :lookup-go?      (cI false :ephemeral? true)
+     :lookup-response (cI nil)
+     :lookup          (cF+ [:obs (fn [_ me chan _]
+                                   (when chan
+                                     (go (let [response (<! chan)
+                                               search (mget me :searchstring)
+                                               hits (filter (fn [ostr]
+                                                              (clojure.string/includes? ostr
+                                                                (mget me :searchstring)))
+                                                      (map :login (:body response)))]
+                                           (with-cc
+                                             (mset! me :lookup-response
+                                               (or (seq hits) (vector (str "no matches for " search)))))))))]
+                        (when (mget (mxu! me :do-any-lookup?) :value)
+                          (when (not (str/blank? (mget me :searchstring)))
+                            (when (mget me :lookup-go?)
+                              (http/get "https://api.github.com/users"
+                                {:with-credentials? false
+                                 :query-params      {"since" 135}})))))}
+    {:&               (props [:value :searchstring])
+     :style            #js {:height          40
+                           :width           192
+                           :margin          12
+                           :padding         10
+                           :backgroundColor "linen"
+                           :borderWidth     1}
+     :placeholder     "whassup?"
+     :autoCapitalize  "none"
+     :autoCorrect     false
+     :autoFocus       true
+     :onChangeText    #(do ;; (prn :chgtext-sets-search % (mget me :name))
+                           (mset! me :searchstring %))
+     :onSubmitEditing #(do ;; (prn :submit!!!! %)
+                           (mset! me :lookup-go? true))}))
+
 
 (defn search-output []
-  (mkx rn/Button
-    :name :dumper
-    :users (cF (mget (mxu! me :lookup-value) :lookup-response))
-    :title (cF (prn :title-sees (type (first (mget me :users)))
-                 (type (cljs.reader/read-string (first (mget me :users)))))
-             (str (first (mget me :users))))
-    :jsx {:&       (props :title)
-          :color   "cyan"
-          :onPress #(prn %)}))
+  ;; todo convert to FlatList and show all matches
+  (mxn/Button
+    {:users (cF (mget (mxu! me :search-input) :lookup-response))
+     :title (cF (prn :title-new-sees (mget me :users)
+                  (first (mget me :users)))
+              (if-let [u1 (first (mget me :users))]
+                (str u1)
+                (str "no user " (rand-int 9999))))}
+    {:&       (props :title)
+     :color   "green"}))
+
+(defn lookup? []
+  (mxn/Switch
+    {:name       :do-any-lookup?
+     :value      (cI true)
+     :thumbColor (cF (if (mget me :value)
+                       "#f5dd4b" "#f4f3f4"))}
+    {:&                   (props :value :thumbColor)
+     :onValueChange       #(mswap! me :value not)
+     :ios_backgroundColor "#3e3e3e"
+     :trackColor          #js {:false "#767577"
+                               :true  "#81b0ff"}}))
 
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mkrx
-                  {:name      :root
-                   :rendering (cF ($ (mxfnc
-                                       (apply $ rn/View
-                                         {:style #js {:flex            1
-                                                      :marginTop       96
-                                                      :padding         24
-                                                      :alignItems      "flex-start"
-                                                      :backgroundColor "coral"}}
-                                         {}
-                                         (doall (map #(mget % :rendering)
-                                                  (mget me :kids)))))))}
-                  (cFkids
-                    (mkx rn/Switch
-                      :name :lookup?
-                      :value (cI true)
-                      :thumbColor (cF (if (mget me :value)
-                                        "#f5dd4b" "#f4f3f4"))
-                      :jsx {:&                   (props :value :thumbColor)
-                            :onValueChange       #(mswap! me :value not)
-                            :ios_backgroundColor "#3e3e3e"
-                            :trackColor          #js {:false "#767577"
-                                                      :true  "#81b0ff"}
-                            #_(js-obj "false" "#767577" "true" "#81b0ff")})
-
-                    (search-input)
-
-                    (search-output)
-                    ))))))
-
-
-#_(mkrx
-    {:name      :lookup-viewer
-     :users     (cF (mget (mxu! me :lookup-value) :lookup-response))
-     :rendering (cF (let [us (mget me :users)
-                          us1 (first us)]
-                      (prn :lookup-viewer-sees us1 :of us)
-                      ($ (mxfnc
-                           ($ rn/Text {:style #js {:backgroundColor "yellow"
-                                                   :color           "black"
-                                                   :margin          4
-                                                   :padding         8}} {}
-                             us1)))))})
+                (mxn/View
+                  {:name :root}
+                  {:style #js {:flex            1
+                               :marginTop       96
+                               :padding         24
+                               :alignItems      "flex-start"
+                               :backgroundColor "cyan"}}
+                  (mxn/Text
+                    {:name :stringTest}
+                    {:style #js {:backgroundColor "red"}}
+                    (mxn/strng "Hi Mom"))
+                  (mxn/Button
+                    {:name :yaya}
+                    {:title "Bingo"})
+                  (lookup?)
+                  (search-input)
+                  (search-output))))))

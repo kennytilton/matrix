@@ -24,8 +24,8 @@
     ;;[helix.dom :as d]
             [helix.hooks :as hooks]
 
-            [myapp.mxreact :as mxr :refer [mkrx mxu!]]
-            [myapp.mxrgen :refer-macros [mkbox mkx mxfnc props]]
+            [myapp.mxreact :as mxr :refer [ mxu!]]
+            [myapp.mxrgen :refer-macros [ mxfnc props]]
             [myapp.demo.flatlist :as flat]
             [myapp.demo.simple :as simple]
             [myapp.demo.http :as htpx]
@@ -33,45 +33,26 @@
 
 (declare mx-find-matrix)
 
-
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (htpx/demo)))
+    (flat/demo)))
 
 ;; ---- GOALS --------------
 
 #_(mx/button
-    :name :counter42
+    :name :my-counter
     :title (cF (str "Bumper " (mget me :counter)))
     :counter (cI 3)
     :jsx (with-props [:title :title]                        ;; {... :title (mget me :title ... }
            {:onPress #(mswap! me :counter inc)})
 
     #_(mx/view {:style (js-obj "backgroundColor" "yellow")}
-        (for [n (range (mget (mxr/mxu! me :counter42) :counter))]
+        (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
           (mktext (str "Text " n))))
     )
 
 
 #_(defn mx-find-matrix [mx]
     (mxu-find-type mx ::hxApp))
-
-; #_ (mkx rn/Button
-;                              :name :counter42
-;                              :title (cF (str "Counter = " (mget me :counter)))
-;                              :counter (cI 3)
-;                              :disabled (cF (not (mget (mxu! me :counting?) :value)))
-;                              :jsx {:& (with-props [:title :disabled]
-;                                         :color "cyan"
-;                                         :onPress #(when (mget (mxu! me :counting?) :value)
-;                                                     (mswap! me :counter inc)))})
-
-; #(do (prn :bam-change
-;                                                           (goog.object/getAllPropertyNames %))
-;                                                         (prn :bam-change
-;                                                           (goog.object/get % "nativeEvent"))
-;                                                         (prn :bam-change
-;                                                           (js->clj (goog.object/get % "nativeEvent")
-;                                                             :keywordize-keys true)))
