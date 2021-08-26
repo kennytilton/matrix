@@ -62,12 +62,13 @@
 
 ;(define-atom-macro Button)
 
-(define-atom-macros Button Switch TextInput)
+
 
 (defmacro define-atom-macros [& views]
   `(do ~@(for [view views]
            `(define-view-macro ~view))))
 
+(define-atom-macros Button Switch TextInput)
 
 
 (comment
