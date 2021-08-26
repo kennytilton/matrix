@@ -92,7 +92,8 @@
        :sid (swap! myapp.mxreact/sid-latest inc)
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :rendering (tiltontec.cell.core/cF
-                    (helix.core/$ rn/Text {} {}
+                    ;; todo better key
+                    (helix.core/$ rn/Text {:key (rand-int 9999)} {}
                       (tiltontec.model.core/mget ~'me ~content-kwd))))))
 
 #_

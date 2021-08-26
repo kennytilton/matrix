@@ -34,7 +34,7 @@
                   {:name      :root
                    :rendering (compute-kids)}
                   (cFkids
-                    #_ (mxn/Button
+                    (mxn/Button
                       {:counter (cI 3)
                        #_#_:bozo (cF (case (mod (my-counter) 3)
                                        0 "red"
@@ -67,14 +67,6 @@
                        :color   "cyan"
                        :onPress #(mswap! me :counter inc)})
 
-                    #_(mxn/Button
-                        {:name    :my-counter
-                         :title   (cF (str "Counter = " (mget me :counter)))
-                         :counter (cI 3)}
-                        {:&       (props :title)
-                         :color   "cyan"
-                         :onPress #(mswap! me :counter inc)})
-
                     (mxn/Button
                       {:name  :dumper
                        :title (cF (str "Downer " (mget (mxu! me :my-counter) :counter)))}
@@ -86,10 +78,11 @@
                       {:name :item-list}
                       {:style #js {:backgroundColor "yellow"}}
                       (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-                        (mkrx
-                          {:name      :an-item
-                           :rendering (cF ($ rn/Text {:style #js {:padding 4 :margin 4}} {}
-                                            (str "Text " n)))})))
+                        (mxn/Text
+                          {:name      :an-item}
+                          {:key n
+                           :style #js {:padding 4 :margin 5}}
+                          (mxn/strng (str "Text " n)))))
 
                     #_(myapp.mxreact/mkrx
                         (assoc (hash-map ~@container-attrs)

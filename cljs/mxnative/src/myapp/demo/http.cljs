@@ -97,7 +97,7 @@
                                :backgroundColor "cyan"}}
                   (mxn/Text
                     {:name :stringTest}
-                    {}
+                    {:style #js {:backgroundColor "red"}}
                     (mxn/strng "Hi Mom"))
                   (mxn/Button
                     {:name :yaya}
