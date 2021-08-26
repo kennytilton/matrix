@@ -37,7 +37,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (htpx/demo)))
 
 ;; ---- GOALS --------------
 

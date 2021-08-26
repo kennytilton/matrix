@@ -51,62 +51,38 @@
      `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
         :sid (swap! myapp.mxreact/sid-latest inc)
         :rendering (tiltontec.cell.core/cF
-                     (prn :bam!!!!)
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (helix.core/$
-                                       (get {:Button rn/Button} ~~(keyword gen-type))
+                                       (or (get {:Button rn/Button
+                                                 :Switch rn/Switch
+                                                 :TextInput rn/TextInput} ~~(keyword gen-type))
+                                         (throw (js/Error. (str "No RN mapping for " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}))))
         ~@(apply concat
             (into [] mx-props#)))))
 
-;(define-atom-macro Button)
-
-
-
-(defmacro define-atom-macros [& views]
-  `(do ~@(for [view views]
-           `(define-view-macro ~view))))
+(defmacro define-atom-macros [& atoms]
+  `(do ~@(for [atom atoms]
+           `(define-atom-macro ~atom))))
 
 (define-atom-macros Button Switch TextInput)
 
 
-(comment
-  (macroexpand-1 '(dvm xView :View)))
-
 #_
-(defmacro Button [mx-props jsx-props]
-  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
-     :sid (swap! myapp.mxreact/sid-latest inc)
-     :rendering (tiltontec.cell.core/cF
-                  (helix.core/$ (mxfnc
-                                  (helix.core/$ rn/Button
-                                    ~jsx-props {}))))
-     ~@(apply concat
-         (into [] mx-props))))
-
-
-
-;(dvm xView :View)
-
-(comment
-  (macroexpand '(dvm xView :View))
-  (macroexpand `(def-view-macro View :View)))
-
-#_(defmacro View [mx-props jsx-props & children]
+(defmacro View [mx-props jsx-props & children]
     (let [rnc (gensym "rnclass")]
       `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
          :sid (swap! myapp.mxreact/sid-latest inc)
          :kids (tiltontec.model.core/cFkids ~@children)
          :rendering (tiltontec.cell.core/cF
-                      (let [~rnc rn/View]
-                        (helix.core/$ (mxfnc
-                                        (apply helix.core/$
-                                          ~rnc              ;; (get {:View rn/View} :View) ;; (when true rn/View)
-                                          ~jsx-props
-                                          {}
-                                          (doall (map #(tiltontec.model.core/mget % :rendering)
-                                                   (tiltontec.model.core/mget ~'me :kids))))))))
+                      (helix.core/$ (mxfnc
+                                      (apply helix.core/$
+                                        rn/View ;; (get {:View rn/View} :View) ;; (when true rn/View)
+                                        ~jsx-props
+                                        {}
+                                        (doall (map #(tiltontec.model.core/mget % :rendering)
+                                                 (tiltontec.model.core/mget ~'me :kids)))))))
          ~@(apply concat
              (into [] mx-props)))))
 ;; xx

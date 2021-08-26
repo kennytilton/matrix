@@ -18,7 +18,7 @@
            (apply $ rn/View
              {:style #js {:flex            1
                           :marginTop       96
-                          :padding         24
+                          :padding         36
                           :alignItems      "flex-start"
                           :backgroundColor "#333"}}
              {}
@@ -27,6 +27,7 @@
 
 
 (defn demo []
+  #_
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
