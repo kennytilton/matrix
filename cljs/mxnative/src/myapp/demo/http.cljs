@@ -15,6 +15,7 @@
 
     ["react" :as react]
     ["react-native" :as rn]
+
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
     [myapp.mxrgen :as mxn :refer-macros [mkbox mkx mxfnc props]]))
@@ -24,7 +25,7 @@
 (defn search-input []
   (mxn/TextInput
     {:name            :search-input
-     :searchstring   (cI "simon")
+     :searchstring   (cI "simo")
      :lookup-go?      (cI false :ephemeral? true)
      :lookup-response (cI nil)
      :lookup          (cF+ [:obs (fn [_ me chan _]
@@ -89,7 +90,7 @@
     :rx-dom (cFonce
               (with-par me
                 (mxn/View
-                  {:name :root}                             ;; unnecessary for now since never searched for
+                  {:name :root}
                   {:style #js {:flex            1
                                :marginTop       96
                                :padding         24
