@@ -20,48 +20,46 @@
     [myapp.mxreact :as mxr :refer [mkrx mxu!]]
     [myapp.mxrgen :as mxn :refer-macros [mkbox mkx mxfnc props]]))
 
-(defn ^js/React get-react [] react)
+(defn search-input []
+  (mxn/TextInput
+    {:name            :search-input
+     :searchstring   (cI "simo")
+     :lookup-go?      (cI false :ephemeral? true)
+     :lookup-response (cI nil)
+     :lookup          (cF+ [:obs (fn [_ me chan _]
+                                   (when chan
+                                     (go (let [response (<! chan)
+                                               search (mget me :searchstring)
+                                               hits (filter (fn [ostr]
+                                                              (clojure.string/includes? ostr
+                                                                (mget me :searchstring)))
+                                                      (map :login (:body response)))]
+                                           (with-cc
+                                             (mset! me :lookup-response
+                                               (or (seq hits) (vector (str "no matches for " search)))))))))]
+                        (when (mget (mxu! me :do-any-lookup?) :value)
+                          (when (not (str/blank? (mget me :searchstring)))
+                            (when (mget me :lookup-go?)
+                              (http/get "https://api.github.com/users"
+                                {:with-credentials? false
+                                 :query-params      {"since" 135}})))))}
+    {:&               (props [:value :searchstring])
+     :style            #js {:height          40
+                           :width           192
+                           :margin          12
+                           :padding         10
+                           :backgroundColor "linen"
+                           :borderWidth     1}
+     :placeholder     "whassup?"
+     :autoCapitalize  "none"
+     :autoCorrect     false
+     :autoFocus       true
+     :onChangeText    #(do ;; (prn :chgtext-sets-search % (mget me :name))
+                           (mset! me :searchstring %))
+     :onSubmitEditing #(do ;; (prn :submit!!!! %)
+                           (mset! me :lookup-go? true))}))
 
-;(defn search-input []
-;  (mxn/TextInput
-;    {:name            :search-input
-;     :searchstring   (cI "simo")
-;     :lookup-go?      (cI false :ephemeral? true)
-;     :lookup-response (cI nil)
-;     :lookup          (cF+ [:obs (fn [_ me chan _]
-;                                   (when chan
-;                                     (go (let [response (<! chan)
-;                                               search (mget me :searchstring)
-;                                               hits (filter (fn [ostr]
-;                                                              (clojure.string/includes? ostr
-;                                                                (mget me :searchstring)))
-;                                                      (map :login (:body response)))]
-;                                           (with-cc
-;                                             (mset! me :lookup-response
-;                                               (or (seq hits) (vector (str "no matches for " search)))))))))]
-;                        (when (mget (mxu! me :do-any-lookup?) :value)
-;                          (when (not (str/blank? (mget me :searchstring)))
-;                            (when (mget me :lookup-go?)
-;                              (http/get "https://api.github.com/users"
-;                                {:with-credentials? false
-;                                 :query-params      {"since" 135}})))))}
-;    {:&               (props [:value :searchstring])
-;     :style            {:height          40
-;                           :width           192
-;                           :margin          12
-;                           :padding         10
-;                           :backgroundColor "linen"
-;                           :borderWidth     1}
-;     :placeholder     "whassup?"
-;     :autoCapitalize  "none"
-;     :autoCorrect     false
-;     :autoFocus       true
-;     :onChangeText    #(do ;; (prn :chgtext-sets-search % (mget me :name))
-;                           (mset! me :searchstring %))
-;     :onSubmitEditing #(do ;; (prn :submit!!!! %)
-;                           (mset! me :lookup-go? true))}))
 
-#_
 (defn search-output []
   ;; todo convert to FlatList and show all matches
   (mxn/Button
@@ -97,16 +95,13 @@
                                :padding         24
                                :alignItems      "flex-start"
                                :backgroundColor "cyan"}}
-                  (mkrx
-                    {:name      :an-item
-                     :rendering (cF ($ rn/Text {:style #js {:backgroundColor "cyan"
-                                                            :margin          4
-                                                            :padding         8}} {}
-                                      "Booya"))})
+                  #_ (mxn/Text
+                    {:name :stringTest}
+                    {}
+                    (mxn/strng))
                   (mxn/Button
                     {:name :yaya}
                     {:title "Bingo"})
                   (lookup?)
-                  ;(search-input)
-                  ;(search-output)
-                  )))))
+                  (search-input)
+                  (search-output))))))
