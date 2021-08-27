@@ -37,21 +37,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (flat/demo)))
-
-;; ---- GOALS --------------
-
-#_(mx/button
-    :name :my-counter
-    :title (cF (str "Bumper " (mget me :counter)))
-    :counter (cI 3)
-    :jsx (with-props [:title :title]                        ;; {... :title (mget me :title ... }
-           {:onPress #(mswap! me :counter inc)})
-
-    #_(mx/view {:style (js-obj "backgroundColor" "yellow")}
-        (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-          (mktext (str "Text " n))))
-    )
+    (simple/demo)))
 
 
 #_(defn mx-find-matrix [mx]

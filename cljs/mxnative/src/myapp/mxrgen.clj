@@ -6,7 +6,7 @@
        (myapp.mxreact/set-state-record ~'me set-state#)
        ~@body)))
 
-(defmacro define-view-macro [gen-type]
+(defmacro define-composite-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props# & kids#]
      `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
         :sid (swap! myapp.mxreact/sid-latest inc)
@@ -14,11 +14,13 @@
         :rendering (tiltontec.cell.core/cF
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (apply helix.core/$
-                                       (or (get {:Text         rn/Text
-                                                 :View         rn/View
-                                                 :SafeAreaView rn/SafeAreaView
-                                                 :ScrollView   rn/ScrollView} ~~(keyword gen-type))
-                                         (throw (js/Error. (str "No RN view mapping for " ~~(keyword gen-type)))))
+                                       (or (get {:Pressable        rn/TouchableOpacity
+                                                 :Text             rn/Text
+                                                 :TouchableOpacity rn/TouchableOpacity
+                                                 :View             rn/View
+                                                 :SafeAreaView     rn/SafeAreaView
+                                                 :ScrollView       rn/ScrollView} ~~(keyword gen-type))
+                                         (throw (js/Error. (str "No RN composite mapping for " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}
                                        (doall
@@ -28,11 +30,11 @@
         ~@(apply concat
             (into [] mx-props#)))))
 
-(defmacro define-view-macros [& views]
+(defmacro define-composite-macros [& views]
   `(do ~@(for [view views]
-           `(define-view-macro ~view))))
+           `(define-composite-macro ~view))))
 
-(define-view-macros Text View SafeAreaView)
+(define-composite-macros Pressable Text TouchableOpacity View SafeAreaView)
 
 (defmacro define-atom-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props#]
@@ -41,10 +43,13 @@
         :rendering (tiltontec.cell.core/cF
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (helix.core/$
-                                       (or (get {:Button    rn/Button
-                                                 :Switch    rn/Switch
-                                                 :TextInput rn/TextInput
-                                                 :FlatList rn/FlatList} ~~(keyword gen-type))
+                                       (or (get {:ActivityIndicator rn/ActivityIndicator
+                                                 :Button            rn/Button
+                                                 :Image             rn/Image
+                                                 :Pressable         rn/Pressable
+                                                 :Switch            rn/Switch
+                                                 :TextInput         rn/TextInput
+                                                 :FlatList          rn/FlatList} ~~(keyword gen-type))
                                          (throw (js/Error. (str "No RN atom mapping for: " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}))))
@@ -55,7 +60,31 @@
   `(do ~@(for [atom atoms]
            `(define-atom-macro ~atom))))
 
-(define-atom-macros Button Switch TextInput FlatList)
+(define-atom-macros
+  ActivityIndicator Button FlatList Switch TextInput)
+
+(defmacro Image [mx-props jsx-props]
+  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+     :sid (swap! myapp.mxreact/sid-latest inc)
+     :rendering (tiltontec.cell.core/cF
+                  (helix.core/$ (myapp.mxrgen/mxfnc
+                                  (helix.core/$
+                                    rn/Image
+                                    ~jsx-props))))
+     ~@(apply concat
+         (into [] mx-props))))
+
+(defmacro ImageBackground [mx-props jsx-props]
+  `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
+     :sid (swap! myapp.mxreact/sid-latest inc)
+     :rendering (tiltontec.cell.core/cF
+                  (helix.core/$ (myapp.mxrgen/mxfnc
+                                  (helix.core/$
+                                    rn/ImageBackground
+                                    ~jsx-props
+                                    {}))))
+     ~@(apply concat
+         (into [] mx-props))))
 
 (defmacro strng [textFormulaBody]
   (let [content-kwd (keyword (gensym "content"))]
@@ -64,8 +93,9 @@
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :rendering (tiltontec.cell.core/cF
                     ;; todo better key
-                    (helix.core/$ rn/Text {:key (rand-int 9999)} {}
-                      (tiltontec.model.core/mget ~'me ~content-kwd))))))
+                    (myapp.mxrgen/mxfnc
+                      (helix.core/$ rn/Text {:key (rand-int 9999)} {}
+                        (tiltontec.model.core/mget ~'me ~content-kwd)))))))
 
 (defmacro props [& inherited]
   `(into {} (for [prop# [~@inherited]]

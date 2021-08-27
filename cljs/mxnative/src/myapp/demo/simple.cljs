@@ -11,7 +11,7 @@
     ["react-native" :as rn]
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [ mxu!]]
-    [myapp.mxrgen :as mxn :refer-macros [my-counter mxfnc props]]))
+    [myapp.mxrgen :as mxn :refer-macros [ mxfnc props]]))
 
 (defn demo []
   (md/make ::hxApp
@@ -23,15 +23,47 @@
                                :marginTop       96
                                :padding         24
                                :alignItems      "flex-start"
-                               :backgroundColor "cyan"}}
+                               :backgroundColor "#bbb"}}
+                  ; <Image
+                  ;  source={{ uri: 'app_icon' }}
+                  ;  style={{ width: 40, height: 40 }}
+                  ;/>
+
+
+
+                  (mxn/Pressable
+                    {:name :presser
+                     :clicks (cI 3)}
+                    {:onPress #(do (prn :pressed!! me (mget me :clicks))
+                                   (mswap! me :clicks inc))}
+                    (mxn/Text
+                      {:name :an-item}
+                      {:style #js {:width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                      (mxn/strng (str "hit me " (mget (mxu! me :presser) :clicks)))))
+                  #_ (mxn/View {}
+                    {:style #js {:flex 1
+                                 :backgroundColor "red"}}
+                    (mxn/ImageBackground {}
+                      {:style #js {:position "absolute"
+                                   :left 0 :top 0
+                                   :right 0 :bottom 0
+                                   :justifyContent "center"
+                                   :alignItems "center"
+                                   :width 66
+                                   :height 58}
+                       :source #js {:uri "https://react____native.dev/img/tiny_logo.png"}}))
+
+                  (mxn/ActivityIndicator {}
+                    {:size "small"
+                     :color "red"})
                   (mxn/Button
                     {:counter (cI 3)
-                     :bozo    (cF (case (mod (my-counter) 3)
+                     :bozo    (cF (case (mod (mget me :counter) 3)
                                     0 "red"
                                     1 "yellow"
                                     2 "aquamarine"))
                      :style   (cF (clj->js {:color (mget me :bozo)}))
-                     :title   (cF (str "Bozo = " (my-counter)))}
+                     :title   (cF (str "Bozo = " (mget me :counter)))}
                     {:&       (props :style :title)
                      :onPress #(mswap! me :counter inc)})
 
