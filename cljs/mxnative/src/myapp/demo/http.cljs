@@ -15,6 +15,8 @@
 
     ["react" :as react]
     ["react-native" :as rn]
+    ["react-native-elements" :as rne]
+    ["@react-navigation/native" :refer [NavigationContainer]]
 
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [ mxu!]]

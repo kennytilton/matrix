@@ -9,11 +9,15 @@
              kid-values-kids] :as md]
 
     ["react-native" :as rn]
+    ["react-native-elements" :as rne]
+    ["@react-navigation/native" :refer [NavigationContainer] :as rnav]
+
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [ mxu!]]
     [myapp.mxrgen :as mxn :refer-macros [ mxfnc props]]))
 
 (defn demo []
+  (prn :RNE!!!!!!!!!!!!!!! rne/Slider)
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
@@ -29,7 +33,32 @@
                   ;  style={{ width: 40, height: 40 }}
                   ;/>
 
-
+                  (mxn/View {}
+                    {:style #js {;; :flex 1
+                                 :flexDirection "row"
+                                 :backgroundColor "cyan"
+                                 :width 300
+                                 :height 48
+                                 :alignItems "stretch"
+                                 ;;:justifyContent "center"
+                                 }}
+                    (mxn/SliderRNE
+                      {:name :slido
+                       :slide-value (cI 0.3)}
+                      {:& (props [:value :slide-value])
+                       ;;:value 25
+                       :style #js {:flex 2}
+                       :maximumValue 50
+                       :minimumValue 10
+                       :step 1
+                       :trackStyle #js {:height 10 :backgroundColor "yellow"}
+                       :thumbStyle #js {:height 20 :width 20 :backgroundColor "black"}
+                       :onValueChange #(do (prn :Sliding! %)
+                                           (mset! me :slide-value %))})
+                    (mxn/Text
+                      {:name :an-item}
+                      {:style #js {:flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                      (mxn/strng (str "slido = " (mget (mxu! me :slido) :slide-value)))))
 
                   (mxn/Pressable
                     {:name :presser
@@ -40,6 +69,7 @@
                       {:name :an-item}
                       {:style #js {:width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
                       (mxn/strng (str "hit me " (mget (mxu! me :presser) :clicks)))))
+
                   #_ (mxn/View {}
                     {:style #js {:flex 1
                                  :backgroundColor "red"}}

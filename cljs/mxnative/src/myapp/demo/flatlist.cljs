@@ -8,6 +8,8 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
     ["react-native" :as rn]
+    ["react-native-elements" :as rne]
+    ["@react-navigation/native" :refer [NavigationContainer]]
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [ mxu!]]
     [myapp.mxrgen :as mxn :refer-macros [ mxfnc props]]))

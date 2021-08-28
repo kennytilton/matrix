@@ -14,12 +14,14 @@
         :rendering (tiltontec.cell.core/cF
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (apply helix.core/$
-                                       (or (get {:Pressable        rn/TouchableOpacity
-                                                 :Text             rn/Text
-                                                 :TouchableOpacity rn/TouchableOpacity
-                                                 :View             rn/View
-                                                 :SafeAreaView     rn/SafeAreaView
-                                                 :ScrollView       rn/ScrollView} ~~(keyword gen-type))
+                                       (or (get {:Pressable           rn/TouchableOpacity
+                                                 :NavigationContainer (myapp.demo.navi/bottom-tab-navi :NavigationContainer)
+                                                 :Navigator           (myapp.demo.navi/bottom-tab-navi :Navigator)
+                                                 :Screen              (myapp.demo.navi/bottom-tab-navi :Screen)
+                                                 :TouchableOpacity    rn/TouchableOpacity
+                                                 :View                rn/View
+                                                 :SafeAreaView        rn/SafeAreaView
+                                                 :ScrollView          rn/ScrollView} ~~(keyword gen-type))
                                          (throw (js/Error. (str "No RN composite mapping for " ~~(keyword gen-type)))))
                                        ~jsx-props#
                                        {}
@@ -34,19 +36,24 @@
   `(do ~@(for [view views]
            `(define-composite-macro ~view))))
 
-(define-composite-macros Pressable Text TouchableOpacity View SafeAreaView)
+(define-composite-macros
+  NavigationContainer Navigator Screen
+  Pressable Text TouchableOpacity View SafeAreaView)
 
 (defmacro define-atom-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props#]
      `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
         :sid (swap! myapp.mxreact/sid-latest inc)
         :rendering (tiltontec.cell.core/cF
+                     (prn :SLider!!!!!! rne/Slider)
+
                      (helix.core/$ (myapp.mxrgen/mxfnc
                                      (helix.core/$
                                        (or (get {:ActivityIndicator rn/ActivityIndicator
                                                  :Button            rn/Button
                                                  :Image             rn/Image
-                                                 :Pressable         rn/Pressable
+                                                 ;; has a child :Pressable         rn/Pressable
+                                                 :SliderRNE         rne/Slider
                                                  :Switch            rn/Switch
                                                  :TextInput         rn/TextInput
                                                  :FlatList          rn/FlatList} ~~(keyword gen-type))
@@ -61,7 +68,7 @@
            `(define-atom-macro ~atom))))
 
 (define-atom-macros
-  ActivityIndicator Button FlatList Switch TextInput)
+  ActivityIndicator Button FlatList SliderRNE Switch TextInput)
 
 (defmacro Image [mx-props jsx-props]
   `(tiltontec.model.core/make :myapp.mxreact/mxrn.elt
@@ -94,8 +101,8 @@
        :rendering (tiltontec.cell.core/cF
                     ;; todo better key
                     (helix.core/$ (myapp.mxrgen/mxfnc
-                    (helix.core/$ rn/Text {:key (rand-int 9999)} {}
-                      (tiltontec.model.core/mget ~'me ~content-kwd))))))))
+                                    (helix.core/$ rn/Text {:key (rand-int 9999)} {}
+                                      (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
 (defmacro props [& inherited]
   `(into {} (for [prop# [~@inherited]]

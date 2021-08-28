@@ -29,15 +29,16 @@
             [myapp.demo.flatlist :as flat]
             [myapp.demo.simple :as simple]
             [myapp.demo.http :as htpx]
-            ))
+            [myapp.demo.navi :as navi]))
 
 (declare mx-find-matrix)
 
+;; todo move into main; lose this file
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (navi/demo)))
 
 
 #_(defn mx-find-matrix [mx]

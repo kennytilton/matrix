@@ -9,26 +9,21 @@
                      kid-values-kids] :as md]
             [myapp.build :as build]))
 
+#_
 (defnc Root [props]
   {:helix/features {:fast-refresh true}}
   ($ rn/View {:style #js {:flex 1, :alignItems "center", :justifyContent "center"}}
     ($ rn/Text {:style #js {:fontSize 36}}
       "Hello Helix!")))
 
-(defnc Root2 [props]
-  ($ rn/Text {:style #js {:fontSize 36}}
-    "Hello Helix?!"))
-
 (defn ^:dev/after-load after-load []
   (refresh/refresh!))
-
-(defn mx-to-rx [mx-dom]
-  (mget mx-dom :rendering))
 
 (defn init []
   (let [app-matrix (build/matrix-build!)
         root (mget app-matrix :rx-dom)
-        rendering (fnc [] (mget root :rendering))]
+        rendering (fnc [] ;; Creates anonymous component
+                    (mget root :rendering))]
     (rn/AppRegistry.registerComponent "MyApp"
        (fn [] rendering))
     (refresh/inject-hook!)))
