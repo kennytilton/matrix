@@ -93,9 +93,9 @@
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :rendering (tiltontec.cell.core/cF
                     ;; todo better key
-                    (myapp.mxrgen/mxfnc
-                      (helix.core/$ rn/Text {:key (rand-int 9999)} {}
-                        (tiltontec.model.core/mget ~'me ~content-kwd)))))))
+                    (helix.core/$ (myapp.mxrgen/mxfnc
+                    (helix.core/$ rn/Text {:key (rand-int 9999)} {}
+                      (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
 (defmacro props [& inherited]
   `(into {} (for [prop# [~@inherited]]
