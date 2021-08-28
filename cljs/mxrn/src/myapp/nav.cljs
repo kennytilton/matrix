@@ -1,5 +1,6 @@
 (ns myapp.nav
-  (:require ["@react-navigation/native" :refer [NavigationContainer]]
+  (:require ["@react-navigation/native" :as rn-nav-native
+             :refer [NavigationContainer]]
             ["react-native" :as rn]
             [myapp.subnav1 :as subnav1]
             [helix.core :refer [defnc $]]))
