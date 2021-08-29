@@ -14,7 +14,8 @@
 
     [helix.core :as hx :refer [defnc fnc $ <>]]
     [myapp.mxreact :as mxr :refer [mxu!]]
-    [myapp.mxrgen :as mxn :refer-macros [mxfnc props]]))
+    [myapp.mxrgen :as mxn :refer-macros [mxfnc props]]
+    [myapp.demo.flatlist :as flat]))
 
 ;;;
 ;;; Use this so SafeAreaView on Android stays away from status bar
@@ -59,26 +60,30 @@
 (defonce tabs-nav (rnav-tabs/createBottomTabNavigator))
 
 (defn demo []
-  (let [{:keys [Navigator Screen]} (j/lookup tabs-nav)]
-    (prn :lookedup-nav Navigator)
-    (prn :lookedup-screen Screen)
-    (md/make ::hxApp
-      :rx-dom (cFonce
-                (with-par me
-                  (mxn/NavigationContainer
-                    ; todo move nav-state into cI
-                    {:name :root}
-                    {:initialState  @*nav-state
-                     :onStateChange (fn [x] (reset! *nav-state x))}
-                    (mxn/Navigator {:name :navygator} {}
-                      (mxn/Screen
-                        {:name :screen-booya}
-                        {:name      "Tab-Booya"
-                         :component TabA}
-                        #_{:& (props :name :component)})
-                      (mxn/Screen
-                        {:name :screen-BBBBB}
-                        {:name      "Tab-BBBBBBB"
-                         :component TabB}
-                        #_{:& (props :name :component)}))))))))
+  (md/make ::hxApp
+    :rx-dom (cFonce
+              (with-par me
+                (mxn/NavigationContainer
+                  ; todo move nav-state into cI
+                  {:name :root}
+                  {:initialState  @*nav-state
+                   :onStateChange (fn [x] (reset! *nav-state x))}
+                  (mxn/Navigator {:name :navygator} {}
+                    (mxn/Screen
+                      {:name      :screen-booya
+                       :component (cF (when-let [k1 (first (mget me :kids))]
+                                        ;; todo just make this part of Screen
+                                        (fnc [] (mget k1 :rendering))))}
+                      {:name      "Tab-Booya"
+                       :component (mget me :component)}
+                      (mxn/SafeAreaView {} {}
+                        (mxn/Text
+                          {:name :an-screen-item}
+                          {:style #js {:flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                          (mxn/strng (str "slido = 42")))))
+                    (mxn/Screen
+                      {:name :screen-BBBBB}
+                      {:name      "Tab-BBBBBBB"
+                       :component TabB}
+                      )))))))
 
