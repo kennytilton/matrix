@@ -69,21 +69,9 @@
                   {:initialState  @*nav-state
                    :onStateChange (fn [x] (reset! *nav-state x))}
                   (mxn/Navigator {:name :navygator} {}
-                    (mxn/Screen
-                      {:name      :screen-booya
-                       :component (cF (when-let [k1 (first (mget me :kids))]
-                                        ;; todo just make this part of Screen
-                                        (fnc [] (mget k1 :rendering))))}
-                      {:name      "Tab-Booya"
-                       :component (mget me :component)}
-                      (mxn/SafeAreaView {} {}
-                        (mxn/Text
-                          {:name :an-screen-item}
-                          {:style #js {:flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
-                          (mxn/strng (str "slido = 42")))))
-                    (mxn/Screen
-                      {:name :screen-BBBBB}
-                      {:name      "Tab-BBBBBBB"
-                       :component TabB}
-                      )))))))
+                    (mxn/SafeAreaView {:tab-title "hi mom"} {}
+                      (mxn/Text
+                        {:name :an-screen-item}
+                        {:style #js {:flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                        (mxn/strng (str "slido = 42"))))))))))
 
