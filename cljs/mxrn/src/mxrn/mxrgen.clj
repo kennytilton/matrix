@@ -32,6 +32,9 @@
         ~@(apply concat
             (into [] mx-props#)))))
 
+;(define-composite-macro View)
+
+#_
 (defmacro XView [mx-props jsx-props & kids]
   `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
      :sid (swap! mxrn.mxreact/sid-latest inc)
@@ -51,25 +54,6 @@
                             (tiltontec.model.core/mget ~'me :kids)))))))
      ~@(apply concat
          (into [] mx-props))))
-
-; (cF
-;                               (prn :compute-View-rendering )
-;                               (apply react/createElement
-;                                 rn/View
-;                                 #js {:style #js {:backgroundColor "cyan"
-;                                                  :flex            1
-;                                                  :justifyContent  "center"}}
-;                                 (doall
-;                                   (prn :kids!!!!!!!!!!!!!!! (tiltontec.model.core/mget me :kids))
-;                                   (map (fn [mapkid]
-;                                          (let [kr# (tiltontec.model.core/mget mapkid :rendering)]
-;                                            (prn :kidrender kr#)
-;                                            kr#))
-;                                     (tiltontec.model.core/mget me :kids)))))
-
-(defmacro define-composite-macros [& views]
-  `(do ~@(for [view views]
-           `(define-composite-macro ~view))))
 
 (define-composite-macros
   NavigationContainer Navigator Screen

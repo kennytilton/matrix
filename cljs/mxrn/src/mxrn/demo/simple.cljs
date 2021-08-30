@@ -48,9 +48,9 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/XView
+                (mxn/View
                   {:name :root}
-                  #js {:style #js {:backgroundColor "yellow"
+                  #js {:style #js {:backgroundColor "linen"
                                    :flex            1
                                    :justifyContent  "center"}}
                   (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
