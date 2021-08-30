@@ -48,9 +48,24 @@
                                  (let [kr# (tiltontec.model.core/mget mapkid# :rendering)]
                                    (prn :kidrender kr#)
                                    kr#))
-                            (tiltontec.model.core/mget ~'~'me :kids)))))))
+                            (tiltontec.model.core/mget ~'me :kids)))))))
      ~@(apply concat
          (into [] mx-props))))
+
+; (cF
+;                               (prn :compute-View-rendering )
+;                               (apply react/createElement
+;                                 rn/View
+;                                 #js {:style #js {:backgroundColor "cyan"
+;                                                  :flex            1
+;                                                  :justifyContent  "center"}}
+;                                 (doall
+;                                   (prn :kids!!!!!!!!!!!!!!! (tiltontec.model.core/mget me :kids))
+;                                   (map (fn [mapkid]
+;                                          (let [kr# (tiltontec.model.core/mget mapkid :rendering)]
+;                                            (prn :kidrender kr#)
+;                                            kr#))
+;                                     (tiltontec.model.core/mget me :kids)))))
 
 (defmacro define-composite-macros [& views]
   `(do ~@(for [view views]

@@ -48,6 +48,31 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
+                (mxn/XView
+                  {:name :root}
+                  #js {:style #js {:backgroundColor "yellow"
+                                   :flex            1
+                                   :justifyContent  "center"}}
+                  (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+                    :name :bam-button
+                    :sid (swap! mxrn.mxreact/sid-latest inc)
+                    :counter (cI (rand-int 9999))
+                    :title (cF (str "Bam is = " (mget me :counter)))
+                    :rendering (cF
+                                 (prn :compute-button-rendering )
+                                 (<> (mxfnc
+                                       (react/createElement
+                                         rn/Button
+                                         (clj->js {:title   (mget me :title)
+                                                   :style   #js {:color "red"}
+                                                   :onPress #(do (prn :bampress)
+                                                                 (mswap! me :counter inc))})))))))))))
+
+#_
+(defn demo []
+  (md/make ::hxApp
+    :rx-dom (cFonce
+              (with-par me
                 (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
                   :rendering (cF
                                (prn :compute-View-rendering )
