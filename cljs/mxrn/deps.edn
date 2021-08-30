@@ -1,0 +1,8 @@
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.773"}
+        com.bhauman/figwheel-main {:mvn/version "0.2.14"}
+        ;; appliedscience/js-interop {:mvn/version "0.1.22"}
+        com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+        com.taoensso/tufte          {:mvn/version "2.2.0"}
+        cljs-http                   {:mvn/version "0.1.46"}
+        tiltontec/matrix            {:mvn/version "4.1.1-SNAPSHOT"}}
+ :paths ["src" "target"]}

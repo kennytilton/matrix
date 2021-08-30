@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "mxrn",
+    "slug": "mxrn",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "mxrn"
+}
