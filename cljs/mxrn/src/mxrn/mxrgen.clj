@@ -25,13 +25,32 @@
                                      :ScrollView          rn/ScrollView} ~~(keyword gen-type))
                              (throw (js/Error. (str "No RN composite mapping for " ~~(keyword gen-type)))))
                            ~jsx-props#
-                           {}
                            (doall
                              (map (fn [~'mapkid#]
                                     (tiltontec.model.core/mget ~'mapkid# :rendering))
                                (tiltontec.model.core/mget ~'~'me :kids)))))))
         ~@(apply concat
             (into [] mx-props#)))))
+
+(defmacro XView [mx-props jsx-props & kids]
+  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+     :sid (swap! mxrn.mxreact/sid-latest inc)
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :rendering (tiltontec.cell.core/cF
+                  (prn :XView-rendering!!!!!!!!!!!!!)
+                  (react/createElement
+                    (mxrn.mxrgen/mxfnc
+                      (apply react/createElement
+                        rn/View
+                        ~jsx-props
+                        (doall
+                          (map (fn [mapkid#]
+                                 (let [kr# (tiltontec.model.core/mget mapkid# :rendering)]
+                                   (prn :kidrender kr#)
+                                   kr#))
+                            (tiltontec.model.core/mget ~'~'me :kids)))))))
+     ~@(apply concat
+         (into [] mx-props))))
 
 (defmacro define-composite-macros [& views]
   `(do ~@(for [view views]
