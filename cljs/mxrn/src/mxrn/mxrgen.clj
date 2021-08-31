@@ -39,7 +39,7 @@
 (defmacro define-composite-macros [& atoms]
   `(do ~@(for [atom atoms]
            `(define-composite-macro ~atom))))
-(define-composite-macros View)
+(define-composite-macros Pressable Text View)
 
 #_
     (define-composite-macros
@@ -102,7 +102,7 @@
 
 
 (define-atom-macros
-  #_ ActivityIndicator Button #_ FlatList #_ SliderRNE #_ Switch #_ TextInput)
+  ActivityIndicator Button #_ FlatList #_ SliderRNE Switch #_ TextInput)
 
 
 (defmacro Image [mx-props jsx-props]
