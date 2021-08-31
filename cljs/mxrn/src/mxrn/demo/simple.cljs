@@ -18,32 +18,6 @@
 
 (def <> react/createElement)
 
-#_
-(defn demo []
-  (md/make ::hxApp
-    :rx-dom (cFonce
-              (with-par me
-                (mxn/XView
-                  {:name :rootView}
-                  #js {:style #js {:flex            1
-                               :marginTop       96
-                               :padding         24
-                               :alignItems      "flex-start"
-                               :backgroundColor "cyan"}}
-                  (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
-                    :name :bam-button
-                    :sid (swap! mxrn.mxreact/sid-latest inc)
-                    :counter (cI (rand-int 9999))
-                    :title (cF (str "Bam is = " (mget me :counter)))
-                    :rendering (cF
-                                 (prn :compute-button-rendering (mget me :title))
-                                 (<> (mxfnc
-                                       (react/createElement
-                                         rn/Button
-                                         (clj->js {:title   (mget me :title)
-                                                   :onPress #(do (prn :bampress)
-                                                                 (mswap! me :counter inc))})))))))))))
-
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
@@ -57,9 +31,9 @@
                     :name :bam-button
                     :sid (swap! mxrn.mxreact/sid-latest inc)
                     :counter (cI (rand-int 9999))
-                    :title (cF (str "Bam is = " (mget me :counter)))
+                    :title (cF (str "Boom is = " (mget me :counter)))
                     :rendering (cF
-                                 (prn :compute-button-rendering )
+                                 (prn :compute-button-rendering)
                                  (<> (mxfnc
                                        (react/createElement
                                          rn/Button
@@ -68,44 +42,67 @@
                                                    :onPress #(do (prn :bampress)
                                                                  (mswap! me :counter inc))})))))))))))
 
-#_
-(defn demo []
-  (md/make ::hxApp
-    :rx-dom (cFonce
-              (with-par me
-                (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
-                  :rendering (cF
-                               (prn :compute-View-rendering )
-                               (apply react/createElement
-                                 rn/View
-                                 #js {:style #js {:backgroundColor "#FFFFFF"
-                                                  :flex            1
-                                                  :justifyContent  "center"}}
-                                 (doall
-                                   (prn :kids!!!!!!!!!!!!!!! (tiltontec.model.core/mget me :kids))
-                                   (map (fn [mapkid]
-                                          (let [kr# (tiltontec.model.core/mget mapkid :rendering)]
-                                            (prn :kidrender kr#)
-                                            kr#))
-                                     (tiltontec.model.core/mget me :kids)))))
-                  :kids (cFkids
-                          (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
-                            :name :bam-button
-                            :sid (swap! mxrn.mxreact/sid-latest inc)
-                            :counter (cI (rand-int 9999))
-                            :title (cF (str "Bam is = " (mget me :counter)))
-                            :rendering (cF
-                                         (prn :compute-button-rendering )
-                                         (<> (mxfnc
-                                               (react/createElement
-                                                 rn/Button
-                                                 (clj->js {:title   (mget me :title)
-                                                           :style   #js {:color "red"}
-                                                           :onPress #(do (prn :bampress)
-                                                                         (mswap! me :counter inc))}))))))))))))
+#_(defn demo []
+    (md/make ::hxApp
+      :rx-dom (cFonce
+                (with-par me
+                  (mxn/XView
+                    {:name :rootView}
+                    #js {:style #js {:flex            1
+                                     :marginTop       96
+                                     :padding         24
+                                     :alignItems      "flex-start"
+                                     :backgroundColor "cyan"}}
+                    (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+                      :name :bam-button
+                      :sid (swap! mxrn.mxreact/sid-latest inc)
+                      :counter (cI (rand-int 9999))
+                      :title (cF (str "Bam is = " (mget me :counter)))
+                      :rendering (cF
+                                   (prn :compute-button-rendering (mget me :title))
+                                   (<> (mxfnc
+                                         (react/createElement
+                                           rn/Button
+                                           (clj->js {:title   (mget me :title)
+                                                     :onPress #(do (prn :bampress)
+                                                                   (mswap! me :counter inc))})))))))))))
 
-#_
-(defn demo []
+#_(defn demo []
+    (md/make ::hxApp
+      :rx-dom (cFonce
+                (with-par me
+                  (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+                    :rendering (cF
+                                 (prn :compute-View-rendering)
+                                 (apply react/createElement
+                                   rn/View
+                                   #js {:style #js {:backgroundColor "#FFFFFF"
+                                                    :flex            1
+                                                    :justifyContent  "center"}}
+                                   (doall
+                                     (prn :kids!!!!!!!!!!!!!!! (tiltontec.model.core/mget me :kids))
+                                     (map (fn [mapkid]
+                                            (let [kr# (tiltontec.model.core/mget mapkid :rendering)]
+                                              (prn :kidrender kr#)
+                                              kr#))
+                                       (tiltontec.model.core/mget me :kids)))))
+                    :kids (cFkids
+                            (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+                              :name :bam-button
+                              :sid (swap! mxrn.mxreact/sid-latest inc)
+                              :counter (cI (rand-int 9999))
+                              :title (cF (str "Bam is = " (mget me :counter)))
+                              :rendering (cF
+                                           (prn :compute-button-rendering)
+                                           (<> (mxfnc
+                                                 (react/createElement
+                                                   rn/Button
+                                                   (clj->js {:title   (mget me :title)
+                                                             :style   #js {:color "red"}
+                                                             :onPress #(do (prn :bampress)
+                                                                           (mswap! me :counter inc))}))))))))))))
+
+#_(defn demo []
     (md/make ::hxApp
       :rx-dom (cFonce
                 (with-par me
