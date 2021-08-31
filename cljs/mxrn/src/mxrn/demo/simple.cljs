@@ -10,7 +10,7 @@
 
     [react]
     [react-native :as rn]
-    ;["react-native-elements" :as rne]
+    [react-native-elements :as rne]
     ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
 
     [mxrn.mxreact :as mxr :refer [mxu!]]
@@ -24,9 +24,14 @@
               (with-par me
                 (mxn/View
                   {:name :root}
-                  #js {:style #js {:backgroundColor "linen"
+                  #js {:style #js {:backgroundColor "#444"
                                    :flex            1
                                    :justifyContent  "center"}}
+                  (mxn/Icon {}
+                    #js {:name "heartbeat"
+                         :type "font-awesome"
+                         :color "#f50"
+                         :onPress #(prn :thump)})
                   (mxn/Switch
                     {:name       :counting?
                      :value      (cI true)
@@ -72,12 +77,44 @@
                   (mxn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
-                    {:onPress #(do (prn :pressed!! me (mget me :clicks))
-                                   (mswap! me :clicks inc))}
+                    (clj->js {:onPressIn #(prn :pressed-In!!  )
+                              :onPress #(do (prn :pressed!!  )
+                                            (mswap! me :clicks inc))})
                     (mxn/Text
                       {:name :an-item}
-                      #js {:style #js {:width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
-                      (mxn/strng (str "hit me " (mget (mxu! me :presser) :clicks))))))))))
+                      #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
+                      (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks)))))
+
+                  (mxn/View {}
+                    #js {:style #js {;; :flex 1
+                                 :flexDirection   "row"
+                                 :backgroundColor "green"
+                                 :width           300
+                                 :height          48
+                                 :alignItems      "center"}}
+
+
+                    (mxn/SliderRNE
+                      {:name        :slido
+                       :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
+                                                   #_ (prn :slider-now slot newv oldv c)))}
+                      (clj->js {:value         (mget me :slide-value)
+                                :name         (mget me :name)
+                                :style         (clj->js {:flex 2})
+                                :maximumValue  50
+                                :minimumValue  10
+                                :step          1
+                                :trackStyle    (clj->js {:height 10 :color "green"})
+                                :thumbStyle    (clj->js {:height 30 :width 20 #_#_ :color "blue" :backgroundColor "cyan"})
+                                :onValueChange #(do ;;(prn :Sliding! %)
+                                                    (mset! me :slide-value %))}))
+
+                    )
+
+                  (mxn/Text
+                    {:name :an-item}
+                    {:style #js {:color "white" :flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                    (mxn/strng (str "slidoxxx = " (mget (mxu! me :slido) :slide-value)))))))))
 
 #_(defn demo []
     (md/make ::hxApp
@@ -104,19 +141,7 @@
                                    :alignItems      "stretch"
                                    ;;:justifyContent "center"
                                    }}
-                      #_(mxn/SliderRNE
-                          {:name        :slido
-                           :slide-value (cI 0.3)}
-                          {:&             (props [:value :slide-value])
-                           ;;:value 25
-                           :style         #js {:flex 2}
-                           :maximumValue  50
-                           :minimumValue  10
-                           :step          1
-                           :trackStyle    #js {:height 10 :backgroundColor "yellow"}
-                           :thumbStyle    #js {:height 20 :width 20 :backgroundColor "black"}
-                           :onValueChange #(do (prn :Sliding! %)
-                                               (mset! me :slide-value %))})
+
                       (mxn/Text
                         {:name :an-item}
                         {:style #js {:flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}

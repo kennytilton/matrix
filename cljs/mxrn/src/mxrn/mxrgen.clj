@@ -39,33 +39,13 @@
 (defmacro define-composite-macros [& atoms]
   `(do ~@(for [atom atoms]
            `(define-composite-macro ~atom))))
+
 (define-composite-macros Pressable Text View)
 
 #_
     (define-composite-macros
       NavigationContainer Navigator Screen
       Pressable Text TouchableOpacity View SafeAreaView)
-
-#_
-(defmacro XView [mx-props jsx-props & kids]
-  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
-     :sid (swap! mxrn.mxreact/sid-latest inc)
-     :kids (tiltontec.model.core/cFkids ~@kids)
-     :rendering (tiltontec.cell.core/cF
-                  (prn :XView-rendering!!!!!!!!!!!!!)
-                  (react/createElement
-                    (mxrn.mxrgen/mxfnc
-                      (apply react/createElement
-                        rn/View
-                        ~jsx-props
-                        (doall
-                          (map (fn [mapkid#]
-                                 (let [kr# (tiltontec.model.core/mget mapkid# :rendering)]
-                                   (prn :kidrender kr#)
-                                   kr#))
-                            (tiltontec.model.core/mget ~'me :kids)))))))
-     ~@(apply concat
-         (into [] mx-props))))
 
 #_
 (define-composite-macros
@@ -79,18 +59,20 @@
         :rendering (tiltontec.cell.core/cF
                      (react/createElement
                        (mxrn.mxrgen/mxfnc
-                         (react/createElement
-                           (or (get {:ActivityIndicator rn/ActivityIndicator
+                         (do (prn :gen-atom ~~(keyword gen-type))
+                             (react/createElement
+                           (or (get {:ActivityIndicator rn/TouchableOpacity
                                      :Button            rn/Button
                                      :Image             rn/Image
                                      ;; has a child :Pressable         rn/Pressable
-                                     ;; :SliderRNE         rne/Slider
+                                     :SliderRNE         rne/Slider
+                                     :Icon rne/Icon
                                      :Switch            rn/Switch
                                      :TextInput         rn/TextInput
                                      :FlatList          rn/FlatList} ~~(keyword gen-type))
                              (throw (js/Error. (str "No RN atom mapping for: " ~~(keyword gen-type)))))
                            ~jsx-props#
-                           {}))))
+                           {})))))
         ~@(apply concat
             (into [] mx-props#)))))
 
@@ -102,7 +84,7 @@
 
 
 (define-atom-macros
-  ActivityIndicator Button #_ FlatList #_ SliderRNE Switch #_ TextInput)
+  ActivityIndicator Button #_ FlatList Icon SliderRNE Switch #_ TextInput)
 
 
 (defmacro Image [mx-props jsx-props]
