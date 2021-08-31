@@ -28,38 +28,51 @@
                                    :flex            1
                                    :justifyContent  "center"}}
                   (mxn/Button
-                    {:name :bam-button
-                    :counter (cI (rand-int 9999))
-                    :title (cF (str "KaBoom is = " (mget me :counter)))}
+                    {:name    :bam-button
+                     :counter (cI (rand-int 9999))
+                     :title   (cF (str "KaBoom is = " (mget me :counter)))}
                     (clj->js {:title   (mget me :title)
                               :style   (clj->js {:color "red"})
                               :onPress #(do (prn :bampress)
-                                            (mswap! me :counter inc))})))))))
+                                            (mswap! me :counter inc))}))
 
-#_
-(defn demo []
-  (md/make ::hxApp
-    :rx-dom (cFonce
-              (with-par me
-                (mxn/View
-                  {:name :root}
-                  #js {:style #js {:backgroundColor "linen"
-                                   :flex            1
-                                   :justifyContent  "center"}}
-                  (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
-                    :name :bam-button
-                    :sid (swap! mxrn.mxreact/sid-latest inc)
-                    :counter (cI (rand-int 9999))
-                    :title (cF (str "Boom is = " (mget me :counter)))
-                    :rendering (cF
-                                 (prn :compute-button-rendering)
-                                 (<> (mxfnc
-                                       (react/createElement
-                                         rn/Button
-                                         (clj->js {:title   (mget me :title)
-                                                   :style   #js {:color "red"}
-                                                   :onPress #(do (prn :bampress)
-                                                                 (mswap! me :counter inc))})))))))))))
+                  (mxn/Button
+                    {:name  :downer
+                     :title (cF (str "Downer " (mget (mxu! me :bam-button) :counter)))}
+                    (clj->js {:title   (mget me :title)
+                              :onPress #(do (prn :bampress)
+                                            (mswap! (mxu! me :bam-button) :counter dec))}))
+
+                  (mxn/Button
+                    {:name  :dumper
+                     :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
+                    #js {:title   "hunh"                    ;; (mget me :title)
+                         :color   "red"
+                         :onPress #(mswap! (mxu! me :bam-button) :counter dec)}))))))
+
+#_(defn demo []
+    (md/make ::hxApp
+      :rx-dom (cFonce
+                (with-par me
+                  (mxn/View
+                    {:name :root}
+                    #js {:style #js {:backgroundColor "linen"
+                                     :flex            1
+                                     :justifyContent  "center"}}
+                    (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+                      :name :bam-button
+                      :sid (swap! mxrn.mxreact/sid-latest inc)
+                      :counter (cI (rand-int 9999))
+                      :title (cF (str "Boom is = " (mget me :counter)))
+                      :rendering (cF
+                                   (prn :compute-button-rendering)
+                                   (<> (mxfnc
+                                         (react/createElement
+                                           rn/Button
+                                           (clj->js {:title   (mget me :title)
+                                                     :style   #js {:color "red"}
+                                                     :onPress #(do (prn :bampress)
+                                                                   (mswap! me :counter inc))})))))))))))
 
 #_(defn demo []
     (md/make ::hxApp
