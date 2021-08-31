@@ -19,3 +19,6 @@ bundler:
 
 ios:
 	cd react-native && yarn ios
+
+andy:
+	cd react-native && yarn android

@@ -94,13 +94,15 @@
         ~@(apply concat
             (into [] mx-props#)))))
 
+;(define-atom-macro Button)
+
 (defmacro define-atom-macros [& atoms]
   `(do ~@(for [atom atoms]
            `(define-atom-macro ~atom))))
 
-(define-atom-macros
-  ActivityIndicator #_ Button FlatList #_ SliderRNE Switch TextInput)
 
+(define-atom-macros
+  #_ ActivityIndicator Button #_ FlatList #_ SliderRNE #_ Switch #_ TextInput)
 
 
 (defmacro Image [mx-props jsx-props]

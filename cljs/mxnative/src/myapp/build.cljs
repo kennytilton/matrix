@@ -38,7 +38,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (navi/demo)))
+    (simple/demo)))
 
 
 #_(defn mx-find-matrix [mx]

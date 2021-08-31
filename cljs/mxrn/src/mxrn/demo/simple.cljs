@@ -27,6 +27,25 @@
                   #js {:style #js {:backgroundColor "linen"
                                    :flex            1
                                    :justifyContent  "center"}}
+                  (mxn/Button
+                    {:name :bam-button
+                    :counter (cI (rand-int 9999))
+                    :title (cF (str "KaBoom is = " (mget me :counter)))}
+                    (clj->js {:title   (mget me :title)
+                              :style   (clj->js {:color "red"})
+                              :onPress #(do (prn :bampress)
+                                            (mswap! me :counter inc))})))))))
+
+#_
+(defn demo []
+  (md/make ::hxApp
+    :rx-dom (cFonce
+              (with-par me
+                (mxn/View
+                  {:name :root}
+                  #js {:style #js {:backgroundColor "linen"
+                                   :flex            1
+                                   :justifyContent  "center"}}
                   (tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
                     :name :bam-button
                     :sid (swap! mxrn.mxreact/sid-latest inc)
