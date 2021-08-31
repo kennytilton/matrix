@@ -112,8 +112,8 @@
                     )
 
                   (mxn/Text
-                    {:name :an-item}
-                    {:style #js {:color "white" :flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                    {:name :another-item}
+                    #js {:style #js {:color "white" :flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
                     (mxn/strng (str "slidoxxx = " (mget (mxu! me :slido) :slide-value)))))))))
 
 #_(defn demo []
