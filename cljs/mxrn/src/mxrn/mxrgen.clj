@@ -16,9 +16,9 @@
                        (mxrn.mxrgen/mxfnc
                          (apply react/createElement
                            (or (get {:Pressable        rn/Pressable
-                                     ;:NavigationContainer (mxrn.demo.navi/bottom-tab-navi :NavigationContainer)
-                                     ;:Navigator           (mxrn.demo.navi/bottom-tab-navi :Navigator)
-                                     ;:Screen              (mxrn.demo.navi/bottom-tab-navi :Screen)
+                                     :NavigationContainer (mxrn.demo.navi/bottom-tab-navi :NavigationContainer)
+                                     :Navigator           (mxrn.demo.navi/bottom-tab-navi :Navigator)
+                                     :Screen              (mxrn.demo.navi/bottom-tab-navi :Screen)
                                      :Text             rn/Text
                                      :TouchableOpacity rn/TouchableOpacity
                                      :View             rn/View
@@ -37,11 +37,9 @@
   `(do ~@(for [c cs]
            `(define-composite-macro ~c))))
 
-(define-composite-macros Pressable SafeAreaView ScrollView Text TouchableOpacity View)
-
-#_(define-composite-macros
-    NavigationContainer Navigator Screen
-    Pressable Text TouchableOpacity View SafeAreaView)
+(define-composite-macros
+  NavigationContainer Navigator Screen
+  Pressable SafeAreaView ScrollView Text TouchableOpacity View)
 
 (defmacro define-atom-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props#]

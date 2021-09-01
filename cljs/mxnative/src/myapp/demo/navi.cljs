@@ -23,12 +23,12 @@
 (defn bottom-tab-navi [k]
   (get tabs-nav k))
 
-(defnc TabA [_] {:helix/features {:fast-refresh true}}
+(defn TabA [_] {:helix/features {:fast-refresh true}}
   ($ rn/View {:style (j/lit {:flex 1, :alignItems "center", :justifyContent "center"})}
     ($ rn/Text {:style (j/lit {:fontSize 36})}
       "Tab A")))
 ;
- (defnc TabB [_] {:helix/features {:fast-refresh true}}
+(defn TabB [_] {:helix/features {:fast-refresh true}}
   ($ rn/View {:style (j/lit {:flex 1, :alignItems "center", :justifyContent "center"})}
      ($ rn/Text {:style (j/lit {:fontSize 36})}
         "Tab B")))
@@ -52,8 +52,8 @@
                    :onStateChange (fn [x] (reset! *nav-state x))}
                   (mxn/Navigator {}{}
                     (mxn/Screen {}
-                      {:name "Tab-A"
+                      #js {:name "Tab-A"
                        :component TabA})
                     (mxn/Screen {}
-                      {:name "Tab-B"
+                      #js {:name "Tab-B"
                        :component TabB}))))))))
