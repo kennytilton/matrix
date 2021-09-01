@@ -7,7 +7,8 @@
                      fget mxi-find mxu-find-type
                      kid-values-kids] :as md]
             [mxrn.mxreact :as mxr :refer [ mxu!]]
-            [mxrn.demo.simple :as simple]))
+            [mxrn.demo.simple :as simple]
+            [mxrn.demo.flatlist :as flat]))
 
 (def <> react/createElement)
 
@@ -15,7 +16,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (flat/demo)))
 
 ;; the function figwheel-rn-root MUST be provided. It will be called by
 ;; by the react-native-figwheel-bridge to render your application.
