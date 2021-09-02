@@ -28,9 +28,9 @@
                                    :justifyContent  "center"}}
 
                   #_ (mxn/Icon {}
-                      #js {:name    "heartbeat"
-                           :type    "font-awesome"
-                           :color   "#f50"
+                      #js {:name    "ei-paperclip"
+                           ;;:type    "font-awesome"
+                           :color   "#f00"
                            :onPress #(prn :thump)})
                   (mxn/Switch
                     {:name       :counting?
@@ -75,7 +75,7 @@
                     #js {:size  "large"
                          :color "#00ff00"})
 
-                  #_(mxn/Pressable
+                  (mxn/Pressable
                       {:name   :presser
                        :clicks (cI 3)}
                       (clj->js {:onPressIn #(prn :pressed-In!!)
