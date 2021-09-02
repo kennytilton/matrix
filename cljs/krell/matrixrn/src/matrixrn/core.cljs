@@ -8,6 +8,7 @@
                      kid-values-kids] :as md]
             [matrixrn.mxreact :as mxr :refer [mxu!]]
             [matrixrn.demo.simple :as simple]
+            [matrixrn.demo.http :as http]
             [matrixrn.demo.flatlist :as flat]))
 
 (def <> react/createElement)
@@ -16,7 +17,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (flat/demo)))
+    (http/demo)))
 
 (defn ^:export -main [& args]
   ;; (hello)
