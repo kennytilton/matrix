@@ -3,4 +3,9 @@
         io.vouch/reagent-react-native {:git/url "https://github.com/vouch-opensource/reagent-react-native.git"
                                        :sha "0fe1c600c9b81180f76b94ef6004c2f85e7d4aa0"}
         reagent/reagent {:mvn/version "0.10.0"
-                         :exclusions [cljsjs/react cljsjs/react-dom]}}}
+                         :exclusions [cljsjs/react cljsjs/react-dom]}
+        appliedscience/js-interop   {:mvn/version "0.1.22"}
+        com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+        com.taoensso/tufte          {:mvn/version "2.2.0"}
+        cljs-http/cljs-http         {:mvn/version "0.1.46"}
+        tiltontec/matrix            {:mvn/version "4.1.1-SNAPSHOT"}}}
