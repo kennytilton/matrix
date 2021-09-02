@@ -53,8 +53,8 @@
                                (or (get {:ActivityIndicator rn/ActivityIndicator
                                          :Button            rn/Button
                                          :Image             rn/Image
-                                         ;:SliderRNE         rne/Slider
-                                        ; :Icon              rne/Icon
+                                         ;;:SliderRNE         rne/Slider
+                                         ;;:Icon              rne/Icon
                                          :Switch            rn/Switch
                                          :TextInput         rn/TextInput
                                          :FlatList          rn/FlatList} ~~(keyword gen-type))

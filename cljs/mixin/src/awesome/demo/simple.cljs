@@ -26,8 +26,8 @@
                   #js {:style #js {:backgroundColor "#444"
                                    :flex            1
                                    :justifyContent  "center"}}
-                  #_#_
-                  (mxn/Icon {}
+
+                  #_ (mxn/Icon {}
                     #js {:name "heartbeat"
                          :type "font-awesome"
                          :color "#f50"
@@ -48,7 +48,7 @@
                   (mxn/Button
                     {:name     :bam-button
                      :counter  (cI (rand-int 9999))
-                     :title    (cF (str "KaBoom is = " (mget me :counter)))
+                     :title    (cF (str "KaBoom = " (mget me :counter)))
                      :disabled false #_ (cF (not (mget (mxu! me :counting?) :value)))}
                     (clj->js {:title    (mget me :title)
                               ;:disabled (mget me :disabled)
@@ -70,11 +70,12 @@
                          :color   "red"
                          :onPress #(mswap! (mxu! me :bam-button) :counter dec)})
 
-                  #_#_#_
+
                   (mxn/ActivityIndicator {}
                     #js {:size  "large"
                          :color "#00ff00"})
 
+                  #_
                   (mxn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
@@ -86,6 +87,7 @@
                       #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks)))))
 
+                  #_ 
                   (mxn/View {}
                     #js {:style #js {;; :flex 1
                                  :flexDirection   "row"
