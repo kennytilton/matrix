@@ -1,0 +1,3 @@
+{:main awesome-project.core
+ :output-to "target/main.js"
+ :output-dir "target"}

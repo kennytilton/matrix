@@ -29,6 +29,7 @@
                      kid-values-kids] :as md]
             [awesome.mxreact :as mxr :refer [mxu!]]
             [awesome.demo.simple :as simple]
+            [awesome.demo.navi :as navi]
             [awesome.demo.http :as htpx]
             [awesome.demo.flatlist :as flat]))
 
@@ -38,7 +39,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (htpx/demo)))
+    (navi/demo)))
 
 ;; the function figwheel-rn-root MUST be provided. It will be called by
 ;; by the react-native-figwheel-bridge to render your application.
