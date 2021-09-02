@@ -9,7 +9,7 @@
 
     [react]
     [react-native :as rn]
-    ;[react-native-elements :as rne]
+    [react-native-elements :as rne]
     ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
 
     [awesome.mxreact :as mxr :refer [mxu!]]
@@ -28,10 +28,10 @@
                                    :justifyContent  "center"}}
 
                   #_ (mxn/Icon {}
-                    #js {:name "heartbeat"
-                         :type "font-awesome"
-                         :color "#f50"
-                         :onPress #(prn :thump)})
+                      #js {:name    "heartbeat"
+                           :type    "font-awesome"
+                           :color   "#f50"
+                           :onPress #(prn :thump)})
                   (mxn/Switch
                     {:name       :counting?
                      :value      (cI true)
@@ -49,12 +49,12 @@
                     {:name     :bam-button
                      :counter  (cI (rand-int 9999))
                      :title    (cF (str "KaBoom = " (mget me :counter)))
-                     :disabled false #_ (cF (not (mget (mxu! me :counting?) :value)))}
-                    (clj->js {:title    (mget me :title)
-                              ;:disabled (mget me :disabled)
-                              :style    (clj->js {:color "red"})
-                              :onPress  #(do (prn :bampress)
-                                             (mswap! me :counter inc))}))
+                     :disabled (cF (not (mget (mxu! me :counting?) :value)))}
+                    (clj->js {:title   (mget me :title)
+                              :disabled (mget me :disabled)
+                              :style   (clj->js {:color "red"})
+                              :onPress #(do (prn :bampress)
+                                            (mswap! me :counter inc))}))
 
                   (mxn/Button
                     {:name  :downer
@@ -75,60 +75,58 @@
                     #js {:size  "large"
                          :color "#00ff00"})
 
-                  #_
-                  (mxn/Pressable
-                    {:name   :presser
-                     :clicks (cI 3)}
-                    (clj->js {:onPressIn #(prn :pressed-In!!  )
-                              :onPress #(do (prn :pressed!!  )
-                                            (mswap! me :clicks inc))})
-                    (mxn/Text
-                      {:name :an-item}
-                      #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                      (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks)))))
+                  #_(mxn/Pressable
+                      {:name   :presser
+                       :clicks (cI 3)}
+                      (clj->js {:onPressIn #(prn :pressed-In!!)
+                                :onPress   #(do (prn :pressed!!)
+                                                (mswap! me :clicks inc))})
+                      (mxn/Text
+                        {:name :an-item}
+                        #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
+                        (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks)))))
 
-                  #_ 
+
                   (mxn/View {}
                     #js {:style #js {;; :flex 1
-                                 :flexDirection   "row"
-                                 :backgroundColor "green"
-                                 :width           300
-                                 :height          48
-                                 :alignItems      "center"}}
+                                     :flexDirection   "row"
+                                     :backgroundColor "green"
+                                     :width           300
+                                     :height          48
+                                     :alignItems      "center"}}
 
 
                     (mxn/SliderRNE
                       {:name        :slido
                        :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
-                                                   #_ (prn :slider-now slot newv oldv c)))}
+                                                   #_(prn :slider-now slot newv oldv c)))}
                       (clj->js {:value         (mget me :slide-value)
-                                :name         (mget me :name)
+                                :name          (mget me :name)
                                 :style         (clj->js {:flex 2})
                                 :maximumValue  50
                                 :minimumValue  10
                                 :step          1
                                 :trackStyle    (clj->js {:height 10 :color "green"})
-                                :thumbStyle    (clj->js {:height 30 :width 20 #_#_ :color "blue" :backgroundColor "cyan"})
-                                :onValueChange #(do ;;(prn :Sliding! %)
-                                                    (mset! me :slide-value %))}))
+                                :thumbStyle    (clj->js {:height 30 :width 20 #_#_:color "blue" :backgroundColor "cyan"})
+                                :onValueChange #(do         ;;(prn :Sliding! %)
+                                                  (mset! me :slide-value %))}))
 
                     )
 
-                  #_
-                      (mxn/Text
-                    {:name :another-item}
-                    #js {:style #js {:color "white" :flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
-                    (mxn/strng (str "slidoxxx = " (mget (mxu! me :slido) :slide-value)))))))))
+                  #_(mxn/Text
+                      {:name :another-item}
+                      #js {:style #js {:color "white" :flex 1 :width 96 :padding 12 :margin 8 :backgroundColor "pink"}}
+                      (mxn/strng (str "slidoxxx = " (mget (mxu! me :slido) :slide-value)))))))))
 
-#_ (mxn/SafeAreaView
-     {:name :item-list}
-     {:style #js {:backgroundColor "yellow"}}
-     (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-       (mxn/Text
-         {:name :an-item}
-         {:key   n
-          :style #js {:padding 4 :margin 5}}
-         (mxn/strng (str "Text " n)))))
+#_(mxn/SafeAreaView
+    {:name :item-list}
+    {:style #js {:backgroundColor "yellow"}}
+    (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
+      (mxn/Text
+        {:name :an-item}
+        {:key   n
+         :style #js {:padding 4 :margin 5}}
+        (mxn/strng (str "Text " n)))))
 
 #_(mxn/View {}
     {:style #js {:flex            1

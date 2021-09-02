@@ -53,8 +53,8 @@
                                (or (get {:ActivityIndicator rn/ActivityIndicator
                                          :Button            rn/Button
                                          :Image             rn/Image
-                                         ;;:SliderRNE         rne/Slider
-                                         ;;:Icon              rne/Icon
+                                         :SliderRNE         rne/Slider
+                                         :Icon              rne/Icon
                                          :Switch            rn/Switch
                                          :TextInput         rn/TextInput
                                          :FlatList          rn/FlatList} ~~(keyword gen-type))
@@ -69,7 +69,7 @@
            `(define-atom-macro ~atom))))
 
 (define-atom-macros
-  ActivityIndicator Button FlatList #_ Icon Image #_ SliderRNE Switch TextInput)
+  ActivityIndicator Button FlatList Icon Image SliderRNE Switch TextInput)
 
 (defmacro Image [mx-props jsx-props]
   `(tiltontec.model.core/make :awesome.mxreact/awesome.elt
