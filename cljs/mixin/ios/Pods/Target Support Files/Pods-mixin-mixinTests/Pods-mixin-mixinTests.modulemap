@@ -1,0 +1,6 @@
+module Pods_mixin_mixinTests {
+  umbrella header "Pods-mixin-mixinTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-mixin-mixinTests/Pods-mixin-mixinTests-frameworks.sh
+${PODS_XCFRAMEWORKS_BUILD_DIR}/double-conversion/double-conversion.framework/double-conversion
+${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL

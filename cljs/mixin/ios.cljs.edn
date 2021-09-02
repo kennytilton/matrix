@@ -1,0 +1,2 @@
+^{:react-native :cli} ;; use :expo if you are using Expo
+{:main awesome.main}
