@@ -1,0 +1,3 @@
+{:main matrixrn.core
+ :output-to "target/main.js"
+ :output-dir "target"}
