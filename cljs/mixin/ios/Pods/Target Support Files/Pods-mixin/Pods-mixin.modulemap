@@ -1,6 +1,0 @@
-module Pods_mixin {
-  umbrella header "Pods-mixin-umbrella.h"
-
-  export *
-  module * { export * }
-}
