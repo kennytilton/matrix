@@ -7,6 +7,7 @@
                      fget mxi-find mxu-find-type
                      kid-values-kids] :as md]
             [matrixrn.mxreact :as mxr :refer [mxu!]]
+            [matrixrn.demo.navi :as navi]
             [matrixrn.demo.simple :as simple]
             [matrixrn.demo.http :as http]
             [matrixrn.demo.flatlist :as flat]))
@@ -17,7 +18,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (navi/demo)))
 
 (defn ^:export -main [& args]
   ;; (hello)

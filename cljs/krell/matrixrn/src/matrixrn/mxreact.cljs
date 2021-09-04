@@ -10,7 +10,10 @@
      :refer-macros [cFkids with-par]
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
-             kid-values-kids] :as md]))
+             kid-values-kids] :as md]
+    [react]
+    [react-native :as rn]
+    [react-native-elements :as rne]))
 
 (def +tag-sid+ (atom -1))
 
@@ -69,3 +72,14 @@
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
     ;(prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))
+
+(defn rn-composite-types []
+  {:Pressable        rn/Pressable
+   ;:NavigationContainer (matrixrn.demo.navi/bottom-tab-navi :NavigationContainer)
+   ;:Navigator           (matrixrn.demo.navi/bottom-tab-navi :Navigator)
+   ;:Screen              (matrixrn.demo.navi/bottom-tab-navi :Screen)
+   :Text             rn/Text
+   :TouchableOpacity rn/TouchableOpacity
+   :View             rn/View
+   :SafeAreaView     rn/SafeAreaView
+   :ScrollView       rn/ScrollView})

@@ -15,15 +15,8 @@
                      (react/createElement
                        (matrixrn.mxrgen/mxfnc
                          (apply react/createElement
-                           (or (get {:Pressable        rn/Pressable
-                                     ;:NavigationContainer (matrixrn.demo.navi/bottom-tab-navi :NavigationContainer)
-                                     ;:Navigator           (matrixrn.demo.navi/bottom-tab-navi :Navigator)
-                                     ;:Screen              (matrixrn.demo.navi/bottom-tab-navi :Screen)
-                                     :Text             rn/Text
-                                     :TouchableOpacity rn/TouchableOpacity
-                                     :View             rn/View
-                                     :SafeAreaView     rn/SafeAreaView
-                                     :ScrollView       rn/ScrollView} ~~(keyword gen-type))
+                           (or
+                             (get (matrixrn.mxreact/rn-composite-types) ~~(keyword gen-type))
                              (throw (js/Error. (str "No RN composite mapping for " ~~(keyword gen-type)))))
                            ~jsx-props#
                            (doall
