@@ -17,7 +17,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (http/demo)))
+    (simple/demo)))
 
 (defn ^:export -main [& args]
   ;; (hello)
