@@ -55,11 +55,10 @@
                               :onPress  #(do (prn :bampress)
                                              (mswap! me :counter inc))}))
 
-                  #_#_#_
                   (mxn/mk rn/Button
                     {:name  :dumper
                      :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
-                    #js {:title   "Booyambo"                   ;; (mget me :title)
+                    #js {:title   "Booyambo"                ;; (mget me :title)
                          :color   "red"
                          :onPress #(mswap! (mxu! me :bam-button) :counter dec)})
 
@@ -67,8 +66,8 @@
                   (mxn/mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
                     #js {:animating (mget me :animating)
-                         :size  "small"
-                         :color "#00ff00"})
+                         :size      "small"
+                         :color     "#00ff00"})
 
                   (mxn/mkk rn/Pressable
                     {:name   :presser
@@ -81,7 +80,7 @@
                       #js {:style #js {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
-                  #_
+
                   (mxn/mkk rn/View {}
                     #js {:style #js {;; :flex 1
                                      :flexDirection   "row"
@@ -107,17 +106,20 @@
                                 :trackStyle    (clj->js {:height 10 :color "green"})
                                 :thumbStyle    (clj->js {:height 30 :width 20 #_#_:color "blue" :backgroundColor "cyan"})
                                 :onValueChange #(do         ;;(prn :Sliding! %)
-                                                  (mset! me :slide-value %))}))))))))
+                                                  (mset! me :slide-value %))})))
+                  (mxn/mkk rn/SafeAreaView
+                    {:name :item-list}
+                    {:style #js {:backgroundColor "yellow"}}
+                    (for [n (range (max 1
+                                     (min 5
+                                       (.floor js/Math (/ (mget (mxr/mxu! me :slido) :slide-value) 10)))))]
+                      (mxn/mkk rn/Text
+                        {:name :an-item}
+                        #js {:key   n
+                             :style #js {:color "cyan" :padding 4 :margin 5}}
+                        (mxn/strng n)))))))))
 
-#_(mxn/SafeAreaView
-    {:name :item-list}
-    {:style #js {:backgroundColor "yellow"}}
-    (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
-      (mxn/Text
-        {:name :an-item}
-        {:key   n
-         :style #js {:padding 4 :margin 5}}
-        (mxn/strng (str "Text " n)))))
+
 
 #_(mxn/View {}
     {:style #js {:flex            1

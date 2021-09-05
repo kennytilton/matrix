@@ -30,9 +30,9 @@
   `(do ~@(for [c cs]
            `(define-composite-macro ~c))))
 
-(define-composite-macros
-  NavigationContainer Navigator Screen
-  Pressable SafeAreaView ScrollView Text TouchableOpacity View)
+;(define-composite-macros
+;  NavigationContainer Navigator Screen
+;  Pressable SafeAreaView ScrollView Text TouchableOpacity View)
 
 (defmacro define-atom-macro [gen-type]
   `(defmacro ~gen-type [mx-props# jsx-props#]
@@ -57,12 +57,12 @@
         ~@(apply concat
             (into [] mx-props#)))))
 
-(defmacro define-atom-macros [& atoms]
-  `(do ~@(for [atom atoms]
-           `(define-atom-macro ~atom))))
+;(defmacro define-atom-macros [& atoms]
+;  `(do ~@(for [atom atoms]
+;           `(define-atom-macro ~atom))))
 
-(define-atom-macros
-  Button FlatList Icon Image SliderRNE Switch TextInput)
+;(define-atom-macros
+;  Button FlatList Icon Image SliderRNE Switch TextInput)
 
 (defmacro Image [mx-props jsx-props]
   `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
