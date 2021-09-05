@@ -10,8 +10,7 @@
             [mxrn.mxreact :as mxr :refer [mxu!]]
             [mxrn.demo.simple :as simple]
             [mxrn.demo.navi :as navi]
-            ))
-
+            [mxrn.demo.http :as http]))
 
   ;(:require [expo.root :as expo-root]
   ;          [react]
@@ -56,7 +55,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (http/demo)))
 
 
 ;(defn ^:export -main [& args]
