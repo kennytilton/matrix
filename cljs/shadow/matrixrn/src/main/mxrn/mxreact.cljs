@@ -73,14 +73,5 @@
     ;(prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))
 
-(defn rn-composite-types []
-  {:Pressable        rn/Pressable
-   ;:NavigationContainer (mxrn.demo.navi/bottom-tab-navi :NavigationContainer)
-   ;:Navigator           (mxrn.demo.navi/bottom-tab-navi :Navigator)
-   ;:Screen              (mxrn.demo.navi/bottom-tab-navi :Screen)
-   :Text             rn/Text
-   :TouchableOpacity rn/TouchableOpacity
-   :View             rn/View
-   :SafeAreaView     rn/SafeAreaView
-   :ScrollView       rn/ScrollView})
+
 

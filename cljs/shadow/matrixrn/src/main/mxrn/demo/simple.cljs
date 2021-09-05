@@ -26,7 +26,7 @@
                   #js {:style #js {:backgroundColor "#444"
                                    :flex            1
                                    :justifyContent  "center"}}
-                  #_(mxn/Icon {}
+                  (mxn/mk rne/Icon {}
                       #js {:name    "heartbeat"
                            :type    "font-awesome"
                            :color   "#f50"
