@@ -10,10 +10,7 @@
      :refer-macros [cFkids with-par]
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
-             kid-values-kids] :as md]
-    [react]
-    [react-native :as rn]
-    [react-native-elements :as rne]))
+             kid-values-kids] :as md]))
 
 (def +tag-sid+ (atom -1))
 
