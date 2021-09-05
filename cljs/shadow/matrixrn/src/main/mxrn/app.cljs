@@ -56,7 +56,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (navi/demo)))
 
 
 ;(defn ^:export -main [& args]
