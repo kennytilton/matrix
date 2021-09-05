@@ -10,6 +10,7 @@
             [mxrn.mxreact :as mxr :refer [mxu!]]
             [mxrn.demo.simple :as simple]
             [mxrn.demo.navi :as navi]
+            [mxrn.demo.flatlist :as flat]
             [mxrn.demo.http :as http]))
 
 ;; todo get j/lit going
@@ -22,7 +23,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (flat/demo)))
 
 (defn start
   {:dev/after-load true}
