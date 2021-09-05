@@ -10,7 +10,11 @@
      :refer-macros [cFkids with-par]
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
-             kid-values-kids] :as md]))
+             kid-values-kids] :as md]
+    [applied-science.js-interop :as j]))
+
+(defn js-ify [m]
+  (j/lit m))
 
 (def +tag-sid+ (atom -1))
 

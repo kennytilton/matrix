@@ -21,9 +21,9 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/mkk rn/View
+                (mxn/mkkx rn/View
                   {:name :root}
-                  #js {:style #js {:backgroundColor "#444"
+                   {:style  {:backgroundColor "#444"
                                    :flex            1
                                    :justifyContent  "center"}}
                   (mxn/mk rne/Icon {}
@@ -31,19 +31,19 @@
                            :type    "font-awesome"
                            :color   "#f50"
                            :onPress #(prn :thump)})
-                  (mxn/mk rn/Switch
+                  (mxn/mkx rn/Switch
                     {:name       :counting?
                      :value      (cI true)
                      :thumbColor (cF (if (mget me :value)
                                        "#f5dd4b" "#f4f3f4"))}
-                    (clj->js {:value               (mget me :value)
-                              :thumbColor          (mget me :thumbColor)
-                              :onValueChange       #(mswap! me :value not)
-                              :ios_backgroundColor "#3e3e3e"
-                              :style               #js {:margin 9}
-                              :trackColor          #js {:false "#767577"
-                                                        :true  "#81b0ff"}
-                              #_(js-obj "false" "#767577" "true" "#81b0ff")}))
+                    {:value               (mget me :value)
+                     :thumbColor          (mget me :thumbColor)
+                     :onValueChange       #(mswap! me :value not)
+                     :ios_backgroundColor "#3e3e3e"
+                     :style               #js {:margin 9}
+                     :trackColor          #js {:false "#767577"
+                                               :true  "#81b0ff"}
+                     #_(js-obj "false" "#767577" "true" "#81b0ff")})
                   (mxn/mk rn/Button
                     {:name     :bam-button
                      :counter  (cI (rand-int 9999))

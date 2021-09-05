@@ -41,6 +41,20 @@
      ~@(apply concat
          (into [] mx-props))))
 
+(defmacro mkx [node-type mx-props jsx-props]
+  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+     :sid (swap! mxrn.mxreact/sid-latest inc)
+     :rendering (tiltontec.cell.core/cF
+                  (react/createElement
+                    (mxrn.mxrgen/mxfnc
+                      (react/createElement
+                        (or ~node-type
+                          (throw (js/Error. (str "No mode-type specified with" ~mx-props))))
+                        (cljs.core/clj->js ~jsx-props)
+                        {}))))
+     ~@(apply concat
+         (into [] mx-props))))
+
 (defmacro mkunhooked [node-type mx-props jsx-props]
   ; so far only because Navigator requires Screen as direct
   ; child, so no mxfnc in between
@@ -79,7 +93,24 @@
      :rendering (tiltontec.cell.core/cF
                   (react/createElement
                     (mxrn.mxrgen/mxfnc
-                      (apply react/createElement ~node-type ~jsx-props
+                      (apply react/createElement ~node-type
+                        ~jsx-props
+                        (doall
+                          (map (fn [mapkid#]
+                                 (tiltontec.model.core/mget mapkid# :rendering))
+                            (tiltontec.model.core/mget ~'me :kids)))))))
+     ~@(apply concat
+         (into [] mx-props))))
+
+(defmacro mkkx [node-type mx-props jsx-props & kids]
+  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+     :sid (swap! mxrn.mxreact/sid-latest inc)
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :rendering (tiltontec.cell.core/cF
+                  (react/createElement
+                    (mxrn.mxrgen/mxfnc
+                      (apply react/createElement ~node-type
+                        (cljs.core/clj->js ~jsx-props)
                         (doall
                           (map (fn [mapkid#]
                                  (tiltontec.model.core/mget mapkid# :rendering))
