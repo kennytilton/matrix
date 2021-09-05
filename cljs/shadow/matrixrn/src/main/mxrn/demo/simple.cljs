@@ -55,6 +55,7 @@
                               :onPress  #(do (prn :bampress)
                                              (mswap! me :counter inc))}))
 
+                  #_#_#_
                   (mxn/mk rn/Button
                     {:name  :dumper
                      :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
@@ -80,6 +81,7 @@
                       #js {:style #js {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
+                  #_
                   (mxn/mkk rn/View {}
                     #js {:style #js {;; :flex 1
                                      :flexDirection   "row"

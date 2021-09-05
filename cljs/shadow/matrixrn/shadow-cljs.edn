@@ -1,7 +1,8 @@
 {:source-paths ["src/main"
                 "src/test"]
 
- :dependencies [[tiltontec/matrix "4.1.1-SNAPSHOT"]]
+ :dependencies [[tiltontec/matrix "4.1.1-SNAPSHOT"]
+                [applied-science/js-interop "0.3.0"]]
 
  :builds       {:app {:target           :react-native
                       :init-fn          mxrn.app/init

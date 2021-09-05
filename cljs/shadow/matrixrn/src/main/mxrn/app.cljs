@@ -9,6 +9,7 @@
             ["react-native" :as rn]
             [mxrn.mxreact :as mxr :refer [mxu!]]
             [mxrn.demo.simple :as simple]
+            [mxrn.demo.navi :as navi]
             ))
 
 
