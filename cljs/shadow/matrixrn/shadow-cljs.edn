@@ -1,12 +1,12 @@
 {:source-paths ["src/main"
                 "src/test"]
 
- :dependencies [[reagent "1.1.0"]
-                [re-frame "1.2.0"]]
+ :dependencies [[tiltontec/matrix "4.1.1-SNAPSHOT"]]
 
  :builds       {:app {:target           :react-native
-                      :init-fn          example.app/init
+                      :init-fn          mxrn.app/init
                       :output-dir       "app"
                       :compiler-options {:infer-externs :auto}
                       :devtools         {:autoload true
                                          :preloads [shadow.expo.keep-awake]}}}}
+
