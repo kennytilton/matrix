@@ -21,17 +21,17 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/mkkx rn/View
+                (mxn/mkk rn/View
                   {:name :root}
                   {:style {:backgroundColor "#444"
                            :flex            1
                            :justifyContent  "center"}}
-                  (mxn/mkx rne/Icon {}
+                  (mxn/mk rne/Icon {}
                      {:name    "heartbeat"
                          :type    "font-awesome"
                          :color   "#f50"
                          :onPress #(prn :thump)})
-                  (mxn/mkx rn/Switch
+                  (mxn/mk rn/Switch
                     {:name       :counting?
                      :value      (cI true)
                      :thumbColor (cF (if (mget me :value)
@@ -44,7 +44,7 @@
                      :trackColor          #js {:false "#767577"
                                                :true  "#81b0ff"}
                      #_(js-obj "false" "#767577" "true" "#81b0ff")})
-                  (mxn/mkx rn/Button
+                  (mxn/mk rn/Button
                     {:name     :bam-button
                      :counter  (cI (rand-int 9999))
                      :title    (cF (str "Kaboom is = " (mget me :counter)))
@@ -55,7 +55,7 @@
                      :onPress  #(do (prn :bampress)
                                     (mswap! me :counter inc))})
 
-                  (mxn/mkx rn/Button
+                  (mxn/mk rn/Button
                     {:name  :dumper
                      :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
                     {:title   "Booyambo"                    ;; (mget me :title)
@@ -63,25 +63,25 @@
                      :onPress #(mswap! (mxu! me :bam-button) :counter dec)})
 
 
-                  (mxn/mkx rn/ActivityIndicator
+                  (mxn/mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
                     {:animating (mget me :animating)
                      :size      "small"
                      :color     "#00ff00"})
 
-                  (mxn/mkkx rn/Pressable
+                  (mxn/mkk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
                     (clj->js {:onPressIn #(prn :pressed-In!!)
                               :onPress   #(do (prn :pressed!!)
                                               (mswap! me :clicks inc))})
-                    (mxn/mkkx rn/Text
+                    (mxn/mkk rn/Text
                       {:name :an-item}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
 
-                  (mxn/mkkx rn/View {}
+                  (mxn/mkk rn/View {}
                     {:style {;; :flex 1
                              :flexDirection   "row"
                              :backgroundColor "green"
@@ -89,11 +89,11 @@
                              :height          48
                              :alignItems      "center"}}
 
-                    (mxn/mkkx rn/Text {}
+                    (mxn/mkk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
                       (mxn/strng (str "slidecho: " (mget (mxu! me :slido) :slide-value))))
 
-                    (mxn/mkx rne/Slider
+                    (mxn/mk rne/Slider
                       {:name        :slido
                        :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
                                                    #_(prn :slider-now slot newv oldv c)))}
@@ -107,13 +107,13 @@
                        :thumbStyle    {:height 30 :width 20 #_#_:color "blue" :backgroundColor "cyan"}
                        :onValueChange #(do                  ;;(prn :Sliding! %)
                                          (mset! me :slide-value %))}))
-                  (mxn/mkkx rn/SafeAreaView
+                  (mxn/mkk rn/SafeAreaView
                     {:name :item-list}
                     {:style {:backgroundColor "red"}}
                     (for [n (range (max 1
                                      (min 5
                                        (.floor js/Math (/ (mget (mxr/mxu! me :slido) :slide-value) 10)))))]
-                      (mxn/mkkx rn/Text
+                      (mxn/mkk rn/Text
                         {:name :an-item}
                         {:key   n
                          :style {:color "black" :padding 4 :margin 5}}

@@ -23,7 +23,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (flat/demo)))
+    (simple/demo)))
 
 (defn start
   {:dev/after-load true}
