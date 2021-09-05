@@ -13,7 +13,7 @@
     ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
 
     [mxrn.mxreact :as mxr :refer [mxu! mx*]]
-    [mxrn.mxrgen :as mxn :refer-macros [mxfnc props]]))
+    [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc props]]))
 
 (def <> react/createElement)
 
@@ -21,7 +21,7 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/View
+                (mxn/mkk rn/View
                   {:name :root}
                   #js {:style #js {:backgroundColor "#444"
                                    :flex            1
@@ -31,7 +31,7 @@
                            :type    "font-awesome"
                            :color   "#f50"
                            :onPress #(prn :thump)})
-                  (mxn/Switch
+                  (mxn/mk rn/Switch
                     {:name       :counting?
                      :value      (cI true)
                      :thumbColor (cF (if (mget me :value)
@@ -44,7 +44,7 @@
                               :trackColor          #js {:false "#767577"
                                                         :true  "#81b0ff"}
                               #_(js-obj "false" "#767577" "true" "#81b0ff")}))
-                  (mxn/Button
+                  (mxn/mk rn/Button
                     {:name     :bam-button
                      :counter  (cI (rand-int 9999))
                      :title    (cF (str "Kaboom is = " (mget me :counter)))
@@ -55,44 +55,44 @@
                               :onPress  #(do (prn :bampress)
                                              (mswap! me :counter inc))}))
 
-                  (mxn/Button
+                  (mxn/mk rn/Button
                     {:name  :dumper
                      :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
-                    #js {:title   "Booya"                   ;; (mget me :title)
+                    #js {:title   "Booyambo"                   ;; (mget me :title)
                          :color   "red"
                          :onPress #(mswap! (mxu! me :bam-button) :counter dec)})
 
 
-                  (mxn/ActivityIndicator
+                  (mxn/mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
                     #js {:animating (mget me :animating)
-                         :size  "large"
+                         :size  "small"
                          :color "#00ff00"})
 
-                  (mxn/Pressable
+                  (mxn/mkk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
                     (clj->js {:onPressIn #(prn :pressed-In!!)
                               :onPress   #(do (prn :pressed!!)
                                               (mswap! me :clicks inc))})
-                    (mxn/Text
+                    (mxn/mkk rn/Text
                       {:name :an-item}
-                      #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                      (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks)))))
+                      #js {:style #js {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
+                      (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
-                  (mxn/View {}
+                  (mxn/mkk rn/View {}
                     #js {:style #js {;; :flex 1
                                      :flexDirection   "row"
                                      :backgroundColor "green"
                                      :width           300
                                      :height          48
                                      :alignItems      "center"}}
-                    #_(mxn/Text
-                        {:name :an-item}
-                        #js {:style #js {:width 96 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                        (mxn/strng (str "hit me? " (mget (mxu! me :presser) :clicks))))
 
-                    (mxn/SliderRNE
+                    (mxn/mkk rn/Text {}
+                      #js {:style #js {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
+                      (mxn/strng (str "slidecho: " (mget (mxu! me :slido) :slide-value))))
+
+                    (mxn/mk rne/Slider
                       {:name        :slido
                        :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
                                                    #_(prn :slider-now slot newv oldv c)))}
