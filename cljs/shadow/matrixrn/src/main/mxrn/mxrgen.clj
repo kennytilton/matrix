@@ -100,8 +100,8 @@
   (prn :mkex-sees (seq kids))
   `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
      :sid (swap! mxrn.mxreact/sid-latest inc)
-     ;;,~@(when (seq kids)
-     :kids (tiltontec.model.core/cFkids ~@kids)
+     ~@(when (seq kids)
+     `(:kids (tiltontec.model.core/cFkids ~@kids))
      :rendering (tiltontec.cell.core/cF
                   (react/createElement
                     (mxrn.mxrgen/mxfnc
