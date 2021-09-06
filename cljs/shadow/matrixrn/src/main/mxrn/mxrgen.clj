@@ -106,6 +106,26 @@
      ~@(apply concat
          (into [] mx-props))))
 
+(defmacro mkuscreen [node-type mx-props jsx-props & kids]
+  ;; this does not wrap node-type in a state-hook component so
+  ;; the returned element is of that node-type.
+  ;;
+  ;; Needed for Navigator-Screen, since Nav insists children be Screens
+  ;;
+  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+     :sid (swap! mxrn.mxreact/sid-latest inc)
+     ~@(when (seq kids)
+         `(:kids (tiltontec.model.core/cFkids ~@kids)))
+     :react-element (tiltontec.cell.core/cF
+                      (apply react/createElement ~node-type
+                        (cljs.core/clj->js ~jsx-props)
+                        (doall
+                          (map (fn [mapkid#]
+                                 (fn [] (tiltontec.model.core/mget mapkid# :react-element)))
+                            (tiltontec.model.core/mget ~'me :kids)))))
+     ~@(apply concat
+         (into [] mx-props))))
+
 #_(defmacro Image [mx-props jsx-props]
     `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
        :sid (swap! mxrn.mxreact/sid-latest inc)

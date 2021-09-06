@@ -13,7 +13,7 @@
             ;[mxrn.demo.flatlist :as demo]
             ;[mxrn.demo.http :as demo]
             ; Pick one ^^^ for next line
-            [mxrn.demo.http :as demo]
+            [mxrn.demo.navi :as demo]
             ))
 
 ;; todo get j/lit going
