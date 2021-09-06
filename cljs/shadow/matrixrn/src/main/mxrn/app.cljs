@@ -8,10 +8,13 @@
             ["react" :as r]
             ["react-native" :as rn]
             [mxrn.mxreact :as mxr :refer [mxu!]]
-            [mxrn.demo.simple :as simple]
-            [mxrn.demo.navi :as navi]
-            [mxrn.demo.flatlist :as flat]
-            [mxrn.demo.http :as http]))
+            ;[mxrn.demo.simple :as demo]
+            ;[mxrn.demo.navi :as demo]
+            ;[mxrn.demo.flatlist :as demo]
+            ;[mxrn.demo.http :as demo]
+            ; Pick one ^^^ for next line
+            [mxrn.demo.flatlist :as demo]
+            ))
 
 ;; todo get j/lit going
 (def shadow-splash (js/require "../assets/shadow-cljs.png"))
@@ -23,7 +26,7 @@
   (reset! mxr/ssdict {})
   (reset! mxr/refdict {})
   (reset! matrix
-    (simple/demo)))
+    (demo/demo)))
 
 (defn start
   {:dev/after-load true}

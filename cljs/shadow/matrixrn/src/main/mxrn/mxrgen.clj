@@ -19,12 +19,21 @@
                                              (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
 #_
-(defmacro props [& inherited]
-  `(into {} (for [prop# [~@inherited]]
+    (defmacro props [& inherited]
+      `(into {} (for [prop# [~@inherited]]
+                  (let [[pkey# pget#] (if (vector? prop#)
+                                        prop#
+                                        [prop# prop#])]
+                    [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
+
+#_
+(defmacro with-props [[& inherited] static-props]
+  `(merge (into {} (for [prop# [~@inherited]]
               (let [[pkey# pget#] (if (vector? prop#)
                                     prop#
                                     [prop# prop#])]
-                [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
+                [pkey# (tiltontec.model.core/mget ~'me pget#)])))
+     ~static-props))
 
 (defmacro mk [node-type mx-props jsx-props]
   `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
@@ -74,6 +83,24 @@
 (defmacro mkk [node-type mx-props jsx-props & kids]
   `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
      :sid (swap! mxrn.mxreact/sid-latest inc)
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :rendering (tiltontec.cell.core/cF
+                  (react/createElement
+                    (mxrn.mxrgen/mxfnc
+                      (apply react/createElement ~node-type
+                        (cljs.core/clj->js ~jsx-props)
+                        (doall
+                          (map (fn [mapkid#]
+                                 (tiltontec.model.core/mget mapkid# :rendering))
+                            (tiltontec.model.core/mget ~'me :kids)))))))
+     ~@(apply concat
+         (into [] mx-props))))
+
+(defmacro mkex [node-type mx-props jsx-props & kids]
+  (prn :mkex-sees (seq kids))
+  `(tiltontec.model.core/make :mxrn.mxreact/mxrn.elt
+     :sid (swap! mxrn.mxreact/sid-latest inc)
+     ;;,~@(when (seq kids)
      :kids (tiltontec.model.core/cFkids ~@kids)
      :rendering (tiltontec.cell.core/cF
                   (react/createElement
