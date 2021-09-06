@@ -13,7 +13,7 @@
             ;[mxrn.demo.flatlist :as demo]
             ;[mxrn.demo.http :as demo]
             ; Pick one ^^^ for next line
-            [mxrn.demo.flatlist :as demo]
+            [mxrn.demo.simple :as demo]
             ))
 
 ;; todo get j/lit going
@@ -34,10 +34,10 @@
   (let [app-matrix (matrix-build!)
         root-mx (mget app-matrix :rx-dom)
         _ (prn :root-mx!!!! root-mx)
-        root-element (mget root-mx :rendering)]
+        root-element (mget root-mx :react-element)]
     (prn :root-elt root-element)
     (expo-root/render-root
-      (fn [] (mget root-mx :rendering)))))
+      (fn [] (mget root-mx :react-element)))))
 
 (defn init []
   (start))

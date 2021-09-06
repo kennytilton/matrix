@@ -13,15 +13,13 @@
     ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
 
     [mxrn.mxreact :as mxr :refer [mxu! mx*]]
-    [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc props]]))
-
-(def <> react/createElement)
+    [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc with-props]]))
 
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/mkk rn/View
+                (mxn/mk rn/View
                   {:name :root}
                   {:style {:backgroundColor "#444"
                            :flex            1
@@ -69,19 +67,19 @@
                      :size      "small"
                      :color     "#00ff00"})
 
-                  (mxn/mkk rn/Pressable
+                  (mxn/mk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
                     (clj->js {:onPressIn #(prn :pressed-In!!)
                               :onPress   #(do (prn :pressed!!)
                                               (mswap! me :clicks inc))})
-                    (mxn/mkk rn/Text
+                    (mxn/mk rn/Text
                       {:name :an-item}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
 
-                  (mxn/mkk rn/View {}
+                  (mxn/mk rn/View {}
                     {:style {;; :flex 1
                              :flexDirection   "row"
                              :backgroundColor "green"
@@ -89,7 +87,7 @@
                              :height          48
                              :alignItems      "center"}}
 
-                    (mxn/mkk rn/Text {}
+                    (mxn/mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
                       (mxn/strng (str "slidecho: " (mget (mxu! me :slido) :slide-value))))
 
@@ -107,13 +105,13 @@
                        :thumbStyle    {:height 30 :width 20 #_#_:color "blue" :backgroundColor "cyan"}
                        :onValueChange #(do                  ;;(prn :Sliding! %)
                                          (mset! me :slide-value %))}))
-                  (mxn/mkk rn/SafeAreaView
+                  (mxn/mk rn/SafeAreaView
                     {:name :item-list}
                     {:style {:backgroundColor "red"}}
                     (for [n (range (max 1
                                      (min 5
                                        (.floor js/Math (/ (mget (mxr/mxu! me :slido) :slide-value) 10)))))]
-                      (mxn/mkk rn/Text
+                      (mxn/mk rn/Text
                         {:name :an-item}
                         {:key   n
                          :style {:color "black" :padding 4 :margin 5}}
