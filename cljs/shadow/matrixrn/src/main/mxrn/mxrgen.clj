@@ -29,13 +29,6 @@
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
-#_ (defmacro props [& inherited]
-    `(into {} (for [prop# [~@inherited]]
-                (let [[pkey# pget#] (if (vector? prop#)
-                                      prop#
-                                      [prop# prop#])]
-                  [pkey# (tiltontec.model.core/mget ~'me pget#)]))))
-
 (defmacro with-props [[& inherited] static-props]
     `(merge (into {} (for [prop# [~@inherited]]
                        (let [[pkey# pget#] (if (vector? prop#)
@@ -74,15 +67,6 @@
                             (tiltontec.model.core/mget ~'me :kids)))))
      ~@(apply concat
          (into [] mx-props))))
-
-(defmacro xxx [aaa & kids]
-  `(boom ~aaa
-     :one 42
-     ~@(when (seq kids)
-         `(:kids (cFkids ~@kids)))))
-
-(comment
-  (macroexpand-1 `(xxx :mom :a :b)))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
   ;; todo fancier macrology

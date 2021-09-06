@@ -73,6 +73,3 @@
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
     ;(prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))
-
-
-
