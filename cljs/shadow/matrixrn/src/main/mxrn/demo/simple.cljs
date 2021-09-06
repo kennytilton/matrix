@@ -6,12 +6,9 @@
      :refer-macros [cFkids with-par]
      :refer [matrix mx-par mget mset! mswap!
              fget] :as md]
-
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
-
     [mxrn.mxreact :as mxr :refer [mxu! mx*]]
     [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc with-props]]))
 
@@ -19,69 +16,60 @@
   (md/make ::hxApp
     :rx-dom (cFonce
               (with-par me
-                (mxn/mk rn/View
-                  {:name :root}
-                  {:style {:backgroundColor "#444"
+                (mk rn/View {}
+                  {:style {:backgroundColor "#666"
                            :flex            1
                            :justifyContent  "center"}}
-                  (mxn/mk rne/Icon {}
-                     {:name    "heartbeat"
-                         :type    "font-awesome"
-                         :color   "#f50"
-                         :onPress #(prn :thump)})
-                  (mxn/mk rn/Switch
+                  (mk rne/Icon {}
+                    {:name    "heartbeat"
+                     :type    "font-awesome"
+                     :color   "#f50"
+                     :onPress #(prn :thump)})
+                  (mk rn/Switch
                     {:name       :counting?
                      :value      (cI true)
                      :thumbColor (cF (if (mget me :value)
                                        "#f5dd4b" "#f4f3f4"))}
-                    {:value               (mget me :value)
-                     :thumbColor          (mget me :thumbColor)
-                     :onValueChange       #(mswap! me :value not)
-                     :ios_backgroundColor "#3e3e3e"
-                     :style               #js {:margin 9}
-                     :trackColor          #js {:false "#767577"
-                                               :true  "#81b0ff"}
-                     #_(js-obj "false" "#767577" "true" "#81b0ff")})
-                  (mxn/mk rn/Button
-                    {:name     :bam-button
+                    (with-props [:value :thumbColor]
+                      {:onValueChange       #(mswap! me :value not)
+                       :ios_backgroundColor "red" ;; "#3e3e3e"
+                       :style               {:margin 9}
+                       :trackColor          {:false "orange" ;; "#767577"
+                                             :true  "cyan" #_ "#81b0ff"}}))
+                  (mk rn/Button
+                    {:name     :counter-host
                      :counter  (cI (rand-int 9999))
-                     :title    (cF (str "Kaboom is = " (mget me :counter)))
+                     :kaboom   (cF (str "Kaboxom = " (mget me :counter)))
                      :disabled (cF (not (mget (mxu! me :counting?) :value)))}
-                    {:title    (mget me :title)
-                     :disabled (mget me :disabled)
-                     :style    (clj->js {:color "red"})
-                     :onPress  #(do (prn :bampress)
-                                    (mswap! me :counter inc))})
+                    (with-props [[:title :kaboom] :disabled]
+                      {:style   {:color "red"}
+                       :onPress #(do (prn :bampress)
+                                     (mswap! me :counter inc))}))
 
-                  (mxn/mk rn/Button
-                    {:name  :dumper
-                     :title (cF (str "Downer" (mget (mxu! me :bam-button) :counter)))}
-                    {:title   "Booyambo"                    ;; (mget me :title)
-                     :color   "red"
-                     :onPress #(mswap! (mxu! me :bam-button) :counter dec)})
+                  (mk rn/Button
+                    {:title (cF (str "Downer: " (mget (mxu! me :counter-host) :counter)))}
+                    (with-props [:title]
+                      {:color   "red"
+                       :onPress #(mswap! (mxu! me :counter-host) :counter dec)}))
 
-
-                  (mxn/mk rn/ActivityIndicator
+                  (mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
-                    {:animating (mget me :animating)
-                     :size      "small"
-                     :color     "#00ff00"})
+                    (with-props [:animating]
+                      {:size  "small"
+                       :color "#00ff00"}))
 
                   (mxn/mk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
-                    (clj->js {:onPressIn #(prn :pressed-In!!)
-                              :onPress   #(do (prn :pressed!!)
-                                              (mswap! me :clicks inc))})
-                    (mxn/mk rn/Text
-                      {:name :an-item}
+                    {:onPressIn #(prn :pressed-In!!)
+                     :onPress   #(do (prn :pressed!!)
+                                     (mswap! me :clicks inc))}
+                    (mxn/mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
                       (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
 
-
                   (mxn/mk rn/View {}
-                    {:style {;; :flex 1
-                             :flexDirection   "row"
+                    {:style {:flexDirection   "row"
                              :backgroundColor "green"
                              :width           300
                              :height          48
@@ -89,35 +77,29 @@
 
                     (mxn/mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
-                      (mxn/strng (str "slidecho: " (mget (mxu! me :slido) :slide-value))))
+                      (mxn/strng (str "slidecho: " (mget (mxu! me :some-slider) :slide-value))))
 
                     (mxn/mk rne/Slider
-                      {:name        :slido
+                      {:name        :some-slider
                        :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
                                                    #_(prn :slider-now slot newv oldv c)))}
-                      {:value         (mget me :slide-value)
-                       :name          (mget me :name)
-                       :style         {:flex 2}
-                       :maximumValue  50
-                       :minimumValue  10
-                       :step          1
-                       :trackStyle    {:height 10 :color "green"}
-                       :thumbStyle    {:height 30 :width 20 #_#_:color "blue" :backgroundColor "cyan"}
-                       :onValueChange #(do                  ;;(prn :Sliding! %)
-                                         (mset! me :slide-value %))}))
+                      (with-props [[:value :slide-value]]
+                        {:style         {:flex 2}
+                         :step          1 :minimumValue  10 :maximumValue  50
+                         :trackStyle    {:height 10 :color "green"}
+                         :thumbStyle    {:height 30 :width 20 :backgroundColor "cyan"}
+                         :onValueChange #(mset! me :slide-value %)})))
                   (mxn/mk rn/SafeAreaView
                     {:name :item-list}
                     {:style {:backgroundColor "red"}}
-                    (for [n (range (max 1
-                                     (min 5
-                                       (.floor js/Math (/ (mget (mxr/mxu! me :slido) :slide-value) 10)))))]
+                    (for [n (range
+                              (max 1 (min 5
+                                       (.floor js/Math (/ (mget (mxr/mxu! me :some-slider) :slide-value) 10)))))]
                       (mxn/mk rn/Text
                         {:name :an-item}
                         {:key   n
                          :style {:color "black" :padding 4 :margin 5}}
                         (mxn/strng n)))))))))
-
-
 
 #_(mxn/View {}
     {:style #js {:flex            1
