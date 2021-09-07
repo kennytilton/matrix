@@ -107,7 +107,7 @@
 #_ (mxn/SafeAreaView
      {:name :item-list}
      {:style #js {:backgroundColor "yellow"}}
-     (for [n (range (mget (mxr/mxu! me :my-counter) :counter))]
+     (for [n (range (mget (mxu! me :my-counter) :counter))]
        (mxn/Text
          {:name :an-item}
          {:key   n

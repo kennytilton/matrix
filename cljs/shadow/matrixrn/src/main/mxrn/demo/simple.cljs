@@ -9,8 +9,7 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [mxrn.mxreact :as mxr :refer [mxu! mx*]]
-    [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc with-props]]))
+    [mxrn.mxrgen :as mxn :refer [mxu! mx*] :refer-macros [mk with-props]]))
 
 (defn demo []
   (md/make ::hxApp
@@ -94,7 +93,7 @@
                     {:style {:backgroundColor "red"}}
                     (for [n (range
                               (max 1 (min 5
-                                       (.floor js/Math (/ (mget (mxr/mxu! me :some-slider) :slide-value) 10)))))]
+                                       (.floor js/Math (/ (mget (mxu! me :some-slider) :slide-value) 10)))))]
                       (mxn/mk rn/Text
                         {:name :an-item}
                         {:key   n
