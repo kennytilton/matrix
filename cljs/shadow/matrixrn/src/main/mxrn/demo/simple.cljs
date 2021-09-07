@@ -12,11 +12,11 @@
     [mxrn.mxrgen :as mxn :refer [mxu! mx*] :refer-macros [mk with-props]]))
 
 (defn demo []
-  (md/make ::hxApp
+  (md/make ::rnApp
     :rx-dom (cFonce
               (with-par me
                 (mk rn/View {}
-                  {:style {:backgroundColor "#666"
+                  {:style {:backgroundColor "#bba"
                            :flex            1
                            :justifyContent  "center"}}
                   (mk rne/Icon {}

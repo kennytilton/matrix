@@ -25,9 +25,8 @@
   (reset! mxr/ssdict {})
   (reset! matrix (demo/demo)))
 
-(defn start
-  {:dev/after-load true}
-  []
+(defn ;; ^:dev/after-load
+  start []
   (let [app-matrix (matrix-build!)
         root-mx (mget app-matrix :rx-dom)
         _ (prn :root-mx!!!! root-mx)
