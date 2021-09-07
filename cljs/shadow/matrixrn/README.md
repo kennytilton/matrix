@@ -1,10 +1,16 @@
 # MatrixRN -- The Petri Dish
-
-Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which it was cloned. It will help you run in different IDE stacks. What follows are rough directions to help someone with sufficient resolve explore MatrixRN.
+Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. It will help you run in different IDE stacks. What follows are rough directions to help the early curious explore MatrixRN.
 
 I call this the Petri dish because it is where I am cultivating MatrixRN. ie, It is not done yet. It seems done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding any given widget can bring surprises when first used from MatrixRN.
 
-RN pros are welcome to pitch in!
+The good news is that we have needed just 150LOC to wrap ReactNative with Matrix, a truly reactive state manager which itself is more like 2000LOC. We have done this by letting RN be RN, leveraging state hooks to connect Matrix state change management with React re-rendering.
+
+## Psst! re-frame?
+Put another way, `re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+
+We will cover more in a Wiki write-up, but Matrix is simply an inside-out different approach to UIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` asks us to break down an application problem into so many events, subscriptions, and effects. Matrix accepts the problem in its natural form.
+
+So...different approaches for different developers. `re-frame` suits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts orchestrated at run-time by the `re-frame` engine. Matrix suits those who want to code applications directly, in the image of the problems they solve.
 
 ## Running the demo project
 In a terminal:
