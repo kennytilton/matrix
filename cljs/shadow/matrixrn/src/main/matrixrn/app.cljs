@@ -13,7 +13,7 @@
             ;[matrixrn.demo.flatlist :as demo]
             ;[matrixrn.demo.http :as demo]
             ; Pick one ^^^ for next line
-            [matrixrn.demo.simple :as demo]))
+            [matrixrn.demo.http :as demo]))
 
 
 (def shadow-splash (js/require "../assets/shadow-cljs.png"))
@@ -29,7 +29,7 @@
   start []
   (let [app-matrix (matrix-build!)
         root-mx (mget app-matrix :rx-dom)
-        _ (prn :root-mx!!!! root-mx)
+        _ (prn :root-mmmmmmx!!!! root-mx)
         root-element (mget root-mx :react-element)]
     (prn :root-elt root-element)
     (expo-root/render-root

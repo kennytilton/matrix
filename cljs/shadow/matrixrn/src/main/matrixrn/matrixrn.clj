@@ -117,7 +117,7 @@
          (into [] mx-props))))
 
 (defmacro fmu [what]
-  `(fget ~name ~'me
+  `(tiltontec.model.core/fget ~what ~'me
      :me? false
      :inside? false
      :must? true
