@@ -11,7 +11,7 @@
     [react-native :as rn]
     [react-native-elements :as rne]
     [mxrn.mxreact :as mxr :refer [mxu!]]
-    [mxrn.mxrgen :as mxn :refer-macros [mxfnc props]]))
+    [mxrn.matrixrn :as mxn :refer-macros [mxfnc props]]))
 
 
 

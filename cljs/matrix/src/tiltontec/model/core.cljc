@@ -1,4 +1,6 @@
 (ns tiltontec.model.core
+  #?(:cljs (:require-macros
+             [tiltontec.model.core :refer [cFkids with-par]]))
   (:require
     [clojure.set :refer [difference]]
     #?(:cljs [tiltontec.util.base

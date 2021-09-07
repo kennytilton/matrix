@@ -18,7 +18,7 @@
     [react-native-elements :as rne]
 
     [mxrn.mxreact :as mxr :refer [mxu!]]
-    [mxrn.mxrgen :as mxn :refer-macros [mxfnc props]]))
+    [mxrn.matrixrn :as mxn :refer-macros [mxfnc props]]))
 
 (defn search-input []
   (mxn/TextInput

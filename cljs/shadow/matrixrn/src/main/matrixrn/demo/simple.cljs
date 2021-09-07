@@ -1,22 +1,19 @@
-(ns mxrn.demo.simple
+(ns matrixrn.demo.simple
   (:require
     [clojure.string :as str]
-    [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
-    [tiltontec.model.core
-     :refer-macros [cFkids with-par]
-     :refer [matrix mx-par mget mset! mswap!
-             fget] :as md]
+    [tiltontec.cell.core :refer-macros [cF cFn cFonce] :refer [cI]]
+    [tiltontec.model.core :refer [with-par matrix mget mset! mswap!] :as md]
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [mxrn.mxrgen :as mxn :refer [mxu! mx*] :refer-macros [mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [mxu! mx* mk with-props]]))
 
 (defn demo []
   (md/make ::rnApp
     :rx-dom (cFonce
               (with-par me
                 (mk rn/View {}
-                  {:style {:backgroundColor "#bba"
+                  {:style {:backgroundColor "linen"
                            :flex            1
                            :justifyContent  "center"}}
                   (mk rne/Icon {}
@@ -38,7 +35,7 @@
                   (mk rn/Button
                     {:name     :counter-host
                      :counter  (cI (rand-int 9999))
-                     :kaboom   (cF (str "Kaboxom = " (mget me :counter)))
+                     :kaboom   (cF (str "Kaboom = " (mget me :counter)))
                      :disabled (cF (not (mget (mxu! me :counting?) :value)))}
                     (with-props [[:title :kaboom] :disabled]
                       {:style   {:color "red"}

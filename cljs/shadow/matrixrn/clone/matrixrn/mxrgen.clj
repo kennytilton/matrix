@@ -13,7 +13,7 @@
         :kids (tiltontec.model.core/cFkids ~@kids#)
         :rendering (tiltontec.cell.core/cF
                      (react/createElement
-                       (matrixrn.mxrgen/mxfnc
+                       (matrixrn.matrixrn/mxfnc
                          (apply react/createElement
                            (or
                              (get (matrixrn.mxreact/rn-composite-types) ~~(keyword gen-type))
@@ -40,7 +40,7 @@
         :sid (swap! matrixrn.mxreact/sid-latest inc)
         :rendering (tiltontec.cell.core/cF
                      (react/createElement
-                       (matrixrn.mxrgen/mxfnc
+                       (matrixrn.matrixrn/mxfnc
                          (do (prn :gen-atom ~~(keyword gen-type))
                              (react/createElement
                                (or (get {:ActivityIndicator rn/ActivityIndicator
@@ -68,7 +68,7 @@
   `(tiltontec.model.core/make :matrixrn.mxreact/matrixrn.elt
      :sid (swap! matrixrn.mxreact/sid-latest inc)
      :rendering (tiltontec.cell.core/cF
-                  (react/createElement (matrixrn.mxrgen/mxfnc
+                  (react/createElement (matrixrn.matrixrn/mxfnc
                                          (react/createElement
                                            rn/Image
                                            ~jsx-props))))
@@ -79,7 +79,7 @@
   `(tiltontec.model.core/make :matrixrn.mxreact/matrixrn.elt
      :sid (swap! matrixrn.mxreact/sid-latest inc)
      :rendering (tiltontec.cell.core/cF
-                  (react/createElement (matrixrn.mxrgen/mxfnc
+                  (react/createElement (matrixrn.matrixrn/mxfnc
                                          (react/createElement
                                            rn/ImageBackground
                                            ~jsx-props
@@ -94,7 +94,7 @@
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :rendering (tiltontec.cell.core/cF
                     ;; todo better key
-                    (react/createElement (matrixrn.mxrgen/mxfnc
+                    (react/createElement (matrixrn.matrixrn/mxfnc
                                            (react/createElement rn/Text
                                              (cljs.core/clj->js {:key (rand-int 9999)}) {}
                                              (tiltontec.model.core/mget ~'me ~content-kwd))))))))

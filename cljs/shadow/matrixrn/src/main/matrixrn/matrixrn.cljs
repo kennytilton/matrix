@@ -1,5 +1,5 @@
-(ns mxrn.mxrgen
-  (:require-macros [mxrn.mxrgen])
+(ns matrixrn.matrixrn
+  (:require-macros [matrixrn.matrixrn])
   (:refer-clojure :exclude [meta time])
   (:require
     [cljs.pprint :refer [pprint cl-format]]
@@ -41,7 +41,7 @@
      :up? true
      :must? must-find?)))
 
-(defmethod not-to-be [::mxrn.elt] [me]
+(defmethod not-to-be [::matrixrn.elt] [me]
   ;; todo: worry about leaks
   (doseq [k (:kids @me)]
     (when (md-ref? k)
@@ -58,8 +58,8 @@
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
-(defmethod observe-by-type [::mxrn.elt] [slot me newv oldv cell]
-  ; (prn :obs-type-mxrn-elt-entry slot (mget me :name)(mget me :sid))
+(defmethod observe-by-type [::matrixrn.elt] [slot me newv oldv cell]
+  ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
     ;(prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))

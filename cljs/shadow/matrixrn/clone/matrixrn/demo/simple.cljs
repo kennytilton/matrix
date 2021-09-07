@@ -13,7 +13,7 @@
     ;["@react-navigation/native" :refer [NavigationContainer] :as rnav]
 
     [mxrn.mxreact :as mxr :refer [mxu!]]
-    [mxrn.mxrgen :as mxn :refer-macros [mxfnc props]]))
+    [mxrn.matrixrn :as mxn :refer-macros [mxfnc props]]))
 
 (def <> react/createElement)
 

@@ -1,4 +1,4 @@
-(ns mxrn.app
+(ns matrixrn.app
   (:require [tiltontec.model.core
              :refer-macros [cFkids with-par]
              :refer [matrix mx-par mget mset! mswap!
@@ -7,13 +7,13 @@
             [expo.root :as expo-root]
             ["react" :as r]
             ["react-native" :as rn]
-            [mxrn.mxrgen :as mxr :refer [mxu!]]
-            ;[mxrn.demo.simple :as demo]
-            ;[mxrn.demo.navi :as demo]
-            ;[mxrn.demo.flatlist :as demo]
-            ;[mxrn.demo.http :as demo]
+            [matrixrn.matrixrn :as mxr :refer [mxu!]]
+            ;[matrixrn.demo.simple :as demo]
+            ;[matrixrn.demo.navi :as demo]
+            ;[matrixrn.demo.flatlist :as demo]
+            ;[matrixrn.demo.http :as demo]
             ; Pick one ^^^ for next line
-            [mxrn.demo.simple :as demo]))
+            [matrixrn.demo.simple :as demo]))
 
 
 (def shadow-splash (js/require "../assets/shadow-cljs.png"))
@@ -25,7 +25,7 @@
   (reset! mxr/ssdict {})
   (reset! matrix (demo/demo)))
 
-(defn ;; ^:dev/after-load
+(defn ^:dev/after-load
   start []
   (let [app-matrix (matrix-build!)
         root-mx (mget app-matrix :rx-dom)
