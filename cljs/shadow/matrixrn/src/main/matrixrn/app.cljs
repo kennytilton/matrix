@@ -11,8 +11,8 @@
             ; Pick one ^^^ for next line
             [matrixrn.demo.flatlist :as demo]))
 
-(def shadow-splash (js/require "../assets/shadow-cljs.png"))
-(def cljs-splash (js/require "../assets/cljs.png"))
+;(def shadow-splash (js/require "../assets/shadow-cljs.png"))
+;(def cljs-splash (js/require "../assets/cljs.png"))
 
 (def <> r/createElement)
 
@@ -22,6 +22,7 @@
 
 (defn ;; ^:dev/after-load
   start []
+  ;(prn :splash!!!!!!!! shadow-splash)
   (let [app-matrix (matrix-build!)
         root-mx (md/mget app-matrix :rx-dom)
         _ (prn :root-mmmmmmx!!!! root-mx)

@@ -20,7 +20,7 @@
                     {:name    "heartbeat"
                      :type    "font-awesome"
                      :color   "#f50"
-                     :onPress #(prn :thump)})
+                     :onPress #(prn :thump-thump)})
                   (mk rn/Switch
                     {:name       :counting?
                      :value      (cI true)
@@ -36,17 +36,17 @@
                     {:name     :counter-host
                      :counter  (cI (rand-int 9999))
                      :kaboom   (cF (str "Kaboom = " (mget me :counter)))
-                     :disabled (cF (not (mget (mxu! me :counting?) :value)))}
+                     :disabled (cF (not (mget (fmu :counting?) :value)))}
                     (with-props [[:title :kaboom] :disabled]
                       {:style   {:color "red"}
                        :onPress #(do (prn :bampress)
                                      (mswap! me :counter inc))}))
 
                   (mk rn/Button
-                    {:title (cF (str "Downer: " (mget (mxu! me :counter-host) :counter)))}
+                    {:title (cF (str "Downer: " (mget (fmu :counter-host) :counter)))}
                     (with-props [:title]
                       {:color   "red"
-                       :onPress #(mswap! (mxu! me :counter-host) :counter dec)}))
+                       :onPress #(mswap! (fmu :counter-host) :counter dec)}))
 
                   (mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
@@ -62,7 +62,7 @@
                                      (mswap! me :clicks inc))}
                     (mxn/mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                      (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
+                      (mxn/strng (str "hit me up? " (mget (fmu :presser) :clicks)))))
 
                   (mxn/mk rn/View {}
                     {:style {:flexDirection   "row"
@@ -73,7 +73,7 @@
 
                     (mxn/mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
-                      (mxn/strng (str "slidecho: " (mget (mxu! me :some-slider) :slide-value))))
+                      (mxn/strng (str "slidecho: " (mget (fmu :some-slider) :slide-value))))
 
                     (mxn/mk rne/Slider
                       {:name        :some-slider
@@ -90,7 +90,7 @@
                     {:style {:backgroundColor "red"}}
                     (for [n (range
                               (max 1 (min 5
-                                       (.floor js/Math (/ (mget (mxu! me :some-slider) :slide-value) 10)))))]
+                                       (.floor js/Math (/ (mget (fmu :some-slider) :slide-value) 10)))))]
                       (mxn/mk rn/Text
                         {:name :an-item}
                         {:key   n
