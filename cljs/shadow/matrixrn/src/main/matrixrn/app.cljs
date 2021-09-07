@@ -3,7 +3,7 @@
             [expo.root :as expo-root]
             ["react" :as r]
             ["react-native" :as rn]
-            [matrixrn.matrixrn :as mxn :refer [mxu!]]
+            [matrixrn.matrixrn :as mxn]
             ;[matrixrn.demo.simple :as demo]
             ;[matrixrn.demo.navi :as demo]
             ;[matrixrn.demo.flatlist :as demo]

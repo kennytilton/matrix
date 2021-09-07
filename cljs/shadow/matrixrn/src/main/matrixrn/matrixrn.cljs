@@ -25,13 +25,6 @@
 (defn set-state-unrecord [me]
   (swap! ssdict dissoc (mget me :sid)))
 
-(defn mxu! [me name]
-  (fget name me
-    :me? false
-    :inside? false
-    :must? true
-    :up? true))
-
 (defn mx*
   ([me name] (mx* me name true))
   ([me name must-find?]
