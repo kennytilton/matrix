@@ -9,8 +9,7 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [mxrn.mxreact :as mxr :refer [mxu! mx*]]
-    [mxrn.mxrgen :as mxn :refer-macros [mk mxfnc with-props]]))
+    [mxrn.mxrgen :as mxn :refer [mx$ mxu mx* mk with-props]]))
 
 (defn demo []
   (md/make ::hxApp
@@ -40,17 +39,17 @@
                     {:name     :counter-host
                      :counter  (cI (rand-int 9999))
                      :kaboom   (cF (str "Kaboxom = " (mget me :counter)))
-                     :disabled (cF (not (mget (mxu! me :counting?) :value)))}
+                     :disabled (cF (not (mget (mxu me :counting?) :value)))}
                     (with-props [[:title :kaboom] :disabled]
                       {:style   {:color "red"}
                        :onPress #(do (prn :bampress)
                                      (mswap! me :counter inc))}))
 
                   (mk rn/Button
-                    {:title (cF (str "Downer: " (mget (mxu! me :counter-host) :counter)))}
+                    {:title (cF (str "Downer: " (mget (mxu me :counter-host) :counter)))}
                     (with-props [:title]
                       {:color   "red"
-                       :onPress #(mswap! (mxu! me :counter-host) :counter dec)}))
+                       :onPress #(mswap! (mxu me :counter-host) :counter dec)}))
 
                   (mk rn/ActivityIndicator
                     {:animating (cF (mget (mx* me :counting?) :value))}
@@ -58,28 +57,28 @@
                       {:size  "small"
                        :color "#00ff00"}))
 
-                  (mxn/mk rn/Pressable
+                  (mk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
                     {:onPressIn #(prn :pressed-In!!)
                      :onPress   #(do (prn :pressed!!)
                                      (mswap! me :clicks inc))}
-                    (mxn/mk rn/Text {}
+                    (mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                      (mxn/strng (str "hit me up? " (mget (mxu! me :presser) :clicks)))))
+                      (mxn/mx$ (str "hit me up? " (mget (mxu me :presser) :clicks)))))
 
-                  (mxn/mk rn/View {}
+                  (mk rn/View {}
                     {:style {:flexDirection   "row"
                              :backgroundColor "green"
                              :width           300
                              :height          48
                              :alignItems      "center"}}
 
-                    (mxn/mk rn/Text {}
+                    (mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
-                      (mxn/strng (str "slidecho: " (mget (mxu! me :some-slider) :slide-value))))
+                      (mx$ (str "slidecho: " (mget (mxu me :some-slider) :slide-value))))
 
-                    (mxn/mk rne/Slider
+                    (mk rne/Slider
                       {:name        :some-slider
                        :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
                                                    #_(prn :slider-now slot newv oldv c)))}
@@ -89,17 +88,17 @@
                          :trackStyle    {:height 10 :color "green"}
                          :thumbStyle    {:height 30 :width 20 :backgroundColor "cyan"}
                          :onValueChange #(mset! me :slide-value %)})))
-                  (mxn/mk rn/SafeAreaView
+                  (mk rn/SafeAreaView
                     {:name :item-list}
                     {:style {:backgroundColor "red"}}
                     (for [n (range
                               (max 1 (min 5
-                                       (.floor js/Math (/ (mget (mxr/mxu! me :some-slider) :slide-value) 10)))))]
-                      (mxn/mk rn/Text
+                                       (.floor js/Math (/ (mget (mxu me :some-slider) :slide-value) 10)))))]
+                      (mk rn/Text
                         {:name :an-item}
                         {:key   n
                          :style {:color "black" :padding 4 :margin 5}}
-                        (mxn/strng n)))))))))
+                        (mx$ n)))))))))
 
 #_(mxn/View {}
     {:style #js {:flex            1

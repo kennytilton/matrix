@@ -8,21 +8,27 @@
     [expo.root :as expo-root]
     ["react" :as r]
     ["react-native" :as rn]
-    [mxrn.mxreact :as mxr :refer [mxu!]]
+    ; todo rename to mxrn or matrixrn
+    [mxrn.mxrgen :as mxn]
     ; simple navi flatlist http
     ; Pick one ^^^ for next line
     [mxrn.demo.simple :as demo]
-    ))
+    [mxrn.demo.navi]
+    [mxrn.demo.flatlist]
+    [mxrn.demo.http]))
 
-;; todo get j/lit going
+;; todo see if pez flashes twice
+;; todo images!
+;; todo see about not flashing text input cursor when not focused
+;; todo try deploying
+;; todo try android
+
 (def shadow-splash (js/require "../assets/shadow-cljs.png"))
 (def cljs-splash (js/require "../assets/cljs.png"))
 
-(def <> r/createElement)
-
 (defn matrix-build! []
-  (reset! mxr/ssdict {})
-  (reset! mxr/refdict {})
+  (reset! mxn/ssdict {})
+  (reset! mxn/refdict {})
   (reset! matrix
     (demo/demo)))
 
