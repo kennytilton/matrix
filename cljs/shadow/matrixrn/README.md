@@ -1,3 +1,37 @@
+# MatrixRN -- The Petrie Dish
+
+Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which it was cloned. It will help you run in different IDE stacks. What follows is rough directions to help someone with sufficient resolve explore MatrixRN.
+
+## Running the demo project
+In a terminal:
+* clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
+* `cd _repoLocation_/cljs/shadow/matrixrn`;
+* `npx shadow-cljs watch app` to start compilation;
+* wait for `[:app] Build completed....`
+
+In a new terminal:
+* `npm start`;
+* the Metro Bundler will start and print to the console;
+* a browser page for the Metro Bundler will be opened at `localhost:19002`;
+* on that page, click `Run on IOS Simulator`;
+
+Wait a minute
+* an iOS sim will appear;
+* another web page `http://localhost:19000/debugger-ui/` will appear;
+* enter the developer console on this page to see application prints and exceptions.
+
+You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics.
+
+## Editing the demo project. I use Cursive
+I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
+
+That is OK. Follow these steps for a solid Cursive experience:
+* from IntelliJ, select `File>New>Project from existing sources...`;
+* navigate to `_repoLocation_/cljs/shadow/matrixrn` and open the `pom.xml`; and
+* yer done.
+
+We now return you to the original read-me.
+
 # React Native using shadow-cljs in 3 minutes
 
 The fastest way a [ClojureScript](https://clojurescript.org/) coder can get started with React Native development. *Prove me wrong.*
