@@ -11,6 +11,46 @@
     [react-native-elements :as rne]
     [mxrn.mxrgen :as mxn :refer [mx$ mxu mx* mk with-props]]))
 
+(defn slider-echoed-in-text []
+  ;; composability demonstration
+  (mk rn/View {}
+    {:style {:flexDirection   "row"
+             :backgroundColor "green"
+             :width           300
+             :height          48
+             :alignItems      "center"}}
+
+    (mk rn/Text {}
+      {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
+      (mx$ (str "slidecho: " (mget (mxu me :some-slider) :slide-value))))
+
+    (mk rne/Slider
+      {:name        :some-slider
+       :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
+                                   #_(prn :slider-now slot newv oldv c)))}
+      (with-props [[:value :slide-value]]
+        {:style         {:flex 2}
+         :step          1 :minimumValue  10 :maximumValue  50
+         :trackStyle    {:height 10 :color "green"}
+         :thumbStyle    {:height 30 :width 20 :backgroundColor "cyan"}
+         :onValueChange #(mset! me :slide-value %)}))))
+
+(defn slider-with-matching-kids []
+  ;; kid-flattening demo
+  [(slider-echoed-in-text)
+
+   (mk rn/SafeAreaView
+     {:name :item-list}
+     {:style {:backgroundColor "red"}}
+     (for [n (range
+               (max 1 (min 5
+                        (.floor js/Math (/ (mget (mxu me :some-slider) :slide-value) 10)))))]
+       (mk rn/Text
+         {:name :an-item}
+         {:key   n
+          :style {:color "black" :padding 4 :margin 5}}
+         (mx$ n))))])
+
 (defn demo []
   (md/make ::hxApp
     :rx-dom (cFonce
@@ -57,6 +97,8 @@
                       {:size  "small"
                        :color "#00ff00"}))
 
+                  (slider-with-matching-kids)
+
                   (mk rn/Pressable
                     {:name   :presser
                      :clicks (cI 3)}
@@ -65,40 +107,7 @@
                                      (mswap! me :clicks inc))}
                     (mk rn/Text {}
                       {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
-                      (mxn/mx$ (str "hit me up? " (mget (mxu me :presser) :clicks)))))
-
-                  (mk rn/View {}
-                    {:style {:flexDirection   "row"
-                             :backgroundColor "green"
-                             :width           300
-                             :height          48
-                             :alignItems      "center"}}
-
-                    (mk rn/Text {}
-                      {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
-                      (mx$ (str "slidecho: " (mget (mxu me :some-slider) :slide-value))))
-
-                    (mk rne/Slider
-                      {:name        :some-slider
-                       :slide-value (cI 0.3 :obs (fn [slot me newv oldv c]
-                                                   #_(prn :slider-now slot newv oldv c)))}
-                      (with-props [[:value :slide-value]]
-                        {:style         {:flex 2}
-                         :step          1 :minimumValue  10 :maximumValue  50
-                         :trackStyle    {:height 10 :color "green"}
-                         :thumbStyle    {:height 30 :width 20 :backgroundColor "cyan"}
-                         :onValueChange #(mset! me :slide-value %)})))
-                  (mk rn/SafeAreaView
-                    {:name :item-list}
-                    {:style {:backgroundColor "red"}}
-                    (for [n (range
-                              (max 1 (min 5
-                                       (.floor js/Math (/ (mget (mxu me :some-slider) :slide-value) 10)))))]
-                      (mk rn/Text
-                        {:name :an-item}
-                        {:key   n
-                         :style {:color "black" :padding 4 :margin 5}}
-                        (mx$ n)))))))))
+                      (mxn/mx$ (str "hit me up? " (mget (mxu me :presser) :clicks))))))))))
 
 #_(mxn/View {}
     {:style #js {:flex            1
