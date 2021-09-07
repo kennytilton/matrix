@@ -13,8 +13,7 @@
             ;[matrixrn.demo.flatlist :as demo]
             ;[matrixrn.demo.http :as demo]
             ; Pick one ^^^ for next line
-            [matrixrn.demo.http :as demo]))
-
+            [matrixrn.demo.flatlist :as demo]))
 
 (def shadow-splash (js/require "../assets/shadow-cljs.png"))
 (def cljs-splash (js/require "../assets/cljs.png"))
@@ -25,7 +24,7 @@
   (reset! mxr/ssdict {})
   (reset! matrix (demo/demo)))
 
-(defn ^:dev/after-load
+(defn ;; ^:dev/after-load
   start []
   (let [app-matrix (matrix-build!)
         root-mx (mget app-matrix :rx-dom)
