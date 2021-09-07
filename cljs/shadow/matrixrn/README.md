@@ -1,6 +1,10 @@
-# MatrixRN -- The Petrie Dish
+# MatrixRN -- The Petri Dish
 
-Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which it was cloned. It will help you run in different IDE stacks. What follows is rough directions to help someone with sufficient resolve explore MatrixRN.
+Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which it was cloned. It will help you run in different IDE stacks. What follows are rough directions to help someone with sufficient resolve explore MatrixRN.
+
+I call this the Petri dish because it is where I am cultivating MatrixRN. ie, It is not done yet. It seems done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding any given widget can bring surprises when first used from MatrixRN.
+
+RN pros are welcome to pitch in!
 
 ## Running the demo project
 In a terminal:
