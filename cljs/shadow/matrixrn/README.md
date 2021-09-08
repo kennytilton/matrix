@@ -35,7 +35,9 @@ Wait a minute
 * another web page `http://localhost:19000/debugger-ui/` will appear;
 * enter the developer console on this page to see application prints and exceptions.
 
-You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics.
+You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN.
+
+Speaking of "RSN", pull often: the petri dish is growing hourly.
 
 ## Editing the demo project. I use Cursive
 I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
