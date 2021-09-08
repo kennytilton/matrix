@@ -45,7 +45,7 @@ Wait a minute.
 * * click on the simulator;
 * * Using the Simulator menu bar, select Device>shake;
 * * Select `Debug remote JS`
-* once you ge the debugger-ui web page to appear, enter the developer console on this page to see application prints and exceptions.
+* once you get the debugger-ui web page to appear, enter the developer console on this page to see application prints and exceptions.
 
 You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN.
 
