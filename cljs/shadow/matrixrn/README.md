@@ -1,16 +1,21 @@
 # MatrixRN -- The Petri Dish
-Below is the read-me is from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. It will help you run in different IDE stacks. What follows are rough directions to help the early curious explore MatrixRN.
+Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/shadow/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
 
-I call this the Petri dish because it is where I am cultivating MatrixRN. ie, It is not done yet. It seems done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding any given widget can bring surprises when first used from MatrixRN.
+What follows are rough directions to help the early curious explore MatrixRN.
 
-The good news is that we have needed just 150LOC to wrap ReactNative with Matrix, a truly reactive state manager which itself is more like 2000LOC. We have done this by letting RN be RN, leveraging state hooks to connect Matrix state change management with React re-rendering.
+## Petri dish?
+I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises. MatrixRN will paper these over where possible, and grow with each papering.
+
+The good news is that, so far, we have needed just 150LOC to wrap ReactNative with Matrix, a mature, truly reactive state manager that harkens back twenty-five years to its Common Lisp progenitor. We have done this by letting RN be RN, doing no more than using React state hooks to connect Matrix state change management with React rendering and events.
 
 ## Psst! re-frame?
-Put another way, `re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
 
-We will cover more in a Wiki write-up, but Matrix is simply an inside-out different approach to UIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` asks us to break down an application problem into so many events, subscriptions, and effects. Matrix accepts the problem in its natural form.
+We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form. 
 
-So...different approaches for different developers. `re-frame` suits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts orchestrated at run-time by the `re-frame` engine. Matrix suits those who want to code applications directly, in the image of the problems they solve.
+These different approaches will suit different developers. `re-frame` fits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts, neatly organized by type of artifact into different directories. Matrix suits those who want to code applications organically, in the image of the problems they solve. Events, dependencies, state change, and views are all co-located and largely transparent.
+
+More soon in a Wiki walk-through of these POC examples.
 
 ## Running the demo project
 In a terminal:
