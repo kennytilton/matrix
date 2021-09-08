@@ -1,2 +1,0 @@
-^{:react-native :expo} ;; use :expo if you are using Expo
-{:main mxrn.main}

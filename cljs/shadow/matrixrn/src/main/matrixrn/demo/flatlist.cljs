@@ -66,23 +66,43 @@
                                       {:key   (str (.now js/Date) (rand-int 99999))
                                        :title "Fall out of bed"}
                                       {:key   (str (.now js/Date) (rand-int 99999))
-                                       :title "Drag comb across head"}])}
+                                       :title "Drag comb across head"}
+                                      {:key   (str (.now js/Date) (rand-int 99999))
+                                       :title "Find way down the stairs"}])}
                     {:style {:flex      1
                              :marginTop 0}}
                     (mk rn/FlatList
-                      {:data (cF (clj->js (mget (mx-par me) :todo-items)))}
+                      {:name :flatty
+                       :data (cF (clj->js (mget (mx-par me) :todo-items)))}
                       {:data         (mget me :data)
                        :keyExtractor (fn [i] (.-key i))
                        :renderItem   (fn [i]
                                        (<> rn/View
-                                         (clj->js {:style {:backgroundColor  "#f9c2ff"
+                                         (clj->js {:style {:backgroundColor  "#ffc2ff"
+                                                           :flex             1
+                                                           :flexDirection    "row"
                                                            :padding          9
-                                                           :marginVertical   8
+                                                           :marginVertical   4
                                                            :marginHorizontal 16}})
-                                         (<> rn/Text (clj->js {:style {:fontSize 28}})
+                                         (<> rn/Text
+                                           #js {:style #js {:fontSize 24}}
                                            (.-title (.-item i)))
-                                         #_ (<> rn/Text (clj->js {:style {:fontSize 9}})
-                                           "X")))})))))))
+                                         (<> rne/Icon
+                                           (clj->js {:name    "trash"
+                                                     :type    "font-awesome"
+                                                     :color   "#f50"
+                                                     :style    {:flex 01 :margin 6}
+                                                     :onPress #(let [item (:item (js->clj i :keywordize-keys true))
+                                                                     current (mget (fmu :todos-container) :todo-items)
+                                                                     next (remove (fn [c]
+                                                                                    (= (js->clj c) item))
+                                                                            current)]
+                                                                 (prn :bump i)
+                                                                 (prn :bump-cvtd item)
+                                                                 (prn :bump (js->clj i :keywordize-keys true))
+                                                                 (prn :current current)
+                                                                 (prn :next (count next))
+                                                                 (mset! (fmu :todos-container) :todo-items next))}))))})))))))
 
 ;;;
 ;;; todo Use this so SafeAreaView on Android stays away from status bar

@@ -1,8 +1,0 @@
-{:paths ["src"]
- :deps  {lilactown/helix             {:mvn/version "0.1.2-SNAPSHOT"}
-         binaryage/devtools          {:mvn/version "0.9.7"}
-         thheller/shadow-cljs        {:mvn/version "2.15.1"}
-         com.taoensso/tufte          {:mvn/version "2.2.0"}
-         tiltontec/matrix            {:mvn/version "4.1.1-SNAPSHOT"}
-         ;;com.tiltontec/matrix        {:mvn/version "0.1.3-SNAPSHOT" #_ "4.1.1-SNAPSHOT"}
-         com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}}}

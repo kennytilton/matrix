@@ -12,4 +12,5 @@ checkos
 target
 files
 closure-library
+cljs/archive
 
