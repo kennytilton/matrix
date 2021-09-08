@@ -26,21 +26,26 @@ More soon in a Wiki walk-through of these POC examples.
 ## Running the demo project
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
-* `cd _repoLocation_/cljs/shadow/matrixrn`;
+* `cd (matrix location)/cljs/shadow/matrixrn`;
 * `npm install`
 * `npx shadow-cljs watch app` to start compilation;
-* wait for `[:app] Build completed....`
+* note: while working on the code, watch this terminal for compilation errors;
+* wait for `[:app] Build completed....` before continuing to the next step.
 
 In a new terminal:
 * `npm start`;
-* the Metro Bundler will start and print to the console;
+* the Metro Bundler will start and print stuff to the console;
 * a browser page for the Metro Bundler will be opened at `localhost:19002`;
 * on that page, click `Run on IOS Simulator`;
 
-Wait a minute
+Wait a minute.
 * an iOS sim will appear;
 * another web page `http://localhost:19000/debugger-ui/` will appear;
-* enter the developer console on this page to see application prints and exceptions.
+* * this ^^ may require an installation of React tools, or even initially:
+* ** click on the simulator;
+* ** Using the Simulator menu bar, select Device>shake;
+* ** Select `Debug remote JS`
+* once you ge the debugger-ui web page to appear, enter the developer console on this page to see application prints and exceptions.
 
 You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN.
 
