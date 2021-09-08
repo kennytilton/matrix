@@ -1,3 +1,63 @@
+# Alert
+Found a missing file testing a separate install. Please check back in an hour.
+
+# MatrixRN -- The Petri Dish
+Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/shadow/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
+
+What follows are rough directions to help the early curious explore MatrixRN.
+
+![A Petri dish](assets/petri-dish-512.jpeg)
+
+"Petri Dish" by Pacific Northwest National Laboratory
+
+## Petri dish?
+I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises; it lacks the consistency of HTML's `<tag attributes*>children</tag>`. MatrixRN will paper these over where possible, and grow with each papering.
+
+The good news is that, so far, we have needed just 150LOC to wrap ReactNative with Matrix, a mature, truly reactive state manager that harkens back twenty-five years to its Common Lisp progenitor. We have done this by letting RN be RN, doing no more than using React state hooks to connect Matrix state change management with React rendering and events.
+
+Furthermore, MatrixRN wraps ReactNative thinly. We use props with functional components, and have access to `createElement` as the examples show. If we know RN, we can code with MatrixRN.
+
+## Psst! re-frame?
+`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+
+We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form. 
+
+These different approaches will suit different developers. `re-frame` fits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts, neatly organized by type of artifact into different directories. Matrix suits those who want to code applications organically, in the image of the problems they solve. Events, dependencies, state change, and views are all co-located and largely transparent.
+
+More soon in a Wiki walk-through of these POC examples.
+
+## Running the demo project
+In a terminal:
+* clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
+* `cd _repoLocation_/cljs/shadow/matrixrn`;
+* `npx shadow-cljs watch app` to start compilation;
+* wait for `[:app] Build completed....`
+
+In a new terminal:
+* `npm start`;
+* the Metro Bundler will start and print to the console;
+* a browser page for the Metro Bundler will be opened at `localhost:19002`;
+* on that page, click `Run on IOS Simulator`;
+
+Wait a minute
+* an iOS sim will appear;
+* another web page `http://localhost:19000/debugger-ui/` will appear;
+* enter the developer console on this page to see application prints and exceptions.
+
+You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN.
+
+Speaking of "RSN", pull often: the petri dish is growing hourly.
+
+## Editing the demo project. I use Cursive
+I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
+
+That is OK. Follow these steps for a solid Cursive experience:
+* from IntelliJ, select `File>New>Project from existing sources...`;
+* navigate to `_repoLocation_/cljs/shadow/matrixrn` and open the `pom.xml`; and
+* yer done.
+
+We now return you to the original read-me.
+
 # React Native using shadow-cljs in 3 minutes
 
 The fastest way a [ClojureScript](https://clojurescript.org/) coder can get started with React Native development. *Prove me wrong.*
