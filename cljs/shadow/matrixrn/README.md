@@ -1,3 +1,6 @@
+# Alert
+Found a missing file testing a separate install. Please check back in an hour.
+
 # MatrixRN -- The Petri Dish
 Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/shadow/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
 
