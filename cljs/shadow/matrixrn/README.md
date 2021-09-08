@@ -3,7 +3,8 @@ Two scrolls down you will find [the read-me](https://github.com/kennytilton/matr
 
 What follows are rough directions to help the early curious explore MatrixRN.
 
-![A Petri dish](assets/petri-dish.jpeg)
+![A Petri dish](assets/petri-dish-512.jpeg)
+
 "Petri Dish" by Pacific Northwest National Laboratory
 
 ## Petri dish?
