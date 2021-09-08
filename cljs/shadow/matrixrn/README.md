@@ -3,6 +3,9 @@ Two scrolls down you will find [the read-me](https://github.com/kennytilton/matr
 
 What follows are rough directions to help the early curious explore MatrixRN.
 
+![A Petri dish](assets/petri-dish.jpeg)
+"Petri Dish" by Pacific Northwest National Laboratory
+
 ## Petri dish?
 I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises. MatrixRN will paper these over where possible, and grow with each papering.
 
