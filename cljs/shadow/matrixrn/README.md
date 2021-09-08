@@ -40,16 +40,17 @@ In a new terminal:
 
 Wait a minute.
 * an iOS sim will appear;
-* another web page `http://localhost:19000/debugger-ui/` will appear;
-* * this ^^ may require an installation of React tools, or even initially:
-* * click on the simulator;
-* * Using the Simulator menu bar, select Device>shake;
-* * Select `Debug remote JS`
-* once you get the debugger-ui web page to appear, enter the developer console on this page to see application prints and exceptions.
+* Using the Simulator menu bar, select `Device>shake`;
+* * a menu of options should appear in the sim;
+* select `Disable fast refresh`; the menu will disappear;
+* again, select `Device>shake`; select `Debug remote JS`;
+* * another web page `http://localhost:19000/debugger-ui/` will appear;
+* * * this ^^ may require an installation of React tools, or even initially:
+* * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
 
-You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN.
+You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN. Each demo manifests some important feature of MatrixRN, or simply provides an example of how to use a particular widget. 
 
-Speaking of "RSN", pull often: the petri dish is growing hourly.
+Speaking of "RSN", pull often: the petri dish is growing all the time.
 
 ## Editing the demo project. I use Cursive
 I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
