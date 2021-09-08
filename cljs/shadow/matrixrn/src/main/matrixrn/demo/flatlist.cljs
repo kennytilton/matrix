@@ -61,11 +61,11 @@
 
                   (mk rn/SafeAreaView
                     {:name       :todos-container
-                     :todo-items (cI [{:key   (str (.now js/Date))
+                     :todo-items (cI [{:key   (str (.now js/Date) (rand-int 99999))
                                        :title "Wake up"}
-                                      {:key   (str (.now js/Date))
+                                      {:key   (str (.now js/Date) (rand-int 99999))
                                        :title "Fall out of bed"}
-                                      {:key   (str (.now js/Date))
+                                      {:key   (str (.now js/Date) (rand-int 99999))
                                        :title "Drag comb across head"}])}
                     {:style {:flex      1
                              :marginTop 0}}
@@ -81,7 +81,7 @@
                                                            :marginHorizontal 16}})
                                          (<> rn/Text (clj->js {:style {:fontSize 28}})
                                            (.-title (.-item i)))
-                                         (<> rn/Text (clj->js {:style {:fontSize 9}})
+                                         #_ (<> rn/Text (clj->js {:style {:fontSize 9}})
                                            "X")))})))))))
 
 ;;;
