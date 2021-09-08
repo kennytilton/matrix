@@ -8,7 +8,7 @@
             ;[matrixrn.demo.navi :as demo]
             ;[matrixrn.demo.flatlist :as demo]
             ;[matrixrn.demo.http :as demo]
-            ; Pick one ^^^ for next line
+            ; Pick one ^^^ for next line...vvv
             [matrixrn.demo.flatlist :as demo]))
 
 ;(def shadow-splash (js/require "../assets/shadow-cljs.png"))
