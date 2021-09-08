@@ -7,9 +7,11 @@ What follows are rough directions to help the early curious explore MatrixRN.
 "Petri Dish" by Pacific Northwest National Laboratory
 
 ## Petri dish?
-I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises. MatrixRN will paper these over where possible, and grow with each papering.
+I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises; it lacks the consistency of HTML's `<tag attributes*>children</tag>`. MatrixRN will paper these over where possible, and grow with each papering.
 
 The good news is that, so far, we have needed just 150LOC to wrap ReactNative with Matrix, a mature, truly reactive state manager that harkens back twenty-five years to its Common Lisp progenitor. We have done this by letting RN be RN, doing no more than using React state hooks to connect Matrix state change management with React rendering and events.
+
+Furthermore, MatrixRN wraps ReactNative thinly. We use props with functional components, and have access to `createElement` as the examples show. If we know RN, we can code with MatrixRN.
 
 ## Psst! re-frame?
 `re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
