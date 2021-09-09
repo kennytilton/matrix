@@ -1,9 +1,9 @@
 {
   "scripts": {
     "server": "npx shadow-cljs server",
-    "start": "npx expo start",
-    "android": "npx expo start --android",
-    "ios": "npx expo start --ios",
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "web": "npx expo start --web",
     "web-only": "npx expo start --web-only",
     "release": "npx shadow-cljs release app",
@@ -21,17 +21,26 @@
     "expo-secure-store": "~10.2.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native": "~0.63.4",
     "react-native-bouncy-checkbox": "^2.1.4",
     "react-native-elements": "^3.4.2",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "^3.6.0",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "expo-splash-screen": "~0.11.2",
+    "expo-status-bar": "~1.0.4",
+    "expo-updates": "~0.8.1",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-reanimated": "~2.2.0",
+    "react-native-unimodules": "~0.14.5"
   },
   "devDependencies": {
     "@expo/webpack-config": "^0.14.0",
     "babel-preset-expo": "8.3.0",
-    "shadow-cljs": "^2.15.9"
+    "shadow-cljs": "^2.15.9",
+    "@babel/core": "^7.9.0"
   },
-  "private": true
+  "private": true,
+  "name": "matrixrn",
+  "version": "1.0.0"
 }
