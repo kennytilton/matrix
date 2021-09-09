@@ -11,11 +11,14 @@
     "eas-build-post-install": "npm run release"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/checkbox": "^0.5.8",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "expo": "^42.0.0",
+    "expo-checkbox": "^1.0.3",
     "expo-cli": "4.10.0",
+    "expo-secure-store": "~10.2.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",

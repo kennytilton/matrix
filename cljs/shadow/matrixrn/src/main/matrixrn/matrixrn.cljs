@@ -53,6 +53,7 @@
 
 (defmethod observe-by-type [::matrixrn.elt] [slot me newv oldv cell]
   ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
-  (when (not= oldv unbound)                                 ;; observe forced anyway on new cells
-    ;(prn :setting-state slot (mget me :name)(mget me :sid))
+  (when (not= oldv unbound)
+    ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
+    (prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))

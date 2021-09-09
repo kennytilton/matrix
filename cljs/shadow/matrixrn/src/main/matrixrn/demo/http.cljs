@@ -87,7 +87,7 @@
                   {:style {:flex            1
                            :marginTop       96
                            :padding         24
-                           :alignItems      "flex-start"
+                           :alignItems      "center"
                            :backgroundColor "cyan"}}
                   (lookup?)
                   (search-input)

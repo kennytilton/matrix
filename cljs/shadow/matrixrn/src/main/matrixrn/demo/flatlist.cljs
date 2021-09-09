@@ -6,9 +6,12 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    ;["@react-native-community/checkbox" :refer (CheckBox)]
+    ; import CheckBox from '@react-native-community/checkbox';
+    ; iOS native-ish no good with Expo ["@react-native-community/checkbox" :default CheckBox]
     ; import BouncyCheckbox from "react-native-bouncy-checkbox";
     ["react-native-bouncy-checkbox" :default BouncyCheckBox]
+    ;; import Checkbox from 'expo-checkbox';
+    ;; not for iOS! ["expo-checkbox" :default CheckBox]
     [matrixrn.matrixrn :as mxn :refer [fmu mk with-props]]))
 
 ;(def BouncyCheckBox (js/require "react-native-bouncy-checkbox"))
@@ -20,10 +23,13 @@
   ;; yes ^^^, any bit of structure in a larger view can simply be pulled out into a function with
   ;; no parameters. All information flows from a "parent" captured by mxrn/mk macrology.
 
+  ;(prn :checkbo CheckBox)
+  (prn :bouncy BouncyCheckBox)
+
   (mk rn/FlatList
     {:data (cF (clj->js (mget (mx-par me) :todo-items)))}
     (with-props [:data]
-      ;; with-props ^^^ just lets us not type the commented line below.
+      ;; with-props ^^^ just lets us not type linkes like the commented line you see below.
       ;; But the analog is good: it is how we pass properties from an MX instance to its RN incarnation.
       ;; Re "incarnation", yeah, MatrixRN works by creating pure MX instances able to define matching RN elements
       {;; :data         (mget me :data)
@@ -41,22 +47,22 @@
                                    :marginVertical   4
                                    :marginHorizontal 16}}
 
-                         (<> BouncyCheckBox #js {;:text        "abc"
+                         (<> BouncyCheckBox #js {;:text        "Do this"
                                                  ;:textStyle "JosefinSans-Regular"
-                                                 :fillColor   "green"
+                                                 :fillColor   "cyan"
                                                  :unfillColor "#eee"
-                                                 :iconStyle   #js {:borderColor "black"}
+                                                 :iconStyle   #js {:borderColor "#f8f"}
                                                  :isChecked   false})
                          (<> rne/Icon
                            (clj->js {:name    "trash"
                                      :type    "font-awesome"
                                      :color   "#f50"
-                                     :style   {:flex 01 :margin 6}
+                                     :style   {:flex 01 :marginRight 18}
                                      :onPress (fn [] (let [next (remove #(= (:key %) (.. i -item -key))
                                                                   (mget (fmu :todos-container) :todo-items))]
                                                        (mset! (fmu :todos-container) :todo-items next)))}))
                          (<> rn/Text
-                           #js {:style #js {:fontSize 24}}
+                           #js {:style #js {:fontSize 18}}
                            (.-title (.-item i)))))})))
 
 (defn to-do-entry []
