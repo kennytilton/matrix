@@ -6,44 +6,64 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
+    ;["@react-native-community/checkbox" :refer (CheckBox)]
+    ; import BouncyCheckbox from "react-native-bouncy-checkbox";
+    ["react-native-bouncy-checkbox" :default BouncyCheckBox]
     [matrixrn.matrixrn :as mxn :refer [fmu mk with-props]]))
 
+;(def BouncyCheckBox (js/require "react-native-bouncy-checkbox"))
 (def cljs-splash-above (js/require "../assets/cljs.png"))
 
 (def <> react/createElement)
 
 (defn the-flatlist-beef []
+  ;; yes ^^^, any bit of structure in a larger view can simply be pulled out into a function with
+  ;; no parameters. All information flows from a "parent" captured by mxrn/mk macrology.
+
   (mk rn/FlatList
-    {:name :flatty
-     :data (cF (clj->js (mget (mx-par me) :todo-items)))}
-    {:data         (mget me :data)
-     :keyExtractor (fn [i] (.-key i))
-     :renderItem   (fn [i]
-                     (<> rn/View #js {:style
-                                      #js {:backgroundColor  "#ffc2ff"
-                                           :flex             1
-                                           :flexDirection    "row"
-                                           :padding          9
-                                           :marginVertical   4
-                                           :marginHorizontal 16}}
-                       (<> rne/Icon
-                         (clj->js {:name    "trash"
-                                   :type    "font-awesome"
-                                   :color   "#f50"
-                                   :style   {:flex 01 :margin 6}
-                                   :onPress (fn [x]
-                                              (let [next (remove #(= (:key %) (.. i -item -key))
-                                                           (mget (fmu :todos-container) :todo-items))]
-                                                (mset! (fmu :todos-container) :todo-items next)))}))
-                       (<> rn/Text
-                         #js {:style #js {:fontSize 24}}
-                         (.-title (.-item i)))))}))
+    {:data (cF (clj->js (mget (mx-par me) :todo-items)))}
+    (with-props [:data]
+      ;; with-props ^^^ just lets us not type the commented line below.
+      ;; But the analog is good: it is how we pass properties from an MX instance to its RN incarnation.
+      ;; Re "incarnation", yeah, MatrixRN works by creating pure MX instances able to define matching RN elements
+      {;; :data         (mget me :data)
+       :keyExtractor (fn [i] (.-key i))
+       :renderItem   (fn [i]
+                       ;; Here we cross over into pure RN, but in truth we could give the mx-flatlist
+                       ;; todos as children and extract their rendering in 'renderItem'. Left as an exercise.
+                       (<> rn/View
+                         #js {:style                        ;; I am torn between clj->js and #js
+                              #js {:backgroundColor  "#ffc2ff"
+                                   :flex             1
+                                   :flexDirection    "row"
+                                   :alignItems       "center"
+                                   :padding          9
+                                   :marginVertical   4
+                                   :marginHorizontal 16}}
+
+                         (<> BouncyCheckBox #js {;:text        "abc"
+                                                 ;:textStyle "JosefinSans-Regular"
+                                                 :fillColor   "green"
+                                                 :unfillColor "#eee"
+                                                 :iconStyle   #js {:borderColor "black"}
+                                                 :isChecked   false})
+                         (<> rne/Icon
+                           (clj->js {:name    "trash"
+                                     :type    "font-awesome"
+                                     :color   "#f50"
+                                     :style   {:flex 01 :margin 6}
+                                     :onPress (fn [] (let [next (remove #(= (:key %) (.. i -item -key))
+                                                                  (mget (fmu :todos-container) :todo-items))]
+                                                       (mset! (fmu :todos-container) :todo-items next)))}))
+                         (<> rn/Text
+                           #js {:style #js {:fontSize 24}}
+                           (.-title (.-item i)))))})))
 
 (defn to-do-entry []
   (mk rn/TextInput
     {:name     :new-undo
      :to-do    (cI "")
-     :editable (cF (mget (fmu :counting?) :value))}
+     :editable (cF (mget (fmu :allow-todo-entry?) :value))}
     (with-props [:value :editable]
       {:placeholder     "What to do?"
        :autoFocus       true
@@ -65,7 +85,7 @@
 
 (defn allow-todos-switch []
   (mk rn/Switch
-    {:name       :counting?
+    {:name       :allow-todo-entry?
      :value      (cI true)
      :thumbColor (cF (if (mget me :value)
                        "cyan" #_"#f5dd4b" "red" #_"#f4f3f4"))}
@@ -85,19 +105,26 @@
   (md/make ::rnApp
     :rx-dom (cFonce
               (with-par me
-                (mk rn/View {}
-                  {:style {:flex            1
-                           :marginTop       96
-                           :padding         24
-                           :alignItems      "center"
-                           :backgroundColor "linen"}}
+                (mk rn/View
+                  ;; ^^^ we work off actual RN components, meaning any component we track down can be used without
+                  ;; much adjustment. But RN components, even built-ins, are wildly inconsistent, so be prepared for
+                  ;; some work. Indeed, Flatlist falls clearly into this category.
+                  {}                                        ;; many widgets have no reactive state
+                  {:style                                   ;; no need for #js. MX hosts apply clj->js to options passed to their RN incarnations.
+                   {:flex            1
+                    :marginTop       96
+                    :padding         24
+                    :alignItems      "center"
+                    :backgroundColor "linen"}}
 
                   (mk rn/Image {}
-                    {:style  {:width  160
-                              :height 160}
+                    {:style  {:width 160 :height 160}
                      :source cljs-splash-above})
 
                   (allow-todos-switch)
+                  ;; a big view can get noisy. Here break out some structure into a function.
+                  ;; More importantly, reuse becomes quite possible.
+
                   (to-do-entry)
 
                   (mk rn/SafeAreaView

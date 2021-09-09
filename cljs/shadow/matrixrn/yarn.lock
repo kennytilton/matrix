@@ -1463,6 +1463,11 @@
     "find-up" "^5.0.0"
     "js-yaml" "^4.1.0"
 
+"@freakycoder/react-native-helpers@0.0.21":
+  "integrity" "sha512-opPtI5F6+TgHowtKEHw+9h7InFNQc9M5hOPOen14iRpROOozeleCiWOsIIr15cjWg/A3xpt50M9r1gbQyCOuBQ=="
+  "resolved" "https://registry.npmjs.org/@freakycoder/react-native-helpers/-/react-native-helpers-0.0.21.tgz"
+  "version" "0.0.21"
+
 "@hapi/address@2.x.x":
   "integrity" "sha512-QD1PhQk+s31P1ixsX0H0Suoupp3VMXzIVMSwobR3F3MSUO2YCV0B7xqLcUw/Bh8yuvd3LhpyqLQWTNcRmp6IdQ=="
   "resolved" "https://registry.npmjs.org/@hapi/address/-/address-2.1.4.tgz"
@@ -1646,6 +1651,11 @@
     "infer-owner" "^1.0.4"
     "node-gyp" "^7.1.0"
     "read-package-json-fast" "^2.0.1"
+
+"@react-native-community/checkbox@^0.5.8":
+  "integrity" "sha512-2ppw40sSqBKSPz75l8rDCvpcvQb/78MtvB5BDtovsJE1kXoUJP4eVLuyLo+LfYdSK9qLD4Llt4bIulr1SI9UIQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/checkbox/-/checkbox-0.5.8.tgz"
+  "version" "0.5.8"
 
 "@react-native-community/cli-debugger-ui@^4.13.1":
   "integrity" "sha512-UFnkg5RTq3s2X15fSkrWY9+5BKOFjihNSnJjTV2H5PtTUFbd55qnxxPw8CxSfK0bXb1IrSvCESprk2LEpqr5cg=="
@@ -10154,6 +10164,31 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
 
+"react-native-apple-header@^0.1.1":
+  "integrity" "sha512-olhk1icxbmX4p320+iE3NunTQOlqBHMxHp/HcQ3XiUpPzekLPhJKK0r5dZfp80LEdcdxnZKhJMJqq0FquIG/VQ=="
+  "resolved" "https://registry.npmjs.org/react-native-apple-header/-/react-native-apple-header-0.1.1.tgz"
+  "version" "0.1.1"
+
+"react-native-bottom-search-bar@^0.1.3":
+  "integrity" "sha512-im72UyXMBB02AMBDi22Kldlj7JDrUIpWcpb/Gsy2ODttNDdI1EGoOnPtOYhm+HLoCuFADS60w4LxtdUrwC7AQQ=="
+  "resolved" "https://registry.npmjs.org/react-native-bottom-search-bar/-/react-native-bottom-search-bar-0.1.3.tgz"
+  "version" "0.1.3"
+
+"react-native-bouncy-checkbox@^2.1.4":
+  "integrity" "sha512-5VKyHBk5wzTLZUexpzim/DtBCqM6n43tOgimIAh5cV6+syJm+FMBq+c4LgFr/dT0EVH24h1B1zmaX6xyYeYEJA=="
+  "resolved" "https://registry.npmjs.org/react-native-bouncy-checkbox/-/react-native-bouncy-checkbox-2.1.4.tgz"
+  "version" "2.1.4"
+  dependencies:
+    "react-native-apple-header" "^0.1.1"
+    "react-native-bottom-search-bar" "^0.1.3"
+    "react-native-dynamic-vector-icons" "^1.1.6"
+    "react-native-vector-icons" "^8.1.0"
+
+"react-native-dynamic-vector-icons@>= 0.2.1", "react-native-dynamic-vector-icons@>= x.x.x":
+  "integrity" "sha512-tz098Wv/4TI70BRWfshSyVzWsoV4PRdp6fMMA7GRmxsaERfYshEy3Rs3bvD9tVjD+zKUcmM4Ce7bmAoJkGSNdg=="
+  "resolved" "https://registry.npmjs.org/react-native-dynamic-vector-icons/-/react-native-dynamic-vector-icons-1.1.6.tgz"
+  "version" "1.1.6"
+
 "react-native-elements@^3.4.2":
   "integrity" "sha512-m0eAWOn7JuR1wNTNY0WHuaqst4LI/gFE4N5Bbyfsc4DiryWsMST7aAg5w/Gos4IexWIzhLKCIkPxthND1m/8Xg=="
   "resolved" "https://registry.npmjs.org/react-native-elements/-/react-native-elements-3.4.2.tgz"
@@ -10192,7 +10227,7 @@
   "resolved" "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz"
   "version" "0.3.1"
 
-"react-native-vector-icons@>7.0.0":
+"react-native-vector-icons@>= 6.6.0", "react-native-vector-icons@>= 6.x.x", "react-native-vector-icons@>7.0.0":
   "integrity" "sha512-sHIdBB6Y0dHaot2fMXgy5J/hhCn5YuyN7SKDNFgPzL8KA1oF2/v7mgYMavnK7LIIs2dJoGnDANKf61dsU+TZlg=="
   "resolved" "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-8.1.0.tgz"
   "version" "8.1.0"
@@ -10221,9 +10256,10 @@
     "prop-types" "^15.6.0"
     "react-timer-mixin" "^0.13.4"
 
-"react-native@*", "react-native@https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz":
+"react-native@*", "react-native@>= 0.55.x", "react-native@>= 0.62", "react-native@https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz":
   "integrity" "sha512-qWR6pcG4yDu/Rthm+DvAS017rL38LbZFnJv/k4HL4ZUH/WhKuqC+stD7TlpaOBb3N2bkydm9s+GCa14T41MLEg=="
   "resolved" "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz"
+  "version" "0.63.2"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^4.14.0"
@@ -10263,7 +10299,7 @@
   "resolved" "https://registry.npmjs.org/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz"
   "version" "0.13.4"
 
-"react@*", "react@16.13.1":
+"react@*", "react@>= 16.x", "react@>= 16.x.x", "react@16.13.1":
   "integrity" "sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.13.1.tgz"
   "version" "16.13.1"
