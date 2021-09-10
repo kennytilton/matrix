@@ -20,6 +20,8 @@
 
   :test-paths ["test"]
   :npm {:dependencies [[source-map-support "0.4.0"]]}
+  :deploy-repositories [["releases"  {:sign-releases false :url "https://clojars.org/repo"}]
+                        ["snapshots" {:sign-releases false :url "https://clojars.org/repo"}]]
   :source-paths ["src" "target/classes"]
   :clean-targets ["out" "release"]
   :target-path "target"

@@ -19,12 +19,13 @@
 
 (def <> react/createElement)
 
+(defn build-keyed-item [item-title]
+  {:key   (str (.now js/Date) (rand-int 99999))
+   :title item-title})
+
 (defn the-flatlist-beef []
   ;; yes ^^^, any bit of structure in a larger view can simply be pulled out into a function with
   ;; no parameters. All information flows from a "parent" captured by mxrn/mk macrology.
-
-  ;(prn :checkbo CheckBox)
-  (prn :bouncy BouncyCheckBox)
 
   (mk rn/FlatList
     {:data (cF (clj->js (mget (mx-par me) :todo-items)))}
@@ -32,8 +33,7 @@
       ;; with-props ^^^ just lets us not type linkes like the commented line you see below.
       ;; But the analog is good: it is how we pass properties from an MX instance to its RN incarnation.
       ;; Re "incarnation", yeah, MatrixRN works by creating pure MX instances able to define matching RN elements
-      {;; :data         (mget me :data)
-       :keyExtractor (fn [i] (.-key i))
+      {:keyExtractor (fn [i] (.-key i))
        :renderItem   (fn [i]
                        ;; Here we cross over into pure RN, but in truth we could give the mx-flatlist
                        ;; todos as children and extract their rendering in 'renderItem'. Left as an exercise.
@@ -69,18 +69,21 @@
   (mk rn/TextInput
     {:name     :new-undo
      :to-do    (cI "")
-     :editable (cF (mget (fmu :allow-todo-entry?) :value))}
-    (with-props [:value :editable]
-      {:placeholder     "What to do?"
+     :editable (cF (mget (fmu :allow-todo-entry?) :value))
+     :need-input (cF (if (seq (mget (fmu :todos-container) :todo-items))
+                       "Anything else to do?" "What is there to do?"))}
+    (with-props [[:value :to-do] :editable [:placeholder :need-input]]
+      {;; :placeholder     "What else is there to do?"
        :autoFocus       true
        :autoCapitalize  "sentences"
+       :selectTextOnFocus true
        :onChangeText    #(mset! me :to-do %)
        :onSubmitEditing #(let [n (js->clj (goog.object/get % "nativeEvent")
                                    :keywordize-keys true)]
+                           ; todo just pick out .-text
                            (when-not (str/blank? (:text n))
                              (mswap! (fmu :todos-container) :todo-items
-                               conj {:key   (str (.now js/Date))
-                                     :title (:text n)})
+                               conj (build-keyed-item (:text n)))
                              ;; now clear input...
                              (mset! me :to-do "")))
        :style           {:height          40
@@ -136,8 +139,7 @@
                   (mk rn/SafeAreaView
                     {:name       :todos-container
                      :todo-items (cI (mapv (fn [task]
-                                             {:key   (str (.now js/Date) (rand-int 99999))
-                                              :title task})
+                                             (build-keyed-item task))
                                        starting-todos))}
                     {:style {:flex      1
                              :marginTop 0}}

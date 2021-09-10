@@ -9,7 +9,8 @@
     ["@react-navigation/native" :refer [NavigationContainer]]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]
     [applied-science.js-interop :as j]
-    [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]))
+    [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]
+    [matrixrn.demo.http :as http]))
 
 (def <> react/createElement)
 
@@ -46,22 +47,27 @@
 (defn demo []
   (md/make ::rnApp
     :rx-dom (cFonce
+              ;; I am not quite sure what to make of this j/lookup interop.
               (let [{:keys [Navigator Screen]} (j/lookup tabs-nav)]
                 (with-par me
                   (mk NavigationContainer {}
                     {:initialState  @*nav-state
                      :onStateChange (fn [x] (reset! *nav-state x))}
                     (mk Navigator {} {}
+                      ;; mkuscreen hopefully can be eliminated as a special case, but Screens themselves
+                      ;; are a special case in RN. :shrug:
                       (mxn/mkuscreen Screen {}
-                        {:name "Tab-AAA"}
-                        (mk rn/Button
-                          {:name    :bam-button
-                           :counter (cI (rand-int 9999))
-                           :title   (cF (str "Kaboxom = " (mget me :counter)))}
-                          (with-props [:title]
-                            {:style   {:padding 9 :color "orange"}
-                             :onPress #(do (prn :bampress)
-                                           (mswap! me :counter inc))})))
+                        {:name "Async/XHR Demo"}
+                        ;; here we demonstrate that content can be built from any composition of clojure
+                        ;; functions with arbitrary parameters. They just need to return a Matrix "mk" component
+                        (http/http-beef
+                          ;; try commenting out this next map to see why we need http-beef to take a parameter
+                          {:style {:flex            1
+                                   :marginTop       0
+                                   :padding         24
+                                   :alignItems      "center"
+                                   :backgroundColor "lime"}}))
+
                       (mku Screen {}
                         {:name      "Tab-A"
                          :component TabA})
