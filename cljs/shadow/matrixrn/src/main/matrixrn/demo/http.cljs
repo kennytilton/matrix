@@ -79,10 +79,23 @@
        :trackColor          {:false "#767577"
                              :true  "#81b0ff"}})))
 
+(defn http-beef [options]
+  (mk rn/View {}
+    {:style {:flex            1
+             :marginTop       96
+             :padding         24
+             :alignItems      "center"
+             :backgroundColor "yellow"}}
+    (lookup?)
+    (search-input)
+    (search-output)))
+
 (defn demo []
   (md/make ::rnApp
     :rx-dom (cFonce
               (with-par me
+                (http-beef)
+                #_
                 (mk rn/View {}
                   {:style {:flex            1
                            :marginTop       96

@@ -9,7 +9,8 @@
     ["@react-navigation/native" :refer [NavigationContainer]]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]
     [applied-science.js-interop :as j]
-    [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]))
+    [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]
+    [matrixrn.demo.http :as http]))
 
 (def <> react/createElement)
 
@@ -53,11 +54,13 @@
                      :onStateChange (fn [x] (reset! *nav-state x))}
                     (mk Navigator {} {}
                       (mxn/mkuscreen Screen {}
-                        {:name "Tab-AAA"}
+                        {:name "Async/XHR Demo"}
+                        (http/http-beef)
+                        #_
                         (mk rn/Button
                           {:name    :bam-button
                            :counter (cI (rand-int 9999))
-                           :title   (cF (str "Kaboxom = " (mget me :counter)))}
+                           :title   (cF (str "Kabozoom = " (mget me :counter)))}
                           (with-props [:title]
                             {:style   {:padding 9 :color "orange"}
                              :onPress #(do (prn :bampress)
