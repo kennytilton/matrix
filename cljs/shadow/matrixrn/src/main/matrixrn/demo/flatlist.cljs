@@ -69,14 +69,18 @@
   (mk rn/TextInput
     {:name     :new-undo
      :to-do    (cI "")
-     :editable (cF (mget (fmu :allow-todo-entry?) :value))}
-    (with-props [:value :editable]
-      {:placeholder     "What to do?"
+     :editable (cF (mget (fmu :allow-todo-entry?) :value))
+     :need-input (cF (if (seq (mget (fmu :todos-container) :todo-items))
+                       "Anything else to do?" "What is there to do?"))}
+    (with-props [[:value :to-do] :editable [:placeholder :need-input]]
+      {;; :placeholder     "What else is there to do?"
        :autoFocus       true
        :autoCapitalize  "sentences"
+       :selectTextOnFocus true
        :onChangeText    #(mset! me :to-do %)
        :onSubmitEditing #(let [n (js->clj (goog.object/get % "nativeEvent")
                                    :keywordize-keys true)]
+                           ; todo just pick out .-text
                            (when-not (str/blank? (:text n))
                              (mswap! (fmu :todos-container) :todo-items
                                conj {:key   (str (.now js/Date))
