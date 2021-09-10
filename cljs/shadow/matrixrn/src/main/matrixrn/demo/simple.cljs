@@ -6,7 +6,7 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [mx* mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [mx* mk fmu with-props]]))
 
 (defn demo []
   (md/make ::rnApp
