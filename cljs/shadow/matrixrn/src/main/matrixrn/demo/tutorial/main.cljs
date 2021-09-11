@@ -11,7 +11,9 @@
     [applied-science.js-interop :as j]
     [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]
     [matrixrn.demo.tutorial.l00-hello-world :as hello]
-    [matrixrn.demo.tutorial.l01-not-just-me :as others]))
+    [matrixrn.demo.tutorial.l01-not-just-me :as others]
+    [matrixrn.demo.tutorial.l02-web-component :as webco]
+    [matrixrn.demo.tutorial.solution.l02-web-component :as webco-sol]))
 
 (def <> react/createElement)
 
@@ -29,5 +31,8 @@
                     (mk Navigator {} {}
                       ;; mkuscreen?! Hopefully this can be eliminated as a special case, but Screens themselves
                       ;; are a special case in RN. :shrug:
+                      (webco-sol/solution)
+                      (webco/lesson)
                       (hello/lesson)
-                      (others/lesson))))))))
+                      (others/lesson)
+                      #_ (webco/lesson))))))))

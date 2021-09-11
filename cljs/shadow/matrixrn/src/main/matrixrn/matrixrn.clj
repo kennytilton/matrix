@@ -86,3 +86,16 @@
      :inside? false
      :must? true
      :up? true))
+
+(defmacro fmu-val [what prop]
+  `(tiltontec.model.core/mget (matrixrn.matrixrn/fmu ~what) ~prop))
+
+(defmacro fmi [what]
+  `(tiltontec.model.core/fget ~what ~'me
+     :me? true
+     :inside? true
+     :must? true
+     :up? false))
+
+(defmacro fmi-val [what prop]
+  `(tiltontec.model.core/mget (matrixrn.matrixrn/fmi ~what) ~prop))
