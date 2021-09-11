@@ -26,18 +26,23 @@
 
 ;; TryThis: poll continuously as they type, but only if two characters have been typed.
 
+;; TryThis(Expert): Create a Matrix type ::mx.XHR with slots like those below, such that this code just makes
+;; an instance of ::mx.XHr with the right URL. Then this widget gets a dependency on the response, and the rest is
+;; hidden in ::mx.XHR.
+
 (defn search-input []
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")
-     :searchstring    (cFn (mget me :defaultValue))
-     ;;              cFn ^^^ is a property with a rule (the "F") that computes a value then turns into an input cell.
-     ;;              which we normally define using `cI`.
+     :searchstring    (cFn (mget me :defaultValue)) ;; cFn runs as a formula to intiialize itself from surrounding data,
+     ;;              then can be modified like a `cI` input cell.
      :lookup-go?      (cI false :ephemeral? true)
      :lookup-response (cI nil)
-     :lookup          (cF+ [:obs (fn [_ me chan prior-chan]
+     :lookup          (cF+ [:obs (fn [_ me chan prior-chan cell]
                                    ;; todo work out how to close prior chan (if not 'undefined'!)
-                                   (when chan
+                                   ;; perhaps we swap!-assoc the new chan into the Cell (an atom) as :clean-up-chan
+                                   ;; and then close! it. But can a 'go' caller close the chan returned by 'go'?
+                                   (when chan ;; ie, a lookup has been kicked off via cljs-http, and this is the chan it will report on
                                      (go (let [response (<! chan)
                                                search (mget me :searchstring)
                                                hits (filter (fn [ostr]
@@ -45,7 +50,8 @@
                                                       (map :login (:body response)))]
                                            (prn :github-users hits)
                                            ;; TryThis: can we clear the searchstring each time they search? Bad U/X?
-                                           (with-cc         ;; required to mutate state inside an observer
+                                           (with-cc         ;; MAJOR feature! required to mutate state inside an observer
+                                             ;;                Well, or you get a warning telling you a backdoor.
                                              (mset! me :lookup-response
                                                (or (seq hits) (vector (str "No matches for " search)))))))))]
                         (when (mget (fmu :do-any-lookup?) :value)
@@ -56,6 +62,7 @@
                                  :query-params      {"since" 135}})))))}
 
     (with-props [:defaultValue]
+      ;; YourThoughts? should we tuck styling away in some nearby map, or co-locate like this?
       {:style           {:height          40
                          :width           192
                          :margin          12
@@ -74,7 +81,7 @@
 (defn search-output []
   (mk rn/FlatList
     {:data  (cF (clj->js
-                  ;; ^^^^ FlatList takes JS data
+                  ;; ^^^^ FlatList expects JS data
                   (if-let [users (seq (mget (fmu :search-input) :lookup-response))]
                     (for [user-login users]
                       (flat/build-keyed-item user-login))
@@ -126,6 +133,11 @@
                :alignItems      "center"
                :backgroundColor "yellow"}}
       view-options)
+    ;; here we see the source code convenience of breaking out
+    ;; large wodges of UI/UX into their own functions.
+    ;; when widgets handle all their state and all their view
+    ;; in one place, the LOC can add up. But co-location of logic
+    ;; in one place is one win we see in Matrix over Flux-style architectures.
     (lookup?)
     (search-input)
     (search-output)))

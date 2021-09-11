@@ -4,12 +4,13 @@
             ["react" :as r]
             ["react-native" :as rn]
             [matrixrn.matrixrn :as mxn]
-            ;[matrixrn.demo.simple :as demo]
-            ;[matrixrn.demo.navi :as demo]
-            ;[matrixrn.demo.flatlist :as demo]
-            ;[matrixrn.demo.http :as demo]
-            ; Pick one ^^^ for next line...vvv
-            [matrixrn.demo.navi :as demo]))
+    ;[matrixrn.demo.simple :as demo]
+    ;[matrixrn.demo.navi :as demo]
+    ;[matrixrn.demo.flatlist :as demo]
+    ;[matrixrn.demo.http :as demo]
+    ; matrixrn.demo.tutorial.main
+    ; Pick one ^^^ for next line...vvv
+            [matrixrn.demo.tutorial.main :as demo]))
 
 ;(def shadow-splash (js/require "../assets/shadow-cljs.png"))
 ;(def cljs-splash (js/require "../assets/cljs.png"))
@@ -20,7 +21,7 @@
   (reset! mxn/ssdict {})
   (reset! md/matrix (demo/demo)))
 
-(defn ;; ^:dev/after-load
+(defn                                                       ;; ^:dev/after-load
   start []
   ;(prn :splash!!!!!!!! shadow-splash)
   (let [app-matrix (matrix-build!)
