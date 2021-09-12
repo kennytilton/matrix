@@ -26,34 +26,45 @@ More soon in a Wiki walk-through of these POC examples.
 ## Running the demo project
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
+* `git checkout master` (Prolly not necessary.)
 * `cd (matrix location)/cljs/matrix`;
-* `lein install` (Installs latest Matrix locally ntil I figure out Clojars new security.)
+* `lein install` (Installs latest Matrix locally intil I figure out Clojars new security.)
 * `cd (matrix location)/cljs/shadow/matrixrn`;
-* IMPORTANT: `git checkout full-expo` (The master branch has been ejected.)
 * `npm install`
+* `( cd ios && pod install )`
 * `npx shadow-cljs watch app` to start compilation;
-* note: while working on the code, watch this terminal for compilation errors;
+* * Note!: while working on the code, watch this terminal for compilation errors;
 * wait for `[:app] Build completed....` before continuing to the next step.
 
 In a new terminal:
-* `npm start`;
-* the Metro Bundler will start and print stuff to the console;
-* a browser page for the Metro Bundler will be opened at `localhost:19002`;
-* on that page, click `Run on IOS Simulator`;
+* `expo run:ios`;
 
-Wait a minute.
-* an iOS sim will appear;
+After quite a bit of work and more than a few scary errors...
+* an iOS sim will appear; wait for it to complete loading;
 * Using the Simulator menu bar, select `Device>shake`;
 * * a menu of options should appear in the sim;
-* select `Disable fast refresh`; the menu will disappear;
-* again, select `Device>shake`; select `Debug remote JS`;
-* * another web page `http://localhost:19000/debugger-ui/` will appear;
-* * * this ^^ may require an installation of React tools, or even initially:
+* if you see an option to `Disable fast refresh` select it; the menu will disappear;
+* * (If it says "enable", do nothing, we are good.)
+* again, select `Device>shake`;
+* if you see an option to `Debug`, select it; a debug web page will appear: "localhost:8081/debugger-ui/"
 * * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
 
-You can now explore the goofy demos, checking the source code for comments describing briefly the Matrix mechanics. Edit `[matrixrn.demo.flatlist :as demo]` in the `app.cljs` NS to try different demos until we bundle them up into a single NavigatorContainer RSN. Each demo manifests some important feature of MatrixRN, or simply provides an example of how to use a particular widget. 
+In your chosen IDE:
+* open the `(matrix location)/cljs/shadow/matrixrn` directory/project ;
+* open `matrixrn.demo.tutorial.main.cljs`;
+* make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
+* * actually, if the phone opens to a "Hello, world." sim page, we are good.
+* * if not, comment/uncomment as needed.
 
-Speaking of "RSN", pull often: the petri dish is growing all the time.
+Now read the source and learn how that example works, and which Matrix tricks are demonstrated.
+
+Where a lesson suggests something like `TryThis[times-six,easy]`, look for a solution named `times-six` in the same directory as the lesson.cljs. The temptation will be great, but we recommend trying to solve the challenges before looking at the solutions. Your call.
+
+If you have questions/problems, please reach out. This doc needs your input. Here are two options:
+* raise an issue on this repo (slower);
+* ping @kennytilton in the #matrix or #cljsrn channels of clojurians.slack.com (faster).
+
+Finally: pull often; the petri dish is growing all the time.
 
 ## Editing the demo project. I use Cursive
 I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
