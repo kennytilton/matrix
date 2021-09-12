@@ -45,27 +45,28 @@
      ~@(apply concat
          (into [] mx-props))))
 
-(defmacro mku [node-type mx-props jsx-props & kids]
-  ;; this does not wrap node-type in a state-hook component so
-  ;; the returned element is of that node-type.
-  ;;
-  ;; Needed for Navigator-Screen, since Nav insists children be Screens
-  ;;
-  `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
-     :sid (swap! matrixrn.matrixrn/sid-latest inc)
-     ~@(when (seq kids)
-         `(:kids (tiltontec.model.core/cFkids ~@kids)))
-     :react-element (tiltontec.cell.core/cF
-                      (apply react/createElement ~node-type
-                        (cljs.core/clj->js ~jsx-props)
-                        (doall
-                          (map (fn [mapkid#]
-                                 (tiltontec.model.core/mget mapkid# :react-element))
-                            (tiltontec.model.core/mget ~'me :kids)))))
-     ~@(apply concat
-         (into [] mx-props))))
+;(defmacro mku [node-type mx-props jsx-props & kids]
+;  ;; this does not wrap node-type in a state-hook component so
+;  ;; that the returned element is of that node-type, instead
+;  ;; of an anonymous component.
+;  ;;
+;  ;; Needed for Navigator-Screen, since Nav insists children be Screens
+;  ;;
+;  `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
+;     :sid (swap! matrixrn.matrixrn/sid-latest inc)
+;     ~@(when (seq kids)
+;         `(:kids (tiltontec.model.core/cFkids ~@kids)))
+;     :react-element (tiltontec.cell.core/cF
+;                      (apply react/createElement ~node-type
+;                        (cljs.core/clj->js ~jsx-props)
+;                        (doall
+;                          (map (fn [mapkid#]
+;                                 (tiltontec.model.core/mget mapkid# :react-element))
+;                            (tiltontec.model.core/mget ~'me :kids)))))
+;     ~@(apply concat
+;         (into [] mx-props))))
 
-(defmacro mkuscreen [node-type mx-props jsx-props & kids]
+(defmacro mku [node-type mx-props jsx-props & kids]
   `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
      :sid (swap! matrixrn.matrixrn/sid-latest inc)
      ~@(when (seq kids)

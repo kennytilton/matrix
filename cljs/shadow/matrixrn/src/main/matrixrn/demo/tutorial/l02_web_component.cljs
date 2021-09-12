@@ -52,4 +52,6 @@
           (mxn/mk rn/Text
             {:readout (cF (fmu-val :red :intensity))}
             {:style {:flex 2 :color "black" :backgroundColor "cyan" :padding 4 :margin 9}}
+            ;; TryThis(avg): how decimal display of color value. Toggle between decimal and hex onPress.
+            ;; TryThis(hard): make editable.
             (mxn/strng (pp/cl-format nil "~:@(~2,'0X~)"(mget (mx-par me) :readout)))))))))

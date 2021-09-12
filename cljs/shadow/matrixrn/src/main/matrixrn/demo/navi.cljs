@@ -54,9 +54,7 @@
                     {:initialState  @*nav-state
                      :onStateChange (fn [x] (reset! *nav-state x))}
                     (mk Navigator {} {}
-                      ;; mkuscreen hopefully can be eliminated as a special case, but Screens themselves
-                      ;; are a special case in RN. :shrug:
-                      (mxn/mkuscreen Screen {}
+                      (mku mxn/Screen {}
                         {:name "Async/XHR Demo"}
                         ;; here we demonstrate that content can be built from any composition of clojure
                         ;; functions with arbitrary parameters. They just need to return a Matrix "mk" component

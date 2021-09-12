@@ -12,9 +12,17 @@
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
-    [applied-science.js-interop :as j]))
+    [applied-science.js-interop :as j]
+    ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]))
 
 (def sid-latest (atom 0))
+
+;; apparently we call a function to get an object of components
+;; keyed Navigator, Screen, et al. Usage: (let
+(defonce Tab (js->clj (rn-bottom-tabs/createBottomTabNavigator) :keywordize-keys true))
+(defonce Navigator (:Navigator Tab))
+(defonce Group (:Group Tab))
+(defonce Screen (:Screen Tab))
 
 (defn mxweb-init! []
   (reset! sid-latest 0))
@@ -57,3 +65,4 @@
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
     (prn :setting-state slot (mget me :name)(mget me :sid))
     (state-hook-set! me slot)))
+
