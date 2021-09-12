@@ -6,12 +6,13 @@
     [tiltontec.model.core :refer [cFkids with-par matrix mx-par mget mset! mswap!] :as md]
     [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]
     [matrixrn.demo.tutorial.x100-hello-world.lesson :as hello]
-    [matrixrn.demo.tutorial.x100-hello-world.times-six :as hello-sol]
+    [matrixrn.demo.tutorial.x100-hello-world.times-six :as times-six]
     [matrixrn.demo.tutorial.x110-its-not-just-me.lesson :as others]
     [matrixrn.demo.tutorial.x110-its-not-just-me.separate-count-display :as others-sol]
-
-    [matrixrn.demo.tutorial.l02-web-component :as webco]
-    [matrixrn.demo.tutorial.solution.l02-web-component :as webco-sol]))
+    [matrixrn.demo.tutorial.x120-web-component.lesson :as webco]
+    [matrixrn.demo.tutorial.x120-web-component.thumb-color :as thumb-color]
+    [matrixrn.demo.tutorial.x120-web-component.decimal-display :as hex-dec]
+    [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as rgb-slider]))
 
 (defn demo []
   (md/make ::rnApp
@@ -27,12 +28,14 @@
                 ;; Macrology handles that elsewhere. The Matrix is a simple tree in which avery node
                 ;; except the top node has a parent, and every node has zero or more children ("kids").
 
+                ;; uncomment below in ascending order to follow tutorial....
                 (mk NavigationContainer {} {}
                   (mk mxn/Navigator {} {}
+                    ;(rgb-slider/solution)
+                    ;(hex-dec/solution)
+                    (thumb-color/solution)
+                    (webco/lesson)
                     (others-sol/solution)
                     (others/lesson)
-                    (hello-sol/solution)
-                    (hello/lesson)
-                    (webco-sol/solution)
-                    (webco/lesson)
-                    ))))))
+                    (times-six/solution)
+                    (hello/lesson)))))))
