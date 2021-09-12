@@ -1,7 +1,7 @@
 # MatrixRN -- The Petri Dish
 Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/shadow/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
 
-What follows are rough directions to help the early curious explore MatrixRN. But a first a caveat.
+What follows are rough directions to help the early curious explore MatrixRN. But first a caveat.
 
 ### Caveat
 I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
