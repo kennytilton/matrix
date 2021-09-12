@@ -99,3 +99,6 @@
 
 (defmacro fmi-val [what prop]
   `(tiltontec.model.core/mget (matrixrn.matrixrn/fmi ~what) ~prop))
+
+(defmacro myval [prop]
+  `(tiltontec.model.core/mget ~'me ~prop))
