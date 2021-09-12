@@ -4,7 +4,7 @@
     [tiltontec.model.core :refer [mget mswap!]]
     [react]
     [react-native :as rn]
-    [matrixrn.matrixrn :as mxn :refer [mkuscreen mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [mk mku]]))
 
 (defn lesson []
   ;; All "mk" maker functions have the signature:
@@ -15,10 +15,9 @@
   ;; rn-element-props: props that will be passed to react/createElement
   ;; children: zero or more child Matrix objectx
   ;;
-  ;; mkuscreen?! Screen is a special case, so for now it gets its own "mku" (make unhooked)
-  ;; Some black-belt macrology can prolly let this next just be "mkU"
+  ;; mku is a special case to support Screen, so for now it gets its own "mku" (make unhooked)
   ;;
-  (mkuscreen mxn/Screen {}
+  (mku mxn/Screen {}
     {:name "Hello, world."}
     (mk rn/Button
       ;; ----------------------------------------------------------------------
