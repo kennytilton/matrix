@@ -23,7 +23,7 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Hello, world. One solution."}
+    {:name "Hello, world. A solution."}
     (mk rn/Button
       {
        :counter   (cI (+ 2 2))

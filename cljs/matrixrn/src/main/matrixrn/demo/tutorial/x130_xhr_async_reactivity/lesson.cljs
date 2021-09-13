@@ -18,9 +18,6 @@
 ;; WARNING!: The GitHub search is a mess. Fix it if you like. It searches in limited fashion
 ;;           I use "si" or "st" to get hits.
 
-
-;; TryThis[,easy]: the U/X here is a mess. It should not say "No user" until they search.
-
 ;; TryThis[,hard]: poll continuously as they type, but only if two characters have been typed.
 
 ;; TryThis[,pro]: any widget kicking off an XHR would duplicate much of the observer code below.
@@ -59,11 +56,13 @@
                                            ;; ^^^ MAJOR feature! 'with-cc' must wrap state change triggered inside an observer
                                            (mset! me :lookup-response
                                              ;; returning error as a 'hit' is lame.
-                                             ;; TryThis[,easy]: return a lookup result map with hits and any
+                                             ;; TryThis[response-map,avg]: return a lookup result map with hits and any
                                              ;; message to be displayed. Use message to say "Users matching <searchstring>"
+                                             ;; This will fix the UX silliness of saying "No matches" before
+                                             ;; tehy even search.
                                              (or (seq hits) (vector (str "No matches for " search)))))
 
-                                         #_ (with-cc
+                                         (with-cc
                                            (mset! me :searchstring ""))
 
                                          ;; without this the focus goes I-am-not-sure where. If we decide the

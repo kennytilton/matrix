@@ -1,4 +1,4 @@
-(ns matrixrn.demo.tutorial.x130-xhr-async-reactivity.auto-clear
+(ns matrixrn.demo.tutorial.x130-xhr-async-reactivity.response-map
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.string :as str]
@@ -12,18 +12,19 @@
     [tiltontec.cell.core :refer-macros [cF cF+ cFn cFonce] :refer [cI]]
     [tiltontec.cell.integrity :refer-macros [with-cc]]
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
+    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props
+                                       fmu fmu-val fmi-val]]))
 
-    [matrixrn.matrixrn :as mxn :refer [mk with-props fmu mku]]))
-
-;; TryThis[auto-clear,avg]: clear the searchstring each time they search
-
-;; search below for SOLUTION!
+;; TryThis[response-map,avg]: return a lookup result map with hits and any
+;; message to be displayed. Use message to say "Users matching <searchstring>"
+;; This will fix the UX silliness of saying "No matches" before
+;; they even search.
 
 (defn search-input []
   (mk rn/TextInput
     {:name            :search-input
-     :use-ref?            true
      :defaultValue    (cI "")
+     :use-ref?        true
      :searchstring    (cFn (mget me :defaultValue))
      :lookup-go?      (cI nil :ephemeral? true)
      :lookup-response (cI nil)
@@ -35,14 +36,20 @@
                                              hits (filter (fn [ostr]
                                                             (str/includes? ostr search))
                                                     (map :login (:body response)))]
-                                         (with-cc
-                                           (mset! me :lookup-response
-                                             (or (seq hits) (vector (str "No matches for " search)))))
 
                                          ;; Solution!
                                          (with-cc
+                                           (mset! me :lookup-response
+                                             {:users   hits
+                                              :message (if (seq hits)
+                                                         (str "Matches for '" search "':")
+                                                         (str "No matches for " search ". Try 's'."))}))
+
+                                         ;; we include the auto-clear solution
+                                         (with-cc
                                            (mset! me :searchstring ""))
 
+                                         ;; restore focus to search field:
                                          (.focus (.-current (mxn/ref-get me)))))))]
                         (when (not (str/blank? (mget me :searchstring)))
                           (when (mget me :lookup-go?)
@@ -61,33 +68,45 @@
        :autoCapitalize  "none"
        :autoCorrect     false
        :autoFocus       true
-       :onChangeText    #(do (prn :onchange! %)
-                             (mset! me :searchstring %))
-       :onSubmitEditing #(do (prn :submit-sees %)
-                             (mset! me :lookup-go? true))})))
+       :onChangeText    #(mset! me :searchstring %)
+       :onSubmitEditing #(mset! me :lookup-go? true)})))
 
 (defn- build-keyed-item [item-title]
   {:key   (str (.now js/Date) (rand-int 99999))
    :title item-title})
 
 (defn- search-output []
-  (mk rn/FlatList
-    {:data (cF (clj->js
-                 (if-let [users (seq (mget (fmu :search-input) :lookup-response))]
-                   (for [user-login users]
-                     (build-keyed-item user-login))
-                   (vector (build-keyed-item "No such user found. Try \"s\".")))))}
-    (with-props [:data]
-      {:keyExtractor (fn [data-item]
-                       (.-key data-item))
-       :renderItem   (fn [render-item]
-                       (react/createElement rn/Text
-                         #js {:style #js {:fontSize 18}}
-                         (.. render-item -item -title)))})))
+  (mk rn/View
+    {:name     :search-output
+     :response (cF (mget (fmu :search-input) :lookup-response))}
+    {:style {:flex       1
+             :padding    6
+             :alignItems "center"}}
+    (when (myval :response)
+      [(mk rn/Text {}
+         {:style {:height          40
+                  :color           "black"
+                  :backgroundColor "linen"
+                  :padding         9
+                  :marginBottom    18
+                  :fontFamily      "Cochin"
+                  :fontSize        24}}
+         (mxn/strng (:message (fmu-val :search-output :response))))
+       (mk rn/FlatList
+         {:data (cF (clj->js
+                      (for [user-login (:users (fmu-val :search-output :response))]
+                        (build-keyed-item user-login))))}
+         (with-props [:data]
+           {:keyExtractor (fn [data-item]
+                            (.-key data-item))
+            :renderItem   (fn [render-item]
+                            (react/createElement rn/Text
+                              #js {:style #js {:fontSize 18}}
+                              (.. render-item -item -title)))}))])))
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "XHR Async Reactivity"}
+    {:name "Beyond Matrix: Async XHR"}
     (mk rn/View {}
       {:style {:flex            1
                :padding         24
@@ -98,6 +117,6 @@
                  :fontFamily "Cochin"
                  :fontSize   28
                  :fontWeight "bold"}}
-        (mxn/strng "Lame GitHub User Search"))
+        (mxn/strng "Lame GitHub user search"))
       (search-input)
       (search-output))))

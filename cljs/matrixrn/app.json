@@ -25,6 +25,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tiltontec.matrixrn.poc"
+    },
+    "android": {
+      "package": "com.tiltontec.matrixrn.poc"
     }
   }
 }

@@ -80,7 +80,7 @@
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
       (do
-        (prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
+        ;(prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
