@@ -34,7 +34,7 @@
                 ;; uncomment below in ascending order to follow tutorial....
                 (mk NavigationContainer {} {}
                   (mk mxn/Navigator {} {}
-                    (response/solution)
+                    ;; (response/solution)
                     ;;(autoclear/solution)
                     ;(xhr/lesson)
                     ;(rgb-slider/solution)
