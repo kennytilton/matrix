@@ -1,9 +1,13 @@
 (ns matrixrn.matrixrn)
 
-(defmacro component-with-state-hook [& body]
+(defmacro component-with-hooks [& body]
   `(fn []
-     (let [[~'_ set-state#] (react/useState 0)]
+     (let [[~'_ set-state#] (react/useState 0)
+           ref# (when (tiltontec.model.core/mget ~'me :use-ref?)
+                  (react/useRef :ref-undefined))]
        (matrixrn.matrixrn/set-state-record ~'me set-state#)
+       (when ref#
+         (matrixrn.matrixrn/ref-record ~'me ref#))
        ~@body)))
 
 (defmacro strng [textFormulaBody]
@@ -14,7 +18,7 @@
        :react-element (tiltontec.cell.core/cF
                         ;; todo better key
                         (react/createElement
-                          (matrixrn.matrixrn/component-with-state-hook
+                          (matrixrn.matrixrn/component-with-hooks
                             (react/createElement rn/Text
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))
@@ -35,38 +39,24 @@
          `(:kids (tiltontec.model.core/cFkids ~@kids)))
      :react-element (tiltontec.cell.core/cF
                       (react/createElement
-                        (matrixrn.matrixrn/component-with-state-hook
+                        (matrixrn.matrixrn/component-with-hooks
                           (apply react/createElement ~node-type
-                            (cljs.core/clj->js ~jsx-props)
-                            (doall                          ;; so this runs while "me" is bound to intended mx
+                            (cljs.core/clj->js (merge
+                                                 (when (tiltontec.model.core/mget ~'me :use-ref?)
+                                                   {:ref (matrixrn.matrixrn/ref-get ~'me)})
+                                                 ~jsx-props))
+                            (doall
+                              ;; ^^^ so this runs while "me" is bound to intended mx
                               (map (fn [mapkid#]
                                      (tiltontec.model.core/mget mapkid# :react-element))
                                 (tiltontec.model.core/mget ~'me :kids)))))))
      ~@(apply concat
          (into [] mx-props))))
 
-;(defmacro mku [node-type mx-props jsx-props & kids]
-;  ;; this does not wrap node-type in a state-hook component so
-;  ;; that the returned element is of that node-type, instead
-;  ;; of an anonymous component.
-;  ;;
-;  ;; Needed for Navigator-Screen, since Nav insists children be Screens
-;  ;;
-;  `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
-;     :sid (swap! matrixrn.matrixrn/sid-latest inc)
-;     ~@(when (seq kids)
-;         `(:kids (tiltontec.model.core/cFkids ~@kids)))
-;     :react-element (tiltontec.cell.core/cF
-;                      (apply react/createElement ~node-type
-;                        (cljs.core/clj->js ~jsx-props)
-;                        (doall
-;                          (map (fn [mapkid#]
-;                                 (tiltontec.model.core/mget mapkid# :react-element))
-;                            (tiltontec.model.core/mget ~'me :kids)))))
-;     ~@(apply concat
-;         (into [] mx-props))))
-
 (defmacro mku [node-type mx-props jsx-props & kids]
+  ;; tbh, 'mku' was developed just for the Navigator-Screen parent-child pairing.
+  ;; the Matrix trick of injecting an anonymous component made RN unhappy because
+  ;; it requires the child of a Navigator to be a Screen, not a wrapped screen.
   `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
      :sid (swap! matrixrn.matrixrn/sid-latest inc)
      ~@(when (seq kids)

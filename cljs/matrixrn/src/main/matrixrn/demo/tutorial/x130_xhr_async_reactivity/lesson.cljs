@@ -30,6 +30,7 @@
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")
+     :use-ref?        true
      :searchstring    (cFn (mget me :defaultValue))
      ;;              cFn ^^^ runs as a formula to intialize itself from surrounding data,
      ;;              then can be modified like a `cI` input cell.
@@ -52,6 +53,7 @@
                                              hits (filter (fn [ostr]
                                                             (str/includes? ostr search))
                                                     (map :login (:body response)))]
+
                                          (prn :github-users hits)
                                          (with-cc
                                            ;; ^^^ MAJOR feature! 'with-cc' must wrap state change triggered inside an observer
@@ -59,7 +61,18 @@
                                              ;; returning error as a 'hit' is lame.
                                              ;; TryThis[,easy]: return a lookup result map with hits and any
                                              ;; message to be displayed. Use message to say "Users matching <searchstring>"
-                                             (or (seq hits) (vector (str "No matches for " search)))))))))]
+                                             (or (seq hits) (vector (str "No matches for " search)))))
+
+                                         #_ (with-cc
+                                           (mset! me :searchstring ""))
+
+                                         ;; without this the focus goes I-am-not-sure where. If we decide the
+                                         ;; UX should be "stay on field for quick follow-up search", we
+                                         ;; need to restore the focus to this input text.
+                                         ;; n.b! I tried this right in the submit, but RN had not yet moved
+                                         ;; the focus elsewhere, so it had no net effect. Here is good, but keep
+                                         ;; in mind that it is vulnerable to other RN focus descisions.
+                                         (.focus (.-current (mxn/ref-get me)))))))]
                         (when (not (str/blank? (mget me :searchstring)))
                           (when (mget me :lookup-go?)
                             (http/get "https://api.github.com/users"
@@ -78,10 +91,8 @@
        :autoCapitalize  "none"
        :autoCorrect     false
        :autoFocus       true
-       :onChangeText    #(do (prn :onchange! %)
-                             (mset! me :searchstring %))
-       :onSubmitEditing #(do (prn :submit-sees %)
-                             (mset! me :lookup-go? true))})))
+       :onChangeText    #(mset! me :searchstring %)
+       :onSubmitEditing #(mset! me :lookup-go? true)})))
 
 (defn- build-keyed-item [item-title]
   {:key   (str (.now js/Date) (rand-int 99999))

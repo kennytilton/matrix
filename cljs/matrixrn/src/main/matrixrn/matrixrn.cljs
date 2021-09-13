@@ -50,6 +50,14 @@
 (defn set-state-unrecord [me]
   (swap! ssdict dissoc (mget me :sid)))
 
+(def refdict (atom {}))
+(defn ref-record [me ref]
+  (swap! refdict assoc (mget me :sid) ref))
+(defn ref-get [me]
+  (get @refdict (mget me :sid)))
+(defn ref-unrecord [me]
+  (swap! refdict dissoc (mget me :sid)))
+
 (defn mx*
   ([me name] (mx* me name true))
   ([me name must-find?]
@@ -65,13 +73,14 @@
     (when (md-ref? k)
       (not-to-be k)))
   (set-state-unrecord me)
+  (ref-unrecord me)
   (not-to-be-self me))
 
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
       (do
-        ;(prn :shs-obs-sets-state!!!!!!!!! (pulse-now) me slot (mget me :name) sid)
+        (prn :shs-obs-sets-state!!!!!!!!! (pulse-now) slot (mget me :name) sid)
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))

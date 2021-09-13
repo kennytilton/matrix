@@ -17,13 +17,12 @@
   (reset! mxn/ssdict {})
   (reset! md/matrix (demo/demo)))
 
-(defn                                                       ;; ^:dev/after-load
+(defn
+  ;; ^:dev/after-load
   start []
   (let [app-matrix (matrix-build!)
         root-mx (md/mget app-matrix :rx-dom)
-        ;; _ (prn :root-mmmmmmx!!!! root-mx)
         root-element (md/mget root-mx :react-element)]
-    (prn :root-elt root-element)
     (expo-root/render-root
       (fn [] (md/mget root-mx :react-element)))))
 
