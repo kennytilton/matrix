@@ -12,7 +12,7 @@
     ;[matrixrn.demo.tutorial.main]
     ;[matrixrn.demo.tutorial.sampler]
     ; Pick one ^^^ for next line...vvv
-    [matrixrn.demo.tutorial.sampler :as demo]))
+    [matrixrn.demo.tutorial.main :as demo]))
 
 (defn matrix-build! []
   (reset! mxn/ssdict {})

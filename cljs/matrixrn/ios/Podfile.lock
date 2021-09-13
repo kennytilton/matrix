@@ -3,6 +3,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (3.2.0):
     - UMCore
+  - EXAV (9.2.3):
+    - ExpoModulesCore
+    - UMCore
   - EXConstants (11.0.2):
     - ExpoModulesCore
     - UMCore
@@ -294,7 +297,7 @@ PODS:
     - React-Core
   - RNGestureHandler (1.10.3):
     - React-Core
-  - RNReanimated (2.2.0):
+  - RNReanimated (2.2.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -339,7 +342,8 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
-  - EXConstants (from `../node_modules/react-native-unimodules/node_modules/expo-constants/ios`)
+  - EXAV (from `../node_modules/expo-av/ios`)
+  - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
@@ -384,8 +388,8 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
-  - "UMCore (from `../node_modules/react-native-unimodules/node_modules/@unimodules/core/ios`)"
-  - "UMReactNativeAdapter (from `../node_modules/react-native-unimodules/node_modules/@unimodules/react-native-adapter/ios`)"
+  - "UMCore (from `../node_modules/@unimodules/core/ios`)"
+  - "UMReactNativeAdapter (from `../node_modules/@unimodules/react-native-adapter/ios`)"
   - UMTaskManagerInterface (from `../node_modules/unimodules-task-manager-interface/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -398,8 +402,10 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
     :path: "../node_modules/expo-application/ios"
+  EXAV:
+    :path: "../node_modules/expo-av/ios"
   EXConstants:
-    :path: "../node_modules/react-native-unimodules/node_modules/expo-constants/ios"
+    :path: "../node_modules/expo-constants/ios"
   EXErrorRecovery:
     :path: "../node_modules/expo-error-recovery/ios"
   EXFileSystem:
@@ -485,9 +491,9 @@ EXTERNAL SOURCES:
   UMAppLoader:
     :path: "../node_modules/unimodules-app-loader/ios"
   UMCore:
-    :path: "../node_modules/react-native-unimodules/node_modules/@unimodules/core/ios"
+    :path: "../node_modules/@unimodules/core/ios"
   UMReactNativeAdapter:
-    :path: "../node_modules/react-native-unimodules/node_modules/@unimodules/react-native-adapter/ios"
+    :path: "../node_modules/@unimodules/react-native-adapter/ios"
   UMTaskManagerInterface:
     :path: "../node_modules/unimodules-task-manager-interface/ios"
   Yoga:
@@ -497,6 +503,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
+  EXAV: 67bcc1d0afeb1fab854b206c84b9f2afbd61d0cd
   EXConstants: 4cb52b6d8f636c767104a44bf7db3873e9c01a6f
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
   EXFileSystem: 0a04aba8da751b9ac954065911bcf166503f8267
@@ -537,7 +544,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 7102fe8985f889579a3ae148d957bbb3f308122b
   RNCCheckbox: 6bd119c26c6eb8264a29d59ff66cb70a14de3349
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
-  RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
+  RNReanimated: ad9db9ab64944d631e13a723a63f1704bddebeaf
   RNScreens: eb0dfb2d6b21d2d7f980ad46b14eb306d2f1062e
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: ce3a4faa010239063b8343895b29a6d97b01069d

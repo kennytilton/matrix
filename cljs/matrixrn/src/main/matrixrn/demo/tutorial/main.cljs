@@ -37,7 +37,7 @@
                     ;; (response/solution)
                     ;;(autoclear/solution)
                     ;(xhr/lesson)
-                    ;(rgb-slider/solution)
+                    (rgb-slider/solution)
                     ;(hex-dec/solution)
                     ;(thumb-color/solution)
                     ;(webco/lesson)
