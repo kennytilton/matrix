@@ -35,19 +35,23 @@ In a terminal:
 * `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
 * `( cd ios && pod install )`
+* * if you get an error `attempted to initialize an object with an unknown UUID.`, so do I.
 * `npx shadow-cljs watch app` to start compilation;
 * * Note! While working on the code, watch this terminal for compilation errors;
-* wait for `[:app] Build completed....` before continuing to the next step.
+* wait 35 seconds on an M1 Mac for `[:app] Build completed....` to appear before continuing to the next step.
 
 In a new terminal:
 * `expo run:ios`;
+* * wait 75 seonds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
+* * a React Native Debugger should also appear on URL `localhost:8081/debugger-ui/` 
+* * if the debugger does not appear, we will address that below;
+* * wait another 30 seconds for the app to appear.
 
-After quite a bit of work and more than a few scary errors...
-* an iOS sim will appear; wait quite a while for it to complete loading;
-* you should be looking at what I call the "Sampler";
-* * here I load the most complete solutions to each lesson;
-* Using the Simulator menu bar, select `Device>shake`;
-* * a menu of options should appear in the sim;
+You should be looking at what I call the "Sampler". Here I load the most complete solutions to each lesson.
+
+Continue with the iOS sim:
+* Using the Mac desktop Simulator menu bar, select `Device>shake`;
+* * a menu of options should appear _in the sim_;
 * if you see an option to `Disable fast refresh` select it; the menu will disappear;
 * * (If it says "enable", do nothing, we are good.)
 * again, select `Device>shake`;
@@ -56,11 +60,13 @@ After quite a bit of work and more than a few scary errors...
 
 To get started on the tutorial lessons, in your chosen IDE:
 * open the `(matrix location)/cljs/matrixrn` directory/project; (<-- this path is a change!)
+* * See below the original instructions for connecting to various IDEs;
 * open `(matrix location)/cljs/matrixrn/app.cljs`
 * * change `[matrixrn.demo.tutorial.sampler :as demo]` to `[matrixrn.demo.tutorial.main :as demo]`
 * open `matrixrn/demo/tutorial/main.cljs`;
 * make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
 * * if not, comment/uncomment as needed.
+* save your changes to trigger recompilation and reload.
 
 Now read the source and learn how that example works, and which Matrix tricks are demonstrated.
 
