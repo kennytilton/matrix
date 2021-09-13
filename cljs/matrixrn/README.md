@@ -31,19 +31,21 @@ In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
 * `git checkout master` (Prolly not necessary.)
 * `cd (matrix location)/cljs/matrix`;
-* `lein install` (Installs latest Matrix locally intil I figure out Clojars new security.)
+* `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
 * `cd (matrix location)/cljs/shadow/matrixrn`;
 * `npm install`
 * `( cd ios && pod install )`
 * `npx shadow-cljs watch app` to start compilation;
-* * Note!: while working on the code, watch this terminal for compilation errors;
+* * Note! While working on the code, watch this terminal for compilation errors;
 * wait for `[:app] Build completed....` before continuing to the next step.
 
 In a new terminal:
 * `expo run:ios`;
 
 After quite a bit of work and more than a few scary errors...
-* an iOS sim will appear; wait for it to complete loading;
+* an iOS sim will appear; wait quite a while for it to complete loading;
+* you should be looking at what I call the "Sampler";
+* * here I load the most complete solutions to each lesson;
 * Using the Simulator menu bar, select `Device>shake`;
 * * a menu of options should appear in the sim;
 * if you see an option to `Disable fast refresh` select it; the menu will disappear;
@@ -52,11 +54,12 @@ After quite a bit of work and more than a few scary errors...
 * if you see an option to `Debug`, select it; a debug web page will appear: "localhost:8081/debugger-ui/"
 * * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
 
-In your chosen IDE:
-* open the `(matrix location)/cljs/shadow/matrixrn` directory/project ;
-* open `matrixrn.demo.tutorial.main.cljs`;
+To get started on the tutorial lessons, in your chosen IDE:
+* open the `(matrix location)/cljs/matrixrn` directory/project; (<-- this path is a change!)
+* open `(matrix location)/cljs/matrixrn/app.cljs`
+* * change `[matrixrn.demo.tutorial.sampler :as demo]` to `[matrixrn.demo.tutorial.main :as demo]`
+* open `matrixrn/demo/tutorial/main.cljs`;
 * make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
-* * actually, if the phone opens to a "Hello, world." sim page, we are good.
 * * if not, comment/uncomment as needed.
 
 Now read the source and learn how that example works, and which Matrix tricks are demonstrated.
