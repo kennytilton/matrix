@@ -1,5 +1,5 @@
 # MatrixRN -- The Petri Dish
-Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/shadow/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
+Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
 
 What follows are rough directions to help the early curious explore MatrixRN. But first a caveat.
 
@@ -31,33 +31,42 @@ In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
 * `git checkout master` (Prolly not necessary.)
 * `cd (matrix location)/cljs/matrix`;
-* `lein install` (Installs latest Matrix locally intil I figure out Clojars new security.)
-* `cd (matrix location)/cljs/shadow/matrixrn`;
+* `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
+* `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
 * `( cd ios && pod install )`
+* * if you get an error `attempted to initialize an object with an unknown UUID.`, so do I.
 * `npx shadow-cljs watch app` to start compilation;
-* * Note!: while working on the code, watch this terminal for compilation errors;
-* wait for `[:app] Build completed....` before continuing to the next step.
+* * Note! While working on the code, watch this terminal for compilation errors;
+* wait 35 seconds on an M1 Mac for `[:app] Build completed....` to appear before continuing to the next step.
 
 In a new terminal:
 * `expo run:ios`;
+* * wait 75 seonds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
+* * a React Native Debugger should also appear on URL `localhost:8081/debugger-ui/` 
+* * if the debugger does not appear, we will address that below;
+* * wait another 30 seconds for the app to appear.
 
-After quite a bit of work and more than a few scary errors...
-* an iOS sim will appear; wait for it to complete loading;
-* Using the Simulator menu bar, select `Device>shake`;
-* * a menu of options should appear in the sim;
+You should be looking at what I call the "Sampler". Here I load the most complete solutions to each lesson.
+
+Continue with the iOS sim:
+* Using the Mac desktop Simulator menu bar, select `Device>shake`;
+* * a menu of options should appear _in the sim_;
 * if you see an option to `Disable fast refresh` select it; the menu will disappear;
 * * (If it says "enable", do nothing, we are good.)
 * again, select `Device>shake`;
 * if you see an option to `Debug`, select it; a debug web page will appear: "localhost:8081/debugger-ui/"
 * * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
 
-In your chosen IDE:
-* open the `(matrix location)/cljs/shadow/matrixrn` directory/project ;
-* open `matrixrn.demo.tutorial.main.cljs`;
+To get started on the tutorial lessons, in your chosen IDE:
+* open the `(matrix location)/cljs/matrixrn` directory/project; (<-- this path is a change!)
+* * See below the original instructions for connecting to various IDEs;
+* open `(matrix location)/cljs/matrixrn/app.cljs`
+* * change `[matrixrn.demo.tutorial.sampler :as demo]` to `[matrixrn.demo.tutorial.main :as demo]`
+* open `matrixrn/demo/tutorial/main.cljs`;
 * make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
-* * actually, if the phone opens to a "Hello, world." sim page, we are good.
 * * if not, comment/uncomment as needed.
+* save your changes to trigger recompilation and reload.
 
 Now read the source and learn how that example works, and which Matrix tricks are demonstrated.
 
@@ -74,7 +83,7 @@ I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They
 
 That is OK. Follow these steps for a solid Cursive experience:
 * from IntelliJ, select `File>New>Project from existing sources...`;
-* navigate to `_repoLocation_/cljs/shadow/matrixrn` and open the `pom.xml`; and
+* navigate to `_repoLocation_/cljs/matrixrn` and open the `pom.xml`; and
 * yer done.
 
 We now return you to the original read-me.
