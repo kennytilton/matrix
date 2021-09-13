@@ -32,7 +32,7 @@ In a terminal:
 * `git checkout master` (Prolly not necessary.)
 * `cd (matrix location)/cljs/matrix`;
 * `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
-* `cd (matrix location)/cljs/shadow/matrixrn`;
+* `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
 * `( cd ios && pod install )`
 * `npx shadow-cljs watch app` to start compilation;
@@ -77,7 +77,7 @@ I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They
 
 That is OK. Follow these steps for a solid Cursive experience:
 * from IntelliJ, select `File>New>Project from existing sources...`;
-* navigate to `_repoLocation_/cljs/shadow/matrixrn` and open the `pom.xml`; and
+* navigate to `_repoLocation_/cljs/matrixrn` and open the `pom.xml`; and
 * yer done.
 
 We now return you to the original read-me.
