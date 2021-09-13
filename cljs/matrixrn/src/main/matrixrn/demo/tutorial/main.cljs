@@ -12,7 +12,9 @@
     [matrixrn.demo.tutorial.x120-web-component.lesson :as webco]
     [matrixrn.demo.tutorial.x120-web-component.thumb-color :as thumb-color]
     [matrixrn.demo.tutorial.x120-web-component.decimal-display :as hex-dec]
-    [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as rgb-slider]))
+    [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as rgb-slider]
+    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.lesson :as xhr]
+    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.auto-clear :as autoclear]))
 
 (defn demo []
   (md/make ::rnApp
@@ -31,7 +33,9 @@
                 ;; uncomment below in ascending order to follow tutorial....
                 (mk NavigationContainer {} {}
                   (mk mxn/Navigator {} {}
-                    ; (rgb-slider/solution)
+                    ;;(autoclear/solution)
+                    (xhr/lesson)
+                    ;(rgb-slider/solution)
                     ;(hex-dec/solution)
                     ;(thumb-color/solution)
                     ;(webco/lesson)

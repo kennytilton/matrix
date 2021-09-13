@@ -13,16 +13,33 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
     [applied-science.js-interop :as j]
+    ; import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+    ; mess go back to managed expo ["@react-navigation/material-bottom-tabs" :as material-bottom-tabs]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]))
 
 (def sid-latest (atom 0))
 
 ;; apparently we call a function to get an object of components
 ;; keyed Navigator, Screen, et al. Usage: (let
-(defonce Tab (js->clj (rn-bottom-tabs/createBottomTabNavigator) :keywordize-keys true))
+(defonce Tab (js->clj
+               (rn-bottom-tabs/createBottomTabNavigator)
+               :keywordize-keys true))
 (defonce Navigator (:Navigator Tab))
 (defonce Group (:Group Tab))
 (defonce Screen (:Screen Tab))
+
+;;; --- Material Bottom Tab would be more easily set up with managed Expo app
+;;;
+;(defn matabs []
+;  (js->clj
+;    (material-bottom-tabs/createMaterialBottomTabNavigator)
+;    :keywordize-keys true))
+
+;(defonce MTab (js->clj (rn-bottom-tabs/createMaterialBottomTabNavigator) :keywordize-keys true))
+;; import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+;(defonce MNavigator (:Navigator Tab))
+;(defonce MGroup (:Group Tab))
+;(defonce MScreen (:Screen Tab))
 
 (defn mxweb-init! []
   (reset! sid-latest 0))
