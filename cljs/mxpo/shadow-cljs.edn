@@ -1,11 +1,11 @@
-{:source-paths ["src/main"
-                "src/test"]
+{:source-paths ["src/main" "src/test"]
 
- :dependencies [[reagent "1.1.0"]
-                [re-frame "1.2.0"]]
+ :dependencies [[tiltontec/matrix "4.1.3"]
+                [applied-science/js-interop "0.3.0"]
+                [cljs-http/cljs-http "0.1.46"]]
 
  :builds       {:app {:target           :react-native
-                      :init-fn          example.app/init
+                      :init-fn          matrixrn.app/init
                       :output-dir       "app"
                       :compiler-options {:infer-externs :auto}
                       :devtools         {:autoload true

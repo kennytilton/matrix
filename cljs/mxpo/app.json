@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "hello-world",
-    "slug": "reagent-expo",
+    "name": "Matrix RN Petri Dish",
+    "slug": "matrix-rn-petri",
     "privacy": "public",
     "platforms": [
       "ios",
