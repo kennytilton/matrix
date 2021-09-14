@@ -31,7 +31,7 @@
 
 ;;; expo install react-native-elements
 ;;; expo install @react-navigation/bottom-tabs
-;;; expo install 
+;;; expo install
 
 (defn matrix-build! []
   (reset! mxn/ssdict {})
