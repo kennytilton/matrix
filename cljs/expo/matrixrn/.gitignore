@@ -8,7 +8,6 @@ npm-debug.*
 out/
 .shadow-cljs/
 .nrepl-port
-pom.xml
 .idea/
 *.iml
 app/

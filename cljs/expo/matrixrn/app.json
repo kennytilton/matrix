@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "hello-world",
-    "slug": "reagent-expo",
+    "name": "matrixrn",
+    "slug": "matrixrn",
     "privacy": "public",
     "platforms": [
       "ios",
