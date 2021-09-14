@@ -34,7 +34,6 @@ In a terminal:
 * `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
 * `cd (matrix location)/cljs/expo/matrixrn`;
 * `npm install`
-* `( cd ios && pod install )`
 * `npx shadow-cljs watch app` to start compilation;
 * * Note! While working on the code, watch this terminal for compilation errors;
 * wait for `[:app] Build completed....` before continuing to the next step.
