@@ -1,3 +1,87 @@
+# MatrixRN -- The Petri Dish
+Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/expo/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
+
+What follows are rough directions to help the early curious explore MatrixRN. But first a caveat.
+
+### Caveat
+I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
+
+## Did I say "Petri dish"?
+![A Petri dish](assets/petri-dish-512.jpeg)
+
+"Petri Dish" by Pacific Northwest National Laboratory
+
+I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises; it lacks the consistency of HTML's `<tag attributes*>children</tag>`. MatrixRN will paper these over where possible, and grow with each papering.
+
+The good news is that, so far, we have needed just 150LOC to wrap ReactNative with Matrix, a mature, truly reactive state manager that harkens back twenty-five years to its Common Lisp progenitor. We have done this by letting RN be RN, doing no more than using React state hooks to connect Matrix state change management with React rendering and events.
+
+Furthermore, MatrixRN wraps ReactNative thinly. We use props with functional components, and have access to `createElement` as the examples show. If we know RN, we can code with MatrixRN.
+
+## Psst! re-frame?
+`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+
+We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form. 
+
+These different approaches will suit different developers. `re-frame` fits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts, neatly organized by type of artifact into different directories. Matrix suits those who want to code applications organically, in the image of the problems they solve. Events, dependencies, state change, and views are all co-located and largely transparent.
+
+More soon in a Wiki walk-through of these POC examples.
+
+## Running the demo project
+In a terminal:
+* clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
+* `git checkout master` (Prolly not necessary.)
+* `cd (matrix location)/cljs/matrix`;
+* `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
+* `cd (matrix location)/cljs/expo/matrixrn`;
+* `npm install`
+* `( cd ios && pod install )`
+* `npx shadow-cljs watch app` to start compilation;
+* * Note! While working on the code, watch this terminal for compilation errors;
+* wait for `[:app] Build completed....` before continuing to the next step.
+
+In a new terminal:
+* `expo run:ios`;
+
+After quite a bit of work and more than a few scary errors...
+* an iOS sim will appear; wait quite a while for it to complete loading;
+* you should be looking at what I call the "Sampler";
+* * here I load the most complete solutions to each lesson;
+* Using the Simulator menu bar, select `Device>shake`;
+* * a menu of options should appear in the sim;
+* if you see an option to `Disable fast refresh` select it; the menu will disappear;
+* * (If it says "enable", do nothing, we are good.)
+* again, select `Device>shake`;
+* if you see an option to `Debug`, select it; a debug web page will appear: "localhost:8081/debugger-ui/"
+* * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
+
+To get started on the tutorial lessons, in your chosen IDE:
+* open the `(matrix location)/cljs/expo/matrixrn` directory/project; (<-- this path is a change!)
+* open `(matrix location)/cljs/expo/matrixrn/app.cljs`
+* * change `[matrixrn.demo.tutorial.sampler :as demo]` to `[matrixrn.demo.tutorial.main :as demo]`
+* open `matrixrn/demo/tutorial/main.cljs`;
+* make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
+* * if not, comment/uncomment as needed.
+
+Now read the source and learn how that example works, and which Matrix tricks are demonstrated.
+
+Where a lesson suggests something like `TryThis[times-six,easy]`, look for a solution named `times-six` in the same directory as the lesson.cljs. The temptation will be great, but we recommend trying to solve the challenges before looking at the solutions. Your call.
+
+If you have questions/problems, please reach out. This doc needs your input. Here are two options:
+* raise an issue on this repo (slower);
+* ping @kennytilton in the #matrix or #cljsrn channels of clojurians.slack.com (faster).
+
+Finally: pull often; the petri dish is growing all the time.
+
+## Editing the demo project. I use Cursive
+I use Cursive, and had to deal with the lack of a deps.edn. It is my fault. They took it out when I got confused, not knowing Cursive relied on it.
+
+That is OK. Follow these steps for a solid Cursive experience:
+* from IntelliJ, select `File>New>Project from existing sources...`;
+* navigate to `_repoLocation_/cljs/expo/matrixrn` and open the `pom.xml`; and
+* yer done.
+
+We now return you to the original read-me.
+
 # React Native using shadow-cljs in 3 minutes
 
 The fastest way a [ClojureScript](https://clojurescript.org/) coder can get started with React Native development. *Prove me wrong.*
