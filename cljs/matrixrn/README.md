@@ -29,7 +29,7 @@ More soon in a Wiki walk-through of these POC examples. For now, check the comme
 ## Running the demo project
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
-* `git checkout master` (Prolly not necessary.)
+* `git checkout main` (Prolly not necessary.)
 * `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
 * `npx shadow-cljs watch app` to start compilation;
@@ -38,7 +38,7 @@ In a terminal:
 
 In a new terminal:
 * `npm start`;
-* * wait 75 seonds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
+* * wait 75 seconds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
 * * depending on your most recent Simulator settings, a React Native Debugger may also appear on URL `localhost:8081/debugger-ui/` 
 * * if the debugger does not appear, we will address that below;
 * * wait another 30 seconds for the app to appear.
