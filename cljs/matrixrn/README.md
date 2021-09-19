@@ -34,14 +34,12 @@ In a terminal:
 * `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
 * `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
-* `( cd ios && pod install )`
-* * if you get an error `attempted to initialize an object with an unknown UUID.`, so do I.
 * `npx shadow-cljs watch app` to start compilation;
 * * Note! While working on the code, watch this terminal for compilation errors;
 * wait 35 seconds on an M1 Mac for `[:app] Build completed....` to appear before continuing to the next step.
 
 In a new terminal:
-* `expo run:ios`;
+* `npm start`;
 * * wait 75 seonds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
 * * a React Native Debugger should also appear on URL `localhost:8081/debugger-ui/` 
 * * if the debugger does not appear, we will address that below;

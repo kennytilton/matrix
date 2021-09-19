@@ -39,7 +39,7 @@ In a terminal:
 * wait for `[:app] Build completed....` before continuing to the next step.
 
 In a new terminal:
-* `expo run:ios`;
+* `npm start`;
 
 After quite a bit of work and more than a few scary errors...
 * an iOS sim will appear; wait quite a while for it to complete loading;
