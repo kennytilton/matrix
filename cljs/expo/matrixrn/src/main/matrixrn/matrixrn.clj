@@ -7,13 +7,14 @@
 ;    window.removeEventListener('mousemove', () => {})
 ;  }
 ;}, [])
+
 (defmacro component-with-hooks [& body]
   `(fn []
      (let [[~'_ set-state#] (react/useState 0)
            ref# (when (tiltontec.model.core/mget ~'me :use-ref?)
                   (react/useRef :ref-undefined))]
        (matrixrn.matrixrn/set-state-record ~'me set-state#)
-       (react/useEffect #(fn []
+       #_ (react/useEffect #(fn []
                            (prn :effect-unmounted (tiltontec.model.core/mget ~'me :sid)
                                   (tiltontec.model.core/mget ~'me :name))))
        (when ref#
@@ -54,7 +55,8 @@
      :react-element (tiltontec.cell.core/cF
                       (react/createElement
                         (matrixrn.matrixrn/component-with-hooks
-                          (prn :mk-rendering (tiltontec.model.core/mget ~'me :sid) ~node-type)
+                          (prn :mk-rendering (tiltontec.model.core/mget ~'me :sid)
+                            (tiltontec.model.core/mget ~'me :name))
                           (apply react/createElement ~node-type
                             (cljs.core/clj->js (merge
                                                  (when (tiltontec.model.core/mget ~'me :use-ref?)

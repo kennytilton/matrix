@@ -76,7 +76,7 @@
   ;; todo: worry about leaks
   (prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
-  ;; hhack (ref-unrecord me)
+  (ref-unrecord me) ;; un-hhack
   (doseq [k (:kids @me)]
     (when (md-ref? k)
       (not-to-be k)))
@@ -94,9 +94,7 @@
       (do ;; try hhack
         (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
           (mdead? me) (ia-type me) #_#_ :meta (meta me))
-        (set-state-fn (pulse-now))
-        #_ (catch js/Object e
-          (prn :setstate-error e)))
+        (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
@@ -105,6 +103,8 @@
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
     (when (= slot :kids)
+      ;; we need PROGN method combo. Right now this method shadows the :kids observer.
+      ;; We jury rig in the call-next-method, but todo true solution needed
       (prn :obsing-kids!!!!!!!!! slot (mget me :name)(mget me :sid))
       (fm-kids-observe me newv oldv cell))
     ;; todo check for per-cell observers and execute
