@@ -1,7 +1,7 @@
 {:source-paths ["src/main"
                 "src/test"]
 
- :dependencies [[tiltontec/matrix "4.1.5-SNAPSHOT"]
+ :dependencies [[tiltontec/matrix "4.1.6-SNAPSHOT"]
                 [applied-science/js-interop "0.3.0"]
                 [cljs-http/cljs-http "0.1.46"]]
 

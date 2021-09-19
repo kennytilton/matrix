@@ -105,7 +105,7 @@
   (rmap-setf [slot me] new-value))
 
 (defn make [& arg-list]
-  (prn :make-entry (count arg-list) (first arg-list))
+  ;; (prn :make-entry (count arg-list) (first arg-list))
   (cond
     (odd? (count arg-list)) (apply make :type arg-list)
     :else
@@ -152,24 +152,24 @@
 
 (defn fm-kids-observe [me newk oldk c]
   (when-not (= oldk unbound)
-    (prn :fm-kids-observe)
+    ;;(prn :fm-kids-observe)
     (let [lostks (difference (set oldk) (set newk))]
       (when-not (empty? lostks)
         (doseq [k lostks]
-          (prn :obs-k-not2be!! k)
+          ;;(prn :obs-k-not2be!! k)
           (not-to-be k))))))
 
 (defmethod observe [:kids ::family]
   [_ me newk oldk c]
-  (prn :observe-kids-family-method)
+  ;;(prn :observe-kids-family-method)
   (fm-kids-observe me newk oldk c))
 
 (defmethod not-to-be [::family]
   [me]
-  (prn :family-not-to-be! me)
+  ;;(prn :family-not-to-be! me)
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      (prn :fm-not-to-be-kid!)
+      ;;(prn :fm-not-to-be-kid!)
       (not-to-be k)))
   (not-to-be-self me))
 
