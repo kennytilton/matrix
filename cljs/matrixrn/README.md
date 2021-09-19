@@ -18,20 +18,18 @@ The good news is that, so far, we have needed just 150LOC to wrap ReactNative wi
 Furthermore, MatrixRN wraps ReactNative thinly. We use props with functional components, and have access to `createElement` as the examples show. If we know RN, we can code with MatrixRN.
 
 ## Psst! re-frame?
-`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? In a word, _the developer experience._
 
 We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form. 
 
 These different approaches will suit different developers. `re-frame` fits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts, neatly organized by type of artifact into different directories. Matrix suits those who want to code applications organically, in the image of the problems they solve. Events, dependencies, state change, and views are all co-located and largely transparent.
 
-More soon in a Wiki walk-through of these POC examples.
+More soon in a Wiki walk-through of these POC examples. For now, check the comments in their source code.
 
 ## Running the demo project
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
 * `git checkout master` (Prolly not necessary.)
-* `cd (matrix location)/cljs/matrix`;
-* `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
 * `cd (matrix location)/cljs/matrixrn`;
 * `npm install`
 * `npx shadow-cljs watch app` to start compilation;
@@ -41,7 +39,7 @@ In a terminal:
 In a new terminal:
 * `npm start`;
 * * wait 75 seonds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
-* * a React Native Debugger should also appear on URL `localhost:8081/debugger-ui/` 
+* * depending on your most recent Simulator settings, a React Native Debugger may also appear on URL `localhost:8081/debugger-ui/` 
 * * if the debugger does not appear, we will address that below;
 * * wait another 30 seconds for the app to appear.
 
