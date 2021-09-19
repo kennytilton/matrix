@@ -30,7 +30,7 @@ More soon in a Wiki walk-through of these POC examples. For now, check the comme
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
 * `git checkout main` (Prolly not necessary.)
-* `cd (matrix location)/cljs/matrixrn`;
+* `cd (matrix location)/cljs/expo/matrixrn`;
 * `npm install`
 * `npx shadow-cljs watch app` to start compilation;
 * * Note! While working on the code, watch this terminal for compilation errors;
@@ -38,26 +38,20 @@ In a terminal:
 
 In a new terminal:
 * `npm start`;
+* a browser window should open on `http://localhost:19002/`;
+* * click the `Run on iOS simulator` option in the sidebar to the left;
 * * wait 75 seconds on an M1 for the iOS sim to appear and say `loading from localhoat:8081`
-* * depending on your most recent Simulator settings, a React Native Debugger may also appear on URL `localhost:8081/debugger-ui/` 
-* * if the debugger does not appear, we will address that below;
-* * wait another 30 seconds for the app to appear.
+* * if this is your first run of an Expo app, a menu will appear:
+* * * select disable fast refresh
+* * * in the Simulator menu bar, select "Device>Shake..." to access the menu again;
+* * * select `Debug Remote JS` to open a debug pane; access the dev console to see app rpints/errors
 
 You should be looking at what I call the "Sampler". Here I load the most complete solutions to each lesson.
 
-Continue with the iOS sim:
-* Using the Mac desktop Simulator menu bar, select `Device>shake`;
-* * a menu of options should appear _in the sim_;
-* if you see an option to `Disable fast refresh` select it; the menu will disappear;
-* * (If it says "enable", do nothing, we are good.)
-* again, select `Device>shake`;
-* if you see an option to `Debug`, select it; a debug web page will appear: "localhost:8081/debugger-ui/"
-* * once you get the debugger-ui web page to appear, enter the developer console to see application prints and exceptions.
-
 To get started on the tutorial lessons, in your chosen IDE:
-* open the `(matrix location)/cljs/matrixrn` directory/project; (<-- this path is a change!)
+* open the `(matrix location)/cljs/expo/matrixrn` directory/project; (<-- this path is a change!)
 * * See below the original instructions for connecting to various IDEs;
-* open `(matrix location)/cljs/matrixrn/app.cljs`
+* open `(matrix location)/cljs/expo/matrixrn/app.cljs`
 * * change `[matrixrn.demo.tutorial.sampler :as demo]` to `[matrixrn.demo.tutorial.main :as demo]`
 * open `matrixrn/demo/tutorial/main.cljs`;
 * make sure `(hello/lesson)` is the only uncommented item under the `Navigator`;
