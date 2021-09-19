@@ -6,7 +6,7 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [mx* mk fmu with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [fm* mk fmu with-props]]))
 
 (defn demo []
   (md/make ::rnApp
@@ -49,7 +49,7 @@
                        :onPress #(mswap! (fmu :counter-host) :counter dec)}))
 
                   (mk rn/ActivityIndicator
-                    {:animating (cF (mget (mx* me :counting?) :value))}
+                    {:animating (cF (mget (fm* me :counting?) :value))}
                     (with-props [:animating]
                       {:size  "small"
                        :color "#00ff00"}))

@@ -34,15 +34,15 @@
                 ;; uncomment below in ascending order to follow tutorial....
                 (mk NavigationContainer {} {}
                   (mk mxn/Navigator {} {}
-                    ;; (response/solution)
+                    (response/solution)
                     ;;(autoclear/solution)
                     ;(xhr/lesson)
-                    (rgb-slider/solution)
+                    ;;(rgb-slider/solution)
                     ;(hex-dec/solution)
                     ;(thumb-color/solution)
                     ;(webco/lesson)
                     ;(others-sol/solution)
-                    ;(others/lesson)
+                    (others/lesson)
                     ;(times-six/solution)
                     ;;#_
                     (hello/lesson)))))))

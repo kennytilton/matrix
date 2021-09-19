@@ -12,7 +12,7 @@
     ;[matrixrn.demo.tutorial.main]
     ;[matrixrn.demo.tutorial.sampler]
     ; Pick one ^^^ for next line...vvv
-    [matrixrn.demo.tutorial.sampler :as demo]))
+    [matrixrn.demo.tutorial.main :as demo]))
 
 ;;; shadow-cljs.edn:
 ; {:source-paths ["src/main"
@@ -40,6 +40,7 @@
 (defn
   ;; not sure what effect this next bit has:
   ;; ^:dev/after-load
+
   start []
   (let [app-matrix (matrix-build!)
         root-mx (md/mget app-matrix :rx-dom)

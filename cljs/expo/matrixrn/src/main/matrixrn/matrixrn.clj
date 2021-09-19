@@ -1,24 +1,38 @@
 (ns matrixrn.matrixrn)
-
+; useEffect(() => {
+;  window.addEventListener('mousemove', () => {});
+;
+;  // returned function will be called on component unmount
+;  return () => {
+;    window.removeEventListener('mousemove', () => {})
+;  }
+;}, [])
 (defmacro component-with-hooks [& body]
   `(fn []
      (let [[~'_ set-state#] (react/useState 0)
            ref# (when (tiltontec.model.core/mget ~'me :use-ref?)
                   (react/useRef :ref-undefined))]
        (matrixrn.matrixrn/set-state-record ~'me set-state#)
+       (react/useEffect #(fn []
+                           (prn :effect-unmounted (tiltontec.model.core/mget ~'me :sid)
+                                  (tiltontec.model.core/mget ~'me :name))))
        (when ref#
          (matrixrn.matrixrn/ref-record ~'me ref#))
        ~@body)))
 
 (defmacro strng [textFormulaBody]
+  ;; todo this is dumb. we want to supply a string to a Text so
+  ;; we create Text with a string child
   (let [content-kwd (keyword (gensym "content"))]
     `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
+       :name (gensym "strng")
        :sid (swap! matrixrn.matrixrn/sid-latest inc)
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :react-element (tiltontec.cell.core/cF
                         ;; todo better key
                         (react/createElement
                           (matrixrn.matrixrn/component-with-hooks
+                            (prn :strng-rendering (tiltontec.model.core/mget ~'me :sid))
                             (react/createElement rn/Text
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))
@@ -40,6 +54,7 @@
      :react-element (tiltontec.cell.core/cF
                       (react/createElement
                         (matrixrn.matrixrn/component-with-hooks
+                          (prn :mk-rendering (tiltontec.model.core/mget ~'me :sid) ~node-type)
                           (apply react/createElement ~node-type
                             (cljs.core/clj->js (merge
                                                  (when (tiltontec.model.core/mget ~'me :use-ref?)

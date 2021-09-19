@@ -78,7 +78,9 @@
 (defn- search-output []
   (mk rn/View
     {:name     :search-output
-     :response (cF (mget (fmu :search-input) :lookup-response))}
+     :response (cF (let [r (mget (fmu :search-input) :lookup-response)]
+                     (prn :BAM-rrrr!!!! r)
+                     r))}
     {:style {:flex       1
              :padding    6
              :alignItems "center"}}

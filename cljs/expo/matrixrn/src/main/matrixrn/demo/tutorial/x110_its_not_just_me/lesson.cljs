@@ -32,6 +32,15 @@
          :title     (cF (str "Click me to count higher: " (mget me :counter)))}
         (with-props [:title [:disabled :disabled?]]
           {:onPress #(mswap! me :counter inc)}))
+
+      (mk rn/View {}
+        {}
+        (when (> (mget (fmu :count-up) :counter) 5)
+          (mk rn/Button
+            {:title     (cF (str "Click me for no reason"))}
+            (with-props [:title]
+              {:onPress #(mswap! me :counter inc)}))))
+
       (mk rn/Button
         ;; `fmu` is short for find other mx searching up from me
         ;; this expands into `fget`, a family search utility we document below.
