@@ -11,9 +11,6 @@
 
 ;; SPOILER ALERT: includes other solutions as well
 
-;; todo does a per-cell observer shadow model-type observers?
-;; todo do hooks leak?
-
 (defn solution []
   (letfn [(rs-label [label]
             (mxn/mk rn/Text {}

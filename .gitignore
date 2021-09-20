@@ -3,6 +3,7 @@
 **/cljs-runtime/*
 **/.DS_Store
 **/.idea
+**/*.iml
 **/node_modules
 cljs-out
 .nrepl-port
