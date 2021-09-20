@@ -12,12 +12,10 @@
     [tiltontec.cell.integrity :refer-macros [with-cc]]
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
 
-    [matrixrn.matrixrn :as mxn :refer [mk with-props fmu mk]]
+    [matrixrn.matrixrn :as mxn :refer [<> mk with-props fmu mk]]
     [cljs-http.client :as http]
     [cljs.core.async :refer [<!] :as async]
     [matrixrn.demo.to-do-lite :as flat]))
-
-(def <> react/createElement)
 
 ;; WARNING!: The GitHub search is a mess. Fix it if you like. It searches in limited fashion
 ;;           I use "si" or "st" to get hits.
@@ -105,7 +103,7 @@
                        (.-key i))
        :renderItem   (fn [i]
                        ;; here we have to "speak" React....
-                       ;; above we simply def <> to be react/createElement
+                       ;; <> is actually deffed to be react/createElement
                        (prn :render-sees i)
                        (<> rn/Text
                          #js {:style #js {:fontSize 18}}

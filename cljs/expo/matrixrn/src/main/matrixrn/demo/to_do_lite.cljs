@@ -12,12 +12,9 @@
     ["react-native-bouncy-checkbox" :default BouncyCheckBox]
     ;; import Checkbox from 'expo-checkbox';
     ;; not for iOS! ["expo-checkbox" :default CheckBox]
-    [matrixrn.matrixrn :as mxn :refer [fmu mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [fmu <> mk with-props]]))
 
-;(def BouncyCheckBox (js/require "react-native-bouncy-checkbox"))
 (def cljs-splash-above (js/require "../assets/cljs.png"))
-
-(def <> react/createElement)
 
 (defn build-keyed-item [item-title]
   {:key   (str (.now js/Date) (rand-int 99999))

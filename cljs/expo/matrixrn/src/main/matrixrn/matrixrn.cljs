@@ -13,9 +13,10 @@
              fget mxi-find mxu-find-type
              fm-kids-observe kid-values-kids] :as md]
     [applied-science.js-interop :as j]
-    ; import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-    ; mess go back to managed expo ["@react-navigation/material-bottom-tabs" :as material-bottom-tabs]
+    [react]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]))
+
+(def <> react/createElement)
 
 (def sid-latest (atom 0))
 (def rendering-sid-latest (atom 0))

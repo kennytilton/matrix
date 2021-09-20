@@ -37,7 +37,6 @@
 
 (defmethod observe :default [slot me new-val old-val c]
   #_ (println :obs-fallthru slot (:tag @me) new-val)
-
   (if-let [obs @+observe-default-handler+]
     (do ;; (println :app-def-obs-hanler!!!)
         (obs slot me new-val old-val c))

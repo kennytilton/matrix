@@ -8,11 +8,10 @@
     [react-native-elements :as rne]
     ["@react-navigation/native" :refer [NavigationContainer]]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]
+    ["@expo/vector-icons" :refer [FontAwesome]]
     [applied-science.js-interop :as j]
-    [matrixrn.matrixrn :as mxn :refer-macros [mk mku with-props]]
+    [matrixrn.matrixrn :as mxn :refer-macros [<> mk mku with-props]]
     [matrixrn.demo.http :as http]))
-
-(def <> react/createElement)
 
 (defonce *nav-state (atom nil))
 
@@ -37,12 +36,12 @@
 (defn TabA [_] {:helix/features {:fast-refresh true}}
   (<> rn/View (j/lit {:style {:flex 1, :alignItems "center", :justifyContent "center"}})
     (<> rn/Text (j/lit {:style {:fontSize 36}})
-      "Tab A")))
+      "Arts Tab!")))
 
 (defn TabB [_] {:helix/features {:fast-refresh true}}
   (<> rn/View (j/lit {:style {:flex 1, :alignItems "center", :justifyContent "center"}})
     (<> rn/Text (j/lit {:style {:fontSize 36}})
-      "Tab B")))
+      "Baby Tab")))
 
 (defn demo []
   (md/make ::rnApp
@@ -55,9 +54,10 @@
                      :onStateChange (fn [x] (reset! *nav-state x))}
                     (mk Navigator {} {}
                       (mku mxn/Screen {}
-                        {:name "Async/XHR Demo"}
-                        ;; here we demonstrate that content can be built from any composition of clojure
-                        ;; functions with arbitrary parameters. They just need to return a Matrix "mk" component
+                        {:name    "Async Demo"
+                         :options {:tabBarLabel "XHR"
+                                   :tabBarIcon  (fn []
+                                                  (<> FontAwesome (j/lit {:name "wifi"})))}}
                         (http/http-beef
                           ;; try commenting out this next map to see why we need http-beef to take a parameter
                           {:style {:flex            1
@@ -65,10 +65,15 @@
                                    :padding         24
                                    :alignItems      "center"
                                    :backgroundColor "lime"}}))
-
-                      (mku Screen {}
-                        {:name      "Tab-A"
+                      (mku mxn/Screen {}
+                        {:name      "A"
+                         :options   {:tabBarLabel "Art"
+                                     :tabBarIcon  (fn []
+                                                    (<> FontAwesome (j/lit {:name "headphones"})))}
                          :component TabA})
-                      (mku Screen {}
-                        {:name      "Tab-B"
-                         :component TabB}))))))))
+                      #_(mku Screen {}
+                          {:name      "B"
+                           :options   {:tabBarLabel "Baby"
+                                       :tabBarIcon  (fn []
+                                                      (<> FontAwesome (j/lit {:name "baby"})))}
+                           :component TabB}))))))))
