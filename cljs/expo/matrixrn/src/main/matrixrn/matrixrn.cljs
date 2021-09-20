@@ -73,20 +73,14 @@
      :must? must-find?)))
 
 (defmethod not-to-be [:matrixrn.matrixrn/matrixrn.elt] [me]
-  ;; todo: worry about leaks
+  ;; normally called by kids observer, but we shadow that
   (prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
-  (ref-unrecord me) ;; un-hhack
+  (ref-unrecord me)
   (doseq [k (:kids @me)]
     (when (md-ref? k)
       (not-to-be k)))
   (not-to-be-self me))
-
-;(defmethod not-to-be-self [:matrixrn.matrixrn/matrixrn.elt] [me]
-;  ;; todo: worry about leaks
-;  (prn :MATRIX-not-to-be-entry!!!! me)
-;  (set-state-unrecord ~'me)
-;  (ref-unrecord ~'me))
 
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
@@ -107,7 +101,7 @@
       ;; We jury rig in the call-next-method, but todo true solution needed
       (prn :obsing-kids!!!!!!!!! slot (mget me :name)(mget me :sid))
       (fm-kids-observe me newv oldv cell))
-    ;; todo check for per-cell observers and execute
+    ;; todo have Matrix check for per-cell observers and execute
     (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
     (state-hook-set! me slot)))
 

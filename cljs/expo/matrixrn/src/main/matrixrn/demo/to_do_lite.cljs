@@ -1,4 +1,4 @@
-(ns matrixrn.demo.todo-wannabe
+(ns matrixrn.demo.to-do-lite
   (:require
     [clojure.string :as str]
     [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
@@ -73,17 +73,14 @@
      :need-input (cF (if (seq (mget (fmu :todos-container) :todo-items))
                        "Anything else to do?" "What is there to do?"))}
     (with-props [[:value :to-do] :editable [:placeholder :need-input]]
-      {;; :placeholder     "What else is there to do?"
-       :autoFocus       true
+      {:autoFocus       true
        :autoCapitalize  "sentences"
        :selectTextOnFocus true
        :onChangeText    #(mset! me :to-do %)
-       :onSubmitEditing #(let [n (js->clj (goog.object/get % "nativeEvent")
-                                   :keywordize-keys true)]
-                           ; todo just pick out .-text
-                           (when-not (str/blank? (:text n))
+       :onSubmitEditing #(let [text (.-text (goog.object/get % "nativeEvent"))]
+                           (when-not (str/blank? text)
                              (mswap! (fmu :todos-container) :todo-items
-                               conj (build-keyed-item (:text n)))
+                               conj (build-keyed-item text))
                              ;; now clear input...
                              (mset! me :to-do "")))
        :style           {:height          40

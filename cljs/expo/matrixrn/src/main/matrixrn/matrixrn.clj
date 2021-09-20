@@ -47,7 +47,6 @@
      ~static-props))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
-  ;; todo fancier macrology
   `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
      :sid (swap! matrixrn.matrixrn/sid-latest inc)
      ~@(when (seq kids)

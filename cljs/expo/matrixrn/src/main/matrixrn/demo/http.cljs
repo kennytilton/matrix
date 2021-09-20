@@ -14,8 +14,8 @@
 
     [matrixrn.matrixrn :as mxn :refer [mk with-props fmu mk]]
     [cljs-http.client :as http]
-    [cljs.core.async :refer [<!]]
-    [matrixrn.demo.todo-wannabe :as flat]))
+    [cljs.core.async :refer [<!] :as async]
+    [matrixrn.demo.to-do-lite :as flat]))
 
 (def <> react/createElement)
 
@@ -31,6 +31,7 @@
 ;; hidden in ::mx.XHR.
 
 (defn search-input []
+  (prn :building-search-input!!!!!!!!!!!!!!!!!)
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")
@@ -39,24 +40,25 @@
      :lookup-go?      (cI false :ephemeral? true)
      :lookup-response (cI nil)
      :lookup          (cF+ [:obs (fn [_ me chan prior-chan cell]
-                                   ;; todo work out how to close prior chan (if not 'undefined'!)
-                                   ;; perhaps we swap!-assoc the new chan into the Cell (an atom) as :clean-up-chan
-                                   ;; and then close! it. But can a 'go' caller close the chan returned by 'go'?
                                    (when chan ;; ie, a lookup has been kicked off via cljs-http, and this is the chan it will report on
                                      (go (let [response (<! chan)
                                                search (mget me :searchstring)
                                                hits (filter (fn [ostr]
                                                               (str/includes? ostr search))
                                                       (map :login (:body response)))]
+                                           (async/close! chan)
                                            (prn :github-users hits)
                                            ;; TryThis: can we clear the searchstring each time they search? Bad U/X?
                                            (with-cc         ;; MAJOR feature! required to mutate state inside an observer
                                              ;;                Well, or you get a warning telling you a backdoor.
                                              (mset! me :lookup-response
                                                (or (seq hits) (vector (str "No matches for " search)))))))))]
+                        (prn :search-in-fires)
                         (when (mget (fmu :do-any-lookup?) :value)
                           (when (not (str/blank? (mget me :searchstring)))
+                            (prn :search-str-not-blank)
                             (when (mget me :lookup-go?)
+                              (prn :search-to-github)
                               (http/get "https://api.github.com/users"
                                 {:with-credentials? false
                                  :query-params      {"since" 135}})))))}
@@ -125,6 +127,7 @@
 ;; the same content in a Screen on the Navi demo
 
 (defn http-beef [& [view-options]]
+  (prn :httpbeef!!!!!!!!)
   (mk rn/View {}
     (merge
       {:style {:flex            1

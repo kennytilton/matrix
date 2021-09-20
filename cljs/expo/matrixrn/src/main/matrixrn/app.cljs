@@ -13,7 +13,8 @@
     ;[matrixrn.demo.tutorial.sampler]
     ; Pick one ^^^ for next line...vvv
     ;[matrixrn.demo.tutorial.sampler :as demo]
-    [matrixrn.demo.todo-wannabe :as demo]
+    ;[matrixrn.demo.to-do-lite :as demo]
+    [matrixrn.demo.http :as demo]
     ))
 
 ;;; shadow-cljs.edn:

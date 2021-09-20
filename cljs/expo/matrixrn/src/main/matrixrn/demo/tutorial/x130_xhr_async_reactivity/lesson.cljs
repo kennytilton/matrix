@@ -3,7 +3,7 @@
   (:require
     [clojure.string :as str]
     [cljs-http.client :as http]
-    [cljs.core.async :refer [<!]]
+    [cljs.core.async :refer [<!] :as async]
 
     [react]
     [react-native :as rn]
@@ -38,10 +38,7 @@
      ;; TryThisAndFail[,easy] ^^^ remove :ephemeral option, or set to false. Use print statements to discover
      ;; the problem with a non-ephemeral flag such as lookup-go?
      :lookup-response (cI nil)
-     :lookup          (cF+ [:obs (fn [_ me chan prior-chan cell]
-                                   ;; todo work out how to close prior chan (if not 'undefined'!)
-                                   ;; todo perhaps we swap!-assoc the new chan into the Cell (an atom) as :clean-up-chan
-                                   ;; todo and then close! it. But can a 'go' caller close the chan returned by 'go'?
+     :lookup          (cF+ [:obs (fn [_ me chan _ _]
                                    (when chan
                                      ;; ^^^ ie, a lookup has been kicked off via cljs-http, and this is the chan it will report on
                                      (go
@@ -50,6 +47,7 @@
                                              hits (filter (fn [ostr]
                                                             (str/includes? ostr search))
                                                     (map :login (:body response)))]
+                                         (async/close! chan)
 
                                          (prn :github-users hits)
                                          (with-cc
