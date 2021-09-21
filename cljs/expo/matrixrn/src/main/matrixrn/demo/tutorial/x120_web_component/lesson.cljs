@@ -6,8 +6,9 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [mku mk with-props
-                                       fmu fmu-val fmi-val]]))
+    [matrixrn.matrixrn :as mxn :refer [<> mku mk with-props
+                                       fmu fmu-val fmi-val]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 (defn make-a-slider [name initial-value color]
   (mxn/mk rne/Slider
@@ -25,7 +26,10 @@
 
 (defn lesson []
   (mku mxn/Screen {}
-    {:name "Web components? Left as an exercise."}
+    {:name "Web components? Left as an exercise."
+     :options {:tabBarLabel "Components"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "server" :size 28})))}}
     (mk rn/View
       {:name :red
        ;; now we use 'fmi' to look "inside" this View's Matrix tree

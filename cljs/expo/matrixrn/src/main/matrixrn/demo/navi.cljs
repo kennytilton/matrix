@@ -7,73 +7,41 @@
     [react-native :as rn]
     [react-native-elements :as rne]
     ["@react-navigation/native" :refer [NavigationContainer]]
-    ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]
     ["@expo/vector-icons" :refer [FontAwesome]]
     [applied-science.js-interop :as j]
-    [matrixrn.matrixrn :as mxn :refer-macros [<> mk mku with-props]]
+    [matrixrn.matrixrn :as mxn :refer [<> mk mku with-props]]
     [matrixrn.demo.http :as http]))
 
 (defonce *nav-state (atom nil))
 
-; If the JS doc looks like this:
-;
-; import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-;
-;const Tab = createBottomTabNavigator();
-;
-;function MyTabs() {
-;  return (
-;    <Tab.Navigator>
-;      <Tab.Screen name="Home" component={HomeScreen} />
-;      <Tab.Screen name="Settings" component={SettingsScreen} />
-;    </Tab.Navigator>
-;  );
-;}
-; ... we do this.
-
-(defonce tabs-nav (rn-bottom-tabs/createBottomTabNavigator))
-
 (defn TabA [_] {:helix/features {:fast-refresh true}}
-  (<> rn/View (j/lit {:style {:flex 1, :alignItems "center", :justifyContent "center"}})
-    (<> rn/Text (j/lit {:style {:fontSize 36}})
+  (<> rn/View (clj->js {:style {:flex 1, :alignItems "center", :justifyContent "center"}})
+    (<> rn/Text (clj->js {:style {:fontSize 36}})
       "Arts Tab!")))
-
-(defn TabB [_] {:helix/features {:fast-refresh true}}
-  (<> rn/View (j/lit {:style {:flex 1, :alignItems "center", :justifyContent "center"}})
-    (<> rn/Text (j/lit {:style {:fontSize 36}})
-      "Baby Tab")))
 
 (defn demo []
   (md/make ::rnApp
     :rx-dom (cFonce
-              ;; I am not quite sure what to make of this j/lookup interop.
-              (let [{:keys [Navigator Screen]} (j/lookup tabs-nav)]
-                (with-par me
-                  (mk NavigationContainer {}
-                    {:initialState  @*nav-state
-                     :onStateChange (fn [x] (reset! *nav-state x))}
-                    (mk Navigator {} {}
-                      (mku mxn/Screen {}
-                        {:name    "Async Demo"
-                         :options {:tabBarLabel "XHR"
+              (with-par me
+                (mk NavigationContainer {}
+                  {:initialState  @*nav-state
+                   :onStateChange (fn [x] (reset! *nav-state x))}
+                  (mk mxn/Navigator {} {}
+                    (mku mxn/Screen {}
+                      {:name    "Async Demo"
+                       :options {:tabBarLabel "XHR"
+                                 :tabBarIcon  (fn []
+                                                (<> FontAwesome (clj->js {:name "wifi" :size 28})))}}
+                      (http/http-beef
+                        ;; try commenting out this next map to see why we need http-beef to take a parameter
+                        {:style {:flex            1
+                                 :marginTop       0
+                                 :padding         24
+                                 :alignItems      "center"
+                                 :backgroundColor "lime"}}))
+                    (mku mxn/Screen {}
+                      {:name      "A Pair of Headphones"
+                       :options   {:tabBarLabel "Art"
                                    :tabBarIcon  (fn []
-                                                  (<> FontAwesome (j/lit {:name "wifi"})))}}
-                        (http/http-beef
-                          ;; try commenting out this next map to see why we need http-beef to take a parameter
-                          {:style {:flex            1
-                                   :marginTop       0
-                                   :padding         24
-                                   :alignItems      "center"
-                                   :backgroundColor "lime"}}))
-                      (mku mxn/Screen {}
-                        {:name      "A"
-                         :options   {:tabBarLabel "Art"
-                                     :tabBarIcon  (fn []
-                                                    (<> FontAwesome (j/lit {:name "headphones"})))}
-                         :component TabA})
-                      #_(mku Screen {}
-                          {:name      "B"
-                           :options   {:tabBarLabel "Baby"
-                                       :tabBarIcon  (fn []
-                                                      (<> FontAwesome (j/lit {:name "baby"})))}
-                           :component TabB}))))))))
+                                                  (<> FontAwesome (clj->js {:name "headphones" :size 28})))}
+                       :component TabA})))))))

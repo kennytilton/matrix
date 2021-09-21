@@ -6,8 +6,9 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props
-                                       fmu fmu-val fmi-val]]))
+    [matrixrn.matrixrn :as mxn :refer [<> myval mku mk with-props
+                                       fmu fmu-val fmi-val]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 (defn make-a-slider [name initial-value color]
   (mxn/mk rne/Slider
@@ -25,7 +26,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Hex vs decimal toggle"}
+    {:name "Hex vs decimal toggle"
+     :options {:tabBarLabel "Hex<->Dec"
+      :tabBarIcon  (fn []
+                     (<> FontAwesome (clj->js {:name "calculator" :size 28})))}}
     (mk rn/View
       {:name :red
        :intensity (cF (fmi-val :slider :slide-value))}

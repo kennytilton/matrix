@@ -21,8 +21,25 @@
 (def sid-latest (atom 0))
 (def rendering-sid-latest (atom 0))
 
-;; apparently we call a function to get an object of components
-;; keyed Navigator, Screen, et al. Usage: (let
+; If the JS doc looks like this:
+;
+; import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+;
+;const Tab = createBottomTabNavigator();
+;
+;function MyTabs() {
+;  return (
+;    <Tab.Navigator>
+;      <Tab.Screen name="Home" component={HomeScreen} />
+;      <Tab.Screen name="Settings" component={SettingsScreen} />
+;    </Tab.Navigator>
+;  );
+;}
+; ... apparently we call a function to get an object of components
+;; keyed Navigator, Screen, et al. Methinks this is because the
+;; function createBottomTabNavigator takes parameters for runtime
+;; customization.
+
 (defonce Tab (js->clj
                (rn-bottom-tabs/createBottomTabNavigator)
                :keywordize-keys true))
@@ -97,12 +114,6 @@
   ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
-    (when (= slot :kids)
-      ;; we need PROGN method combo. Right now this method shadows the :kids observer.
-      ;; We jury rig in the call-next-method, but todo true solution needed
-      (prn :obsing-kids!!!!!!!!! slot (mget me :name)(mget me :sid))
-      (fm-kids-observe me newv oldv cell))
-    ;; todo have Matrix check for per-cell observers and execute
     (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
     (state-hook-set! me slot)))
 

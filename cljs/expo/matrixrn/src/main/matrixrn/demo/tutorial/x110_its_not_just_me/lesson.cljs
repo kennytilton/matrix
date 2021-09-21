@@ -42,12 +42,9 @@
 
       (mk rn/Button
         {:name      :five-south
-         :title     (cF (str "Five ^^ I go south"))
+         :title     (cF (str "Make It Five ^^ and I go south"))
          :disabled? (cF+ [:obs (fn [slot me newv priorv c]
-                                 (prn :BAM-obs-disabled? (mget me :name) newv)
-                                 ;; now also invoke standard observation, if we like
-                                 ;; or do so first if we like
-                                 (observe slot me newv priorv c))]
+                                 (prn :BAM-obs-disabled? (mget me :name) newv))]
                       (> (mget (fmu :count-up) :counter) 4))}
         (with-props [:title [:disabled :disabled?]]
           {:onPress #(mswap! me :counter inc)}))

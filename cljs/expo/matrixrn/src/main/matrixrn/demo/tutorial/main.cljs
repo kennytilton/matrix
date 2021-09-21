@@ -15,6 +15,7 @@
     [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as rgb-slider]
     [matrixrn.demo.tutorial.x130-xhr-async-reactivity.lesson :as xhr]
     [matrixrn.demo.tutorial.x130-xhr-async-reactivity.auto-clear :as autoclear]
+    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.xhr :as mx-xhr]
     [matrixrn.demo.tutorial.x130-xhr-async-reactivity.response-map :as response]))
 
 (defn demo []
@@ -36,13 +37,14 @@
                   (mk mxn/Navigator {} {}
                     ;(response/solution)
                     ;;(autoclear/solution)
-                    ;(xhr/lesson)
-                    ;;(rgb-slider/solution)
+                    (mx-xhr/solution)
+                    ;(rgb-slider/solution)
                     ;(hex-dec/solution)
-                    ;(thumb-color/solution)
+                    (thumb-color/solution)
                     ;(webco/lesson)
                     ;(others-sol/solution)
-                    (others/lesson)
+                    ;(others/lesson)
+                    ;(hex-dec/solution)
                     ;(times-six/solution)
                     ;;#_
                     (hello/lesson)))))))

@@ -4,7 +4,8 @@
     [tiltontec.model.core :refer [mget mswap!]]
     [react]
     [react-native :as rn]
-    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [<> myval mku mk with-props]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; TryThis: counting to 42 (to test the above) takes a lot of clicking!
 ;; Add a new computed ":times-six" property that is six times the :counter property,
@@ -23,7 +24,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Hello, world. A solution."}
+    {:name    "Hello, world. One solution."
+     :options {:tabBarLabel "Hello"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "globe" :size 28})))}}
     (mk rn/Button
       {
        :counter   (cI (+ 2 2))

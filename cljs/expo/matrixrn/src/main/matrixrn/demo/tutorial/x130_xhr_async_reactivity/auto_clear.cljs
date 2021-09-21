@@ -13,7 +13,8 @@
     [tiltontec.cell.integrity :refer-macros [with-cc]]
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
 
-    [matrixrn.matrixrn :as mxn :refer [mk with-props fmu mku]]))
+    [matrixrn.matrixrn :as mxn :refer [<> mk with-props fmu mku]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; TryThis[auto-clear,avg]: clear the searchstring each time they search
 
@@ -87,7 +88,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "XHR Async Reactivity"}
+    {:name "XHR Async Reactivity"
+     :options {:tabBarLabel "XHR"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "wifi" :size 28})))}}
     (mk rn/View {}
       {:style {:flex            1
                :padding         24

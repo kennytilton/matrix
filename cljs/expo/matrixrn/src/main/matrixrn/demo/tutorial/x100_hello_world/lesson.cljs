@@ -22,7 +22,7 @@
     {:name "Hello, world."
      :options {:tabBarLabel "Hello"
                :tabBarIcon  (fn []
-                              (<> FontAwesome (clj->js {:name "globe" :size 36})))}}
+                              (<> FontAwesome (clj->js {:name "globe" :size 28})))}}
     (mk rn/Button
       ;; ----------------------------------------------------------------------
       ;; This first group of props are for the Matrix "host" object.

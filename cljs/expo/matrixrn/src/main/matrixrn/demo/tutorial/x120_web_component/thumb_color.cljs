@@ -6,8 +6,9 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props
-                                       fmu fmu-val fmi-val]]))
+    [matrixrn.matrixrn :as mxn :refer [<> myval mku mk with-props
+                                       fmu fmu-val fmi-val]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; TryThis[thumb-color,easy] use the slider value to set the intensity
 ;; of the thumb-color. Best way? Change the color parameter to be
@@ -29,7 +30,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Reactive thumb color"}
+    {:name "Reactive thumb color"
+     :options {:tabBarLabel "Color Me"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "server" :size 28})))}}
     (mk rn/View
       {:name      :red
        :intensity (cF (fmi-val :slider :slide-value))}

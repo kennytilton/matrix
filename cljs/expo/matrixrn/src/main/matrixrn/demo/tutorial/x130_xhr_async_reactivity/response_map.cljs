@@ -12,8 +12,9 @@
     [tiltontec.cell.core :refer-macros [cF cF+ cFn cFonce] :refer [cI]]
     [tiltontec.cell.integrity :refer-macros [with-cc]]
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
-    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props
-                                       fmu fmu-val fmi-val]]))
+    [matrixrn.matrixrn :as mxn :refer [<> myval mku mk with-props
+                                       fmu fmu-val fmi-val]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; TryThis[response-map,avg]: return a lookup result map with hits and any
 ;; message to be displayed. Use message to say "Users matching <searchstring>"
@@ -75,7 +76,7 @@
   {:key   (str (.now js/Date) (rand-int 99999))
    :title item-title})
 
-(defn- search-output []
+(defn search-output []
   (mk rn/View
     {:name     :search-output
      :response (cF (let [r (mget (fmu :search-input) :lookup-response)]
@@ -108,7 +109,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Beyond Matrix: Async XHR"}
+    {:name "Beyond Matrix: Async XHR"
+     :options {:tabBarLabel "XHR"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "wifi"})))}}
     (mk rn/View {}
       {:style {:flex            1
                :padding         24

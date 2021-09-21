@@ -6,8 +6,9 @@
     [react]
     [react-native :as rn]
     [react-native-elements :as rne]
-    [matrixrn.matrixrn :as mxn :refer [myval mku mk with-props
-                                       fmu fmu-val fmi-val myval]]))
+    [matrixrn.matrixrn :as mxn :refer [<> myval mku mk with-props
+                                       fmu fmu-val fmi-val myval]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; SPOILER ALERT: includes other solutions as well
 
@@ -62,7 +63,10 @@
                 (rs-readout))))]
 
     (mku mxn/Screen {}
-      {:name "Web components: rgb-slider compleat"}
+      {:name "Web components: rgb-slider compleat"
+       :options {:tabBarLabel "Compleat"
+                 :tabBarIcon  (fn []
+                                (<> FontAwesome (clj->js {:name "server" :size 28})))}}
       (mk rn/View {} {:style {:flex 1}}
         (mk rn/View {} {}
           (rgb-slider :red 51 "R" "#~:@(~2,'0X~)0000")

@@ -14,28 +14,9 @@
     ; Pick one ^^^ for next line...vvv
     ;[matrixrn.demo.tutorial.sampler :as demo]
     ;[matrixrn.demo.to-do-lite :as demo]
-    ;[matrixrn.demo.navi :as demo]
+    ;;[matrixrn.demo.navi :as demo]
     [matrixrn.demo.tutorial.main :as demo]
     ))
-
-;;; shadow-cljs.edn:
-; {:source-paths ["src/main"
-;                "src/test"]
-;
-; :dependencies [[tiltontec/matrix "4.1.3"]
-;                [applied-science/js-interop "0.3.0"]
-;                [cljs-http/cljs-http "0.1.46"]]
-;
-; :builds       {:app {:target           :react-native
-;                      :init-fn          matrixrn.app/init
-;                      :output-dir       "app"
-;                      :compiler-options {:infer-externs :auto}
-;                      :devtools         {:autoload true
-;                                         :preloads [shadow.expo.keep-awake]}}}}
-
-;;; expo install react-native-elements
-;;; expo install @react-navigation/bottom-tabs
-;;; expo install
 
 (defn matrix-build! []
   (reset! mxn/ssdict {})
