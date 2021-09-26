@@ -13,10 +13,10 @@
     [matrixrn.demo.tutorial.x120-web-component.thumb-color :as thumb-color]
     [matrixrn.demo.tutorial.x120-web-component.decimal-display :as hex-dec]
     [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as rgb-slider]
-    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.lesson :as xhr]
-    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.auto-clear :as autoclear]
-    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.xhr :as mx-xhr]
-    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.response-map :as response]))
+    [matrixrn.demo.tutorial.x130-async-heaven.lesson :as xhr]
+    [matrixrn.demo.tutorial.x130-async-heaven.auto-clear :as autoclear]
+    [matrixrn.demo.tutorial.x130-async-heaven.xhr :as mx-xhr]
+    [matrixrn.demo.tutorial.x130-async-heaven.response-map :as response]))
 
 (defn demo []
   (md/make ::rnApp
@@ -37,13 +37,13 @@
                   (mk mxn/Navigator {} {}
                     ;(response/solution)
                     ;;(autoclear/solution)
-                    (mx-xhr/solution)
+                    ;(mx-xhr/solution)
                     ;(rgb-slider/solution)
                     ;(hex-dec/solution)
-                    (thumb-color/solution)
+                    ;(thumb-color/solution)
                     ;(webco/lesson)
                     ;(others-sol/solution)
-                    ;(others/lesson)
+                    (others/lesson)
                     ;(hex-dec/solution)
                     ;(times-six/solution)
                     ;;#_

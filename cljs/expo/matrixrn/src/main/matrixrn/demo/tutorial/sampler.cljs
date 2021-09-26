@@ -8,7 +8,7 @@
     [matrixrn.demo.tutorial.x100-hello-world.times-six :as hello]
     [matrixrn.demo.tutorial.x110-its-not-just-me.separate-count-display :as others]
     [matrixrn.demo.tutorial.x120-web-component.rgb-slider :as webco]
-    [matrixrn.demo.tutorial.x130-xhr-async-reactivity.response-map :as xhr-async]))
+    [matrixrn.demo.tutorial.x130-async-heaven.response-map :as xhr-async]))
 
 (defn demo []
   (md/make ::rnApp

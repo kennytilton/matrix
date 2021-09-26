@@ -1,4 +1,4 @@
-(ns matrixrn.demo.tutorial.x130-xhr-async-reactivity.lesson
+(ns matrixrn.demo.tutorial.x130-async-heaven.lesson
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.string :as str]
@@ -14,17 +14,25 @@
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
 
     [matrixrn.matrixrn :as mxn :refer [<> mk with-props fmu mku]]
-    ["@expo/vector-icons" :refer [FontAwesome]]))
+    ["@expo/vector-icons" :refer [FontAwesome]]
+    ;; import AsyncStorage from '@react-native-async-storage/async-storage';
+    ["@react-native-async-storage/async-storage" :default AsyncStorage]
+    ))
 
 ;; WARNING!: The GitHub search is a mess. Fix it if you like. It searches in limited fashion
 ;;           I use "si" or "st" to get hits.
 
 ;; TryThis[,hard]: poll continuously as they type, but only if two characters have been typed.
 
-;; TryThis[,pro]: any widget kicking off an XHR would duplicate much of the observer code below.
+;; TryThis[xhr,pro]: any widget kicking off an XHR would duplicate much of the observer code below.
 ;; Create a Matrix type ::matrixrn.XHR that encapsulates that code reusably.
 
 (defn search-input []
+  (prn :async!!!!!! AsyncStorage)
+  (-> (.setItem AsyncStorage "testing-a-key" "testing-a-stored-value")
+    (.then
+      (fn [] (-> (.getItem AsyncStorage "testing-a-key")
+               (.then #(js/alert %))))))
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")

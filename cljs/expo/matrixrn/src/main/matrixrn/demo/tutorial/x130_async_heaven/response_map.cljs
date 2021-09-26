@@ -1,4 +1,4 @@
-(ns matrixrn.demo.tutorial.x130-xhr-async-reactivity.response-map
+(ns matrixrn.demo.tutorial.x130-async-heaven.response-map
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.string :as str]
@@ -79,9 +79,7 @@
 (defn search-output []
   (mk rn/View
     {:name     :search-output
-     :response (cF (let [r (mget (fmu :search-input) :lookup-response)]
-                     (prn :BAM-rrrr!!!! r)
-                     r))}
+     :response (cF (mget (fmu :search-input) :lookup-response))}
     {:style {:flex       1
              :padding    6
              :alignItems "center"}}
@@ -109,10 +107,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Beyond Matrix: Async XHR"
-     :options {:tabBarLabel "XHR"
+    {:name "Async XHR Response Map"
+     :options {:tabBarLabel "Map"
                :tabBarIcon  (fn []
-                              (<> FontAwesome (clj->js {:name "wifi"})))}}
+                              (<> FontAwesome (clj->js {:name "wifi"  :size 28})))}}
     (mk rn/View {}
       {:style {:flex            1
                :padding         24

@@ -31,7 +31,6 @@
        :react-element (tiltontec.cell.core/cF
                         (react/createElement
                           (matrixrn.matrixrn/component-with-hooks
-                            (prn :strng-rendering (tiltontec.model.core/mget ~'me :sid))
                             (react/createElement rn/Text
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))

@@ -43,9 +43,7 @@
       (mk rn/Button
         {:name      :five-south
          :title     (cF (str "Make It Five ^^ and I go south"))
-         :disabled? (cF+ [:obs (fn [slot me newv priorv c]
-                                 (prn :BAM-obs-disabled? (mget me :name) newv))]
-                      (> (mget (fmu :count-up) :counter) 4))}
+         :disabled? (cF (> (mget (fmu :count-up) :counter) 4))}
         (with-props [:title [:disabled :disabled?]]
           {:onPress #(mswap! me :counter inc)}))
 

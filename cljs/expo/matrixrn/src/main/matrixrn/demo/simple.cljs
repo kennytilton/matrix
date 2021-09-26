@@ -39,8 +39,7 @@
                      :disabled (cF (not (mget (fmu :counting?) :value)))}
                     (with-props [[:title :kaboom] :disabled]
                       {:style   {:color "red"}
-                       :onPress #(do (prn :bampress)
-                                     (mswap! me :counter inc))}))
+                       :onPress #(mswap! me :counter inc)}))
 
                   (mk rn/Button
                     {:title (cF (str "Downer: " (mget (fmu :counter-host) :counter)))}

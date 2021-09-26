@@ -25,7 +25,7 @@
 (defn solution []
   (mku mxn/Screen {}
     {:name    "Hello, world. One solution."
-     :options {:tabBarLabel "Hello"
+     :options {:tabBarLabel "Times Six"
                :tabBarIcon  (fn []
                               (<> FontAwesome (clj->js {:name "globe" :size 28})))}}
     (mk rn/Button

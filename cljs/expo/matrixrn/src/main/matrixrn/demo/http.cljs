@@ -29,7 +29,6 @@
 ;; hidden in ::mx.XHR.
 
 (defn search-input []
-  (prn :building-search-input!!!!!!!!!!!!!!!!!)
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")
@@ -125,7 +124,6 @@
 ;; the same content in a Screen on the Navi demo
 
 (defn http-beef [& [view-options]]
-  (prn :httpbeef!!!!!!!!)
   (mk rn/View {}
     (merge
       {:style {:flex            1

@@ -24,9 +24,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:tabBarLabel "Separate count display"
-     :tabBarIcon  (fn []
-                    (<> FontAwesome (clj->js {:name "users" :size 28})))}
+    {:name "Hello, Separate Count."
+     :options   {:tabBarLabel "Sep Count"
+                 :tabBarIcon  (fn []
+                                (<> FontAwesome (clj->js {:name "users" :size 28})))}}
     (mk rn/View {}
       {:style {:flex            1
                :padding         48

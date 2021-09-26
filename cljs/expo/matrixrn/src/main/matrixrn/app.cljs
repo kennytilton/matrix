@@ -12,11 +12,17 @@
     ;[matrixrn.demo.tutorial.main]
     ;[matrixrn.demo.tutorial.sampler]
     ; Pick one ^^^ for next line...vvv
-    ;[matrixrn.demo.tutorial.sampler :as demo]
+    ; [matrixrn.demo.tutorial.sampler :as demo]
     ;[matrixrn.demo.to-do-lite :as demo]
-    ;;[matrixrn.demo.navi :as demo]
-    [matrixrn.demo.tutorial.main :as demo]
-    ))
+    ; [matrixrn.demo.navi :as demo]
+    ; [matrixrn.demo.tutorial.main :as demo]
+    ; [matrixrn.demo.tutorial.x100-hello-world.core :as demo]
+    ; [matrixrn.demo.tutorial.x110-its-not-just-me.lesson :as demo]
+    ; [matrixrn.demo.tutorial.x110-its-not-just-me.lesson :as demo]
+    ; [matrixrn.demo.tutorial.x110-its-not-just-me.core :as demo]
+    ; [matrixrn.demo.tutorial.x120-web-component.core :as demo]
+    [matrixrn.demo.tutorial.x130-async-heaven.core :as demo]
+    #_ [matrixrn.demo.tutorial.x110-its-not-just-me.separate-count-display :as demo]))
 
 (defn matrix-build! []
   (reset! mxn/ssdict {})
@@ -25,7 +31,6 @@
 (defn
   ;; not sure what effect this next bit has:
   ;; ^:dev/after-load
-
   start []
   (let [app-matrix (matrix-build!)
         root-mx (md/mget app-matrix :rx-dom)

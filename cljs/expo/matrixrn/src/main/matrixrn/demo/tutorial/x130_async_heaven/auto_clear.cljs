@@ -1,4 +1,4 @@
-(ns matrixrn.demo.tutorial.x130-xhr-async-reactivity.auto-clear
+(ns matrixrn.demo.tutorial.x130-async-heaven.auto-clear
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.string :as str]
@@ -89,7 +89,7 @@
 (defn solution []
   (mku mxn/Screen {}
     {:name "XHR Async Reactivity"
-     :options {:tabBarLabel "XHR"
+     :options {:tabBarLabel "Clear"
                :tabBarIcon  (fn []
                               (<> FontAwesome (clj->js {:name "wifi" :size 28})))}}
     (mk rn/View {}
