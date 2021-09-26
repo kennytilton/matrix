@@ -21,7 +21,8 @@
     ; [matrixrn.demo.tutorial.x110-its-not-just-me.lesson :as demo]
     ; [matrixrn.demo.tutorial.x110-its-not-just-me.core :as demo]
     ; [matrixrn.demo.tutorial.x120-web-component.core :as demo]
-    [matrixrn.demo.tutorial.x130-async-heaven.core :as demo]
+    ;[matrixrn.demo.tutorial.x130-async-heaven.core :as demo]
+    [matrixrn.demo.tutorial.x140-todo-lite.core :as demo]
     #_ [matrixrn.demo.tutorial.x110-its-not-just-me.separate-count-display :as demo]))
 
 (defn matrix-build! []

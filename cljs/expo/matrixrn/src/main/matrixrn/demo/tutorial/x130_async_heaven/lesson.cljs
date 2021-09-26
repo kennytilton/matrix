@@ -14,10 +14,7 @@
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
 
     [matrixrn.matrixrn :as mxn :refer [<> mk with-props fmu mku]]
-    ["@expo/vector-icons" :refer [FontAwesome]]
-    ;; import AsyncStorage from '@react-native-async-storage/async-storage';
-    ["@react-native-async-storage/async-storage" :default AsyncStorage]
-    ))
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; WARNING!: The GitHub search is a mess. Fix it if you like. It searches in limited fashion
 ;;           I use "si" or "st" to get hits.
@@ -28,11 +25,6 @@
 ;; Create a Matrix type ::matrixrn.XHR that encapsulates that code reusably.
 
 (defn search-input []
-  (prn :async!!!!!! AsyncStorage)
-  (-> (.setItem AsyncStorage "testing-a-key" "testing-a-stored-value")
-    (.then
-      (fn [] (-> (.getItem AsyncStorage "testing-a-key")
-               (.then #(js/alert %))))))
   (mk rn/TextInput
     {:name            :search-input
      :defaultValue    (cI "")
