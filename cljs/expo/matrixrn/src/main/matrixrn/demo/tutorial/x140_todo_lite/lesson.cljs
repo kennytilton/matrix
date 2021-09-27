@@ -26,8 +26,9 @@
 (def cljs-splash-above (js/require "../assets/cljs.png"))
 
 (defn build-keyed-item [item-title]
-  {:key   (str (random-uuid))
-   :title item-title})
+  {:key        (str (random-uuid))
+   :title      item-title
+   :completed? false})
 
 (defn the-flatlist-beef []
   ;; yes ^^^, any bit of structure in a larger view can simply be pulled out into a function with
@@ -43,6 +44,7 @@
        :renderItem   (fn [i]
                        ;; Here we cross over into pure RN, but in truth we could give the mx-flatlist
                        ;; todos as children and extract their rendering in 'renderItem'. Left as an exercise.
+                       (prn :renderitem-sees i)
                        (<> rn/View
                          #js {:style                        ;; I am torn between clj->js and #js
                               #js {:backgroundColor  "#ffc2ff"
@@ -53,12 +55,14 @@
                                    :marginVertical   4
                                    :marginHorizontal 16}}
 
-                         (<> BouncyCheckBox #js {;:text        "Do this"
-                                                 ;:textStyle "JosefinSans-Regular"
-                                                 :fillColor   "cyan"
+                         (<> BouncyCheckBox #js {:fillColor   "cyan"
                                                  :unfillColor "#eee"
                                                  :iconStyle   #js {:borderColor "#f8f"}
-                                                 :isChecked   false})
+                                                 :isChecked   false
+                                                 :onPress     (fn [chkd?]
+                                                                (prn :BAMchkd!!! chkd? i)
+                                                                (mswap! (mx-par me) :todo-items
+                                                                  assoc-in [(.-index i) :completed?] chkd?))})
                          (<> rne/Icon
                            (clj->js {:name    "trash"
                                      :type    "font-awesome"
@@ -68,7 +72,8 @@
                                                                   (mget (fmu :todos-container) :todo-items))]
                                                        (mset! (fmu :todos-container) :todo-items next)))}))
                          (<> rn/Text
-                           #js {:style #js {:fontSize 18}}
+                           #js {:style #js {:fontSize           18
+                                            :textDecorationLine "line-through"}}
                            (.-title (.-item i)))))})))
 
 (defn to-do-entry []
@@ -94,12 +99,6 @@
                            :backgroundColor "linen"
                            :borderWidth     1}})))
 
-(def starting-todos
-  [] #_ ["Wake up"
-   "Fall out of bed"
-   "Drag comb across head"
-   "Find way down stairs"])
-
 (defn lesson []
   (mku mxn/Screen {}
     {:name    "TodoMVC Lite"
@@ -107,59 +106,33 @@
                :tabBarIcon  (fn []
                               (<> FontAwesome (clj->js {:name "tasks" :size 28})))}}
 
-    (mk rn/View
-      ;; ^^^ we work off actual RN components, meaning any component we track down can be used without
-      ;; much adjustment. But RN components, even built-ins, are wildly inconsistent, so be prepared for
-      ;; some work. Indeed, Flatlist falls clearly into this category.
-      {}                                                    ;; many widgets have no reactive state
+    (mk rn/View {}                                          ;; many widgets have no reactive state
       {:style                                               ;; no need for #js. MX hosts apply clj->js to options passed to their RN incarnations.
        {:flex            1
-        :marginTop       96
         :padding         24
         :alignItems      "center"
         :backgroundColor "linen"}}
 
-      (mk rn/Image {}
-        {:style  {:width 160 :height 160}
-         :source cljs-splash-above})
+      (mk rn/Text {}
+        {:style {:fontSize     72
+                 :fontFamily   "HelveticaNeue-Thin"
+                 :textAlign    "center"
+                 :color        "rgba(175, 47, 47, 0.15)"
+                 :marginBottom 20}}
+        (mxn/strng "todos"))
 
       (to-do-entry)
 
       (mk rn/SafeAreaView
-        {:name       :todos-container
+        {:name        :todos-container
          :todo-loader (cF+ [:obs (fn [_ me promise _ _]
                                    (.then promise
-                                     #(let [raw %
-                                            todos (rdr/read-string raw)]
-                                        (prn :raw-read raw)
-                                        (prn :todos todos)
-                                        (with-cc
-                                          (prn :deferred-set!! todos)
-                                          (mset! me :todo-items todos)))))]
+                                     #(with-cc
+                                        (mset! me :todo-items (rdr/read-string %)))))]
                         (.getItem AsyncStorage "mxrn-todomc-lite"))
-         :todo-items (cI nil
-                       :obs (fn [_ _ newv _ _]
-                              (.setItem AsyncStorage "mxrn-todomc-lite" (pr-str newv))))
-         #_ (cI (mapv (fn [task]
-                                 (build-keyed-item task))
-                           starting-todos)
-                       :obs (fn [_ _ newv _ _]
-                              (prn :BAM-todo!!! (random-uuid) newv)
-                              (prn :BAM-todo!!!  (pr-str newv))
-                              (let [p (.getItem AsyncStorage "mxrn-todomc-lite")]
-                                (.then p #(let [raw %]
-                                                  (prn :raw-read raw)
-                                                  (prn (rdr/read-string raw))
-                                                  (js/alert raw))))
-                              #_
-                              (-> (.setItem AsyncStorage "mxrn-todomc-lite" (pr-str newv))
-                                (.then
-                                  (fn []
-                                    (-> (.getItem AsyncStorage "mxrn-todomc-lite")
-                                           (.then #(let [raw %]
-                                                    (prn :raw-read raw)
-                                                    (prn (rdr/read-string raw))
-                                                    (js/alert raw)))))))))}
+         :todo-items  (cI nil
+                        :obs (fn [_ _ newv _ _]
+                               (.setItem AsyncStorage "mxrn-todomc-lite" (pr-str newv))))}
         {:style {:flex      1
                  :marginTop 0}}
         (the-flatlist-beef)))))
