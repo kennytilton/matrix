@@ -1,5 +1,13 @@
 (ns mxreact.mxreact)
 
+(defmacro with-props [[& inherited] static-props]
+  `(merge (into {} (for [prop# [~@inherited]]
+                     (let [[pkey# pget#] (if (vector? prop#)
+                                           prop#
+                                           [prop# prop#])]
+                       [pkey# (tiltontec.model.core/mget ~'me pget#)])))
+     ~static-props))
+
 (defmacro $
   [type & args]
 
