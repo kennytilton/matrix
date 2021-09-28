@@ -1,4 +1,8 @@
 {:paths ["src"]
  :deps {lilactown/helix {:mvn/version "0.1.1"}
         binaryage/devtools {:mvn/version "0.9.7"}
-        thheller/shadow-cljs {:mvn/version "2.15.1"}}}
+        thheller/shadow-cljs {:mvn/version "2.15.1"}
+        tiltontec/matrix {:mvn/version "4.1.7-SNAPSHOT"}
+        applied-science/js-interop {:mvn/version "0.3.0"}
+        cljs-http/cljs-http {:mvn/version "0.1.46"}}}
+

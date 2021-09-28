@@ -1,4 +1,5 @@
 (ns mxreact.mxreact
+  (:require-macros [mxreact.mxreact])
   (:require
     ["react" :as react]))
 

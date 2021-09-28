@@ -1,6 +1,5 @@
 ;; shadow-cljs configuration
 {:deps true
-
  :builds
  {:app {:target :browser
         :output-dir "js"
