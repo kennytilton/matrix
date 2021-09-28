@@ -4,9 +4,10 @@
    [helix.core :as hx :refer [$ <>]]
    [helix.dom :as d]
    [helix.hooks :as hooks]
-   [todo-mvc.components :as c]
-   [todo-mvc.lib :refer [defnc]]
-   [todo-mvc.storage :as storage]
+   ;[todo-mvc.components :as c]
+   ;;[todo-mvc.lib :refer [defnc]]
+   ;[todo-mvc.storage :as storage]
+   [mxreact.mxreact :as mxr]
    ["react-dom" :as rdom]
    ["react-router-dom" :as rr]))
 
@@ -62,72 +63,20 @@
   ::clear-completed [todos _]
   (filterv (comp not :completed?) todos))
 
-(defnc App
+; (.createElement
+;                        (hx/get-react)
+;                        ~type
+;                        (impl.props/dom-props ~(first args))
+;                        ~@(rest args))
+
+(defn App
   []
-  (let [[todos dispatch] (storage/use-persisted-reducer
-                          "todos-helix"
-                          todo-actions
-                          nil
-                          #(todo-actions % [::init]))
-        active-todos (filter (comp not :completed?) todos)
-        completed-todos (filter :completed? todos)
+  (d/p "Hi fn mom 9")
+  (.createElement (mxr/get-react)
+    "p"
+    {}
+    "Hi mom 3"))
 
-				;; TodoList handlers
-        add-todo #(dispatch [::add (string/trim %)])
-        remove-todo #(dispatch [::remove %])
-        toggle-todo #(dispatch [::toggle %])
-        update-todo-title (fn [id title]
-                            (dispatch [::update-title id title]))
-        toggle-all #(dispatch [::toggle-all])
-        clear-completed #(dispatch [::clear-completed])
-
-        todo-list (fn [visible-todos]
-                    (for [{:keys [id] :as todo} visible-todos]
-                      (c/todo-item {:key id
-                                    :on-toggle toggle-todo
-                                    :on-destroy remove-todo
-                                    :on-update-title update-todo-title
-                                    & todo})))]
-    (d/p "Hi mom") #_
-    ($ rr/BrowserRouter
-       (d/div
-        (d/section
-         {:class "todoapp"}
-         (d/header
-          {:class "header"}
-          (c/title)
-          (c/new-todo {:on-complete add-todo}))
-         (when (< 0 (count todos))
-           (<>
-            (d/section
-             {:class "main"}
-             (d/input {:id "toggle-all" :class "toggle-all" :type "checkbox"
-                       :checked (all-complete? todos) :on-change toggle-all})
-             (d/label {:for "toggle-all"} "Mark all as complete")
-             (d/ul
-              {:class "todo-list"}
-              ($ rr/Switch
-                 ($ rr/Route {:path "/active"}
-                    (todo-list active-todos))
-                 ($ rr/Route {:path "/completed"}
-                    (todo-list completed-todos))
-                 ($ rr/Route {:path "/"}
-                    (todo-list todos)))))
-            (d/footer
-             {:class "footer"}
-             (d/span
-              {:class "todo-count"}
-              (d/strong (count active-todos))
-              " items left")
-             (d/ul
-              {:class "filters"}
-              (d/li ($ rr/NavLink {:to "/" :activeClassName "selected" :exact true} "All"))
-              (d/li ($ rr/NavLink {:to "/active" :activeClassName "selected"} "Active"))
-              (d/li ($ rr/NavLink {:to "/completed" :activeClassName "selected"} "Completed")))
-             (d/button {:class "clear-completed"
-                        :on-click clear-completed} "Clear completed")))))
-        (c/app-footer)))))
-
-(defn ^:export start
+(defn ^:dev/after-load start
   []
   (rdom/render ($ App) (js/document.getElementById "app")))
