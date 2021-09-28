@@ -8,7 +8,8 @@
    [todo-mvc.lib :refer [defnc]]
    [todo-mvc.storage :as storage]
    ["react-dom" :as rdom]
-   ["react-router-dom" :as rr]))
+   ["react-router-dom" :as rr]
+   [mxreact.mxreact :refer [wmk]]))
 
 (defn todo [id title]
   {:id id
@@ -64,69 +65,48 @@
 
 (defnc App
   []
-  (let [[todos dispatch] (storage/use-persisted-reducer
-                          "todos-helix"
-                          todo-actions
-                          nil
-                          #(todo-actions % [::init]))
-        active-todos (filter (comp not :completed?) todos)
-        completed-todos (filter :completed? todos)
+  (d/div
+    (d/section
+      {:class "todoapp"}
+      (d/header
+        {:class "header"}
+        (d/h1 "todos")
+        (d/p "Hi mom")
+        (d/p "Booya")))))
 
-				;; TodoList handlers
-        add-todo #(dispatch [::add (string/trim %)])
-        remove-todo #(dispatch [::remove %])
-        toggle-todo #(dispatch [::toggle %])
-        update-todo-title (fn [id title]
-                            (dispatch [::update-title id title]))
-        toggle-all #(dispatch [::toggle-all])
-        clear-completed #(dispatch [::clear-completed])
+(defn lesson []
+  (wmk "h1" {}
+    {:style {:fontSize     72
+             :fontFamily   "HelveticaNeue-Thin"
+             :textAlign    "center"
+             :color        "rgba(175, 47, 47, 0.15)"
+             :marginBottom 20}}
+    "todos"))
 
-        todo-list (fn [visible-todos]
-                    (for [{:keys [id] :as todo} visible-todos]
-                      (c/todo-item {:key id
-                                    :on-toggle toggle-todo
-                                    :on-destroy remove-todo
-                                    :on-update-title update-todo-title
-                                    & todo})))]
-    (d/p "Hi mom") #_
-    ($ rr/BrowserRouter
-       (d/div
-        (d/section
-         {:class "todoapp"}
-         (d/header
-          {:class "header"}
-          (c/title)
-          (c/new-todo {:on-complete add-todo}))
-         (when (< 0 (count todos))
-           (<>
-            (d/section
-             {:class "main"}
-             (d/input {:id "toggle-all" :class "toggle-all" :type "checkbox"
-                       :checked (all-complete? todos) :on-change toggle-all})
-             (d/label {:for "toggle-all"} "Mark all as complete")
-             (d/ul
-              {:class "todo-list"}
-              ($ rr/Switch
-                 ($ rr/Route {:path "/active"}
-                    (todo-list active-todos))
-                 ($ rr/Route {:path "/completed"}
-                    (todo-list completed-todos))
-                 ($ rr/Route {:path "/"}
-                    (todo-list todos)))))
-            (d/footer
-             {:class "footer"}
-             (d/span
-              {:class "todo-count"}
-              (d/strong (count active-todos))
-              " items left")
-             (d/ul
-              {:class "filters"}
-              (d/li ($ rr/NavLink {:to "/" :activeClassName "selected" :exact true} "All"))
-              (d/li ($ rr/NavLink {:to "/active" :activeClassName "selected"} "Active"))
-              (d/li ($ rr/NavLink {:to "/completed" :activeClassName "selected"} "Completed")))
-             (d/button {:class "clear-completed"
-                        :on-click clear-completed} "Clear completed")))))
-        (c/app-footer)))))
+(defn demo []
+  (md/make ::reactWebApp
+    ;; md/make ^^^ wires up a map for membership in the Matrix as an object suitable for the Matrix node graph
+    :rx-dom (cFonce
+              ;; cFonce ^^ evaluates once and never runs again, even if it reads reactive properties
+              (md/with-par me
+                (lesson)))))
+
+(defn matrix-build! []
+  (reset! mxn/ssdict {})
+  (reset! md/matrix (demo)))
+
+(defn
+  ;; not sure what effect this next bit has:
+  ;; ^:dev/after-load
+  start []
+  (let [app-matrix (matrix-build!)
+        root-mx (md/mget app-matrix :rx-dom)
+        root-element (md/mget root-mx :react-element)]
+    (expo-root/render-root
+      (fn [] root-element))))
+
+(defn init []
+  (start))
 
 (defn ^:export start
   []
