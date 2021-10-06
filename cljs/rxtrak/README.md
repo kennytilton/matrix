@@ -35,7 +35,10 @@ In a terminal window, clone the entire Matrix repo:
 * `git clone https://github.com/kennytilton/matrix.git`
 
 Navigate to the rxTrak project:
-* `cd matrix/cljs/rctrak`
+* `cd matrix/cljs/rxtrak`
+
+Tidy up:
+* `lein clean`
 
 Start the application in a browser:
 * `lein fig:build`
