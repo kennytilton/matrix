@@ -11,7 +11,8 @@
     :rx-dom
     #_ ($ :div {} (str "MXR Bingo Damn!" (rand-int 99999)))
     (cFonce (with-par me
-              (mk2 "div" nil nil "Cooler"))))
+              (mk2 "div" nil {:style {:color "red"}}
+                (str "Cooler " (rand-int 99999))))
     #_ (cFonce
       (with-par me
         (mk "button"
@@ -31,7 +32,7 @@
           {:style {:backgroundColor "linen"}}
           (mk "span" {}
             {:style {:color "#f50"
-                    :onCLick #(prn :thump-thump)}})))))
+                    :onCLick #(prn :thump-thump)}})))))))
 
 #_(cFonce
     (with-par me

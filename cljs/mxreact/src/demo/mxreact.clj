@@ -45,6 +45,8 @@
     (prn :mk2-sees node-type)
     `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
        :sid (swap! demo.mxreact/sid-latest inc)
+       ~@(when (seq kids)
+           `(:kids (tiltontec.model.core/cFkids ~@kids)))
        :react-element (tiltontec.cell.core/cF
                         (prn :creating-elt!!!!)
                         (.createElement (get-react)
