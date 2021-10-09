@@ -30,13 +30,43 @@
      (let [[~'_ set-state#] (.useState (get-react) 0)
            ref# (when (tiltontec.model.core/mget ~'me :use-ref?)
                   (.useRef (get-react) :ref-undefined))]
-       (mxreact.mxreact/set-state-record ~'me set-state#)
+       (demo.mxreact/set-state-record ~'me set-state#)
        #_(react/useEffect #(fn []
                              (prn :effect-unmounted (tiltontec.model.core/mget ~'me :sid)
                                (tiltontec.model.core/mget ~'me :name))))
        (when ref#
-         (mxreact.mxreact/ref-record ~'me ref#))
+         (demo.mxreact/ref-record ~'me ref#))
        ~@body)))
+
+(defmacro mk2 [node-type mx-props jsx-props & kids]
+  #_ `($ ~node-type {} (str "MK demo MXR Bingo Damn!" (rand-int 99999)))
+
+  (do
+    (prn :mk2-sees node-type)
+    `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
+       :sid (swap! demo.mxreact/sid-latest inc)
+       :react-element (tiltontec.cell.core/cF
+                        (prn :creating-elt!!!!)
+                        (.createElement (get-react)
+                          (demo.mxreact/component-with-hooks
+                            (.createElement (get-react) (name ~node-type)
+                              (cljs.core/clj->js (merge
+                                                   #_ (when (tiltontec.model.core/mget ~'me :use-ref?)
+                                                        {:ref (demo.mxreact/ref-get ~'me)})
+                                                   ~jsx-props))
+                              ~@kids)))))))
+
+(defn mkfn [tag mx-props jsx-props & kids]
+  (md/make :mxreact.mxreact/matrixrn.elt
+    :sid (swap! demo.mxreact/sid-latest inc)
+    :react-element
+    #_(demo.mxreact/$ :div {} (str (first kids) ":" (rand-int 99999)))
+    (tiltontec.cell.core/cF
+      (.createElement (get-react)
+        (demo.mxreact/component-with-hooks
+          (.createElement (get-react) (name tag)
+            (cljs.core/clj->js jsx-props)
+            kids))))))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
   #_ `($ ~node-type {} (str "MK demo MXR Bingo Damn!" (rand-int 99999)))
@@ -44,19 +74,19 @@
   (do
     (prn :mk-sees node-type)
     `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
-       :sid (swap! mxreact.mxreact/sid-latest inc)
+       :sid (swap! demo.mxreact/sid-latest inc)
        ~@(when (seq kids)
            `(:kids (tiltontec.model.core/cFkids ~@kids)))
        :react-element (tiltontec.cell.core/cF
                         (prn :creating-elt!!!!)
                         (.createElement (get-react)
-                          (mxreact.mxreact/component-with-hooks
+                          (demo.mxreact/component-with-hooks
                             #_(prn :mk-rendering (tiltontec.model.core/mget ~'me :sid)
                                 (tiltontec.model.core/mget ~'me :name))
-                            (apply .createElement (get-react) ~node-type
+                            (apply .createElement (get-react) (name ~node-type)
                               (cljs.core/clj->js (merge
-                                                   (when (tiltontec.model.core/mget ~'me :use-ref?)
-                                                     {:ref (mxreact.mxreact/ref-get ~'me)})
+                                                   #_ (when (tiltontec.model.core/mget ~'me :use-ref?)
+                                                     {:ref (demo.mxreact/ref-get ~'me)})
                                                    ~jsx-props))
                               (doall
                                 ;; ^^^ so this runs while "me" is bound to intended mx
@@ -74,7 +104,7 @@
      :up? true))
 
 (defmacro fmu-val [what prop]
-  `(tiltontec.model.core/mget (mxreact.mxreact/fmu ~what) ~prop))
+  `(tiltontec.model.core/mget (demo.mxreact/fmu ~what) ~prop))
 
 (defmacro fmi [what]
   `(tiltontec.model.core/fget ~what ~'me
@@ -84,7 +114,7 @@
      :up? false))
 
 (defmacro fmi-val [what prop]
-  `(tiltontec.model.core/mget (mxreact.mxreact/fmi ~what) ~prop))
+  `(tiltontec.model.core/mget (demo.mxreact/fmi ~what) ~prop))
 
 (defmacro myval [prop]
   `(tiltontec.model.core/mget ~'me ~prop))

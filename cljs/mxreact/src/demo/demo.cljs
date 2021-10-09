@@ -4,14 +4,14 @@
     [tiltontec.cell.core :refer-macros [cF cFn cFonce] :refer [cI]]
     [tiltontec.model.core :refer [with-par matrix mget mset! mswap!] :as md]
     [react]
-    [demo.mxreact :as mxr :refer [$ mk mkfn fmu with-props]]))
+    [demo.mxreact :as mxr :refer [$ mk mk2 mkfn fmu with-props]]))
 
 (defn demo []
   (md/make :mxreact/mxReactApp
     :rx-dom
     #_ ($ :div {} (str "MXR Bingo Damn!" (rand-int 99999)))
     (cFonce (with-par me
-              (mkfn :div {} {} "Cool"))))
+              (mk2 "div" nil nil "Cooler"))))
     #_ (cFonce
       (with-par me
         (mk "button"
