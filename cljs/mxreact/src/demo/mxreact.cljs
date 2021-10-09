@@ -72,10 +72,10 @@
     (prn :shs-no-sid!! (mget me :name) me)))
 
 (defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
-  ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
+  (prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
-    #_(prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
+    (prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
     (state-hook-set! me slot)))
 
 (defn mkfn [tag mx-props jsx-props & kids]

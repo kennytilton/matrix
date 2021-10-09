@@ -9,30 +9,41 @@
 (defn demo []
   (md/make :mxreact/mxReactApp
     :rx-dom
-    #_ ($ :div {} (str "MXR Bingo Damn!" (rand-int 99999)))
+    #_($ :div {} (str "MXR Bingo Damn!" (rand-int 99999)))
     (cFonce (with-par me
-              (mk2 "div" nil {:style {:color "red"}}
-                (str "Cooler " (rand-int 99999))))
-    #_ (cFonce
-      (with-par me
-        (mk "button"
-          {:name     :counter-host
-           :counter  (cI (rand-int 9999))
-           :kaboom   (cF (str "Kaboom = " (mget me :counter)))
-           :disabled false                                  ;; (cF (not (mget (fmu :counting?) :value)))
-           }
-          (with-props [[:title :kaboom] :disabled]
-            {:style   {:color "red"}
-             :onPress #(mswap! me :counter inc)}))))
-    #_
-    (cFonce
-      (with-par me
-        (mk "div"
-          {}
-          {:style {:backgroundColor "linen"}}
-          (mk "span" {}
-            {:style {:color "#f50"
-                    :onCLick #(prn :thump-thump)}})))))))
+              (mk2 "div"
+                {:ctr     (cI 42)
+                 ;; :divtext (cF (str "Cooler " (rand-int (mget me :ctr))))
+                 }
+                {:style   {:color "red"}
+                 :onClick #(do
+                             (prn :click %
+                               (goog.object/getKeys %)
+                               (goog.object/get % "nativeEvent")
+                               (.-screenX %))
+                             (mswap! me :ctr inc))}
+                "one"
+                "two"
+                #_ (str "Cooler " (rand-int (mget me :ctr))))))
+    #_(cFonce
+        (with-par me
+          (mk "button"
+            {:name     :counter-host
+             :counter  (cI (rand-int 9999))
+             :kaboom   (cF (str "Kaboom = " (mget me :counter)))
+             :disabled false                                ;; (cF (not (mget (fmu :counting?) :value)))
+             }
+            (with-props [[:title :kaboom] :disabled]
+              {:style   {:color "red"}
+               :onPress #(mswap! me :counter inc)}))))
+    #_(cFonce
+        (with-par me
+          (mk "div"
+            {}
+            {:style {:backgroundColor "linen"}}
+            (mk "span" {}
+              {:style {:color   "#f50"
+                       :onCLick #(prn :thump-thump)}}))))))
 
 #_(cFonce
     (with-par me
