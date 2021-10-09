@@ -3,7 +3,7 @@
    [tiltontec.model.core :as md]
    [mxreact.mxreact :as mxr :refer [$]]
    ["react-dom" :as rdom]
-   [demo.demo :as demo]))
+   [demo.demo :as dmo]))
 
 ; (.createElement
 ;                        (hx/get-react)
@@ -13,7 +13,7 @@
 
 (defn matrix-build! []
   (reset! mxr/ssdict {})
-  (reset! md/matrix (demo/demo)))
+  (reset! md/matrix (dmo/demo)))
 
 (defn App []
   ($ :div {} (str "MX Bingo " (rand-int 99999))))
@@ -23,6 +23,9 @@
   #_ (rdom/render ($ App) (js/document.getElementById "app"))
 
   (let [app-matrix (matrix-build!)
+        _ (prn :appmx!!!!!! app-matrix)
         root-mx (md/mget app-matrix :rx-dom)
-        #_#_ root-element (md/mget root-mx :react-element)]
-    (rdom/render root-mx (js/document.getElementById "app"))))
+        _ (prn :rootmx root-mx)
+        root-element (md/mget root-mx :react-element)
+        _ (prn :root-elt root-element)]
+    (rdom/render root-element (js/document.getElementById "app"))))

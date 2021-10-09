@@ -51,7 +51,7 @@
      :up? true
      :must? must-find?)))
 
-(defmethod not-to-be [:matrixrn.matrixrn/matrixrn.elt] [me]
+(defmethod not-to-be [:mxreact.mxreact/matrixrn.elt] [me]
   ;; normally called by kids observer, but we shadow that
   ;;(prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
@@ -71,7 +71,7 @@
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
-(defmethod observe-by-type [:matrixrn.matrixrn/matrixrn.elt] [slot me newv oldv cell]
+(defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
   ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
