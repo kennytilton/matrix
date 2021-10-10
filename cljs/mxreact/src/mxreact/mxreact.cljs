@@ -64,17 +64,16 @@
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
-      (do ;; try hhack
-        #_ (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
-             (mdead? me) (ia-type me) #_#_ :meta (meta me))
+      (do                                                   ;; try hhack
+        #_(prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
+            (mdead? me) (ia-type me) #_#_:meta (meta me))
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
 (defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
-  ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
+  ;;(prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
-    #_ (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
+    (prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
     (state-hook-set! me slot)))
-

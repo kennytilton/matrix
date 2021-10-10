@@ -4,7 +4,7 @@
     [tiltontec.cell.core :refer-macros [cF cFn cFonce] :refer [cI]]
     [tiltontec.model.core :refer [with-par matrix mget mset! mswap!] :as md]
     [react]
-    [demo.mxreact :as mxr :refer [div p span $ mk fmu with-props]]))
+    [mxreact.mxreact :as mxr :refer [div p span $ mk fmu with-props]]))
 
 (defn demo []
   (md/make :mxreact/mxReactApp
@@ -21,7 +21,7 @@
                              (mswap! me :ctr inc))}
                 "one"
                 (p {} {} (str "two " (mget (fmu :my-ctr) :ctr) "END"))
-                (p {} {} "booya")
+                (p {} {} "booya!!!!")
                 (span {}{} "mkay")
                 (mxr/strng (str "Cooler " (mget (fmu :my-ctr) :ctr))))))
     #_(cFonce

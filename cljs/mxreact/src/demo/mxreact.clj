@@ -8,22 +8,6 @@
                        [pkey# (tiltontec.model.core/mget ~'me pget#)])))
      ~static-props))
 
-;(defmacro $
-;  [type & args]
-;
-;  (let [type (if (keyword? type)
-;               (name type)
-;               type)]
-;    (cond
-;      (map? (first args))
-;      `^js/React.Element (.createElement
-;                           (get-react)
-;                           ~type
-;                           (cljs.core/clj->js ~(first args))
-;                           ~@(rest args))
-;
-;      :else `^js/React.Element (.createElement (get-react) ~type nil ~@args))))
-
 (defmacro component-with-hooks [& body]
   `(fn []
      (let [[~'_ set-state#] (.useState (get-react) 0)
@@ -76,8 +60,6 @@
      ~@(apply concat
          (into [] mx-props))))
 
-
-
 (declare
   input textarea option select a abbr address area article aside audio b base bdi
   bdo big blockquote body br button canvas caption cite code col colgroup data datalist
@@ -100,10 +82,6 @@
     circle clipPath ellipse g line mask path pattern polyline rect svg text defs
     linearGradient polygon radialGradient stop tspan])
 
-;(defmacro div [node-type mx-props jsx-props & kids]
-;  `(mk "div" ~node-type ~mx-props ~jsx-props ~@kids))
-
-
 (defn gen-tag
   [tag]
   `(defmacro ~tag [& args#]
@@ -115,34 +93,6 @@
          (gen-tag tag))))
 
 (gen-tags)
-
-;(defmacro $d
-;  [type & args]
-;  (if (map? (first args))
-;    `^js/React.Element (.createElement
-;                         (hx/get-react)
-;                         ~type
-;                         (impl.props/dom-props ~(first args))
-;                         ~@(rest args))
-;    `^js/React.Element (.createElement
-;                         (hx/get-react)
-;                         ~type
-;                         nil
-;                         ~@args)))
-
-
-;#?(:clj (defn gen-tag
-;          [tag]
-;          `(defmacro ~tag [& args#]
-;             `($d ~(str '~tag) ~@args#))))
-;
-;#?(:clj (defmacro gen-tags
-;          []
-;          `(do
-;             ~@(for [tag tags]
-;                 (gen-tag tag)))))
-;
-;#?(:clj (gen-tags))
 
 (defmacro fmu [what]
   `(tiltontec.model.core/fget ~what ~'me
