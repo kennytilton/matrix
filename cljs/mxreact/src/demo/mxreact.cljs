@@ -72,25 +72,8 @@
     (prn :shs-no-sid!! (mget me :name) me)))
 
 (defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
-  (prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
+  ;;(prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
     (prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
     (state-hook-set! me slot)))
-
-(defn mkfn [tag mx-props jsx-props & kids]
-  (md/make :mxreact.mxreact/matrixrn.elt
-    :sid (swap! demo.mxreact/sid-latest inc)
-    :react-element
-    #_(demo.mxreact/$ :div {} (str (first kids) ":" (rand-int 99999)))
-    (tiltontec.cell.core/cF
-      (prn :creating-elt!!!!)
-      ;; (demo.mxreact/$ "div" {} (str (first kids) " oxr " (rand-int 99999)))
-      ;;+ (.createElement (get-react) ~type nil ~@args)
-      ;;+ (.createElement (get-react) "div" nil "BAM")
-      #_(demo.mxreact/$ :div {} (str (first kids) ":" (rand-int 99999)))
-      (.createElement (get-react)
-        (demo.mxreact/component-with-hooks
-          (.createElement (get-react) (name tag)
-            (cljs.core/clj->js jsx-props)
-            kids))))))

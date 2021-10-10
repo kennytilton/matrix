@@ -4,17 +4,14 @@
     [tiltontec.cell.core :refer-macros [cF cFn cFonce] :refer [cI]]
     [tiltontec.model.core :refer [with-par matrix mget mset! mswap!] :as md]
     [react]
-    [demo.mxreact :as mxr :refer [$ mk mk2 mkfn fmu with-props]]))
+    [demo.mxreact :as mxr :refer [div p span $ mk fmu with-props]]))
 
 (defn demo []
   (md/make :mxreact/mxReactApp
     :rx-dom
-    #_($ :div {} (str "MXR Bingo Damn!" (rand-int 99999)))
     (cFonce (with-par me
-              (mk2 "div"
-                {:ctr     (cI 42)
-                 ;; :divtext (cF (str "Cooler " (rand-int (mget me :ctr))))
-                 }
+              (div {:name :my-ctr
+                    :ctr  (cI 42)}
                 {:style   {:color "red"}
                  :onClick #(do
                              (prn :click %
@@ -23,8 +20,10 @@
                                (.-screenX %))
                              (mswap! me :ctr inc))}
                 "one"
-                "two"
-                #_ (str "Cooler " (rand-int (mget me :ctr))))))
+                (p {} {} (str "two " (mget (fmu :my-ctr) :ctr) "END"))
+                (p {} {} "booya")
+                (span {}{} "mkay")
+                (mxr/strng (str "Cooler " (mget (fmu :my-ctr) :ctr))))))
     #_(cFonce
         (with-par me
           (mk "button"

@@ -8,22 +8,21 @@
                        [pkey# (tiltontec.model.core/mget ~'me pget#)])))
      ~static-props))
 
-
-(defmacro $
-  [type & args]
-
-  (let [type (if (keyword? type)
-               (name type)
-               type)]
-    (cond
-      (map? (first args))
-      `^js/React.Element (.createElement
-                           (get-react)
-                           ~type
-                           (cljs.core/clj->js ~(first args))
-                           ~@(rest args))
-
-      :else `^js/React.Element (.createElement (get-react) ~type nil ~@args))))
+;(defmacro $
+;  [type & args]
+;
+;  (let [type (if (keyword? type)
+;               (name type)
+;               type)]
+;    (cond
+;      (map? (first args))
+;      `^js/React.Element (.createElement
+;                           (get-react)
+;                           ~type
+;                           (cljs.core/clj->js ~(first args))
+;                           ~@(rest args))
+;
+;      :else `^js/React.Element (.createElement (get-react) ~type nil ~@args))))
 
 (defmacro component-with-hooks [& body]
   `(fn []
@@ -38,66 +37,112 @@
          (demo.mxreact/ref-record ~'me ref#))
        ~@body)))
 
-(defmacro app-elt [tag$ jsx-props & kids]
-  `(.createElement (get-react) tag$))
-
-(defmacro mk2 [node-type mx-props jsx-props & kids]
-  #_ `($ ~node-type {} (str "MK demo MXR Bingo Damn!" (rand-int 99999)))
-
-  (do
-    (prn :mk2-sees node-type :kids kids)
+(defmacro strng [textFormulaBody]
+  ;; we create Text with a string child, but one potentially reactive
+  (let [content-kwd (keyword (gensym "content"))]
     `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
+       :name (gensym "strng")
        :sid (swap! demo.mxreact/sid-latest inc)
-       ~@(when (seq kids)
-           `(:kids (tiltontec.model.core/cFkids ~@kids)))
+       ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :react-element (tiltontec.cell.core/cF
-                        (prn :creating-elt!!!! js/document)
                         (react/createElement
                           (demo.mxreact/component-with-hooks
-                            (apply react/createElement (name ~node-type)
-                              (cljs.core/clj->js (merge
-                                                   ;; todo useref
-                                                   #_ (when (tiltontec.model.core/mget ~'me :use-ref?)
-                                                        {:ref (demo.mxreact/ref-get ~'me)})
-                                                   ~jsx-props))
-                              (let [kidz# (tiltontec.model.core/mget ~'me :kids)]
-                                (doall
-                                  ;; ^^^ so this runs while "me" is bound to intended mx
-                                  (map (fn [mapkid#]
-                                         (prn :processing mapkid#)
-                                         (if (string? mapkid#)
-                                           mapkid#
-                                           (tiltontec.model.core/mget mapkid# :react-element)))
-                                    kidz#))))))))))
+                            (react/createElement "span"
+                              (cljs.core/clj->js {:key (rand-int 9999)}) {}
+                              (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
-  #_ `($ ~node-type {} (str "MK demo MXR Bingo Damn!" (rand-int 99999)))
-
-  (do
-    (prn :mk-sees node-type)
-    (prn :mk-sees-mxp mx-props)
-    `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
-       :sid (swap! demo.mxreact/sid-latest inc)
-       ~@(when (seq kids)
-           `(:kids (tiltontec.model.core/cFkids ~@kids)))
-       :react-element (tiltontec.cell.core/cF
-                        (prn :creating-elt!!!!)
-                        (.createElement (get-react)
-                          (demo.mxreact/component-with-hooks
-                            #_(prn :mk-rendering (tiltontec.model.core/mget ~'me :sid)
-                                (tiltontec.model.core/mget ~'me :name))
-                            (apply .createElement (get-react) (name ~node-type)
-                              (cljs.core/clj->js (merge
-                                                   #_ (when (tiltontec.model.core/mget ~'me :use-ref?)
+  `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
+     :sid (swap! demo.mxreact/sid-latest inc)
+     ~@(when (seq kids)
+         `(:kids (tiltontec.model.core/cFkids ~@kids)))
+     :react-element (tiltontec.cell.core/cF
+                      (react/createElement
+                        (demo.mxreact/component-with-hooks
+                          (apply react/createElement (name ~node-type)
+                            (cljs.core/clj->js (merge
+                                                 ;; todo useref
+                                                 #_(when (tiltontec.model.core/mget ~'me :use-ref?)
                                                      {:ref (demo.mxreact/ref-get ~'me)})
-                                                   ~jsx-props))
+                                                 ~jsx-props))
+                            (let [kidz# (tiltontec.model.core/mget ~'me :kids)]
                               (doall
                                 ;; ^^^ so this runs while "me" is bound to intended mx
                                 (map (fn [mapkid#]
-                                       (tiltontec.model.core/mget mapkid# :react-element))
-                                  (tiltontec.model.core/mget ~'me :kids)))))))
-       ~@(apply concat
-           (into [] mx-props)))))
+                                       (if (string? mapkid#)
+                                         mapkid#
+                                         (tiltontec.model.core/mget mapkid# :react-element)))
+                                  kidz#)))))))
+     ~@(apply concat
+         (into [] mx-props))))
+
+
+
+(declare
+  input textarea option select a abbr address area article aside audio b base bdi
+  bdo big blockquote body br button canvas caption cite code col colgroup data datalist
+  dd del details dfn dialog div dl dt em embed fieldset figcaption figure footer form
+  h1 h2 h3 h4 h5 h6 head header hr html i iframe img ins kbd keygen label legend li link
+  main map mark menu menuitem meta meter nav noscript object ol optgroup output p param
+  picture pre progress q rp rt ruby s samp script section small source span strong style
+  sub summary sup table tbody td tfoot th thead time title tr track u ul var video wbr
+  circle clipPath ellipse g line mask path pattern polyline rect svg text defs
+  linearGradient polygon radialGradient stop tspan)
+
+(def tags
+  '[input textarea option select a abbr address area article aside audio b base bdi
+    bdo big blockquote body br button canvas caption cite code col colgroup data datalist
+    dd del details dfn dialog div dl dt em embed fieldset figcaption figure footer form
+    h1 h2 h3 h4 h5 h6 head header hr html i iframe img ins kbd keygen label legend li link
+    main map mark menu menuitem meta meter nav noscript object ol optgroup output p param
+    picture pre progress q rp rt ruby s samp script section small source span strong style
+    sub summary sup table tbody td tfoot th thead time title tr track u ul var video wbr
+    circle clipPath ellipse g line mask path pattern polyline rect svg text defs
+    linearGradient polygon radialGradient stop tspan])
+
+;(defmacro div [node-type mx-props jsx-props & kids]
+;  `(mk "div" ~node-type ~mx-props ~jsx-props ~@kids))
+
+
+(defn gen-tag
+  [tag]
+  `(defmacro ~tag [& args#]
+     `(mk ~(str '~tag) ~@args#)))
+
+(defmacro gen-tags []
+  `(do
+     ~@(for [tag tags]
+         (gen-tag tag))))
+
+(gen-tags)
+
+;(defmacro $d
+;  [type & args]
+;  (if (map? (first args))
+;    `^js/React.Element (.createElement
+;                         (hx/get-react)
+;                         ~type
+;                         (impl.props/dom-props ~(first args))
+;                         ~@(rest args))
+;    `^js/React.Element (.createElement
+;                         (hx/get-react)
+;                         ~type
+;                         nil
+;                         ~@args)))
+
+
+;#?(:clj (defn gen-tag
+;          [tag]
+;          `(defmacro ~tag [& args#]
+;             `($d ~(str '~tag) ~@args#))))
+;
+;#?(:clj (defmacro gen-tags
+;          []
+;          `(do
+;             ~@(for [tag tags]
+;                 (gen-tag tag)))))
+;
+;#?(:clj (gen-tags))
 
 (defmacro fmu [what]
   `(tiltontec.model.core/fget ~what ~'me
