@@ -48,39 +48,27 @@
     (prn :mk2-sees node-type :kids kids)
     `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
        :sid (swap! demo.mxreact/sid-latest inc)
-       #_ ~@(when (seq kids)
+       ~@(when (seq kids)
            `(:kids (tiltontec.model.core/cFkids ~@kids)))
        :react-element (tiltontec.cell.core/cF
                         (prn :creating-elt!!!! js/document)
-                        (.createElement (get-react)
+                        (react/createElement
                           (demo.mxreact/component-with-hooks
-                            (apply react/createElement #_ (get-react) (name ~node-type)
+                            (apply react/createElement (name ~node-type)
                               (cljs.core/clj->js (merge
+                                                   ;; todo useref
                                                    #_ (when (tiltontec.model.core/mget ~'me :use-ref?)
                                                         {:ref (demo.mxreact/ref-get ~'me)})
                                                    ~jsx-props))
-                              ;; ~@kids
-                              ["abc" "123" "do-reme" "xyz"]
-                              )
-                              #_ (doall
-                                ;; ^^^ so this runs while "me" is bound to intended mx
-                                (map (fn [mapkid#]
-                                       (tiltontec.model.core/mget mapkid# :react-element))
-                                  (tiltontec.model.core/mget ~'me :kids)))))))))
-
-(defn mkfn [tag mx-props jsx-props & kids]
-  (md/make :mxreact.mxreact/matrixrn.elt
-    :sid (swap! demo.mxreact/sid-latest inc)
-    :react-element
-    #_(demo.mxreact/$ :div {} (str (first kids) ":" (rand-int 99999)))
-    (tiltontec.cell.core/cF
-      (.createElement (get-react)
-        (demo.mxreact/component-with-hooks
-          (.createElement (get-react) (name tag)
-            (cljs.core/clj->js jsx-props)
-            kids))))
-    ~@(apply concat
-        (into [] mx-props))))
+                              (let [kidz# (tiltontec.model.core/mget ~'me :kids)]
+                                (doall
+                                  ;; ^^^ so this runs while "me" is bound to intended mx
+                                  (map (fn [mapkid#]
+                                         (prn :processing mapkid#)
+                                         (if (string? mapkid#)
+                                           mapkid#
+                                           (tiltontec.model.core/mget mapkid# :react-element)))
+                                    kidz#))))))))))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
   #_ `($ ~node-type {} (str "MK demo MXR Bingo Damn!" (rand-int 99999)))
