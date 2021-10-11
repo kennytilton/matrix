@@ -4,7 +4,7 @@
  {:app {:target :browser
         :output-dir "js"
         :asset-path "/js"
-        :modules {:app {:entries [demo.core]}}
+        :modules {:app {:entries [app.core]}}
         :devtools {:http-root    "."
                    :http-port    8888
                    :reload-strategy :full

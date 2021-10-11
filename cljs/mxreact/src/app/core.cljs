@@ -1,19 +1,18 @@
-(ns demo.core
+(ns app.core
   (:require
-   [tiltontec.model.core :as md]
-   [mxreact.mxreact :as mxr :refer [$]]
-   ["react-dom" :as rdom]
-   ;[demo.demo :as dmo]
-   [demo.todo-mvc :as dmo]
-   ))
+    [tiltontec.model.core :as md]
+    [mxreact.mxreact :as mxr]
+    ["react-dom" :as rdom]
+    [demo.demo :as dmo]
+    [tutorial.x100-hello-world.lesson :as app]
+    ))
 
 (defn matrix-build! []
   (reset! mxr/ssdict {})
-  (reset! md/matrix (dmo/demo)))
+  (reset! md/matrix (app/app)))
 
 (defn ^:dev/after-load ;; todo try losing this once in react land
   start []
-  #_ (rdom/render ($ App) (js/document.getElementById "app"))
 
   (let [app-matrix (matrix-build!)
         _ (prn :appmx!!!!!! app-matrix)

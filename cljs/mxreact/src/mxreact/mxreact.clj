@@ -11,17 +11,15 @@
 (defmacro component-with-hooks [& body]
   `(fn []
      (let [[~'_ set-state#] (.useState (get-react) 0)
+           ;; todo test refs
            ref# (when (tiltontec.model.core/mget ~'me :use-ref?)
                   (.useRef (get-react) :ref-undefined))]
-       (demo.mxreact/set-state-record ~'me set-state#)
-       #_(react/useEffect #(fn []
-                             (prn :effect-unmounted (tiltontec.model.core/mget ~'me :sid)
-                               (tiltontec.model.core/mget ~'me :name))))
+       (mxreact.mxreact/set-state-record ~'me set-state#)
        (when ref#
-         (demo.mxreact/ref-record ~'me ref#))
+         (mxreact.mxreact/ref-record ~'me ref#))
        ~@body)))
 
-(defmacro strng [textFormulaBody]
+(defmacro mx$ [textFormulaBody]
   ;; we create Text with a string child, but one potentially reactive
   (let [content-kwd (keyword (gensym "content"))]
     `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt

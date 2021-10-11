@@ -4,7 +4,7 @@
     [tiltontec.cell.core :refer-macros [cF cFn cFonce] :refer [cI]]
     [tiltontec.model.core :refer [with-par matrix mget mset! mswap!] :as md]
     [react]
-    [mxreact.mxreact :as mxr :refer [div p span $ mk fmu with-props]]))
+    [mxreact.mxreact :as mxr :refer [div p span mx$ mk fmu with-props]]))
 
 (defn demo []
   (md/make :mxreact/mxReactApp
@@ -23,7 +23,7 @@
                 (p {} {} (str "two " (mget (fmu :my-ctr) :ctr) "END"))
                 (p {} {} "booya!!!!")
                 (span {}{} "mkay")
-                (mxr/strng (str "Cooler " (mget (fmu :my-ctr) :ctr))))))
+                (mxr/mx$ (str "Cooler " (mget (fmu :my-ctr) :ctr))))))
     #_(cFonce
         (with-par me
           (mk "button"
@@ -95,7 +95,7 @@
                            (mswap! me :clicks inc))}
           (mxn/mk rn/Text {}
             {:style {:width 128 :padding 12 :margin 6 :backgroundColor "yellow"}}
-            (mxn/strng (str "hit me up? " (mget (fmu :presser) :clicks)))))
+            (mxn/mx$ (str "hit me up? " (mget (fmu :presser) :clicks)))))
 
         (mxn/mk rn/View {}
           {:style {:flexDirection   "row"
@@ -106,7 +106,7 @@
 
           (mxn/mk rn/Text {}
             {:style {:width 128 :padding 12 :margin 6 :backgroundColor "coral"}}
-            (mxn/strng (str "slidecho: " (mget (fmu :some-slider) :slide-value))))
+            (mxn/mx$ (str "slidecho: " (mget (fmu :some-slider) :slide-value))))
 
           (mxn/mk rne/Slider
             {:name        :some-slider
@@ -128,4 +128,4 @@
               {:name :an-item}
               {:key   n
                :style {:color "black" :padding 4 :margin 5}}
-              (mxn/strng n)))))))
+              (mxn/mx$ n)))))))
