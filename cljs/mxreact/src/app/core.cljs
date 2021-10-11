@@ -7,6 +7,16 @@
     [tutorial.x100-hello-world.lesson :as app]
     ))
 
+(defn App
+  []
+  ;; (d/p "Hi fn mom 10")
+  ;; (d/$d "p" (str "Hi mom " (rand-int 99999)))
+  #_ (.createElement (mxr/get-react)
+       "p"
+       (clj->js {})
+       (str "Hi mom " (rand-int 99999)))
+  ($ :div {} (str "Bingo " (rand-int 99999))))
+
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! md/matrix (app/app)))
