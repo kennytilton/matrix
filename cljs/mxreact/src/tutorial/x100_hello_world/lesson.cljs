@@ -4,10 +4,27 @@
     [tiltontec.model.core :refer [with-par mx-par matrix mget mset! mswap!] :as md]
     [react]
 
-    [mxreact.mxreact :as mxr :refer [mx$ div p button]]
+    [mxreact.mxreact :as mxr :refer [mk mkc mx$ div p button]]
+    ;; The JS:
+    ;;    import ReactSlider from "react-slider";
+    ;; Various solutions:
+    ;;   ["@expo/vector-icons" :refer [FontAwesome]]
+    ;;   ["react-native-bouncy-checkbox" :default BouncyCheckBox]
+    ;; no ["react-slider" :refer [ReactSlider]]
+    ["react-slider" :default ReactSlider]
     ))
 
+(defn Slider []
+  (mkc ReactSlider {}
+    {:className "horizontal-slider"
+     :thumbClassName "example-thumb"
+     :trackClassName "example-track"}))
+
 (defn app []
+  (prn :slider!!!!!!!!!! ReactSlider)
+  (prn :Slider!!! (Slider))
+  (prn :elt!!!! (react/createElement ReactSlider))
+
   (md/make :mxreact/mxReactApp
     :rx-dom
     (cFonce (with-par me
@@ -20,13 +37,30 @@
               ;; children: zero or more child Matrix objects
               ;;
               (div {} {}
-                (doall ;; todo work ths into cFkids
+                #_ (doall ;; todo work ths into cFkids
                   ;; children are flattened and nils removed, so this nested array is no problem.
                   (for [msg ["Click the button, watch the title change. When you get to 42, the"
                              "the button will be disabled."]]
                     (p {}{} msg)))
 
-                (button
+                ; <ReactSlider
+                ;      className="horizontal-slider"
+                ;      thumbClassName="example-thumb"
+                ;      trackClassName="example-track"
+                ;    />
+
+                #_ (mkc ReactSlider {} {})
+
+                (mkc ReactSlider {}
+                  {;;:className "horizontal-slider"
+                   ;;:thumbclassname "example-thumb"
+                   ;;:trackclassName "example-track"
+                   :style {:width "100%"
+                           :max-width "500px"
+                           :height "100vh"
+                           :margin "auto"}})
+
+                #_ (button
                   ;; ----------------------------------------------------------------------
                   ;; This first group of props are for the Matrix "host" object.
                   ;; These can be moderated by reactive Cells, or just be assigned literals.

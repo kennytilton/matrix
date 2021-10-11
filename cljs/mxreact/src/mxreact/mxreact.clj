@@ -33,6 +33,31 @@
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))
 
+(defmacro mkc [react-component mx-props jsx-props & kids]
+  `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
+     :sid (swap! mxreact.mxreact/sid-latest inc)
+     ~@(when (seq kids)
+         `(:kids (tiltontec.model.core/cFkids ~@kids)))
+     :react-element (tiltontec.cell.core/cF
+                      (react/createElement
+                        (mxreact.mxreact/component-with-hooks
+                          (apply react/createElement ~react-component
+                            (cljs.core/clj->js (merge
+                                                 ;; todo useref
+                                                 #_(when (tiltontec.model.core/mget ~'me :use-ref?)
+                                                     {:ref (mxreact.mxreact/ref-get ~'me)})
+                                                 ~jsx-props))
+                            (let [kidz# (tiltontec.model.core/mget ~'me :kids)]
+                              (doall
+                                ;; ^^^ so this runs while "me" is bound to intended mx
+                                (map (fn [mapkid#]
+                                       (if (string? mapkid#)
+                                         mapkid#
+                                         (tiltontec.model.core/mget mapkid# :react-element)))
+                                  kidz#)))))))
+     ~@(apply concat
+         (into [] mx-props))))
+
 (defmacro mk [node-type mx-props jsx-props & kids]
   `(tiltontec.model.core/make :mxreact.mxreact/matrixrn.elt
      :sid (swap! mxreact.mxreact/sid-latest inc)
@@ -53,7 +78,11 @@
                                 (map (fn [mapkid#]
                                        (if (string? mapkid#)
                                          mapkid#
-                                         (tiltontec.model.core/mget mapkid# :react-element)))
+                                         (let [kidelt# (tiltontec.model.core/mget mapkid# :react-element)]
+                                           (prn :me!!!!! ~'me)
+                                           (prn :MK-mapkid mapkid# )
+                                           (prn :MK-kidelt kidelt#)
+                                           kidelt#)))
                                   kidz#)))))))
      ~@(apply concat
          (into [] mx-props))))
