@@ -17,10 +17,15 @@
        (str "Hi mom " (rand-int 99999)))
   ($ :div {} (str "Bingo " (rand-int 99999))))
 
+(defn ^:dev/after-load start
+  []
+  (rdom/render ($ App) (js/document.getElementById "app")))
+
 (defn matrix-build! []
   (reset! mxr/ssdict {})
   (reset! md/matrix (app/app)))
 
+#_
 (defn ^:dev/after-load ;; todo try losing this once in react land
   start []
 
