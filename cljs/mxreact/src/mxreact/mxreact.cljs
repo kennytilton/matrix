@@ -11,7 +11,6 @@
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
              fm-kids-observe kid-values-kids] :as md]
-    [applied-science.js-interop :as j]
     [react]))
 
 ;(def <> react/createElement)

@@ -1,5 +1,21 @@
 (ns mxreact.mxreact)
 
+(defmacro $
+  [type & args]
+
+  (let [type (if (keyword? type)
+               (name type)
+               type)]
+    (cond
+      (map? (first args))
+      `^js/React.Element (.createElement
+                           (get-react)
+                           ~type
+                           (cljs.core/clj->js ~(first args))
+                           ~@(rest args))
+
+      :else `^js/React.Element (.createElement (get-react) ~type nil ~@args))))
+
 (defmacro with-props [[& inherited] static-props]
   `(merge (into {} (for [prop# [~@inherited]]
                      (let [[pkey# pget#] (if (vector? prop#)
