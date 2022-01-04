@@ -3,17 +3,63 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>CLJS + Helix • TodoMVC</title>
-		<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
-		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
-  </head>
+		<title>CLJS + React + Matrix</title>
+		<style>
+		.horizontal-slider {
+		  width: 100%;
+		  max-width: 500px;
+		  height: 50px;
+		  margin: auto;
+		  background: yellow;
+		}
+		.slider {
+		  width: 100%;
+		  max-width: 500px;
+		  height: 150vh;
+		  margin: auto;
+		}
+		.example-thumb {
+		  cursor: pointer;
+		  position: absolute;
+		  z-index: 100;
+		  background: #ffffff;
+		  border: 5px solid #3774ff;
+		  border-radius: 100%;
+		  display: block;
+		  box-shadow: 0 0 2px 0 rgb(0 0 0 / 44%);
+		}
+		.example-thumb.active {
+		  background-color: grey;
+		}
+		.example-track {
+		  position: relative;
+		  background: #ddd;
+		}
+		.example-track.example-track-0 {
+		  background: #83a9ff;
+		}
+		.horizontal-slider .example-track {
+		  top: 20px;
+		  height: 4px;
+		}
+		.horizontal-slider .example-thumb {
+		  top: 12px;
+		  width: 10px;
+		  outline: none;
+		  height: 10px;
+		  line-height: 38px;
+		}
+	</style>
+    </head>
+
+
 	<body>
 		<div id="app" >Loading...</div>
+
 		<!-- Scripts here. Don't remove ↓ -->
-		<script src="node_modules/todomvc-common/base.js"></script>
 		<script src="js/app.js"></script>
 		<script>
-			todo_mvc.core.start();
+			app.core.start();
 		</script>
 	</body>
 </html>

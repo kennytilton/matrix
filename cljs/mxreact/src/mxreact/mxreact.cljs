@@ -11,6 +11,7 @@
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
              fm-kids-observe kid-values-kids] :as md]
+<<<<<<< HEAD
     ))
 
 (def sid-latest (atom 0))
@@ -54,6 +55,16 @@
 ;(defonce MNavigator (:Navigator Tab))
 ;(defonce MGroup (:Group Tab))
 ;(defonce MScreen (:Screen Tab))
+=======
+    [react]))
+
+;(def <> react/createElement)
+
+(defn ^js/React get-react [] react)
+
+(def sid-latest (atom 0))
+(def rendering-sid-latest (atom 0))
+>>>>>>> mxreact
 
 (defn mxweb-init! []
   (reset! sid-latest 0)
@@ -85,7 +96,11 @@
      :up? true
      :must? must-find?)))
 
+<<<<<<< HEAD
 (defmethod not-to-be [:mxreact.mxreact/mxreact.elt] [me]
+=======
+(defmethod not-to-be [:mxreact.mxreact/matrixrn.elt] [me]
+>>>>>>> mxreact
   ;; normally called by kids observer, but we shadow that
   ;;(prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
@@ -98,13 +113,20 @@
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
+<<<<<<< HEAD
       (do ;; try hhack
         #_ (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
              (mdead? me) (ia-type me) #_#_ :meta (meta me))
+=======
+      (do                                                   ;; try hhack
+        #_(prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
+            (mdead? me) (ia-type me) #_#_:meta (meta me))
+>>>>>>> mxreact
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
+<<<<<<< HEAD
 (defmethod observe-by-type [:mxreact.mxreact/mxreact.elt] [slot me newv oldv cell]
   ; (prn :obs-type-mxreact-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
@@ -112,3 +134,11 @@
     #_ (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
     (state-hook-set! me slot)))
 
+=======
+(defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
+  ;;(prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
+  (when (not= oldv unbound)
+    ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
+    ;; (prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
+    (state-hook-set! me slot)))
+>>>>>>> mxreact

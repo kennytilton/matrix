@@ -12,7 +12,7 @@
     ;[matrixrn.demo.tutorial.main]
     ;[matrixrn.demo.tutorial.sampler]
     ; Pick one ^^^ for next line...vvv
-    ; [matrixrn.demo.tutorial.sampler :as demo]
+    [matrixrn.demo.tutorial.sampler :as demo]
     ;[matrixrn.demo.to-do-lite :as demo]
     ; [matrixrn.demo.navi :as demo]
     ; [matrixrn.demo.tutorial.main :as demo]
@@ -22,7 +22,7 @@
     ; [matrixrn.demo.tutorial.x110-its-not-just-me.core :as demo]
     ; [matrixrn.demo.tutorial.x120-web-component.core :as demo]
     ;[matrixrn.demo.tutorial.x130-async-heaven.core :as demo]
-    [matrixrn.demo.tutorial.x140-todo-lite.core :as demo]
+    ;[matrixrn.demo.tutorial.x140-todo-lite.core :as demo]
     #_ [matrixrn.demo.tutorial.x110-its-not-just-me.separate-count-display :as demo]))
 
 (defn matrix-build! []
