@@ -11,51 +11,6 @@
      :refer [make matrix mx-par mget mset! mswap!
              fget mxi-find mxu-find-type
              fm-kids-observe kid-values-kids] :as md]
-<<<<<<< HEAD
-    ))
-
-(def sid-latest (atom 0))
-(def rendering-sid-latest (atom 0))
-
-; If the JS doc looks like this:
-;
-; import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-;
-;const Tab = createBottomTabNavigator();
-;
-;function MyTabs() {
-;  return (
-;    <Tab.Navigator>
-;      <Tab.Screen name="Home" component={HomeScreen} />
-;      <Tab.Screen name="Settings" component={SettingsScreen} />
-;    </Tab.Navigator>
-;  );
-;}
-; ... apparently we call a function to get an object of components
-;; keyed Navigator, Screen, et al. Methinks this is because the
-;; function createBottomTabNavigator takes parameters for runtime
-;; customization.
-
-(defonce Tab (js->clj
-               (rn-bottom-tabs/createBottomTabNavigator)
-               :keywordize-keys true))
-(defonce Navigator (:Navigator Tab))
-(defonce Group (:Group Tab))
-(defonce Screen (:Screen Tab))
-
-;;; --- Material Bottom Tab would be more easily set up with managed Expo app
-;;;
-;(defn matabs []
-;  (js->clj
-;    (material-bottom-tabs/createMaterialBottomTabNavigator)
-;    :keywordize-keys true))
-
-;(defonce MTab (js->clj (rn-bottom-tabs/createMaterialBottomTabNavigator) :keywordize-keys true))
-;; import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-;(defonce MNavigator (:Navigator Tab))
-;(defonce MGroup (:Group Tab))
-;(defonce MScreen (:Screen Tab))
-=======
     [react]))
 
 ;(def <> react/createElement)
@@ -64,7 +19,6 @@
 
 (def sid-latest (atom 0))
 (def rendering-sid-latest (atom 0))
->>>>>>> mxreact
 
 (defn mxweb-init! []
   (reset! sid-latest 0)
@@ -96,11 +50,7 @@
      :up? true
      :must? must-find?)))
 
-<<<<<<< HEAD
-(defmethod not-to-be [:mxreact.mxreact/mxreact.elt] [me]
-=======
 (defmethod not-to-be [:mxreact.mxreact/matrixrn.elt] [me]
->>>>>>> mxreact
   ;; normally called by kids observer, but we shadow that
   ;;(prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
@@ -113,32 +63,18 @@
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
-<<<<<<< HEAD
-      (do ;; try hhack
-        #_ (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
-             (mdead? me) (ia-type me) #_#_ :meta (meta me))
-=======
       (do                                                   ;; try hhack
         #_(prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
             (mdead? me) (ia-type me) #_#_:meta (meta me))
->>>>>>> mxreact
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
     (prn :shs-no-sid!! (mget me :name) me)))
 
-<<<<<<< HEAD
-(defmethod observe-by-type [:mxreact.mxreact/mxreact.elt] [slot me newv oldv cell]
-  ; (prn :obs-type-mxreact-elt-entry slot (mget me :name)(mget me :sid))
-  (when (not= oldv unbound)
-    ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
-    #_ (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
-    (state-hook-set! me slot)))
 
-=======
 (defmethod observe-by-type [:mxreact.mxreact/matrixrn.elt] [slot me newv oldv cell]
   ;;(prn :obs-type-matrixrn-elt-entry??? slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
     ;; (prn :obs-by-type-setting-state slot (mget me :name) (mget me :sid) #_(meta me) (mdead? me))
     (state-hook-set! me slot)))
->>>>>>> mxreact
+
