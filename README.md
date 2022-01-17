@@ -1,4 +1,6 @@
 ![Pardon Our Appearance](https://github.com/kennytilton/matrix/blob/main/images/7417287052_ca9e644931_b.jpeg?raw=true)
+"Under Construction Grunge Sign" by Free Grunge Textures - www.freestock.ca is licensed under CC BY 2.0.
+
 If you followed some link to get here, FYI we have just started overhauling the Matrix documentation and even the very organization of this repo.
 
 Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
