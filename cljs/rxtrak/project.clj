@@ -10,7 +10,7 @@
                  [org.clojure/clojurescript "1.10.238"]
                  [com.cognitect/transit-cljs "0.8.243"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
-                 [funcool/bide "1.5.0"]
+                 [funcool/bide "1.7.0"]
                  [clj-http "3.7.0"]
                  [cljs-http "0.1.44"]
                  [cheshire "5.8.0"]
