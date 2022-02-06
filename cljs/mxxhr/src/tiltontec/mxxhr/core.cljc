@@ -11,8 +11,7 @@
              counts countit counts-reset]]
 
     #?(:cljs [tiltontec.cell.base
-              :refer-macros [pcell un-stopped without-c-dependency cpr
-                             with-cc]
+              :refer-macros [pcell un-stopped without-c-dependency cpr]
 
               :refer [+pulse+ c-pulse c-optimized-away?
                       mdead? md-ref? ia-type
