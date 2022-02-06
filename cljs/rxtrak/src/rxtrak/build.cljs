@@ -110,7 +110,7 @@
   [(section {:class "todoapp"}
      (std-clock)
      (header {:class "header"}
-       (h1 "&#x211e;Trek")
+       (h1 "&#x211e;Trak")
        (rx-entry-field))
 
      (rx-list-items)
