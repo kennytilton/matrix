@@ -1,4 +1,4 @@
-(ns mxweb.style
+(ns tiltontec.mxweb.style
   (:require
     [tiltontec.util.base :refer [type-cljc]]
     [tiltontec.util.core :refer [pln]]
@@ -9,14 +9,14 @@
      :refer-macros [the-kids mdv!]
      :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]
-    [mxweb.base :refer [tag?]]
+    [tiltontec.mxweb.base :refer [tag?]]
     [goog.dom.classlist :as classlist]
     [goog.style :as gstyle]
     [goog.dom :as dom]
     [cljs.pprint :as pp]
     [clojure.string :as str]))
 
-;; todo move to utill or put all this in mxweb
+;; todo move to utill or put all this in tiltontec.mxweb
 
 (defn tag-dom [me]
   ;; This will return nil when 'me' is being awakened and rules
@@ -34,7 +34,7 @@
   (assert (tag? tag))
   (apply make
          :type :mxweb.css/css
-         ;;:mxweb-id (when mxweb (:id @mxweb))
+         ;;:tiltontec.mxweb-id (when tiltontec.mxweb (:id @tiltontec.mxweb))
          :tag tag
          :css-keys (for [[k _] (partition 2 stylings)] k)
          stylings))

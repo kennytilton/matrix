@@ -21,7 +21,7 @@
     [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [<mget fasc fm! make md-reset! backdoor-reset!
+              :refer [mget fasc fm! make md-reset! backdoor-reset!
                       mx-par]
               :as md])
 
@@ -215,7 +215,7 @@
           (is (= ae-count (count (md-kids top))))
           (doseq [ae (md-kids top)]
             (doseq [drug (take 16 (md-kids ae))]
-              (prn :drugfo2 (<mget drug :ndc))
+              (prn :drugfo2 (mget drug :ndc))
               (doseq [info (md-kids drug)]
                 (prn :drugstat (xhr-status info)(xhr-status-key info) :ndc (:ndc drug))
                 (is (some #{(xhr-status-key info)} [:ok [:error 400] [:error 404] 400 404])))))
@@ -251,11 +251,11 @@
                (case (:name @xhr)
                  :drug-label (cpr tag (:name @xhr) (:dbg @xhr)
                                   :status (xhr-status-key xhr)
-                                  :drug-label-warning (first (:warnings (first (:results (<mget xhr :selection))))))
+                                  :drug-label-warning (first (:warnings (first (:results (mget xhr :selection))))))
                  :mfr-recall (cpr tag (:name @xhr) (:dbg @xhr)
                                   :status (xhr-status-key xhr)
-                                  (first (:results (<mget xhr :selection)))
-                                  :sel (select-keys (first (:results (<mget xhr :selection)))
+                                  (first (:results (mget xhr :selection)))
+                                  :sel (select-keys (first (:results (mget xhr :selection)))
                                                     [:state :reason_for_recall]))
                  (cpr tag :xhr-dump-unknown (:name @xhr) (:dbg @xhr)))
                (do
@@ -278,7 +278,7 @@
 
                   (let [google (with-synapse (:s-goog)
                                  (xhr-html "http://google.com"))]
-                    (when-let [resp (<mget google :response)]
+                    (when-let [resp (mget google :response)]
                       (println :got-google-response!!!)
 
                       (list google))))]
@@ -304,7 +304,7 @@
 
                   (let [hiring (with-synapse (:s-hnews)
                                  (xhr-html "https://news.ycombinator.com/item?id=16967543"))]
-                    (when-let [resp (<mget hiring :response)]
+                    (when-let [resp (mget hiring :response)]
                       (println :got-hiring-response!!!)
 
                       (list hiring))))]
@@ -325,7 +325,7 @@
   (let [q (send-xhr
             (str "http://localhost:3000/dark-jedis/" 3616))]
     (xhr-await q )
-    (prn :sith (<mget q :response))))
+    (prn :sith (mget q :response))))
 
 
 (deftest xhr-tree-simple
@@ -334,7 +334,7 @@
                         {:send?       true
                          :body-parser identity
                          :kids        (cF (cpr :kidrule!!!!!!)
-                                          (when-let [parent (<mget me :response)]
+                                          (when-let [parent (mget me :response)]
                                             (the-kids
                                               (make-xhr "http://yahoo.com"
                                                         {:par         me
@@ -347,7 +347,7 @@
 
       ;;(xhr-send top)
       (when (xhr-await top)
-        (when (<mget top :response)
+        (when (mget top :response)
           (is (= 200 (xhr-status top)))
           (is (= 2 (count (md-kids top))))
           (doseq [k (md-kids top)]
@@ -422,7 +422,7 @@
                   (when-let [google (with-synapse (:s-goog)
                                       (send-unparsed-xhr :s-goog "http://google.com" false))]
                     (cpr :got-goog??? google)
-                    (when (<mget google :response)
+                    (when (mget google :response)
                       (cpr :got-goog!!! (xhrfo google))
                       (if (xhr-error? google)
                         (when-let [yahoo (synaptic-xhr-unparsed :s-yahoo "http://yahoo.com")]
@@ -436,14 +436,14 @@
           (is (not (nil? r)))
           (when r
             (is (= 2 (count r)))
-            (is (some #(.contains (<mget % :uri) "google") r))
-            (is (some #(.contains (<mget % :uri) "youtube") r)))))
+            (is (some #(.contains (mget % :uri) "google") r))
+            (is (some #(.contains (mget % :uri) "youtube") r)))))
       #_(let [cx-ok (cx-if-else "http://googlexxxxxx.com")]
           (let [r (cf-await cx-ok)]
             (is (not (nil? r)))
             (when r
               (is (= 1 (count r)))
-              (is (some #(.contains (<mget % :uri) "yahoo") r))))))))
+              (is (some #(.contains (mget % :uri) "yahoo") r))))))))
 
 (deftest xhr-send-group-get-as-received
   ;; kick off  requests and return them one at a time in order received.
@@ -453,7 +453,7 @@
         h (let [open-xhrs (atom nil)]
             (cF (let [xhrs (with-synapse (:make-xhrs)
                              (reset! open-xhrs (set (map #(send-unparsed-xhr :group % false) sites))))
-                      done (filter #(when (<mget % :response) %) @open-xhrs)]
+                      done (filter #(when (mget % :response) %) @open-xhrs)]
                   (when (seq done)
                     (assert (= 1 (count done)) (str "done count NG:" (count done)))
                     (reset! open-xhrs (set/difference @open-xhrs done))
@@ -550,13 +550,13 @@
                                  {:latency  40
                                   :response 100}))
 
-              :f3 (cF (when-let [f1v (:body (xhr-response (<mget me :f1)))]
+              :f3 (cF (when-let [f1v (:body (xhr-response (mget me :f1)))]
                         (xhr-dummy :service-c
                                    {:params   {:f1 f1v}
                                     :latency  60
                                     :response #(str "responseB-" (:f1 %))})))
 
-              :f45 (cF (when-let [f2v (:body (xhr-response (<mget me :f2)))]
+              :f45 (cF (when-let [f2v (:body (xhr-response (mget me :f2)))]
                          (cpr :building-245!!!!!!!!!!!!!!!!!!!!!!)
                          (vector
                            (xhr-dummy :service-d
@@ -569,10 +569,10 @@
                                        :response #(+ 5000 (:f2 %))}))))
 
 
-              :result (cF (when (and (every? #(<mget me %) [:f3 :f45])
-                                     (every? xhr-response (<mget me :f45)))
-                            (let [rs (concat (map #(xhr-response (<mget me %)) [:f1 :f2 :f3])
-                                             (map xhr-response (<mget me :f45)))]
+              :result (cF (when (and (every? #(mget me %) [:f3 :f45])
+                                     (every? xhr-response (mget me :f45)))
+                            (let [rs (concat (map #(xhr-response (mget me %)) [:f1 :f2 :f3])
+                                             (map xhr-response (mget me :f45)))]
                               (when (every? identity rs)
                                 (map :body rs))))))]
 
@@ -590,13 +590,13 @@
                                  {:latency  40
                                   :response 100}))
 
-              :f3 (cF (when-let [f1v (:body (xhr-response (<mget me :f1)))]
+              :f3 (cF (when-let [f1v (:body (xhr-response (mget me :f1)))]
                         (xhr-dummy :service-c
                                    {:params   {:f1 f1v}
                                     :latency  60
                                     :response #(str "responseB-" (:f1 %))})))
 
-              :f45 (cF (when-let [f2v (:body (xhr-response (<mget me :f2)))]
+              :f45 (cF (when-let [f2v (:body (xhr-response (mget me :f2)))]
                          (vector
                            (xhr-dummy :service-d
                                       {:params   {:f2 f2v}
@@ -607,10 +607,10 @@
                                        :latency  55
                                        :response #(+ 5000 (:f2 %))}))))
 
-              :result (cF (when (and (every? #(<mget me %) [:f3 :f45])
-                                     (every? xhr-response (<mget me :f45)))
-                            (let [rs (concat (map #(xhr-response (<mget me %)) [:f1 :f2 :f3])
-                                             (map xhr-response (<mget me :f45)))]
+              :result (cF (when (and (every? #(mget me %) [:f3 :f45])
+                                     (every? xhr-response (mget me :f45)))
+                            (let [rs (concat (map #(xhr-response (mget me %)) [:f1 :f2 :f3])
+                                             (map xhr-response (mget me :f45)))]
                               (when (every? identity rs)
                                 (map :body rs))))))]
 

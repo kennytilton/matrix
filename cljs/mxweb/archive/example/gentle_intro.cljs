@@ -65,7 +65,7 @@
 ;
 
 
-(ns mxweb.example.gentle-intro
+(ns tiltontec.mxweb.example.gentle-intro
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [cljs.core.async :as async :refer [put! chan <! >! close!]]
@@ -81,12 +81,12 @@
     [tiltontec.cell.observer :refer-macros [fn-obs]]
     [tiltontec.model.core
      :refer [matrix mx-par <mget mset! mxi-find  kid-values-kids] :as md]
-    [mxweb.html
+    [tiltontec.mxwebhtml
      :refer [io-read io-upsert io-clear-storage
              dom-tag tagfo tag-dom mxu-find-class
              dom-has-class dom-ancestor-by-tag]
      :as tag]
-    [mxweb.gen
+    [tiltontec.mxwebgen
      :refer-macros [section header h1 input footer p a span label ul li div button]
      :refer [dom-tag]]
     [cljs-http.client :as client]))

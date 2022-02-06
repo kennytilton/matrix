@@ -1,11 +1,11 @@
-(ns mxweb.example.gloss
+(ns tiltontec.mxweb.example.gloss
   (:require [clojure.string :as str]
             [tiltontec.cell.core :refer-macros [cF cFonce cF+] :refer [cI]]
             [tiltontec.cell.base :refer [unbound]]
             [tiltontec.model.core
              :refer [matrix mx-par mget mset! mswap! mxi-find mxu-find-name nextsib] :as md]
-            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 button input div span]]
-            [mxweb.style
+            [tiltontec.mxwebgen :refer [evt-mx target-value] :refer-macros [h1 button input div span]]
+            [tiltontec.mxwebstyle
              :refer [make-css-inline]
              :as css]))
 

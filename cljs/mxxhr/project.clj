@@ -1,6 +1,6 @@
-(defproject tiltontec/mxxhr "0.1.4-SNAPSHOT"
+(defproject tiltontec/mxxhr "0.1.5-SNAPSHOT"
   :description "XMLHttpRequest for the Matrix (dataflow library)"
-  :url "https://github.com/kennytilton/mxxhr"
+  :url "https://github.com/kennytilton/tiltontec.mxxhr"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.0"]
@@ -12,7 +12,7 @@
                  [com.cognitect/transit-cljs "0.8.264"]
                  [se.haleby/stub-http "0.2.9"]
                  [com.taoensso/tufte "2.2.0"]
-                 [tiltontec/matrix "0.1.7-SNAPSHOT"]]
+                 [tiltontec/matrix "4.1.7-SNAPSHOT"]]
   :plugins [[lein-cljsbuild "1.1.8"]
             [lein-doo "0.1.11"]]
   :doo {:paths {:rhino "lein run -m org.mozilla.javascript.tools.shell.Main"}}

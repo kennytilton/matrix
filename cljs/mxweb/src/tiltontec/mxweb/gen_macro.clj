@@ -1,7 +1,7 @@
-(ns mxweb.gen-macro
+(ns tiltontec.mxweb.gen-macro
   (:refer-clojure :exclude [map meta time])
   (:require
-    [mxweb.gen :refer [make-tag]]))
+    [tiltontec.mxweb.gen :refer [make-tag]]))
 
 (defmacro deftag [tag]
   (let [kids (gensym "kids")
@@ -11,29 +11,29 @@
        (let [~tag-name (str '~tag)]
          (cond
            (nil? ~vargs)
-           `(mxweb.gen/make-tag ~~tag-name {} {} nil)
+           `(tiltontec.mxweb.gen/make-tag ~~tag-name {} {} nil)
 
            (map? (first ~vargs))
            (cond
              (map? (second ~vargs))
-             `(mxweb.gen/make-tag ~~tag-name ~(first ~vargs) ~(second ~vargs)
+             `(tiltontec.mxweb.gen/make-tag ~~tag-name ~(first ~vargs) ~(second ~vargs)
                 ~(when-let [~kids (seq (nthrest ~vargs 2))]
                    `(tiltontec.model.core/cFkids ~@~kids)))
 
-             :default `(mxweb.gen/make-tag
+             :default `(tiltontec.mxweb.gen/make-tag
                          ~~tag-name ~(first ~vargs)
                          {}
                          ~(when-let [~kids (seq (nthrest ~vargs 1))]
                             `(tiltontec.model.core/cFkids ~@~kids))))
 
-           :default `(mxweb.gen/make-tag
+           :default `(tiltontec.mxweb.gen/make-tag
                        ~~tag-name {} {}
                        (tiltontec.model.core/cFkids ~@~vargs)))))))
 
 #_(defmacro deftag [tag]
     `(defmacro ~tag [& vargs#]
        (let [tag-name# (str '~tag)]
-         `(mxweb.gen/make-tag
+         `(tiltontec.mxweb.gen/make-tag
             tag-name# {} {}
             (tiltontec.model.core/cFkids ~@vargs#)))))
 

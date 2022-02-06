@@ -1,4 +1,4 @@
-(ns mxweb.widget
+(ns tiltontec.mxweb.widget
   (:require
     [goog.events.Event :as event]
 
@@ -10,9 +10,9 @@
              fget mxi-find mxu-find-type
              kid-values-kids] :as md]
 
-    [mxweb.gen-macro
+    [tiltontec.mxweb.gen-macro
      :refer-macros [section header h1 input footer p a span label ul li div button br]]
-    [mxweb.gen
+    [tiltontec.mxweb.gen
      :refer [make-tag evt-mx]]))
 
 (defn tag-checkbox

@@ -1,4 +1,4 @@
-(ns mxweb.example.flux-challenge
+(ns tiltontec.mxweb.example.flux-challenge
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [now pln]]
             [tiltontec.cell.base :refer [unbound]]
@@ -9,9 +9,9 @@
              :refer-macros [with-par]
              :refer [matrix mx-par mget mset! mxi-find mxu-find-name mxu-find-type
                      kid-values-kids] :as md]
-            [mxweb.gen :refer [evt-mx target-value]
+            [tiltontec.mxwebgen :refer [evt-mx target-value]
              :refer-macros [h1 h3 h6 input div section button ul li]]
-            [mxweb.html
+            [tiltontec.mxwebhtml
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
                      mxu-find-tag mxu-find-class

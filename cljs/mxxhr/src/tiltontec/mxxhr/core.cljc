@@ -1,4 +1,4 @@
-(ns mxxhr.core
+(ns tiltontec.mxxhr.core
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
@@ -61,7 +61,7 @@
 
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [<mget fasc fm! make md-reset! mswap!> backdoor-reset!
+     :refer [mget fasc fm! make md-reset! mswap! backdoor-reset!
              mx-par]
      :as md]
 
@@ -117,7 +117,7 @@
 
 (defn xhr-send [xhr]
 
-  (let [uri (<mget xhr :uri)]
+  (let [uri (mget xhr :uri)]
     ;(prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
     (#?(:clj alter :cljs swap!) xhr assoc :send-time (now))
 
@@ -182,30 +182,30 @@
 
 (defn xhr-status [xhr]
   (assert-xhr xhr :xhrstatus)
-  (or (:status (<mget xhr :response))
+  (or (:status (mget xhr :response))
       :no-response-yet))
 
 (defn xhr-ok-body [xhr]
   (assert-xhr xhr :ok-body)
-  (when-let [r (<mget xhr :response)]
+  (when-let [r (mget xhr :response)]
     (when (= 200 (:status r))
       (:body r))))
 
 (defn xhr-error [xhr]
   (assert-xhr xhr :xhr-error)
-  (when-let [r (<mget xhr :response)]
+  (when-let [r (mget xhr :response)]
     (when (not= 200 (:status r))
       (:body r))))
 
 (defn xhr-response [xhr]
-  (assert-xhr xhr :reesponse)
-  ;;(println :xresp-sees (<mget xhr :uri)(<mget xhr :status))
-  (<mget xhr :response))
+  (assert-xhr xhr :response)
+  (println :xresp-sees (mget xhr :uri)(mget xhr :status))
+  (mget xhr :response))
 
 (defn xhr-selection [xhr]
   (assert-xhr xhr :selection)
-  ;;(println :xresp-sees (<mget xhr :uri)(<mget xhr :status))
-  (<mget xhr :selection))
+  ;;(println :xresp-sees (mget xhr :uri)(mget xhr :status))
+  (mget xhr :selection))
 
 (defn make-xhr
   ([uri]
@@ -214,15 +214,15 @@
   ([uri attrs]
    (assert (string? uri) (str "param uri <" uri "> not a string"))
    (let [xhr (apply make
-                    :type :mxxhr.core/xhr
+                    :type :tiltontec.mxxhr.core/xhr
                     :id (swap! +xhr-sid+ inc)               ;; debug aid
                     :uri uri
                     :response (cI nil)
                     :select nil
                     :body-parser (:body-parser attrs #(#?(:clj parse-json$ :cljs identity) %))
                     :selection (cF (when-let [b (xhr-ok-body me)]
-                                     ;; (pln :sel-sees-body!! (<mget me :select) b)
-                                     (if-let [ks (<mget me :select)]
+                                     ;; (pln :sel-sees-body!! (mget me :select) b)
+                                     (if-let [ks (mget me :select)]
                                        (select-keys b ks)
                                        b)))
                     (vec (apply concat (seq (dissoc attrs :body-parser)))))]
@@ -237,7 +237,7 @@
             (.abort xhr))))
 
 ;; (* 7 17 103 10163)
-(defmethod not-to-be [:mxxhr.core/xhr] [me]
+(defmethod not-to-be [:tiltontec.mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
   ;; (println :not-to-be-xhr!!!!!!! me)
 
@@ -266,7 +266,7 @@
                          :send? true
                          :timeout 5000} attrs))))
 
-(defmethod observe [:kids :mxxhr.core/xhr] [_ me newv oldv _]
+(defmethod observe [:kids :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
   ;;
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
@@ -283,7 +283,7 @@
         :default                                            ;; try to cancel?
         (pln :ignoring-new-kid-xhrs!!!!!!! #_ newv)))))
 
-(defmethod observe [:send? :mxxhr.core/xhr] [_ me newv oldv _]
+(defmethod observe [:send? :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
   ;;(println :observing-xhr!!!! newv (:uri @me))
   (when newv
     ;;;(println :send?-observer-sending-xhr!!!!!!!!!!!!!)
@@ -303,7 +303,7 @@
 
 (defn xhr-to-map [xhr]
   (case (type xhr)
-    :smxxhr.core/xhr
+    :tiltontec.mxxhr.core/xhr
     (xhr-name-to-map xhr)
 
     :tiltontec.model.core/family
@@ -336,7 +336,7 @@
 (defn xhrfo [xhr]
   (assert-xhr xhr :xhrfo)
   [(xhr-status-key xhr)
-   (<mget xhr :uri)])
+   (mget xhr :uri)])
 
 (defn xhr-await
   ([xhr] (xhr-await xhr 3))
@@ -385,7 +385,7 @@
                (send-xhr id uri
                          {:body-parser identity}))]
      (when (or (not resolve?)
-               (<mget xhr :response))
+               (mget xhr :response))
        xhr))))
 
 ;;; --- util ------------------------------
@@ -404,7 +404,7 @@
        (err "assert-xhr> not any-ref?" (type tag) tag))
 
      (not= (ia-type xhr) ::xhr)
-     (err "assert-xhr> xhr ref not type xhr" (type xhr) tag)
+     (err "assert-xhr> xhr ref not type xhr" :actual-iatype (ia-type xhr) :clj-type (type xhr) tag)
 
      :default xhr)))
 
@@ -440,18 +440,18 @@
        (md/make ::poller
          :re-poll (cI 0)
          :re-poll-test re-poll-test
-         :xhr (cF (when (<mget me :re-poll)
+         :xhr (cF (when (mget me :re-poll)
                     (send-xhr :get-running final-uri)))
          :response (cF+ [:obs (fn-obs
                                 (when ((:re-poll-test @me) new)
                                   #?(:cljs (js/setTimeout
                                              #(with-cc
-                                                (mswap!> me :re-poll inc)) re-poll-after)
+                                                (mswap! me :re-poll inc)) re-poll-after)
                                      :clj (go
                                             (<! (timeout re-poll-after))
                                             #(with-cc
-                                               (mswap!> me :re-poll inc))))))]
-                     (if-let [body (xhr?-ok-body (<mget me :xhr))]
+                                               (mswap! me :re-poll inc))))))]
+                     (if-let [body (xhr?-ok-body (mget me :xhr))]
                        (do
                          (merge {:when (now)} body))
                        (when-bound cache))))))))

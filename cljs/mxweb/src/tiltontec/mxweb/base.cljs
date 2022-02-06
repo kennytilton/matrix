@@ -1,4 +1,4 @@
-(ns mxweb.base
+(ns tiltontec.mxweb.base
   (:require [tiltontec.util.base :refer [type-cljc]]))
 
 (defn tag? [me]

@@ -16,9 +16,9 @@
                  [cheshire "5.8.0"]
                  [com.taoensso/tufte "1.1.2"]
                  ;; todo bring up to date
-                 [com.tiltontec/matrix "0.1.3-SNAPSHOT"]
-                 [com.tiltontec/xhr "0.1.1-SNAPSHOT"]
-                 [com.tiltontec/webmx "0.1.0-SNAPSHOT"]]
+                 [tiltontec/matrix "4.1.7-SNAPSHOT"]
+                 [tiltontec/mxxhr "0.1.5-SNAPSHOT"]
+                 [tiltontec/mxweb "0.2.0-SNAPSHOT"]]
 
   :source-paths ["src"]
 

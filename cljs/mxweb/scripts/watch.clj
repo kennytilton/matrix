@@ -2,5 +2,5 @@
 
 (b/watch "src"
   {:main 'mxweb.core
-   :output-to "out/mxweb.js"
+   :output-to "out/tiltontec.mxweb.js"
    :output-dir "out"})

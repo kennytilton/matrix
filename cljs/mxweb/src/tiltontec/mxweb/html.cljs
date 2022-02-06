@@ -1,4 +1,4 @@
-(ns mxweb.html
+(ns tiltontec.mxweb.html
   (:require
     [clojure.string :as str]
     [clojure.walk :refer [stringify-keys]]
@@ -13,7 +13,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
-    [mxweb.style
+    [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
     [goog.dom :as dom]
@@ -197,7 +197,7 @@
               (.setAttribute dom (name slot) newv))))
 
         (+inline-css+ slot)
-        (throw (js/Error. (str "mxweb obs sees oldskool style: " slot)))))))
+        (throw (js/Error. (str "tiltontec.mxweb obs sees oldskool style: " slot)))))))
 
 ;;; --- local storage ------------------------
 
@@ -250,7 +250,7 @@
   (doseq [key (io-find key-prefix)]
     (io-delete key)))
 
-;;; ---- mxweb-specific utilities ----------------------------------------------
+;;; ---- tiltontec.mxweb-specific utilities ----------------------------------------------
 
 (defn input-editing-start [dom initial-value]
   (form/setValue dom initial-value)

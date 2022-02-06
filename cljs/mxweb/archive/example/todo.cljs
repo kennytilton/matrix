@@ -1,4 +1,4 @@
-(ns mxweb.example.todo
+(ns tiltontec.mxweb.example.todo
   (:require
     [clojure.string :as str]
     [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]
@@ -8,7 +8,7 @@
     [tiltontec.cell.observer :refer [observe-by-type]]
     [tiltontec.model.core :as md :refer [make mget mset!]]
     [tiltontec.util.core :as util :refer [pln now map-to-json json-to-map uuidv4]]
-    [mxweb.html :refer [io-upsert io-read io-find io-truncate]]))
+    [tiltontec.mxwebhtml :refer [io-upsert io-read io-find io-truncate]]))
 
 ;;; FYI: every other implementation I looked at stores all Todos as a single blob in
 ;;; localStorage. The TodoMVC spec does not require anything more, but it seems
