@@ -12,7 +12,13 @@ Here is our road map, absent requests for specific implementations for evaluatio
 * a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
 * ...reference-style documentation as needed;
 * the same for Javascript;
-* the same for CLJS React Natuve.
+* the same for CLJS React Native.
+
+Some new/recommended content:
+* A [tl;dr overview](https://github.com/kennytilton/matrix/wiki/introduction) suited to the reactive cognoscenti.
+* Perhaps the best wrtie-up so far, in the context of [TodoMVC](https://github.com/kennytilton/mxtodomvc).
+* A live write-up of a [quotations caraousel](https://tilton.medium.com/simplejx-aweb-un-framework-e9b59c12dcff) using the JS ver
+* Live, production examples of the JS+HTML Matrix, [AskHN Who's Hiring](https://kennytilton.github.io/whoishiring/) and Common Lisp Cells+Qooxdoo, [Tilton's Algebra](http://tiltontec.com/).
 
 
 Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
