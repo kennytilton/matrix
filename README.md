@@ -1,10 +1,10 @@
 ![Matrix cell culture](images/mx-banner-red.jpg)
 
-Welcome to the "mono" repo for Matrix, the generic, point-to-point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) over twenty years ago.
+Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) over twenty years ago.
 
 This repo contains:
-* Clojure/ClJS version
-* a JavaScriot version
+* Clojure/ClJS version;
+* a JavaScriot version;
 * wrappers at various stages of development for HTML/CSS, ReactJS, and ReactNative; and
 * wrappers for XHR and localStorage, with more to come.
 
@@ -12,7 +12,7 @@ Here is our road map, absent requests for specific implementations for evaluatio
 * a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
 * ...reference-style documentation as needed;
 * the same for Javascript;
-* the same for CLJS React Native.
+* the same for CLJS ReactNative.
 
 Some new/recommended content:
 * A [tl;dr overview](https://github.com/kennytilton/matrix/wiki/introduction) suited to the reactive cognoscenti.
@@ -20,8 +20,7 @@ Some new/recommended content:
 * A live write-up of a [quotations caraousel](https://tilton.medium.com/simplejx-aweb-un-framework-e9b59c12dcff) using the JS ver
 * Live, production examples of the JS+HTML Matrix, [AskHN Who's Hiring](https://kennytilton.github.io/whoishiring/) and Common Lisp Cells+Qooxdoo, [Tilton's Algebra](http://tiltontec.com/).
 
-
-Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
+Watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
 
 # Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
