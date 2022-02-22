@@ -14,10 +14,10 @@
              :refer []]
 
 
-            [tiltontec.model.core :refer [matrix mx-par <mget mset!> mswap!>
+            [tiltontec.model.core :refer [matrix mx-par mget mset! mswap!
                                           fget mxi-find mxu-find-type
                                           kid-values-kids] :as md]
-            [tiltontec.webmx.html
+            [tiltontec.mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
                      mxu-find-tag mxu-find-class
@@ -25,17 +25,18 @@
                      dom-has-class dom-ancestor-by-tag]
              :as tag]
 
-            [tiltontec.xhr
+            [tiltontec.mxxhr.core
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
 
-            [tiltontec.webmx.gen
-             :refer-macros [section header h1 input footer p a
-                            span label ul li div button br]
-             :refer [dom-tag evt-tag]]
+            [tiltontec.mxweb.gen-macro
+             :refer-macros [section header h1 input footer p a span label ul li div button br]]
 
-            [tiltontec.webmx.style :refer [make-css-inline]]
+            [tiltontec.mxweb.gen
+             :refer [dom-tag evt-mx]]
+
+            [tiltontec.mxweb.style :refer [make-css-inline]]
 
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]
@@ -57,11 +58,11 @@
 
 (defn rx-list-item [me rx matrix]
   (let [ul-tag me]
-    (li {:class   (cF [(when (<mget me :selected?) "chosen")
-                       (when (<mget me :editing?) "editing")
+    (li {:class   (cF [(when (mget me :selected?) "chosen")
+                       (when (mget me :editing?) "editing")
                        (when (rx-completed rx) "completed")])
 
-         :display (cF (if-let [route (<mget matrix :route)]
+         :display (cF (if-let [route (mget matrix :route)]
                         (cond
                           (or (= route "All")
                             (xor (= route "Active")
@@ -72,7 +73,7 @@
       {:rx        rx
        ;; above is also key to identify lost/gained LIs, in turn to optimize list maintenance
 
-       :selected? (cF (some #{rx} (<mget ul-tag :selections)))
+       :selected? (cF (some #{rx} (mget ul-tag :selections)))
 
        :editing?  (cI false)}
 
@@ -83,13 +84,13 @@
                    :onclick #(rx-toggle-completed! rx)})
 
            (label {:onclick    (fn [evt]
-                                 (mswap!> ul-tag :selections
+                                 (mswap! ul-tag :selections
                                    #(if (some #{rx} %)
                                       (remove #{rx} %)
                                       (conj % rx))))
 
                    :ondblclick #(do
-                                  (mset!> rx-li :editing? true)
+                                  (mset! rx-li :editing? true)
                                   (tag/input-editing-start
                                     (dom/getElementByClass "edit" (tag-dom rx-li))
                                     (rx-title rx)))}
@@ -110,12 +111,12 @@
 
 (defn rx-edit [e rx-li]
   (let [edt-dom (.-target e)
-        rx (<mget rx-li :rx)
+        rx (mget rx-li :rx)
         li-dom (tag-dom rx-li)]
 
     (when (classlist/contains li-dom "editing")
       (let [title (str/trim (form/getValue edt-dom))
-            stop-editing #(mset!> rx-li :editing? false)]
+            stop-editing #(mset! rx-li :editing? false)]
         (cond
           (or (= (.-type e) "blur")
             (= (.-key e) "Enter"))
@@ -123,7 +124,7 @@
             (stop-editing)                                  ;; has to go first cuz a blur event will sneak in
             (if (= title "")
               (rx-delete! rx)
-              (mset!> rx :title title)))
+              (mset! rx :title title)))
 
           (= (.-key e) "Escape")
           ;; this could leave the input field with mid-edit garbage, but
@@ -140,7 +141,7 @@
                             (let [db$ (tmc/to-string (tmc/from-long due-by))]
                               (subs db$ 0 10))))
 
-          :oninput   #(mset!> rx :due-by
+          :oninput   #(mset! rx :due-by
                         (tmc/to-long
                           (tmc/from-string
                             (form/getValue (.-target %)))))
@@ -158,7 +159,7 @@
                                                        (if-let [due (rx-due-by rx)]
                                                          (if (rx-completed rx)
                                                            cache ;; cF expansion has cache (prior value) in lexical scope
-                                                           (let [time-left (- due (<mget clock :clock))]
+                                                           (let [time-left (- due (mget clock :clock))]
                                                              (cond
                                                                (neg? time-left) "red"
                                                                (< time-left (* 24 3600 1000)) "coral"
@@ -177,9 +178,11 @@
 (defn ae-explorer [rx]
   (button {:class   "li-show"
            :style   (cF (str "display:"
-                          (or (when-let [xhr (<mget me :ae)]
+                          (or (when-let [xhr (mget me :ae)]
+                                (prn :bam-got-xhr!!!!!!!! xhr)
                                 (let [aes (xhr-response xhr)]
                                   (when (= 200 (:status aes))
+                                    (prn :aes-found-200! aes)
                                     "block")))
                             "none")))
            :onclick #(js/alert "Feature not yet implemented.")}
@@ -188,7 +191,8 @@
                       (when-not (or (= old unbound) (nil? old))
                         (not-to-be old))
                       (println :new-ae? new))]
-           (when (<mget (mxu-find-class me "ae-autocheck") :on?)
+           (when (mget (mxu-find-class me "ae-autocheck") :on?)
+             (prn :auto-check-on!!!!!!!!)
              (println :ae-auto-check! (rx-title rx))
              (println :url (pp/cl-format nil ae-by-brand
                              (js/encodeURIComponent (rx-title rx))))
@@ -197,7 +201,8 @@
                {:name name :send? true})))
      :aeresponse (cF+ [:obs (fn-obs
                               (println :newresponse new))]
-                   (when-let [lookup (<mget me :ae)]
+                   (when-let [lookup (mget me :ae)]
+                     (prn :lookup!!!!!!!! lookup)
                      (xhr-response lookup)))
      }
 

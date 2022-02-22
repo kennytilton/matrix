@@ -1,9 +1,9 @@
-(ns mxweb.example.ticktock
+(ns tiltontec.mxweb.example.ticktock
   (:require [clojure.string :as str]
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
-            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 input div span]]))
+            [tiltontec.mxwebgen :refer [evt-mx target-value] :refer-macros [h1 input div span]]))
 
 (declare clock time-color color-input)
 

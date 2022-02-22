@@ -1,4 +1,4 @@
-(ns mxweb.example.todomx-list-item
+(ns tiltontec.mxweb.example.todomx-list-item
   (:require [cljs.pprint :as pp]
             [clojure.string :as str]
             [bide.core :as r]
@@ -17,7 +17,7 @@
             [tiltontec.model.core :refer [matrix mx-par mget mset!
                                           fget mxi-find mxu-find-class mxu-find-type
                                           kid-values-kids] :as md]
-            [mxweb.html
+            [tiltontec.mxwebhtml
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
                      mxu-find-tag mxu-find-class
@@ -30,11 +30,11 @@
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
 
-            [mxweb.gen
+            [tiltontec.mxwebgen
              :refer-macros [section header h1 input footer p a span label ul li div button br]
              :refer [dom-tag evt-mx]]
 
-            [mxweb.style :refer [make-css-inline]]
+            [tiltontec.mxwebstyle :refer [make-css-inline]]
 
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]
@@ -43,7 +43,7 @@
             [goog.events.Event :as event]
             [goog.dom.forms :as form]
 
-            [mxweb.example.todo
+            [tiltontec.mxwebexample.todo
              :refer [make-todo td-title td-created bulk-todo
                      td-completed td-due-by td-upsert td-delete! load-all
                      td-id td-toggle-completed!]]

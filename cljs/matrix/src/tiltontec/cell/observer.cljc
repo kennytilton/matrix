@@ -36,8 +36,6 @@
 (def +observe-default-handler+ (atom nil))
 
 (defmethod observe :default [slot me new-val old-val c]
-  #_ (println :obs-fallthru slot (:tag @me) new-val)
-
   (if-let [obs @+observe-default-handler+]
     (do ;; (println :app-def-obs-hanler!!!)
         (obs slot me new-val old-val c))
@@ -68,16 +66,11 @@ call parameters: slot, me, new, old, and c."
   ([c why]
    (c-observe c unbound why))
   ([c prior-value why]
-   ;; (trx :cobs-3 (c-slot c) why)
    (assert (c-ref? c))
    (assert (integer? @+pulse+))
    (rmap-setf [:pulse-observed c] @+pulse+)
-   #_
-   (if-let [me (c-model c)]
-     (pme :c-observe!!!! (c-slot c) why @+pulse+ (nil? (:obs @c)))
-     (trx :c-observe-no-me!!!! (c-slot c) why @+pulse+ (nil? (:obs @c))))
-   ;;(trx :c-obs-value! #_ why (c-slot c) #_ (c-model c) (c-value c) ) ;; prior-value c)
-   ((or (:obs @c) observe)
-    (c-slot c)(c-model c)(c-value c) prior-value c)))
+   (observe (c-slot c)(c-model c)(c-value c) prior-value c)
+   (when-let [cell-observer (:obs @c)]
+     (cell-observer (c-slot c)(c-model c)(c-value c) prior-value c))))
 
 

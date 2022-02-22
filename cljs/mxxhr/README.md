@@ -1,4 +1,4 @@
-# xhr
+# mxXHR
 
 A Clojure/Clojurescript library providing [Matrix](https://github.com/kennytilton/matrix)-aware XMLHttpRequests.
 

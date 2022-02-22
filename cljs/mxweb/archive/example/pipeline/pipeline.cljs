@@ -1,4 +1,4 @@
-(ns mxweb.example.pipeline.pipeline
+(ns tiltontec.mxweb.example.pipeline.pipeline
   (:require-macros
              [cljs.core.async.macros :as m :refer [go alt!]])
 

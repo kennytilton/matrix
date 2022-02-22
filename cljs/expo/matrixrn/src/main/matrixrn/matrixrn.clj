@@ -22,18 +22,15 @@
        ~@body)))
 
 (defmacro strng [textFormulaBody]
-  ;; todo this is dumb. we want to supply a string to a Text so
-  ;; we create Text with a string child
+  ;; we create Text with a string child, but one potentially reactive
   (let [content-kwd (keyword (gensym "content"))]
     `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
        :name (gensym "strng")
        :sid (swap! matrixrn.matrixrn/sid-latest inc)
        ~content-kwd (tiltontec.cell.core/cF ~textFormulaBody)
        :react-element (tiltontec.cell.core/cF
-                        ;; todo better key
                         (react/createElement
                           (matrixrn.matrixrn/component-with-hooks
-                            (prn :strng-rendering (tiltontec.model.core/mget ~'me :sid))
                             (react/createElement rn/Text
                               (cljs.core/clj->js {:key (rand-int 9999)}) {}
                               (tiltontec.model.core/mget ~'me ~content-kwd))))))))
@@ -47,7 +44,6 @@
      ~static-props))
 
 (defmacro mk [node-type mx-props jsx-props & kids]
-  ;; todo fancier macrology
   `(tiltontec.model.core/make :matrixrn.matrixrn/matrixrn.elt
      :sid (swap! matrixrn.matrixrn/sid-latest inc)
      ~@(when (seq kids)
@@ -55,7 +51,7 @@
      :react-element (tiltontec.cell.core/cF
                       (react/createElement
                         (matrixrn.matrixrn/component-with-hooks
-                          (prn :mk-rendering (tiltontec.model.core/mget ~'me :sid)
+                          #_ (prn :mk-rendering (tiltontec.model.core/mget ~'me :sid)
                             (tiltontec.model.core/mget ~'me :name))
                           (apply react/createElement ~node-type
                             (cljs.core/clj->js (merge

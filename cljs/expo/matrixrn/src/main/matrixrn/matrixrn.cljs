@@ -13,15 +13,33 @@
              fget mxi-find mxu-find-type
              fm-kids-observe kid-values-kids] :as md]
     [applied-science.js-interop :as j]
-    ; import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-    ; mess go back to managed expo ["@react-navigation/material-bottom-tabs" :as material-bottom-tabs]
+    [react]
     ["@react-navigation/bottom-tabs" :as rn-bottom-tabs]))
+
+(def <> react/createElement)
 
 (def sid-latest (atom 0))
 (def rendering-sid-latest (atom 0))
 
-;; apparently we call a function to get an object of components
-;; keyed Navigator, Screen, et al. Usage: (let
+; If the JS doc looks like this:
+;
+; import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+;
+;const Tab = createBottomTabNavigator();
+;
+;function MyTabs() {
+;  return (
+;    <Tab.Navigator>
+;      <Tab.Screen name="Home" component={HomeScreen} />
+;      <Tab.Screen name="Settings" component={SettingsScreen} />
+;    </Tab.Navigator>
+;  );
+;}
+; ... apparently we call a function to get an object of components
+;; keyed Navigator, Screen, et al. Methinks this is because the
+;; function createBottomTabNavigator takes parameters for runtime
+;; customization.
+
 (defonce Tab (js->clj
                (rn-bottom-tabs/createBottomTabNavigator)
                :keywordize-keys true))
@@ -48,10 +66,10 @@
 
 (def ssdict (atom {}))
 (defn set-state-record [me setter]
-  (prn :recording-new-set-state (mget me :sid))
+  ;;(prn :recording-new-set-state (mget me :sid))
   (swap! ssdict assoc (mget me :sid) setter))
 (defn set-state-unrecord [me]
-  (prn :setstate-unrecord (mget me :sid))
+  ;;(prn :setstate-unrecord (mget me :sid))
   (swap! ssdict dissoc (mget me :sid)))
 
 (def refdict (atom {}))
@@ -60,7 +78,7 @@
 (defn ref-get [me]
   (get @refdict (mget me :sid)))
 (defn ref-unrecord [me]
-  (prn :refunrecord (mget me :sid))
+  ;;(prn :refunrecord (mget me :sid))
   (swap! refdict dissoc (mget me :sid)))
 
 (defn fm*
@@ -73,26 +91,20 @@
      :must? must-find?)))
 
 (defmethod not-to-be [:matrixrn.matrixrn/matrixrn.elt] [me]
-  ;; todo: worry about leaks
-  (prn :not-to-be-entry!!!! me)
+  ;; normally called by kids observer, but we shadow that
+  ;;(prn :not-to-be-entry!!!! me)
   (set-state-unrecord me)
-  (ref-unrecord me) ;; un-hhack
+  (ref-unrecord me)
   (doseq [k (:kids @me)]
     (when (md-ref? k)
       (not-to-be k)))
   (not-to-be-self me))
 
-;(defmethod not-to-be-self [:matrixrn.matrixrn/matrixrn.elt] [me]
-;  ;; todo: worry about leaks
-;  (prn :MATRIX-not-to-be-entry!!!! me)
-;  (set-state-unrecord ~'me)
-;  (ref-unrecord ~'me))
-
 (defn state-hook-set! [me slot]
   (if-let [sid (mget me :sid)]
     (if-let [set-state-fn (get @ssdict sid)]
       (do ;; try hhack
-        (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
+        #_ (prn :shs-sets-state!!!!! :sid sid :pulse (pulse-now) :slot slot (mget me :name)
           (mdead? me) (ia-type me) #_#_ :meta (meta me))
         (set-state-fn (pulse-now)))
       (prn :shs-no-state-fn!!! (mget me :name) sid))
@@ -102,12 +114,6 @@
   ; (prn :obs-type-matrixrn-elt-entry slot (mget me :name)(mget me :sid))
   (when (not= oldv unbound)
     ;; ^^^ observe forced anyway on new cells, when (= oldv unbound), so do not bother
-    (when (= slot :kids)
-      ;; we need PROGN method combo. Right now this method shadows the :kids observer.
-      ;; We jury rig in the call-next-method, but todo true solution needed
-      (prn :obsing-kids!!!!!!!!! slot (mget me :name)(mget me :sid))
-      (fm-kids-observe me newv oldv cell))
-    ;; todo check for per-cell observers and execute
-    (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
+    #_ (prn :obs-by-type-setting-state slot (mget me :name)(mget me :sid) #_ (meta me) (mdead? me))
     (state-hook-set! me slot)))
 

@@ -15,22 +15,24 @@
 
             [tiltontec.model.core
              :refer-macros [with-par]
-             :refer [matrix mx-par <mget mset!> mswap!>
+             :refer [matrix mx-par mget mset! mswap!
                      fget mxi-find mxu-find-type
                      kid-values-kids] :as md]
-            [tiltontec.webmx.html
+            [tiltontec.mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
                      dom-tag tagfo tag-dom mxu-find-class
                      dom-has-class dom-ancestor-by-tag]
              :as tag]
 
-            [tiltontec.webmx.gen
-             :refer-macros [section header h1 input footer p a span label ul li div button br]
-             :refer [dom-tag evt-tag]]
+            [tiltontec.mxweb.gen-macro
+             :refer-macros [section header h1 input footer p a span label ul li div button br]]
 
-            [tiltontec.webmx.style :refer [make-css-inline]]
-            [tiltontec.webmx.widget :refer [tag-checkbox]]
+            [tiltontec.mxweb.gen
+             :refer [make-tag dom-tag evt-mx]]
+
+            [tiltontec.mxweb.style :refer [make-css-inline]]
+            [tiltontec.mxweb.widget :refer [tag-checkbox]]
 
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]
@@ -93,7 +95,7 @@
                        ["/completed" :Completed]])
     {:default     :ignore
      :on-navigate (fn [route params query]
-                    (mset!> @matrix :route (name route)))}))
+                    (mset! @matrix :route (name route)))}))
 
 ;;; --- the landing page -------------------------------
 
@@ -140,7 +142,7 @@
                                    rxs (mx-rxs)]
                                (when-not (= title "")
                                  (do                        ;; tufte/p ::growrx
-                                   (mswap!> rxs :items-raw
+                                   (mswap! rxs :items-raw
                                      #(conj % (make-rx {:title title})))))
                                (form/setValue (.-target evt) "")))))}))
 
@@ -148,7 +150,7 @@
 
 (defn rx-list-items []
   (section {:class  "main"
-            :hidden (cF (<mget (mx-rxs me) :empty?))}
+            :hidden (cF (mget (mx-rxs me) :empty?))}
 
     (toggle-all)
 
@@ -160,12 +162,12 @@
 
       {:selections  (cI nil)
        :kid-values  (cF (sort-by rx-created
-                          (<mget (mx-rxs me)
+                          (mget (mx-rxs me)
                             (case (mx-route me)
                               "All" :items
                               "Completed" :items-completed
                               "Active" :items-active))))
-       :kid-key     #(<mget % :rx)
+       :kid-key     #(mget % :rx)
        :kid-factory (fn [me rx]
                       (rx-list-item me rx (mx-find-matrix me)))}
 
@@ -183,21 +185,21 @@
     (input {:id        "toggle-all"
             :class     "toggle-all"
             ::tag/type "checkbox"
-            :checked   (cF (= (<mget (mx-par me) :action) :uncomplete))})
+            :checked   (cF (= (mget (mx-par me) :action) :uncomplete))})
 
     (label {:for     "toggle-all"
             ;; a bit ugly: handler below is not in kids rule of LABEL, so 'me' is the DIV, not the LABEL.
-            :onclick #(let [action (<mget me :action)]
+            :onclick #(let [action (mget me :action)]
                         (event/preventDefault %)            ;; else browser messes with checked, which we handle
                         (doseq [td (mx-rx-items)]
-                          (mset!> td :completed (when (= action :complete) (now)))))}
+                          (mset! td :completed (when (= action :complete) (now)))))}
       "Mark all as complete")))
 
 ;; --- dashboard -------------------------------------
 
 (defn dashboard-footer []
   (footer {:class  "footer"
-           :hidden (cF (<mget (mx-rxs me) :empty?))}
+           :hidden (cF (mget (mx-rxs me) :empty?))}
 
     (span {:class   "todo-count"
            :content (cF (pp/cl-format nil "<strong>~a</strong>  item~:P remaining"
@@ -214,7 +216,7 @@
                  label))))
 
     (button {:class   "clear-completed"
-             :hidden  (cF (empty? (<mget (mx-rxs me) :items-completed)))
+             :hidden  (cF (empty? (mget (mx-rxs me) :items-completed)))
              :onclick #(doseq [td (filter rx-completed (mx-rx-items))]
                          (rx-delete! td))}
       "Clear completed")))
@@ -226,17 +228,17 @@
     (div {:class   "std-clock"
           :content (cF (subs (.toDateString
                                (js/Date.
-                                 (<mget me :clock)))
+                                 (mget me :clock)))
                          4))
           :onclick #(do (reset! steps 60)
-                        (mset!> (evt-tag %) :clock (now)))
+                        (mset! (evt-mx %) :clock (now)))
           }
       {:clock  (cI (now))
        :ticker (cFonce (js/setInterval
                          #(when (pos? (swap! steps dec))
                             (let [time-step (* 12 3600 1000)
-                                  w (<mget me :clock)]
-                              (mset!> me :clock (+ w time-step))))
+                                  w (mget me :clock)]
+                              (mset! me :clock (+ w time-step))))
                          1000))})))
 
 ;; --- AE autocheck -----------------------
@@ -254,8 +256,8 @@
     (let [fc (name class)]
       (println :my-find-seeking fc)
       (fget (fn [mx]
-              (let [mc (<mget mx :class)]
-                (println (<mget mx :tag) :mc mc)
+              (let [mc (mget mx :class)]
+                (println (mget mx :tag) :mc mc)
                 (= fc mc)))
         where :me? false :up? true))))
 
@@ -266,8 +268,8 @@
                               :margin "24px"
                               :display (cF (let [ul (mxu-find-class (:tag @me) "todo-list")]
                                              (assert ul)
-                                             ;;(println :sellll (<mget ul :selections))
-                                             (if (> (count (<mget ul :selections)) 1)
+                                             ;;(println :sellll (mget ul :selections))
+                                             (if (> (count (mget ul :selections)) 1)
                                                "block" "none")))
                               :display "block"))
            :onclick #(js/alert "Feature not yet implemented.")}
@@ -280,7 +282,7 @@
 ;; --- convenient accessors ---------------------
 
 (defn mx-route [mx]
-  (<mget (mx-find-matrix mx) :route))
+  (mget (mx-find-matrix mx) :route))
 
 (defn mx-rxs
   "Given a node in the matrix, navigate to the root and read the rxs. After
@@ -288,18 +290,18 @@
   and find the matrix in @matrix. The no-arg variant is offered as a dubious
   dev convenience (dubious since it adds the burden of knowing where one can
   safely assume the matrix atom has been loaded)."
-  ([] (<mget @matrix :rxs))
+  ([] (mget @matrix :rxs))
 
   ([mx]
    (if (nil? mx)
      (mx-rxs)
      (let [mtrx (mx-find-matrix mx)]
        (assert mtrx (str "mx-rxs not finding matrix from " (tagfo mx)))
-       (<mget mtrx :rxs)))))
+       (mget mtrx :rxs)))))
 
 (defn mx-rx-items
   ([] (mx-rx-items nil))
-  ([mx] (<mget (mx-rxs mx) :items)))
+  ([mx] (mget (mx-rxs mx) :items)))
 
 (defn mx-find-matrix [mx]
   (mxu-find-type mx ::rxApp))

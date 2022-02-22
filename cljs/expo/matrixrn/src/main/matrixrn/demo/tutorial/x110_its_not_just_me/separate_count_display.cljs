@@ -5,7 +5,8 @@
     [tiltontec.model.core :refer [mget mswap!]]
     [react]
     [react-native :as rn]
-    [matrixrn.matrixrn :as mxn :refer [mku fmu mk with-props]]))
+    [matrixrn.matrixrn :as mxn :refer [<> mku fmu mk with-props]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 ;; We introduce 'fmu', short:
 ;;    for "search [f]amily (the Matrix, in fact)
@@ -23,7 +24,10 @@
 
 (defn solution []
   (mku mxn/Screen {}
-    {:name "Separate count display"}
+    {:name "Hello, Separate Count."
+     :options   {:tabBarLabel "Sep Count"
+                 :tabBarIcon  (fn []
+                                (<> FontAwesome (clj->js {:name "users" :size 28})))}}
     (mk rn/View {}
       {:style {:flex            1
                :padding         48

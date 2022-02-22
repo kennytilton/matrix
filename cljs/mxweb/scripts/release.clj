@@ -4,7 +4,7 @@
 
 (let [start (System/nanoTime)]
   (b/build "src"
-    {:output-to "release/mxweb.js"
+    {:output-to "release/tiltontec.mxweb.js"
      :output-dir "release"
      :optimizations :advanced
      :verbose true})

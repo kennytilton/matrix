@@ -1,4 +1,4 @@
-(ns mxweb.example.testing
+(ns tiltontec.mxweb.example.testing
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.string :as str]
             [cljs.core.async :refer [<!]]
@@ -17,10 +17,10 @@
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
 
-            [mxweb.gen :refer [evt-mx target-value]
+            [tiltontec.mxwebgen :refer [evt-mx target-value]
              :refer-macros [h1 h2 h3 h4 h5 section label header footer br
                             textarea p span a img ul li input div button]]
-            [mxweb.style
+            [tiltontec.mxwebstyle
              :refer [make-css-inline]
              :as css]
             [goog.dom :as dom]

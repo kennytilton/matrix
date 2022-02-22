@@ -1,18 +1,18 @@
-(ns mxweb.example.pipeline.core
+(ns tiltontec.mxweb.example.pipeline.core
   (:require-macros
     [cljs.core.async.macros :as m :refer [go alt!]])
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [pln]]
             [tiltontec.cell.base :refer [ia-type]]
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
-            [mxweb.example.pipeline.pipeline :as pline
+            [tiltontec.mxwebexample.pipeline.pipeline :as pline
              :refer [pseg-processor pipe-segs pipe-start]]
             [tiltontec.model.core
              :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name
                      mxu-find-type]
              :as md]
 
-            [mxweb.gen :refer [evt-mx target-value]
+            [tiltontec.mxwebgen :refer [evt-mx target-value]
              :refer-macros [h1 h4 h5 input div span button p]]
 
             [cljs.core.async

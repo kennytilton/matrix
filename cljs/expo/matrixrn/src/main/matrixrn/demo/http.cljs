@@ -12,12 +12,10 @@
     [tiltontec.cell.integrity :refer-macros [with-cc]]
     [tiltontec.model.core :refer [with-par matrix mx-par mget mset! mswap!] :as md]
 
-    [matrixrn.matrixrn :as mxn :refer [mk with-props fmu mk]]
+    [matrixrn.matrixrn :as mxn :refer [<> mk with-props fmu mk]]
     [cljs-http.client :as http]
-    [cljs.core.async :refer [<!]]
-    [matrixrn.demo.todo-wannabe :as flat]))
-
-(def <> react/createElement)
+    [cljs.core.async :refer [<!] :as async]
+    [matrixrn.demo.to-do-lite :as flat]))
 
 ;; WARNING!: The GitHub search is a mess. Fix it if you like. It searches in limited fashion
 ;;           I use "si" or "st" to get hits.
@@ -39,24 +37,25 @@
      :lookup-go?      (cI false :ephemeral? true)
      :lookup-response (cI nil)
      :lookup          (cF+ [:obs (fn [_ me chan prior-chan cell]
-                                   ;; todo work out how to close prior chan (if not 'undefined'!)
-                                   ;; perhaps we swap!-assoc the new chan into the Cell (an atom) as :clean-up-chan
-                                   ;; and then close! it. But can a 'go' caller close the chan returned by 'go'?
                                    (when chan ;; ie, a lookup has been kicked off via cljs-http, and this is the chan it will report on
                                      (go (let [response (<! chan)
                                                search (mget me :searchstring)
                                                hits (filter (fn [ostr]
                                                               (str/includes? ostr search))
                                                       (map :login (:body response)))]
+                                           (async/close! chan)
                                            (prn :github-users hits)
                                            ;; TryThis: can we clear the searchstring each time they search? Bad U/X?
                                            (with-cc         ;; MAJOR feature! required to mutate state inside an observer
                                              ;;                Well, or you get a warning telling you a backdoor.
                                              (mset! me :lookup-response
                                                (or (seq hits) (vector (str "No matches for " search)))))))))]
+                        (prn :search-in-fires)
                         (when (mget (fmu :do-any-lookup?) :value)
                           (when (not (str/blank? (mget me :searchstring)))
+                            (prn :search-str-not-blank)
                             (when (mget me :lookup-go?)
+                              (prn :search-to-github)
                               (http/get "https://api.github.com/users"
                                 {:with-credentials? false
                                  :query-params      {"since" 135}})))))}
@@ -103,7 +102,7 @@
                        (.-key i))
        :renderItem   (fn [i]
                        ;; here we have to "speak" React....
-                       ;; above we simply def <> to be react/createElement
+                       ;; <> is actually deffed to be react/createElement
                        (prn :render-sees i)
                        (<> rn/Text
                          #js {:style #js {:fontSize 18}}

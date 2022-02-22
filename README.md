@@ -1,10 +1,9 @@
-# Usage
+![Pardon Our Appearance](https://github.com/kennytilton/matrix/blob/main/images/7417287052_ca9e644931_b.jpeg?raw=true)
+"Under Construction Grunge Sign" by Free Grunge Textures - www.freestock.ca is licensed under CC BY 2.0.
 
-[![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/matrix.svg)](https://clojars.org/com.tiltontec/matrix)
+If you followed some link to get here, FYI we have just started overhauling the Matrix documentation and even the very organization of this repo.
 
-See example project `todomx` in its own repo for individual modules to require. (Yes, we need to simplify that.)
-
-To build locally, check the scripts directory. `scripts/build` from the project root dir to build once, `scripts/watch` to build continuously.
+Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
 
 # Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
@@ -25,7 +24,7 @@ Above we see the CSS `class` tracking the completed property of the lexically cl
 
 Why the "input" characterization? It cannot be rules all the way down. These cells are the inputs into the dataflow from outside imperative code. The diagram below is of a *directed acyclic graph* depicting the flow that arises when input cells change and their new values are consumed by formulaic cells (when their recomputation is triggered). In the diagram below, cells 7, 5, and 3 would be the input cells.
 
-![DAG graphic](https://github.com/kennytilton/todoFRP/blob/matrixjs/todo/MatrixCLJS/resources/Directed_acyclic_graph.png) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljs/matrix/resources/Directed_acyclic_graph.png?raw=true) 
 
 The dataflow engine propagates each new input value by recursively recomputing dependent formulaic cells in a [glitch](https://en.wikipedia.org/wiki/Reactive_programming#Glitches)-free cascade. We get useful behavior out of this cascading calculation via "on change" callbacks. We name these callbacks "observers" (not to be confused with [RxJS](http://reactivex.io/rxjs/) or [MobX](https://github.com/mobxjs/mobx/blob/master/README.md) *observables*). Much simplified:
 ````cljs

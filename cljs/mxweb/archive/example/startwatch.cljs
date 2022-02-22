@@ -1,12 +1,12 @@
 
-(ns mxweb.example.startwatch
+(ns tiltontec.mxweb.example.startwatch
   (:require [clojure.string :as str]
             [tiltontec.util.core :refer [now]]
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer-macros [with-par]
              :refer [matrix mx-par mget mset! mxi-find mxu-find-name] :as md]
-            [mxweb.gen :refer [evt-mx target-value] :refer-macros [h1 input div]]
+            [tiltontec.mxwebgen :refer [evt-mx target-value] :refer-macros [h1 input div]]
             [tiltontec.cell.synapse :refer-macros [with-synapse]]))
 
 (declare clock time-color)

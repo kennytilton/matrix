@@ -4,7 +4,8 @@
     [tiltontec.model.core :refer [mget mswap!]]
     [react]
     [react-native :as rn]
-    [matrixrn.matrixrn :as mxn :refer [mk mku]]))
+    [matrixrn.matrixrn :as mxn :refer [<> mk mku]]
+    ["@expo/vector-icons" :refer [FontAwesome]]))
 
 (defn lesson []
   ;; All "mk" maker functions have the signature:
@@ -18,7 +19,10 @@
   ;; mku is a special case to support Screen, so for now it gets its own "mku" (make unhooked)
   ;;
   (mku mxn/Screen {}
-    {:name "Hello, world."}
+    {:name "Hello, world."
+     :options {:tabBarLabel "Hello"
+               :tabBarIcon  (fn []
+                              (<> FontAwesome (clj->js {:name "globe" :size 28})))}}
     (mk rn/Button
       ;; ----------------------------------------------------------------------
       ;; This first group of props are for the Matrix "host" object.

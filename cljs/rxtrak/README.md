@@ -14,7 +14,7 @@ Remember Scotty trying to talk into the Macintosh mouse? Nuff said. But FB engin
 
 ![Flux](documentation/flux.png)
 
-Dan Abramov made a brave attempt with Redux, but what started simple scaled to ornate. As with everything Lisps touch, ClojureScript re-frame by Mike Thompson turned out vastly better, but the exposed wiring of Flux remained.
+Mike Thompson did a good job cleaning up Flux with ClojureScript `re-frame`, and Dan Abramov made a brave but verbose attempt with Redux, but what started simple scaled to ornate. As with everything Lisps touch, ClojureScript re-frame by Mike Thompson turned out vastly better, but the exposed wiring of Flux remained.
 
 ### Pub-Sub no mas
 Enter Hoplon/Javelin, the Reagent ratom, MobX, and binding.Scala. These truly reactive frameworks support a more natural expression of the one-way dataflow Facebook engineers correctly identified as vital to front-end developer sanity, one in which the framework magically identifies and automates the dataflow DAG implicit in the natural coding of an interface.
@@ -35,7 +35,10 @@ In a terminal window, clone the entire Matrix repo:
 * `git clone https://github.com/kennytilton/matrix.git`
 
 Navigate to the rxTrak project:
-* `cd matrix/cljs/rctrak`
+* `cd matrix/cljs/rxtrak`
+
+Tidy up:
+* `lein clean`
 
 Start the application in a browser:
 * `lein fig:build`
