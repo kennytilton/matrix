@@ -8,7 +8,7 @@ This repo contains:
 * wrappers at various stages of development for HTML/CSS, ReactJS, and ReactNative; and
 * wrappers for XHR and localStorage, with more to come.
 
-Here is our road map:
+Here is our road map, absent requests for specific implementations for evaluation/adoption:
 * a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
 * ...reference-style documentation as needed;
 * the same for Javascript;
