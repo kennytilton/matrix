@@ -1,6 +1,6 @@
 ![Matrix cell culture](images/mx-banner-red.jpg)
 
-Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) over twenty years ago.
+Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) twenty-five years ago. Gasp.
 
 This repo contains:
 * Clojure/ClJS version [here](https://github.com/kennytilton/matrix/tree/main/cljs/matrix);
