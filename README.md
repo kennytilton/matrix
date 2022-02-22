@@ -1,7 +1,19 @@
-![Pardon Our Appearance](https://github.com/kennytilton/matrix/blob/main/images/7417287052_ca9e644931_b.jpeg?raw=true)
-"Under Construction Grunge Sign" by Free Grunge Textures - www.freestock.ca is licensed under CC BY 2.0.
+![Matrix cell culture](images/mx-banner-red.jpg)
 
-If you followed some link to get here, FYI we have just started overhauling the Matrix documentation and even the very organization of this repo.
+Welcome to the "mono" repo for Matrix, the generic, point-to-point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) over twenty years ago.
+
+This repo contains:
+* Clojure/ClJS version
+* a JavaScriot version
+* wrappers at various stages of development for HTML/CSS, ReactJS, and ReactNative; and
+* wrappers for XHR and localStorage, with more to come.
+
+Here is our road map:
+* a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
+* ...reference-style documentation as needed;
+* the same for Javascript;
+* the same for CLJS React Natuve.
+
 
 Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
 
