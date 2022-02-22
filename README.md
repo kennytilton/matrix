@@ -3,22 +3,23 @@
 Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) over twenty years ago.
 
 This repo contains:
-* Clojure/ClJS version;
-* a JavaScriot version;
+* Clojure/ClJS version [here](https://github.com/kennytilton/matrix/tree/main/cljs/matrix);
+* a JavaScript version [here](https://github.com/kennytilton/matrix/tree/main/js/matrix);
 * wrappers at various stages of development for HTML/CSS, ReactJS, and ReactNative; and
 * wrappers for XHR and localStorage, with more to come.
 
 Here is our road map, absent requests for specific implementations for evaluation/adoption:
 * a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
-* ...reference-style documentation as needed;
-* the same for Javascript;
+* ...reference-style documentation as needed and...
+* ...new `clojure.test` content serving also to demonstrate advanced Matrix features;
+* the same ^^^ for Javascript;
 * the same for CLJS ReactNative.
 
 Some new/recommended content:
-* A [tl;dr overview](https://github.com/kennytilton/matrix/wiki/introduction) suited to the reactive cognoscenti.
-* Perhaps the best wrtie-up so far, in the context of [TodoMVC](https://github.com/kennytilton/mxtodomvc).
-* A live write-up of a [quotations caraousel](https://tilton.medium.com/simplejx-aweb-un-framework-e9b59c12dcff) using the JS ver
-* Live, production examples of the JS+HTML Matrix, [AskHN Who's Hiring](https://kennytilton.github.io/whoishiring/) and Common Lisp Cells+Qooxdoo, [Tilton's Algebra](http://tiltontec.com/).
+* a [tl;dr overview](https://github.com/kennytilton/matrix/wiki/introduction) suited to the reactive cognoscenti;
+* perhaps the best write-up so far, in the context of [TodoMVC](https://github.com/kennytilton/mxtodomvc);
+* a live write-up of a [quotations caraousel](https://tilton.medium.com/simplejx-aweb-un-framework-e9b59c12dcff) using the JS version; and
+* live, production examples of the JS+HTML Matrix, [AskHN Who's Hiring](https://kennytilton.github.io/whoishiring/) and Common Lisp Cells+Qooxdoo, [Tilton's Algebra](http://tiltontec.com/).
 
 Watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
 
