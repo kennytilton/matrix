@@ -1,0 +1,23 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies
+ [[tiltontec/matrix "4.1.7-SNAPSHOT"]
+  [tiltontec/mxxhr "0.1.5-SNAPSHOT"]
+  [tiltontec/mxweb "0.2.0-SNAPSHOT"]]
+
+ :dev-http
+ {8020 "public"}
+
+ :builds
+ {:app
+  {:target :browser
+   :output-dir "public/js"
+   :asset-path "/js"
+
+   :modules
+   {:main ; becomes public/js/main.js
+    {:init-fn mxweb-trainer.core/init}}}}}
