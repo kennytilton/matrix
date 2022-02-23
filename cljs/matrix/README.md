@@ -1,3 +1,4 @@
+![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix / CLJS
 ### ...by TodoMVC Example
 

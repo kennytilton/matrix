@@ -1,9 +1,27 @@
-![Pardon Our Appearance](https://github.com/kennytilton/matrix/blob/main/images/7417287052_ca9e644931_b.jpeg?raw=true)
-"Under Construction Grunge Sign" by Free Grunge Textures - www.freestock.ca is licensed under CC BY 2.0.
+![Matrix cell culture](images/mx-banner-red.jpg)
 
-If you followed some link to get here, FYI we have just started overhauling the Matrix documentation and even the very organization of this repo.
+Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) twenty-five years ago. Gasp.
 
-Please watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
+This repo contains:
+* Clojure/ClJS version [here](https://github.com/kennytilton/matrix/tree/main/cljs/matrix);
+* a JavaScript version [here](https://github.com/kennytilton/matrix/tree/main/js/matrix);
+* wrappers at various stages of development for HTML/CSS, ReactJS, and ReactNative; and
+* wrappers for XHR and localStorage, with more to come.
+
+Here is our road map, absent requests for specific implementations for evaluation/adoption:
+* a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
+* ...reference-style documentation as needed and...
+* ...new `clojure.test` content serving also to demonstrate advanced Matrix features;
+* the same ^^^ for Javascript;
+* the same for CLJS ReactNative.
+
+Some new/recommended content:
+* a [tl;dr overview](https://github.com/kennytilton/matrix/wiki/introduction) suited to the reactive cognoscenti;
+* perhaps the best write-up so far, in the context of [TodoMVC](https://github.com/kennytilton/mxtodomvc);
+* a live write-up of a [quotations caraousel](https://tilton.medium.com/simplejx-aweb-un-framework-e9b59c12dcff) using the JS version; and
+* live, production examples of the JS+HTML Matrix, [AskHN Who's Hiring](https://kennytilton.github.io/whoishiring/) and Common Lisp Cells+Qooxdoo, [Tilton's Algebra](http://tiltontec.com/).
+
+Watch this space for frequent updates, or contact me directly: kentilton at gmail dot com.
 
 # Matrix from 30,000 feet
 With the Matrix library, global variables or individual properties of objects can be expressed as so-called *cells*. Cells come in two flavors. *Formulaic* cells use standard HLL code to compute their value from other cells. For a dead simple example, the *TodoMVC* rules mandate we apply the "completed" class to to-do LIs if and only if the user has marked them as, well, completed:
