@@ -7,9 +7,7 @@ What follows are rough directions to help the early curious explore MatrixRN. Bu
 I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
 
 ## Did I say "Petri dish"?
-![A Petri dish](assets/petri-dish-512.jpeg)
-
-"Petri Dish" by Pacific Northwest National Laboratory
+![A Petri dish](../../../images/mx-banner-red.jpg)
 
 I call this the Petri dish because it is where I am cultivating MatrixRN. It feels done, but it will grow as we implement new RN sample projects. That may seem obvious, but in the case of React Native I am finding that every widget brings surprises; it lacks the consistency of HTML's `<tag attributes*>children</tag>`. MatrixRN will paper these over where possible, and grow with each papering.
 
