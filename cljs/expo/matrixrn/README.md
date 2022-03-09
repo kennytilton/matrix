@@ -3,8 +3,7 @@ Two scrolls down you will find [the read-me](https://github.com/kennytilton/matr
 
 What follows are rough directions to help the early curious explore MatrixRN. But first a caveat.
 
-### Caveat
-I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
+> Caveat adaptor: I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
 
 ## Did I say "Petri dish"?
 ![A Petri dish](../../../images/mx-banner-red.jpg)
