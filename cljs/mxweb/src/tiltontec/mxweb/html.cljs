@@ -182,7 +182,9 @@
         (do
           ;;(pln :dom-hit-attr!!!! (tagfo me) slot newv oldv)
           (case slot
-            :style (set! (.-style dom) (style-string newv))
+            :style (do
+                     (prn :obs-style (style-string newv))
+                     (set! (.-style dom) (style-string newv)))
 
             :hidden (set! (.-hidden dom) newv)
             :disabled (if newv

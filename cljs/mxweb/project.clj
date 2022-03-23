@@ -1,10 +1,10 @@
-(defproject tiltontec/mxweb "0.2.0-SNAPSHOT"
+(defproject tiltontec/mxweb "0.2.1-SNAPSHOT"
   :description "A Web un-Framework for the Matrix (dataflow library)"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :url "https://github.com/kennytilton"
-  :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.773"]
+  :dependencies [[org.clojure/clojure "1.11.0"]
+                 [org.clojure/clojurescript "1.11.4"]
                  [com.cognitect/transit-cljs "0.8.264"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [funcool/bide "1.6.0"]
