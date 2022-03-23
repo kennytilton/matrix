@@ -62,6 +62,9 @@
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
                             (when-let [v (mget mx k)]
+                              (when (and (= :bad-css (:name @mx))
+                                      (= k :style))
+                                (pln :tag-style-attr (or (:name @mx)(:id @mx) :anon-mx) k v))
                               [(name k) (case k
                                           :style (tagcss/style-string v)
                                           :class (if (coll? v)

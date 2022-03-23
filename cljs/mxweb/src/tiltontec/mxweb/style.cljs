@@ -26,39 +26,50 @@
   (let [id (mget me :id)]
     (assert id)
     (or (mget me :dom-cache)
-        (if-let [dom (dom/getElement (str id))]
-          (backdoor-reset! me :dom-cache dom)
-          (println :style-no-element id :found)))))
+      (if-let [dom (dom/getElement (str id))]
+        (backdoor-reset! me :dom-cache dom)
+        (println :style-no-element id :found)))))
 
 (defn make-css-inline [tag & stylings]
   (assert (tag? tag))
+  (prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
+    stylings)
   (apply make
-         :type :mxweb.css/css
-         ;;:tiltontec.mxweb-id (when tiltontec.mxweb (:id @tiltontec.mxweb))
-         :tag tag
-         :css-keys (for [[k _] (partition 2 stylings)] k)
-         stylings))
+    :type :mxweb.css/css
+    ;;:tiltontec.mxweb-id (when tiltontec.mxweb (:id @tiltontec.mxweb))
+    :tag tag
+    :css-keys (for [[k _] (partition 2 stylings)] k)
+    stylings))
 
 (defn style-string [s]
-  (cond
-    (string? s) s
-    (nil? s) ""
+  (let [ss (cond
+             (string? s) s
+             (nil? s) ""
 
-    (map? s)
-    (str/join ";"
-      (for [[k v] s]
-        (pp/cl-format nil "~a:~a" (name k) v)))
+             (map? s)
+             (str/join ";"
+               (for [[k v] s]
+                 (do (when-not (or (keyword? v)
+                                 (string? v))
+                       (prn :about-to-name k v :from s))
+                     (pp/cl-format nil "~a:~a" (name k) (name v)))))
 
-    (= :mxweb.css/css (ia-type s))
-    (style-string (select-keys @s (:css-keys @s)))
+             (= :mxweb.css/css (ia-type s))
+             (do
+                 (pln :ss-sees-mxwcss!!!! @s)
+                 (pln :ss-sees-mxwcss-keys!!!! (:css-keys @s))
+                 (pln :ss-sees-mxwcss-vals!!!! (select-keys @s (:css-keys @s)))
+                 (style-string (select-keys @s (:css-keys @s))))
 
-    :default
-    (do
-      (println :ss-unknown s (type s))
-      "")))
+             :default
+             (do
+               (pln :ss-unknown s (type s))
+               ""))]
+    ;; (pln :mxw-gens-ss ss)
+    ss))
 
 (defmethod observe-by-type [:mxweb.css/css] [slot me newv oldv _]
   (when (not= oldv unbound)
     (let [dom (tag-dom (:tag @me))]
-      (println :dom-hit-setStyle!!! slot newv oldv)
+      (println :css-obs-dom-hit-setStyle!!! slot newv oldv (:tag @me))
       (gstyle/setStyle dom (name slot) newv))))
