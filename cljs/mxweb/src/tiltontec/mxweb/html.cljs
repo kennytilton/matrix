@@ -62,7 +62,7 @@
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
                             (when-let [v (mget mx k)]
-                              (when (and (= :bad-css (:name @mx))
+                              #_ (when (and (= :bad-css (:name @mx))
                                       (= k :style))
                                 (pln :tag-style-attr (or (:name @mx)(:id @mx) :anon-mx) k v))
                               [(name k) (case k
@@ -186,7 +186,7 @@
           ;;(pln :dom-hit-attr!!!! (tagfo me) slot newv oldv)
           (case slot
             :style (do
-                     (prn :obs-style (style-string newv))
+                     ;;(prn :obs-style (style-string newv))
                      (set! (.-style dom) (style-string newv)))
 
             :hidden (set! (.-hidden dom) newv)

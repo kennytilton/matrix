@@ -32,7 +32,7 @@
 
 (defn make-css-inline [tag & stylings]
   (assert (tag? tag))
-  (prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
+  #_ (prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
     stylings)
   (apply make
     :type :mxweb.css/css
@@ -48,7 +48,8 @@
 
              (map? s)
              (str/join ";"
-               (for [[k v] s]
+               (for [[k v] s
+                     :when v]
                  (do (when-not (or (keyword? v)
                                  (string? v))
                        (prn :about-to-name k v :from s))
@@ -56,9 +57,9 @@
 
              (= :mxweb.css/css (ia-type s))
              (do
-                 (pln :ss-sees-mxwcss!!!! @s)
-                 (pln :ss-sees-mxwcss-keys!!!! (:css-keys @s))
-                 (pln :ss-sees-mxwcss-vals!!!! (select-keys @s (:css-keys @s)))
+                 ;(pln :ss-sees-mxwcss!!!! @s)
+                 ;(pln :ss-sees-mxwcss-keys!!!! (:css-keys @s))
+                 ;(pln :ss-sees-mxwcss-vals!!!! (select-keys @s (:css-keys @s)))
                  (style-string (select-keys @s (:css-keys @s))))
 
              :default
@@ -71,5 +72,5 @@
 (defmethod observe-by-type [:mxweb.css/css] [slot me newv oldv _]
   (when (not= oldv unbound)
     (let [dom (tag-dom (:tag @me))]
-      (println :css-obs-dom-hit-setStyle!!! slot newv oldv (:tag @me))
-      (gstyle/setStyle dom (name slot) newv))))
+      ;; (println :css-obs-dom-hit-setStyle!!! slot newv oldv (:tag @me))
+      (gstyle/setStyle dom (name slot) (name newv)))))
