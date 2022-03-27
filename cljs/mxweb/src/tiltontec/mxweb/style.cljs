@@ -9,7 +9,7 @@
      :refer-macros [the-kids mdv!]
      :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]
-    [tiltontec.mxweb.base :refer [tag?]]
+    [tiltontec.mxweb.base :refer [tag? kw$]]
     [goog.dom.classlist :as classlist]
     [goog.style :as gstyle]
     [goog.dom :as dom]
@@ -50,10 +50,10 @@
              (str/join ";"
                (for [[k v] s
                      :when v]
-                 (do (when-not (or (keyword? v)
+                 (do (when-not false #_ (or (keyword? v)
                                  (string? v))
                        (prn :about-to-name k v :from s))
-                     (pp/cl-format nil "~a:~a" (name k) (name v)))))
+                     (pp/cl-format nil "~a:~a" (name k) (kw$ v)))))
 
              (= :mxweb.css/css (ia-type s))
              (do
@@ -73,4 +73,5 @@
   (when (not= oldv unbound)
     (let [dom (tag-dom (:tag @me))]
       ;; (println :css-obs-dom-hit-setStyle!!! slot newv oldv (:tag @me))
-      (gstyle/setStyle dom (name slot) (name newv)))))
+      (prn :obs-y-type slot newv)
+      (gstyle/setStyle dom (name slot) (kw$ newv)))))

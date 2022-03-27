@@ -13,6 +13,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
+    [tiltontec.mxweb.base :refer [kw$]]
     [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
@@ -62,8 +63,8 @@
 (defn class-to-class-string [c]
   (prn :c2c-sees c)
   (let [cs (if (coll? c)
-             (str/join " " (map name c))
-             (name c))]
+             (str/join " " (map kw$ c))
+             (kw$ c))]
     (prn :c2csays cs)
     cs))
 
@@ -74,10 +75,12 @@
                                       (= k :class))
                                 (pln :tag-class-attr (or (:name @mx) (:id @mx) :anon-mx) k v
                                   (class-to-class-string v)))
-                              [(name k) (case k
+                              (prn :naming-k k)
+                              [(kw$ k) (case k
                                           :style (tagcss/style-string v)
                                           :class (class-to-class-string v)
-                                          (name v))])))]
+                                          (do (prn :naming-v v)
+                                              (kw$ v)))])))]
     (apply js-obj
       (apply concat beef))))
 
@@ -108,8 +111,9 @@
 (def +true-html+ {::type "type"})
 
 (defn true-html [keyword]
+  (prn :true-h-naming? keyword)
   (or (keyword +true-html+)
-    (name keyword)))
+    (kw$ keyword)))
 
 (defn tag [me]
   (mget me :tag))
@@ -216,18 +220,22 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
-  (fget #(str/includes? (class-to-class-string (mget % :class)) (name class))
+  (prn :mxu-finding-naming class)
+  (fget #(str/includes? (class-to-class-string (mget % :class)) (kw$ class))
     where :me? false :up? true))
 
 (defn mxu-find-tag
   "Search up the matrix from node 'where' looking for element of a certain tag"
   [where tag]
-  (fget #(= (name tag) (mget % :tag))
-    where :me? false :up? true))
+  (prn :naming-mxu-ftag tag)
+  (let [n (name tag)]
+    (fget #(= n (mget % :tag))
+      where :me? false :up? true)))
 
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with a certain :id"
   [where id]
+  (prn :mxu-naming-id id)
   (fget #(= (name id) (mget % :id))
     where :me? false :up? true))
 
