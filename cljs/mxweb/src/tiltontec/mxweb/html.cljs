@@ -45,7 +45,7 @@
 
 (defn map-less-nils [m]
   (apply dissoc m
-         (for [[k v] m :when (nil? v)] k)))
+    (for [[k v] m :when (nil? v)] k)))
 
 (defn tag-dom [me]
   ;; This will return nil when 'me' is being awakened and rules
@@ -55,27 +55,31 @@
   (let [id (mget me :id)]
     (assert id)
     (or (mget me :dom-cache)
-        (if-let [dom (dom/getElement (str id))]
-          (backdoor-reset! me :dom-cache dom)
-          #_ (println :benign?-html-no-element id :found)))))
+      (if-let [dom (dom/getElement (str id))]
+        (backdoor-reset! me :dom-cache dom)
+        #_(println :benign?-html-no-element id :found)))))
 
 (defn class-to-class-string [c]
-  (if (coll? c)
-    (str/join " " (map name c))
-    (name c)))
+  (prn :c2c-sees c)
+  (let [cs (if (coll? c)
+             (str/join " " (map name c))
+             (name c))]
+    (prn :c2csays cs)
+    cs))
 
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
                             (when-let [v (mget mx k)]
-                              #_ (when (and (= :bad-css (:name @mx))
-                                      (= k :style))
-                                (pln :tag-style-attr (or (:name @mx)(:id @mx) :anon-mx) k v))
+                              (when (and                    ;;(= :bad-css (:name @mx))
+                                      (= k :class))
+                                (pln :tag-class-attr (or (:name @mx) (:id @mx) :anon-mx) k v
+                                  (class-to-class-string v)))
                               [(name k) (case k
                                           :style (tagcss/style-string v)
                                           :class (class-to-class-string v)
                                           (name v))])))]
     (apply js-obj
-           (apply concat beef))))
+      (apply concat beef))))
 
 (defn tag-dom-create
   ([me] (tag-dom-create me false))
@@ -84,28 +88,28 @@
      (string? me) (dom/safeHtmlToNode (sanitizer/sanitize me))
      (coll? me) (let [frag (.createDocumentFragment js/document)]
                   (doseq [tag me]
-                    (when tag ;; tolerate nils
+                    (when tag                               ;; tolerate nils
                       (dom/appendChild frag (tag-dom-create tag))))
                   frag)
      :default
-     (do ;;(pln :domcre-attrs (:attr-keys @me))
-         (let [dom (apply dom/createDom (mget me :tag)
-                          (tag-attrs me)
-                          (concat                           ;; to-do: need this?
-                            (map #(tag-dom-create % dbg) (mget me :kids))
-                            (when-let [c (mget me :content)]
-                              [(tag-dom-create c)])))]
+     (do                                                    ;;(pln :domcre-attrs (:attr-keys @me))
+       (let [dom (apply dom/createDom (mget me :tag)
+                   (tag-attrs me)
+                   (concat                                  ;; to-do: need this?
+                     (map #(tag-dom-create % dbg) (mget me :kids))
+                     (when-let [c (mget me :content)]
+                       [(tag-dom-create c)])))]
 
-           (when (some #{:list} (:attr-keys @me))
-             ;; todo investigate why this was necessary
-             (.setAttribute dom "list" (mget me :list)))
-           dom)))))
+         (when (some #{:list} (:attr-keys @me))
+           ;; todo investigate why this was necessary
+           (.setAttribute dom "list" (mget me :list)))
+         dom)))))
 
 (def +true-html+ {::type "type"})
 
 (defn true-html [keyword]
   (or (keyword +true-html+)
-      (name keyword)))
+    (name keyword)))
 
 (defn tag [me]
   (mget me :tag))
@@ -117,16 +121,16 @@
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    #_ (println :obstagkids!!!!! (tagfo me)
-      :same-kids (= oldv newv)
-      :same-kid-set (= (set newv)(set oldv)))
+    #_(println :obstagkids!!!!! (tagfo me)
+        :same-kids (= oldv newv)
+        :same-kid-set (= (set newv) (set oldv)))
     (do                                                     ;; p ::observe-kids
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
             gained (clojure.set/difference (set newv) (set oldv))]
         (cond
-          (and (= (set newv)(set oldv))
-               (not (= oldv newv)))
+          (and (= (set newv) (set oldv))
+            (not (= oldv newv)))
           ;; simply reordered children
           (let [frag (.createDocumentFragment js/document)]
             (doseq [newk newv]
@@ -160,8 +164,8 @@
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
                            (.removeChild pdom (tag-dom newk))
-                           (do ; (println :obs-tag-kids-building-new-dom (tagfo newk))
-                               (tag-dom-create newk)))))
+                           (do                              ; (println :obs-tag-kids-building-new-dom (tagfo newk))
+                             (tag-dom-create newk)))))
 
                      ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
                      (dom/removeChildren pdom)
@@ -173,16 +177,16 @@
 (defmethod observe-by-type [:mxweb.base/tag] [slot me newv oldv _]
   (when (not= oldv unbound)
     (when-let [dom (tag-dom me)]
-      #_ (when *mxweb-trace*
-        (when-not (some #{slot} [:tick])
-          (pln :observing-tagtype (tagfo me) slot newv oldv)))
+      #_(when *mxweb-trace*
+          (when-not (some #{slot} [:tick])
+            (pln :observing-tagtype (tagfo me) slot newv oldv)))
 
       (cond
         (= slot :content)
-        (do ;;(pln :setting-html-content newv dom)
+        (do                                                 ;;(pln :setting-html-content newv dom)
           (.requestAnimationFrame js/window
-            #(do ;;(prn :ani-frame! newv)
-                 (set! (.-innerHTML dom) newv))))
+            #(do                                            ;;(prn :ani-frame! newv)
+               (set! (.-innerHTML dom) newv))))
 
         (some #{slot} (:attr-keys @me))
         (do
@@ -196,7 +200,8 @@
             :disabled (if newv
                         (.setAttribute dom "disabled" true)
                         (.removeAttribute dom "disabled"))
-            :class (classlist/set dom (class-to-class-string newv))
+            :class (do (prn :obs-class newv (class-to-class-string newv))
+                       (classlist/set dom (class-to-class-string newv)))
             :checked (set! (.-checked dom) newv)
             (do
               ;(pln :obs-by-type-genset slot newv)
@@ -212,19 +217,19 @@
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
   (fget #(str/includes? (class-to-class-string (mget % :class)) (name class))
-        where :me? false :up? true))
+    where :me? false :up? true))
 
 (defn mxu-find-tag
   "Search up the matrix from node 'where' looking for element of a certain tag"
   [where tag]
   (fget #(= (name tag) (mget % :tag))
-        where :me? false :up? true))
+    where :me? false :up? true))
 
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with a certain :id"
   [where id]
   (fget #(= (name id) (mget % :id))
-        where :me? false :up? true))
+    where :me? false :up? true))
 
 ;;; --- localStorage io implementation --------------------------------
 
@@ -248,9 +253,9 @@
          found []]
     (if (seq keys)
       (recur (rest keys)
-             (if (str/starts-with? (first keys) key-prefix)
-               (conj found (first keys))
-               found))
+        (if (str/starts-with? (first keys) key-prefix)
+          (conj found (first keys))
+          found))
       found)))
 
 (defn io-truncate [key-prefix]
