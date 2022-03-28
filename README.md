@@ -1,6 +1,8 @@
 ![Matrix cell culture](images/mx-banner-red.jpg)
 
-Welcome to the "mono" repo for Matrix, the generic, point reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) twenty-five years ago. Gasp.
+Welcome to the "mono" repo for Matrix, a generic, fine-grained, reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) twenty-five years ago. Gasp.
+
+Of most interest to many will be the application of Matrix to Web and mobile app development. We are actively documenting the Web solution in a new [mxWeb Training](https://github.com/kennytilton/mxweb-trainer) app/tutorial. That perforce will explain Matrix itself, so the curious might start there.
 
 This repo contains:
 * Clojure/ClJS version [here](https://github.com/kennytilton/matrix/tree/main/cljs/matrix);
