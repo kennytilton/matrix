@@ -32,7 +32,7 @@ With the Matrix library, global variables or individual properties of objects ca
                         "completed"))
        ...}...)
 ````
-Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, another Matrix-aware object lifted from `window.localStorage`. `(<mget <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. A so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
+Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, another Matrix-aware object lifted from `window.localStorage`. `(<mget <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. Not shown: a so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
                       
 *Input* cells are assigned new values by conventional imperative code, usually in an event handler.
 ````cljs
