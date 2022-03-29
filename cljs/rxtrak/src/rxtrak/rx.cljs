@@ -11,6 +11,7 @@
     [clojure.string :as str]
     [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]
     [tiltontec.cell.base :refer [unbound ia-type]]
+    [tiltontec.cell.evaluate :refer [not-to-be]]
     [tiltontec.cell.core
      :refer-macros [cF cFn] :refer [cI]]
     [tiltontec.cell.observer :refer [observe-by-type]]

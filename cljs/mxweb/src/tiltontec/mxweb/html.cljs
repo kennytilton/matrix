@@ -61,26 +61,21 @@
         #_(println :benign?-html-no-element id :found)))))
 
 (defn class-to-class-string [c]
-  (prn :c2c-sees c)
-  (let [cs (if (coll? c)
-             (str/join " " (map kw$ c))
-             (kw$ c))]
-    (prn :c2csays cs)
-    cs))
+  (if (coll? c)
+    (str/join " " (map kw$ c))
+    (kw$ c)))
 
 (defn tag-attrs [mx]
   (let [beef (remove nil? (for [k (:attr-keys @mx)]
                             (when-let [v (mget mx k)]
-                              (when (and                    ;;(= :bad-css (:name @mx))
+                              #_ (when (and                    ;;(= :bad-css (:name @mx))
                                       (= k :class))
                                 (pln :tag-class-attr (or (:name @mx) (:id @mx) :anon-mx) k v
                                   (class-to-class-string v)))
-                              (prn :naming-k k)
                               [(kw$ k) (case k
                                           :style (tagcss/style-string v)
                                           :class (class-to-class-string v)
-                                          (do (prn :naming-v v)
-                                              (kw$ v)))])))]
+                                          (kw$ v))])))]
     (apply js-obj
       (apply concat beef))))
 
@@ -204,8 +199,7 @@
             :disabled (if newv
                         (.setAttribute dom "disabled" true)
                         (.removeAttribute dom "disabled"))
-            :class (do (prn :obs-class newv (class-to-class-string newv))
-                       (classlist/set dom (class-to-class-string newv)))
+            :class (classlist/set dom (class-to-class-string newv))
             :checked (set! (.-checked dom) newv)
             (do
               ;(pln :obs-by-type-genset slot newv)
@@ -220,14 +214,12 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
-  (prn :mxu-finding-naming class)
   (fget #(str/includes? (class-to-class-string (mget % :class)) (kw$ class))
     where :me? false :up? true))
 
 (defn mxu-find-tag
   "Search up the matrix from node 'where' looking for element of a certain tag"
   [where tag]
-  (prn :naming-mxu-ftag tag)
   (let [n (name tag)]
     (fget #(= n (mget % :tag))
       where :me? false :up? true)))
@@ -235,7 +227,6 @@
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with a certain :id"
   [where id]
-  (prn :mxu-naming-id id)
   (fget #(= (name id) (mget % :id))
     where :me? false :up? true))
 

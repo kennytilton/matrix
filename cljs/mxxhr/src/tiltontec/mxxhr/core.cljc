@@ -198,7 +198,8 @@
 
 (defn xhr-response [xhr]
   (assert-xhr xhr :response)
-  (println :xresp-sees (mget xhr :uri)(mget xhr :status))
+  (println :xresp-sees!!! (mget xhr :uri)
+    (mget xhr :response) :keys!! (keys (mget xhr :response)))
   (mget xhr :response))
 
 (defn xhr-selection [xhr]

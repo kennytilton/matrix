@@ -36,7 +36,6 @@
     stylings)
   (apply make
     :type :mxweb.css/css
-    ;;:tiltontec.mxweb-id (when tiltontec.mxweb (:id @tiltontec.mxweb))
     :tag tag
     :css-keys (for [[k _] (partition 2 stylings)] k)
     stylings))
@@ -50,17 +49,10 @@
              (str/join ";"
                (for [[k v] s
                      :when v]
-                 (do (when-not false #_ (or (keyword? v)
-                                 (string? v))
-                       (prn :about-to-name k v :from s))
-                     (pp/cl-format nil "~a:~a" (name k) (kw$ v)))))
+                 (pp/cl-format nil "~a:~a" (name k) (kw$ v))))
 
              (= :mxweb.css/css (ia-type s))
-             (do
-                 ;(pln :ss-sees-mxwcss!!!! @s)
-                 ;(pln :ss-sees-mxwcss-keys!!!! (:css-keys @s))
-                 ;(pln :ss-sees-mxwcss-vals!!!! (select-keys @s (:css-keys @s)))
-                 (style-string (select-keys @s (:css-keys @s))))
+             (style-string (select-keys @s (:css-keys @s)))
 
              :default
              (do
@@ -72,6 +64,6 @@
 (defmethod observe-by-type [:mxweb.css/css] [slot me newv oldv _]
   (when (not= oldv unbound)
     (let [dom (tag-dom (:tag @me))]
-      ;; (println :css-obs-dom-hit-setStyle!!! slot newv oldv (:tag @me))
-      (prn :obs-y-type slot newv)
+      #_ (when (some #{slot} [:animation])
+        (prn :CSS-obs-by-type slot newv oldv (kw$ newv)))
       (gstyle/setStyle dom (name slot) (kw$ newv)))))
