@@ -32,15 +32,15 @@ With the Matrix library, global variables or individual properties of objects ca
                         "completed"))
        ...}...)
 ````
-Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, another Matrix-aware object lifted from `window.localStorage`. `(<mget <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. Not shown: a so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
+Above we see the CSS `class` tracking the completed property of the lexically closed-over `todo`, another Matrix-aware object lifted from `window.localStorage`. `(mget <x> <y>)` establishes dependency of the enclosing formula on property `y` of `x`. Not shown: a so-called *observer* (discussed below) automatically propagates freshly computed values of `class` to the actual DOM.
                       
 *Input* cells are assigned new values by conventional imperative code, usually in an event handler.
 ````cljs
 (input {:class "toggle" ::tag/type "checkbox"
         :checked (c? (<mget todo :completed))
-        :onclick #(mswap!> todo :completed)}) ;; <-- mswap!> does swap and triggers dataflow to dependents
+        :onclick #(mswap! todo :completed)}) ;; <-- mswap!> does the swap and then triggers dataflow to dependents
 ````
-`mswap!>` is a dataflow "writer" that mirrors `<mget`. It causes all direct or indirect dependents to recalculate. (Note also the `checked` attribute, another example of a property following the `completed` property of our todo.)
+`mswap!` is a dataflow "writer" that mirrors `mget`. It causes all direct or indirect dependents to recalculate. (Note also the `checked` attribute, another example of a property following the `completed` property of our todo.)
 
 Why the "input" characterization? It cannot be rules all the way down. These cells are the inputs into the dataflow from outside imperative code. The diagram below is of a *directed acyclic graph* depicting the flow that arises when input cells change and their new values are consumed by formulaic cells (when their recomputation is triggered). In the diagram below, cells 7, 5, and 3 would be the input cells.
 
