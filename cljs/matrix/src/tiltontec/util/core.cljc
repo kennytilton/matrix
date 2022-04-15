@@ -1,5 +1,5 @@
 (ns tiltontec.util.core
-  (:require [clojure.string :as $]
+  (:require [clojure.string :as str]
             #?(:cljs [cognitect.transit :as trx])
             #?(:cljs [tiltontec.util.base :as utm
                       :refer-macros [prog1 b-when wtrx]]
@@ -11,6 +11,8 @@
 (defn xor [a b]
   (or (and a (not b))
     (and b (not a))))
+
+(declare pln xpln)
 
 (defn set-ify [x]
   (cond
@@ -46,8 +48,14 @@
                 :clj clojure.lang.Ref) x))
 
 (defn rmap-setf [[slot ref] new-value]
-  (assert (any-ref? ref))
-  (assert (map? @ref))
+  (assert (any-ref? ref)
+    (pln "model.util.core/rmap-setf> slot:" slot
+      "new-value:" new-value
+      "failed assertion any-ref? on ref:" ref))
+  (assert (map? @ref)
+    (pln "model.util.core/rmap-setf> slot:" slot
+      "new-value:" new-value
+      "failed assertion map? on ref:" ref))
   (#?(:clj alter :cljs swap!) ref assoc slot new-value)
   new-value)
 
@@ -66,7 +74,7 @@
 
 (defmethod err :default [& bits]
   (throw (#?(:cljs js/Error. :clj Exception.)
-           ($/join " " (cons "jz/err>" bits)))))
+           (str/join " " (cons "jz/err>" bits)))))
 
 (defn flz [x]
   (if (isa? (type x) #?(:cljs cljs.core.LazySeq
@@ -128,7 +136,7 @@
 
 (defn pln [& args]
   (locking *out*
-    (println ($/join " " args))))
+    (println (str/join " " args))))
 
 (defn xpln [& args])
 

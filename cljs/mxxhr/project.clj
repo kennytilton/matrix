@@ -1,4 +1,4 @@
-(defproject tiltontec/mxxhr "0.1.5-SNAPSHOT"
+(defproject tiltontec/mxxhr "0.1.6-SNAPSHOT"
   :description "XMLHttpRequest for the Matrix (dataflow library)"
   :url "https://github.com/kennytilton/tiltontec.mxxhr"
   :license {:name "Eclipse Public License"

@@ -4,7 +4,7 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
 
     #?(:clj [clojure.core.async :refer [go chan go-loop <! <!! >!! >!
-                                timeout alt!!]])
+                                        timeout alt!!]])
 
     [tiltontec.util.core
      :refer [pln err xor now *plnk-keys* any-ref?
@@ -18,7 +18,7 @@
                       +client-q-handler+ c-stopped unbound when-bound
                       *within-integrity* *defer-changes*
                       *depender* caller-ensure]]
-       :clj [tiltontec.cell.base :refer :all])
+       :clj  [tiltontec.cell.base :refer :all])
 
 
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
@@ -26,26 +26,26 @@
     #?(:cljs [tiltontec.cell.synapse
               :refer-macros [with-synapse]
               :refer []]
-       :clj [tiltontec.cell.synapse :refer :all])
+       :clj  [tiltontec.cell.synapse :refer :all])
 
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-cc with-integrity]
               :refer []]
        :clj
-    [tiltontec.cell.integrity :refer :all])
+             [tiltontec.cell.integrity :refer :all])
 
     #?(:cljs [tiltontec.util.base
               :refer [type-cljc]
               :refer-macros [trx prog1 *trx?* def-rmap-slots]]
        :clj
-    [tiltontec.util.base
-     :refer :all])
+             [tiltontec.util.base
+              :refer :all])
 
     #?(:cljs [cljs-http.core :refer [abort!]])
 
     ; cool------------------------
 
-    #?(:clj [tiltontec.cell.observer :refer [fn-obs observe observe-by-type]]
+    #?(:clj  [tiltontec.cell.observer :refer [fn-obs observe observe-by-type]]
        :cljs [tiltontec.cell.observer
               :refer-macros [fn-obs]
               :refer [observe observe-by-type]])
@@ -53,10 +53,10 @@
     ;cool-----
 
     #?(:clj
-    [tiltontec.cell.core :refer :all]
+             [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c_F cF_]
-              :refer [cI c-reset! make-c-formula ]])
+              :refer [cI c-reset! make-c-formula]])
 
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
@@ -68,11 +68,11 @@
 
 
     #?(:clj
-    [clj-http.client :as client]
+             [clj-http.client :as client]
        :cljs [cljs-http.client :as client])
 
     #?(:clj
-    [cheshire.core :refer :all]
+             [cheshire.core :refer :all]
        :cljs [cognitect.transit :as t])
 
     [clojure.walk :refer [keywordize-keys]]
@@ -90,11 +90,11 @@
 (defn parse-json$
   ([j$] (parse-json$ j$ true))
   ([j$ keywordize]
-    #?(:clj  (parse-string j$ keywordize)
-       :cljs (do
-               (let [r (t/reader :json)]
-                 ((if keywordize keywordize-keys identity)
-                   (t/read r j$)))))))
+   #?(:clj  (parse-string j$ keywordize)
+      :cljs (do
+              (let [r (t/reader :json)]
+                ((if keywordize keywordize-keys identity)
+                 (t/read r j$)))))))
 
 
 
@@ -109,7 +109,7 @@
         ;(println :beankeys!! (keys (bean exception)))
         ;;(println :bean!! ) (pprint (bean exception))
         (println :status (:status (:data (bean exception)))
-                 :body (parse-json$ (:body (:data (bean exception)))))
+          :body (parse-json$ (:body (:data (bean exception)))))
         (println "exception message is: " (.getMessage exception))
         (cpr :error!!!!!)
         )))
@@ -120,41 +120,41 @@
     ;(prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
     (#?(:clj alter :cljs swap!) xhr assoc :send-time (now))
 
-    #?(:clj (client/get uri
-              {:async? true}
+    #?(:clj  (client/get uri
+               {:async? true}
 
-              (fn [response]
-                ;(prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
-                (countit [:xhr :reponse])
-                (if (mdead? xhr)
-                  (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
-                  (do
-                    ;;(cpr :hitting-with-cc *within-integrity*)
-                    (with-cc :xhr-handler-sets-responded
-                      (md-reset! xhr :response {:status (:status response)
-                                                :body   ((:body-parser @xhr) (:body response))})))))
-              (fn [exception]
-                (countit [:xhr :exception])
-                ;;(prn "xhr-send> raw exception" exception)
-                (let [edata (:data (bean exception))]
+               (fn [response]
+                 ;(prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
+                 (countit [:xhr :reponse])
+                 (if (mdead? xhr)
+                   (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                   (do
+                     ;;(cpr :hitting-with-cc *within-integrity*)
+                     (with-cc :xhr-handler-sets-responded
+                       (md-reset! xhr :response {:status (:status response)
+                                                 :body   ((:body-parser @xhr) (:body response))})))))
+               (fn [exception]
+                 (countit [:xhr :exception])
+                 ;;(prn "xhr-send> raw exception" exception)
+                 (let [edata (:data (bean exception))]
 
-                  ;(prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
-                  (when-not (mdead? xhr)
-                    (with-cc :xhr-handler-sets-error
-                      (md-reset! xhr :response {:status (:status edata)
-                                                :body   (parse-json$ (:body edata))}))))))
+                   ;(prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
+                   (when-not (mdead? xhr)
+                     (with-cc :xhr-handler-sets-error
+                       (md-reset! xhr :response {:status (:status edata)
+                                                 :body   (parse-json$ (:body edata))}))))))
 
        :cljs (go
-        (let [chan (do
-       (client/get uri {:with-credentials? false}))]
+               (let [chan (do
+                            (client/get uri {:with-credentials? false}))]
 
-       (let [response (<! chan)]
+                 (let [response (<! chan)]
                    (if (:success response)
                      (do
                        ;(prn :body (keys (:body response)))
                        ;(prn :success (:status response)  (keys response) (count (:body response)))
                        (if (mdead? xhr)
-                         (do (cpr :ignoring-response-to-dead-XHR!!! uri #_ (meta xhr)))
+                         (do (cpr :ignoring-response-to-dead-XHR!!! uri #_(meta xhr)))
                          (with-cc :xhr-handler-sets-responded
                            (js/setTimeout
                              #(do
@@ -167,8 +167,8 @@
 
                      (do
                        (prn :NO-success :stat (:status response)
-                        :ecode (:error-code response)
-                            :etext (:error-text response))
+                         :ecode (:error-code response)
+                         :etext (:error-text response))
 
                        (if (mdead? xhr)
                          (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
@@ -182,7 +182,7 @@
 (defn xhr-status [xhr]
   (assert-xhr xhr :xhrstatus)
   (or (:status (mget xhr :response))
-      :no-response-yet))
+    :no-response-yet))
 
 (defn xhr-ok-body [xhr]
   (assert-xhr xhr :ok-body)
@@ -214,18 +214,18 @@
   ([uri attrs]
    (assert (string? uri) (str "param uri <" uri "> not a string"))
    (let [xhr (apply make
-                    :type :tiltontec.mxxhr.core/xhr
-                    :id (swap! +xhr-sid+ inc)               ;; debug aid
-                    :uri uri
-                    :response (cI nil)
-                    :select nil
-                    :body-parser (:body-parser attrs #(#?(:clj parse-json$ :cljs identity) %))
-                    :selection (cF (when-let [b (xhr-ok-body me)]
-                                     ;; (pln :sel-sees-body!! (mget me :select) b)
-                                     (if-let [ks (mget me :select)]
-                                       (select-keys b ks)
-                                       b)))
-                    (vec (apply concat (seq (dissoc attrs :body-parser)))))]
+               :type :tiltontec.mxxhr.core/xhr
+               :id (swap! +xhr-sid+ inc)                    ;; debug aid
+               :uri uri
+               :response (cI nil)
+               :select nil
+               :body-parser (:body-parser attrs #(#?(:clj parse-json$ :cljs identity) %))
+               :selection (cF (when-let [b (xhr-ok-body me)]
+                                ;; (pln :sel-sees-body!! (mget me :select) b)
+                                (if-let [ks (mget me :select)]
+                                  (select-keys b ks)
+                                  b)))
+               (vec (apply concat (seq (dissoc attrs :body-parser)))))]
      ;; (println :xhr-made!!!!!!!!!! uri)
      xhr)))
 
@@ -233,8 +233,8 @@
   ;; todo could use some tests
   #?(:cljs (when-let [chan (:cancel @xhr)]
              (abort! chan))
-     :clj (when (.isActive xhr)
-            (.abort xhr))))
+     :clj  (when (.isActive xhr)
+             (.abort xhr))))
 
 ;; (* 7 17 103 10163)
 (defmethod not-to-be [:tiltontec.mxxhr.core/xhr] [me]
@@ -261,9 +261,9 @@
      :default (throw (#?(:cljs js/Error. :clj Exception.) (cl-format "~&send-xhr cannot discriminate params ~a and ~a" x y)))))
   ([name uri attrs]
    (countit :send-xhr)
-    ;;;(println :send-xhr!!!!! uri)
-   (make-xhr uri (merge {:name name
-                         :send? true
+   ;;;(println :send-xhr!!!!! uri)
+   (make-xhr uri (merge {:name    name
+                         :send?   true
                          :timeout 5000} attrs))))
 
 (defmethod observe [:kids :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
@@ -277,11 +277,11 @@
 
       (cond
         (empty? gained)
-            ;; just lose the lost
+        ;; just lose the lost
         (do)
 
         :default                                            ;; try to cancel?
-        (pln :ignoring-new-kid-xhrs!!!!!!! #_ newv)))))
+        (pln :ignoring-new-kid-xhrs!!!!!!! #_newv)))))
 
 (defmethod observe [:send? :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
   ;;(println :observing-xhr!!!! newv (:uri @me))
@@ -368,24 +368,24 @@
   ([id uri] (synaptic-xhr id uri true))
   ([id uri resolve?]
    ((if resolve? xhr-resolved identity)
-     (with-synapse (id)
-       (send-xhr id uri)))))
+    (with-synapse (id)
+      (send-xhr id uri)))))
 
 (defn send-unparsed-xhr
   ([id uri] (send-unparsed-xhr id uri true))
   ([id uri resolve?]
    ((if resolve? xhr-await identity)
-     (send-xhr id uri
-               {:body-parser identity}))))
+    (send-xhr id uri
+      {:body-parser identity}))))
 
 (defn synaptic-xhr-unparsed
   ([id uri] (synaptic-xhr-unparsed id uri true))
   ([id uri resolve?]
    (let [xhr (with-synapse (id)
                (send-xhr id uri
-                         {:body-parser identity}))]
+                 {:body-parser identity}))]
      (when (or (not resolve?)
-               (mget xhr :response))
+             (mget xhr :response))
        xhr))))
 
 ;;; --- util ------------------------------
@@ -399,7 +399,7 @@
 
      (not (any-ref? xhr))
      (do
-       (println :xhr? (nil?  xhr))
+       (println :xhr? (nil? xhr))
        ;;(println :xhr? xhr)
        (err "assert-xhr> not any-ref?" (type tag) tag))
 
@@ -418,7 +418,6 @@
   (when-let [r (xhr?-response xhr)]
     (when (= 200 (:status r))
       (:body r))))
-
 
 (defn syn-xhr-ok-body [me id uri]
   (when-let [r (xhr-response
@@ -447,10 +446,10 @@
                                   #?(:cljs (js/setTimeout
                                              #(with-cc
                                                 (mswap! me :re-poll inc)) re-poll-after)
-                                     :clj (go
-                                            (<! (timeout re-poll-after))
-                                            #(with-cc
-                                               (mswap! me :re-poll inc))))))]
+                                     :clj  (go
+                                             (<! (timeout re-poll-after))
+                                             #(with-cc
+                                                (mswap! me :re-poll inc))))))]
                      (if-let [body (xhr?-ok-body (mget me :xhr))]
                        (do
                          (merge {:when (now)} body))
