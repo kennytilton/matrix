@@ -1,0 +1,28 @@
+(ns acme.main
+  ;; pure dart package are imported using string
+  (:require ["package:flutter/material.dart" :as material]
+            ["package:flutter/widgets.dart" :as widgets]
+            ["package:flutter/painting.dart" :as painting]
+            ["dart:developer" :as dev]))
+
+(defn main []
+
+
+  (material/runApp
+    (material/MaterialApp.
+      :title "Welcome to Flutter World"
+      :theme (material/ThemeData. :primarySwatch material.Colors/pink)
+      :home (material/Scaffold.
+              :appBar (material/AppBar.
+                        :title (widgets/Text. (str "hello, world" (rand-int 99999))))
+              :body (do
+                      (prn :hi-mom!!!!!-really!!!!!)
+                      (widgets/Center.
+                      :child (widgets/Text. (str "hello, world v." (rand-int 99999))
+                               :style (painting/TextStyle.
+                                        :color material.Colors/blue
+                                        :fontSize 32.0)))))))
+    (dev/log "Hi, Mom!" :name "It works now!")
+    (prn "Hi, Mom PRN!" :name "It works now!")
+    (widgets/debugDumpApp)
+    #_ (dev/debugger))
