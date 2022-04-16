@@ -1,0 +1,16 @@
+(ns tiltontec.util.base
+  (:require [clojure.string :as str]))
+
+(defn trc [x]
+  (dart:core/print (str "trx> " x)))
+
+(defn any-ref? [x]
+  ;; (dart/is? (f! 'foo) cljd.core/Symbol)
+  ;; PORT
+  (dart/is? x cljd.core/Atom))
+
+(defn rmap-meta-setf [[slot ref] new-value]
+  (assert (meta ref))
+  (alter-meta! ref assoc slot new-value)
+  ;;(prn :altermeta!! slot new-value)
+  new-value)
