@@ -1,0 +1,19 @@
+(ns tiltontec.main
+  ;; pure dart package are imported using string
+  (:require ["package:flutter/material.dart" :as material]
+            ["package:flutter/widgets.dart" :as widgets]
+            ["package:flutter/painting.dart" :as painting]))
+
+(defn main []
+  (material/runApp
+    (material/MaterialApp.
+      :title "Welcome to Flutter"
+      :theme (material/ThemeData. :primarySwatch material.Colors/pink)
+      :home (material/Scaffold.
+              :appBar (material/AppBar.
+                        :title (widgets/Text. "Welcome to ClojureDart"))
+              :body (widgets/Center.
+                      :child (widgets/Text. "This text is Centered."
+                               :style (painting/TextStyle.
+                                        :color material.Colors/red
+                                        :fontSize 32.0)))))))
