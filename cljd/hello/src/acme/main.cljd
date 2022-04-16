@@ -6,8 +6,6 @@
             ["dart:developer" :as dev]))
 
 (defn main []
-
-
   (material/runApp
     (material/MaterialApp.
       :title "Welcome to Flutter World"
@@ -16,13 +14,18 @@
               :appBar (material/AppBar.
                         :title (widgets/Text. (str "hello, world" (rand-int 99999))))
               :body (do
-                      (prn :hi-mom!!!!!-really!!!!!)
+
+                      (prn "do-block prn OK")
+                      (dart:core/print "do-block dart-core-print-says-hi")
+                      ;;(dev/log "dev/log do block")
                       (widgets/Center.
-                      :child (widgets/Text. (str "hello, world v." (rand-int 99999))
-                               :style (painting/TextStyle.
-                                        :color material.Colors/blue
-                                        :fontSize 32.0)))))))
-    (dev/log "Hi, Mom!" :name "It works now!")
-    (prn "Hi, Mom PRN!" :name "It works now!")
-    (widgets/debugDumpApp)
-    #_ (dev/debugger))
+                        :child (widgets/Text. (str "hello, world v." (rand-int 99999))
+                                 :style (painting/TextStyle.
+                                          :color material.Colors/blue
+                                          :fontSize 32.0)))))))
+  ; not working (dev/log "post-runapp> dev/log>" :name "It works now!")
+  ; this works but pauses in debugger, so commented out: (dev/debugger)
+  (prn "post-runapp> PRN!" :name "It works now!")
+  (dart:core/print "post-runapp> dart-core-print-says-hi")
+  (widgets/debugDumpApp)
+  )
