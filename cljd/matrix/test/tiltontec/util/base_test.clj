@@ -1,2 +1,2 @@
-(ns util.base-test
+(ns tiltontec.util.base-test
   (:require [clojure.test :refer :all]))
