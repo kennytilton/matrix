@@ -1,9 +1,13 @@
 (ns tiltontec.cell.base
   (:require
-    [tiltontec.util.base :as utm
-     :refer [any-ref?]
-     :as ut]))
-
+    [tiltontec.util.base :as utb
+     :refer [def-rmap-slots]]
+    [tiltontec.util.core
+     :refer [cl-find set-ify any-ref? err ia-ref
+             make-fifo-queue fifo-empty? fifo-peek fifo-pop
+             fifo-data fifo-add rmap-setf
+             wtrx-test]
+     :as utc]))
 
 ;; --- the Cells beef -----------------------
 
@@ -25,7 +29,6 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (def ^:dynamic *defer-changes* false)
 (def +client-q-handler+ (atom nil))
-
 
 (def unbound (gensym "unbound-cell-value"))
 (defn when-bound [x]
@@ -107,15 +110,17 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;; ------------------------------------------------------
 
-(derive ::model ::object)
-(derive ::cell ::object)
-(derive ::c-formula ::cell)
+;(derive ::model ::object)
+;(derive ::cell ::object)
+;(derive ::c-formula ::cell)
 
 (defn ia-type [it]
-  (type it))
+  (when-let [m (meta it)]
+    (:type m)))
 
 (defn ia-type? [it typ]
-  (isa? (ia-type it) typ))
+  ;; todo check this
+  (= (ia-type it) typ))
 
 (defn c-formula? [c]
   (ia-type? c ::c-formula))
@@ -123,7 +128,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn c-ref? [x]
   (ia-type? x ::cell))
 
-(def-rmap-slots c-
+(utb/def-rmap-slots c-
   me slot state input? rule pulse pulse-last-changed pulse-observed
   useds users callers optimize ephemeral?
   lazy synapses synaptic?)
@@ -171,12 +176,10 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn caller-ensure [used new-caller]
   ;; (trx :caller-ensure :used (c-slot used) (c-slot new-caller))
-  (alter
-    used assoc :callers (conj (c-callers used) new-caller)))
+  (swap! used assoc :callers (conj (c-callers used) new-caller)))
 
 (defn caller-drop [used caller]
-  (alter
-    used assoc :callers (disj (c-callers used) caller)))
+  (swap! used assoc :callers (disj (c-callers used) caller)))
 
 (defn unlink-from-callers [c]
   (for [caller (c-callers c)]
@@ -200,7 +203,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;; --- mdead? ---
 
-(defn mdead? :default [me]
+(defn mdead? [me]
   (if-let [m (meta me)]
     (= :dead (::state m))
     false))

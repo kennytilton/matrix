@@ -1,16 +1,85 @@
 (ns tiltontec.util.base
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as cljstr]))
 
 (defn trc [x]
   (dart:core/print (str "trx> " x)))
 
-(defn any-ref? [x]
-  ;; (dart/is? (f! 'foo) cljd.core/Symbol)
-  ;; PORT
-  (dart/is? x cljd.core/Atom))
+
 
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))
   (alter-meta! ref assoc slot new-value)
   ;;(prn :altermeta!! slot new-value)
   new-value)
+
+;; --- easy access to maps in refs ----
+
+(defmacro def-rmap-slots [reader-prefix & slots]
+  `(do
+     ~@(map (fn [slot#]
+              `(defn ~(symbol (str (or reader-prefix "")
+                                slot#))
+                 [~'ref]
+                 (~(keyword slot#) @~'ref))) slots)))
+
+(defmacro def-rmap-meta-slots [reader-prefix & slots]
+  `(do
+     ~@(map (fn [slot#]
+              `(defn ~(symbol (str (or reader-prefix "")
+                                slot#))
+                 [~'ref]
+                 (~(keyword slot#) (meta ~'ref)))) slots)))
+
+(defn type-cljd [x]
+  (if-let [m (meta x)]
+    (or (:type m)
+      (throw (AssertionError. (str "type-clj passed object with meta without type property: " x)))
+    (throw (AssertionError. (str "type-clj passed object without meta: " x))))))
+
+;; ---- debug print statement hacks ---------------------
+
+(def ^:dynamic *trx?* true)
+
+#_
+    (alter-var-root #'*trx?* not)
+
+(def ^:dynamic *trc-ensure* nil)
+(def ^:dynamic *trx-path-id* nil)
+(def ^:dynamic *trxdepth* 0)
+(def last-trc (atom 0)) ;; s/b universal time
+
+(defn call-trc$ [s bits]
+  (str s ": " (cljstr/join ", " bits)))
+
+
+(defn call-trc [s & os]
+  ;; (break) ;; uncomment to escape loop
+  (when *trx?*
+    (when s
+      (let [path (apply str (repeat *trxdepth* "."))]
+        (println path (call-trc$ s os))))))
+
+(defmacro trx [label & vals]
+  `(call-trc ~(when (not (nil? label))
+                (str label))
+     ~@vals))
+
+(defn call-wtrx [fn lo hi trxargs]
+  (binding [*trxdepth* (inc *trxdepth*)]
+    (cond
+      (<= lo *trxdepth* hi)
+      (apply call-trc trxargs)
+      (> *trxdepth* hi)
+      (throw (Exception.
+               (str "wtrx exceeded max depth " hi ":"
+                 (apply call-trc$ (first trxargs)
+                   (rest trxargs))))))
+    (fn)))
+
+(defmacro wtrx [[lo hi & trxargs] & body]
+  `(call-wtrx (fn [] ~@body) ~lo ~hi (list ~@trxargs)))
+
+(defmacro prog1 [& body]
+  `(let [result# ~(first body)]
+     ~@(rest body)
+     result#))

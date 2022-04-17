@@ -21,7 +21,8 @@
                         :title (widgets/Text. (str "At " (.now dart:core/DateTime))))
               :body (do
                       (prn "do-block prn OK" )
-                      (dart:core/print ["do-block dart-core-print-says-hi" :and-42 42])
+                      (prn "do-block> PRN!" :name "It works now!")
+                      (dart:core/print (str "do-block dart-core-print-says-hi" :and-42 42))
                       (dart:core/print (dart:core/DateTime. 12 12 12))
                       ;;(dev/log "dev/log do block")
                       (widgets/Center.
@@ -32,7 +33,7 @@
   ; not working (dev/log "post-runapp> dev/log>" :name "It works now!")
   ; this works but pauses in debugger, so commented out: (dev/debugger)
   (prn "post-runapp> PRN!" :name "It works now!")
-  (ub/trc "hi mom!!")
+  (ub/trc "post-runapp> TRC> hi mom!!")
   (dart:core/print "post-runapp> dart-core-print-says-hi")
   (dart:core/print (dart:core/DateTime. 2012 12 12))
   (dart:core/print (.now dart:core/DateTime))
