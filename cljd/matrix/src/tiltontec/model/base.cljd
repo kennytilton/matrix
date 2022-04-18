@@ -1,0 +1,6 @@
+(ns tiltontec.model.base
+  (:require
+    [clojure.string :as strx]))
+
+(defn dummy [& bits]
+  (strx/join "," bits))

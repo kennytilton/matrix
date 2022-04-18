@@ -115,8 +115,6 @@
 
 ;;; --- The Pentagram of Death: a hard use case for data integrity ------
 
-
-
 (defn pentagram-of-death []
   ;;
   ;; Christened the Pentagram of Death by Phillip J Eby, this
@@ -267,21 +265,23 @@
       ))
   (prn :pentagram-of-death-OK))
 
-#_#_
-
-(deftest t-cell-unchanged-test
+(defn t-cell-unchanged-test []
   (cells-init)
+  (data-pulse-next)
 
   (let [ob (atom 0)
         b (cI 2 :slot :bb
-            :obs (fn-obs (trx nil :obs-bb!! new old)
+            :obs (fn-obs
+                   (prn :obs-bb!! new old)
                    (swap! ob inc))
             :unchanged-if (fn [n p]
-                            (trx nil :ucif-sees n p)
+                            (prn :ucif-sees n p)
                             (and (number? n)
                               (number? p)
                               (or (and (even? n)(even? p))
                                 (and (odd? n)(odd? p))))))
+        _ (c-awaken b)
+        _ (prn :b-start @b)
         cct (atom 0)
         c (cF+ [:slot :cc]
             (swap! cct inc)
@@ -302,18 +302,23 @@
     (assert (= (c-get c) 45))
     (assert (= (c-get b) 5))
     (assert (= 2 @ob))
-    (assert (= 2 @cct))))
+    (assert (= 2 @cct)))
+  (prn :t-cell-unchanged-test-OK))
 
-(deftest opti-away
+(defn opti-away []
   (let [aa (cF 42)]
     (assert (= 42 (c-get aa)))
     (println :aa @aa)
     (assert (c-optimized-away? aa))
-    (assert (= 42 @aa))))
+    (assert (= 42 @aa)))
+  (prn :opti-away-OK))
 
 (defn run-tests []
   (test-input)
   (t-formula)
   (t-formula-2)
   (t-formula-22)
-  (pentagram-of-death))
+  (pentagram-of-death)
+  (t-cell-unchanged-test)
+  (opti-away)
+  (prn :test.evaluate-tests-OK))
