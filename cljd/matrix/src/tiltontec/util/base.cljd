@@ -4,8 +4,6 @@
 (defn trc [x]
   (dart:core/print (str "trx> " x)))
 
-
-
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))
   (alter-meta! ref assoc slot new-value)

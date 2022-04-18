@@ -198,6 +198,7 @@
 ;;; --- awakening ------------------------------------
 
 (defn c-awaken [c]
+  (prn :c-awaken-sees @c (ia-type c))
   (case (ia-type c)
     ::cty/c-formula
     (binding [*depender* nil]
@@ -206,6 +207,8 @@
 
     ::cty/cell
     (do
+      (prn :awakening!!! @c)
+      (prn :pulses @+pulse+ (c-pulse-observed c))
       (assert (c-input? c))
       (when (> @+pulse+ (c-pulse-observed c))               ;; safeguard against double-call
         (when-let [me (c-me c)]
@@ -393,7 +396,7 @@ then clear our record of them."
 
 (defn c-value-changed? [c new-value old-value]
   (not ((or (:unchanged-if @c)
-          (= (c-model c) (c-slot c)))
+          =)
         new-value old-value)))
 
 ;;--------------- change propagation  ----------------------------

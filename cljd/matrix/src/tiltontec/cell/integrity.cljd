@@ -1,14 +1,11 @@
 (ns tiltontec.cell.integrity
   (:require
     [tiltontec.util.base
-     :refer-macros [wtrx trx]
-     :refer [prog1]]
-
+     :refer [prog1 wtrx trx]]
     [tiltontec.util.core
      :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
     [tiltontec.cell.base
-     :refer-macros [pcell]
-     :refer [un-stopped +pulse+ c-pulse c-optimized-away?
+     :refer [pcell un-stopped +pulse+ c-pulse c-optimized-away?
              +client-q-handler+ c-stopped
              *within-integrity* *defer-changes*
              *depender* caller-ensure]]))

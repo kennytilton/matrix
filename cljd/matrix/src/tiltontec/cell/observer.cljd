@@ -48,7 +48,7 @@
                 (if-let [obs @+observe-default-handler+]
                   (do (prn :using-default-obs slot-name (type-cljd me))
                       obs)
-                  (prn :no-obs-define-for slot-name (type-cljd me)))))]
+                  (do #_ (prn :no-obs-define-for slot-name (type-cljd me))))))]
     (when obs (obs slot-name me new-val old-val c))))
 
 
@@ -87,6 +87,7 @@ call parameters: slot, me, new, old, and c."
    (assert (c-ref? c))
    (assert (dart/is? @+pulse+ int))
    (rmap-setf [:pulse-observed c] @+pulse+)
+   ;;(prn :c-observe-calling-observe!!!!! why c)
    (observe (c-slot c) (c-model c) (c-value c) prior-value c)
    (when-let [cell-observer (:obs @c)]
      (cell-observer (c-slot c) (c-model c) (c-value c) prior-value c))))

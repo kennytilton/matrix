@@ -4,7 +4,10 @@
             ["package:flutter/widgets.dart" :as widgets]
             ["package:flutter/painting.dart" :as painting]
             ["dart:developer" :as dev]
-            [tiltontec.util.base :as ub]))
+            [tiltontec.util.base :as ub]
+            [tiltontec.util.core
+             :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
+            [tiltontec.testing :as testing]))
 
 ;(set! *print-level* 3)
 ;(set! *print-length* 10)
@@ -39,6 +42,51 @@
   (dart:core/print (.now dart:core/DateTime))
   (ub/rmap-meta-setf [:cz version] 42)
   (ub/trc (str "meta set " (meta version)))
-  ;; nope (dart:core/print (dart:core/DateTime.utc 1951 7 25))
+
+  #_
+  (let [q (atom [])
+        qpush (fn [q val] (swap! q conj val))
+        qpop (fn [q]
+               (let [val (first @q)]
+                 (swap! q subvec 1)
+                 val))]
+    (prn :q @q)
+    (qpush q 0)
+    (prn :q0 @q)
+    (qpush q 1)
+    (qpop q)
+    (prn :qpop @q)
+    (qpush q 2)
+    (qpush q 3)
+    (qpop q)
+    (prn :qpop2 @q))
+
+  #_
+  (let [q (atom [])
+        qpush (fn [q val] (swap! q conj val))
+        qpop (fn [q]
+               (let [val (first @q)]
+                 (swap! q #(vec (rest %)) #_ #(do (subvec % 1)))
+                 val))]
+    (qpush q 0)
+    (qpush q 1)
+    (let [p1 (qpop q)]
+      (qpush q 2)
+      (let [p2 (qpop q)]
+        (prn :qpop2 p2)
+        (prn :q @q))))
+
+  #_
+  (let [q (atom [])]
+    (prn :q @q)
+    (fifo-add q 0)
+    (prn :q @q)
+    (fifo-add q 1)
+    (fifo-pop q)
+    (fifo-add q 2)
+    (fifo-add q 3)
+    (fifo-pop q)
+    (prn :q @q))
+  (testing/run-tests)
   ;;(widgets/debugDumpApp)
   )

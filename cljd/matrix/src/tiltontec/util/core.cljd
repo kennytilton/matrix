@@ -94,11 +94,13 @@
   (atom []))
 
 (defn fifo-data [q] @q)
+
 (defn fifo-clear [q]
-  ;; todo why is this not reset! nil
-  (swap! q empty))
+  (reset! q []))
+
 (defn fifo-empty? [q]
   (empty? @q))
+
 (defn fifo-peek [q]
   (first @q))
 
@@ -107,9 +109,9 @@
 
 (defn fifo-pop [q]
   (when-not (fifo-empty? q)
-    (utm/prog1
-      (first @q)
-      (swap! q subvec 1))))
+    (let [val (first @q)]
+      (swap! q #(vec (rest %)))
+      val)))
 
 ;;; --- detritus ----------------------
 

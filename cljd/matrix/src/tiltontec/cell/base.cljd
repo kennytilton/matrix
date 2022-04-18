@@ -126,7 +126,7 @@ rule to get once behavior or just when fm-traversing to find someone"
   (ia-type? c ::c-formula))
 
 (defn c-ref? [x]
-  (ia-type? x ::cell))
+  (some #{(ia-type x)} [::cell ::c-formula]))
 
 (utb/def-rmap-slots c-
   me slot state input? rule pulse pulse-last-changed pulse-observed
