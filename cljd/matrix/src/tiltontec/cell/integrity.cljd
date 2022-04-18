@@ -136,7 +136,7 @@
 
 (defmacro without-integrity [& body]
   `(binding
-     [*within-integrity* false
+     [tiltontec.cell.base/*within-integrity* false
       *defer-changes* false
       *call-stack* '()]
      ~@body))

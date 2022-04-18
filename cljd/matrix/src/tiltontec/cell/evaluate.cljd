@@ -147,7 +147,7 @@
     (any-ref? c) @c
     :else c))
 
-(defn <cget [c]
+(defn cget [c]
   (c-get c))
 
 (declare calculate-and-link

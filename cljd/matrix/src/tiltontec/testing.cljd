@@ -31,9 +31,11 @@
 
             [tiltontec.cell.integrity
              :refer [with-integrity data-pulse-next]]
-            [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume c-awaken
+            [tiltontec.cell.evaluate :refer [c-get subscget c-value-assume c-awaken
                                              record-dependency ensure-value-is-current]]
-            [tiltontec.test.evaluate :refer [run-tests] :as test-eval]))
+            [tiltontec.test.evaluate :refer [run-tests] :as test-eval]
+            [tiltontec.test.observer :refer [run-tests] :as test-obs]
+            [tiltontec.test.integrity :refer [run-tests] :as test-integ]))
 
 (def-rmap-slots jj- boom)
 
@@ -228,4 +230,7 @@
   (t-cFn)
   (t-cFonce)
 
-  (test-eval/run-tests))
+  (test-eval/run-tests)
+  (test-obs/run-tests)
+  (test-integ/run-tests)
+  (prn :testing-OK))

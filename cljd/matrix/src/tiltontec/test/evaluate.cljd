@@ -29,7 +29,7 @@
      :refer [fn-obs]]
     [tiltontec.cell.integrity
      :refer [with-integrity data-pulse-next]]
-    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume c-awaken
+    [tiltontec.cell.evaluate :refer [c-get cget c-value-assume c-awaken
                                      record-dependency ensure-value-is-current]]))
 
 (defn test-input []

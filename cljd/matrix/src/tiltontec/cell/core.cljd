@@ -5,7 +5,7 @@
     [tiltontec.util.base
      :refer [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
     [tiltontec.cell.base
-     :refer [without-c-dependency
+     :refer [without-c-dependency *within-integrity*
              c-optimized-away? c-formula? c-value c-optimize
              c-unbound? c-input? unbound
              c-model mdead? c-valid? c-useds c-ref? md-ref?
@@ -24,7 +24,7 @@
 
     [tiltontec.cell.integrity
      :refer [with-integrity]]
-    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume
+    [tiltontec.cell.evaluate :refer [c-get cget c-value-assume
                                      record-dependency ensure-value-is-current]]))
 
 ; todo: stand-alone cells with observers should be observed when they are made
@@ -229,7 +229,7 @@ in the CL version of Cells SETF itself is the change API dunction."
   (cset! c new-value))
 
 (defn cswap! [c swap-fn & swap-fn-args]
-  (cset! c (apply swap-fn (<cget c) swap-fn-args)))
+  (cset! c (apply swap-fn (cget c) swap-fn-args)))
 
 (defmacro c-reset-next! [f-c f-new-value]
   "Observers should have side-effects only outside the
@@ -239,11 +239,11 @@ allow an observer to explicitly queue a c-reset! for
 execution as soon as the current change is manifested."
   `(cond
      (not *within-integrity*)
-     (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
-              (c-slot ~f-c)))
+     (throw (Exception. (str "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
+                          (c-slot ~f-c))))
      ;---------------------------------------------
      :else
-     (ufb-add :change
+     (tiltontec.cell.integrity/ufb-add :change
        [:c-reset-next!
         (fn [~'opcode ~'defer-info]
           (let [c# ~f-c

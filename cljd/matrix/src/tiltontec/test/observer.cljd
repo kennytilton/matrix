@@ -1,0 +1,87 @@
+(ns tiltontec.test.observer
+  (:require
+    [tiltontec.util.base
+     :refer [trx prog1]]
+    [tiltontec.cell.base
+     :refer [without-c-dependency c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? ia-type?
+             ia-type cells-init c-callers c-useds
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state +pulse+ c-pulse-observed
+             *call-stack* *defer-changes*
+             c-rule c-me c-value-state c-callers caller-ensure
+             unlink-from-callers *causation*
+             c-slot-name c-synapticF caller-drop
+             c-pulse c-pulse-last-changed c-ephemeral? c-slot
+             *depender* *not-to-be*
+             *c-prop-depth* md-slot-owning? c-lazy] :as cty]
+    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.observer :refer [fn-obs]]
+
+    [tiltontec.cell.core
+     :refer [cF cF+ cI c-reset!]]
+    ))
+
+(defn t-formula []
+  (cells-init)
+  (let [bingo (atom false)
+        c (cF+ [:slot :bingo
+                :obs (fn-obs
+                       (reset! bingo true))]
+            (+ 40 2))]
+    (assert (ia-type? c ::cty/c-formula))
+    (assert (= (c-value-state c) :unbound))
+    (assert (= #{} (c-callers c)))
+    (assert (= #{} (c-useds c)))
+    (assert (not (c-input? c)))
+    (assert (not (c-valid? c)))
+    (assert (nil? (c-model c)))
+    (assert (= (c-get c) 42))
+    (assert (= 42 @c)) ;; ie, optimized-away
+    (assert @bingo)
+    ))
+
+(def bingo2 (atom false))
+
+(defn test-input []
+  (let [c (cI 42 :slot :bingo2
+            :obs (fn-obs (reset! bingo2 true)))]
+    (assert (ia-type? c ::cty/cell))
+    (assert (= (c-value-state c) :valid))
+    (assert (= #{} (c-callers c)))
+    (assert (c-input? c))
+    (assert (c-valid? c))
+    (assert (nil? (c-model c)))
+    (assert (= :bingo2 (c-slot c) (c-slot-name c)))
+    (assert (= (c-get c) 42))
+    (assert (= false @bingo2))
+    ))
+
+(defn t-custom-obs []
+  (let [bobs (atom nil)
+        b (cI 2 :slot :bb
+            :obs (fn-obs
+                   (trx nil slot me new old)
+                   (reset! bobs new)))
+        cobs (atom nil)
+        c (cF+ [:obs (fn-obs [slot me new old c]
+                       (trx slot me new old)
+                       (reset! cobs new))]
+            (* 10 (c-get b)))]
+    (do
+      (assert (= (c-get b) 2))
+      (assert (= @bobs nil))
+      (assert (= (c-get c) 20))
+      (assert (= @cobs 20))
+      (c-reset! b 3)
+      (assert (= 3 @bobs))
+      (assert (= 30 (c-get c)))
+      (assert (= 30 @cobs)))))
+
+(defn run-tests []
+  (t-formula)
+  (test-input)
+  (t-custom-obs)
+  (prn :observer-tests-OK))
+
+
