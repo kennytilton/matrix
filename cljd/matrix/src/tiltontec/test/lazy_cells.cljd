@@ -1,0 +1,97 @@
+(ns tiltontec.test.lazy-cells
+  (:require
+    [tiltontec.util.base
+     :refer [trx prog1]]
+    [tiltontec.cell.base
+     :refer [without-c-dependency c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? ia-type? cells-init
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state +pulse+ c-pulse-observed
+             *call-stack* *defer-changes* unbound
+             c-rule c-me c-value-state c-callers caller-ensure
+             unlink-from-callers *causation*
+             c-slot-name c-synaptic? caller-drop
+             c-pulse c-pulse-last-changed c-ephemeral? c-slot
+             *depender* *not-to-be*
+             *c-prop-depth* md-slot-owning? c-lazy] :as cty]
+    [tiltontec.cell.integrity :refer [with-integrity]]
+    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.observer
+     :refer [defobserver fn-obs]]
+    [tiltontec.cell.core
+     :refer [cF cF+ c_F cF_ cI c-reset!]))
+
+
+(defn solid-lazy []
+  (cells-init)
+  (let [xo (atom 0)
+        a (cI 0)
+        x (cF_ [:obs (fn-obs (swap! xo inc))]
+            (+ (c-get a) 40))]
+    (is (= unbound (:value @x)))
+    (is (= 0 @xo))
+    (is (= 40 (c-get x)))
+    (is (= 1 @xo))
+    (c-reset! a 100)
+    (is (= 1 @xo))
+    (is (= 40 (:value @x)))
+    (is (= 140 (c-get x)))
+    (is (= 2 @xo))
+    ))
+
+(defn lazy-until-asked []
+  (cells-init)
+  (let [xo (atom 0)
+        xr (atom 0)
+        a (cI 0)
+        x (c_F [:obs (fn-obs (swap! xo inc))]
+            (swap! xr inc)
+            (+ (c-get a) 40))]
+    (is (= unbound (:value @x)))
+    (is (= 0 @xo))
+    (is (= 0 @xr))
+    (is (= 40 (c-get x)))
+    (is (= 1 @xo))
+    (is (= 1 @xr))
+    (c-reset! a 100)
+    (is (= 2 @xo))
+    (is (= 2 @xr))
+    (is (= 140 (:value @x)))
+    (is (= 140 (c-get x)))
+    (is (= 2 @xo))
+    (is (= 2 @xr))
+    ))
+
+(defn optimize-when-value-t []
+  (cells-init)
+  (let [xo (atom 0)
+        xr (atom 0)
+        a (cI 0 :slot :aaa)
+        x (cF+ [:slot :xxx
+                :obs (fn-obs (swap! xo inc))
+                :optimize :when-value-t]
+            (swap! xr inc)
+            (trx nil :reading-a!!!)
+            (when-let [av (c-get a)]
+              (when (> av 1)
+                (+ av 40))))]
+    (is (nil? (c-get x)))
+    (is (= #{a} (c-useds x)))
+    (c-reset! a 1)
+    (trx nil :reset-finished!!!!!!!!!!)
+    (is (nil? (c-get x)))
+    (is (= #{a} (c-useds x)))
+    (trx nil :reset-2-beginning!!!!!!!!!!!!)
+    (c-reset! a 2)
+    (trx nil :reset-2-finished!!!!!!!!!!)
+    (is (= 42 (c-get x)))
+    (is (empty? (c-useds x)))
+    (trx nil :useds (c-useds x))
+    (is (empty? (c-callers x)))
+    ))
+
+(defn run-tests []
+  (solid-lazy)
+  (lazy-until-asked)
+  (optimize-when-value-t)
+  (prn :lazy-cells-OK))

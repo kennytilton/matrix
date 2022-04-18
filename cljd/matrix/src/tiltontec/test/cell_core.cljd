@@ -1,0 +1,232 @@
+(ns tiltontec.test.cell-core
+  (:require
+    ["dart:developer" :as dev]
+    [tiltontec.util.base :as ub
+     :refer [def-rmap-slots rmap-setf trx prog1]]
+    ;[tiltontec.util.core
+    ; :refer [cl-find set-ify any-ref? err ia-ref
+    ;         make-fifo-queue fifo-empty? fifo-peek fifo-pop
+    ;         fifo-data fifo-add rmap-setf
+    ;         wtrx-test]
+    ; :as utc]
+    [tiltontec.cell.base
+     :refer [without-c-dependency ia-type cells-init
+             c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? unbound
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state +pulse+ c-pulse-observed
+             *call-stack* *defer-changes*
+             c-rule c-me c-value-state c-callers caller-ensure
+             c-synapses c-slot-name
+             unlink-from-callers *causation*
+             c-synaptic? caller-drop
+             c-pulse c-pulse-last-changed c-ephemeral? c-slot
+             *depender* *not-to-be*
+             *c-prop-depth* md-slot-owning? c-lazy] :as cty]
+    [tiltontec.cell.core
+     :refer [make-cell cI cF cFn cFonce cF+ cF+n c-reset!]]
+    [tiltontec.cell.observer
+     :refer [fn-obs]]
+    [tiltontec.cell.integrity
+     :refer [with-integrity data-pulse-next]]
+    [tiltontec.cell.evaluate :refer [c-get c-value-assume c-awaken
+                                     record-dependency ensure-value-is-current]]
+    ;[tiltontec.test.evaluate :refer [run-tests] :as test-eval]
+    ;[tiltontec.test.observer :refer [run-tests] :as test-obs]
+    ;[tiltontec.test.integrity :refer [run-tests] :as test-integ]
+    ;[tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
+    ))
+
+#_#_#_#_#_
+(def-rmap-slots jj- boom)
+
+(defn test-rmap []
+  (let [x (atom {:value 0 :boom 42})]
+    (assert (= 42 (jj-boom x)))
+    (assert (= 0 (:value @x)))
+
+    (rmap-setf [:value x] 42)
+    (assert (= 42 (:value @x)))
+    (assert (let [j (rmap-setf [:value x] 43)]
+              ;(trx nil :xxx x @x (:value @x))
+              ;(trx nil :j j (type j))
+              (= 43 j)))
+    (assert (= 44 (do (rmap-setf [:value x] 44))))
+    (prn :test-rmap-OK)))
+
+(defn test-fifo-build []
+  (prn :testing-fifo-build)
+  (let [q (make-fifo-queue)]
+    (assert (fifo-empty? q))
+    (assert (nil? (fifo-peek q)))
+    (assert (nil? (fifo-pop q)))
+    (assert (empty? (fifo-data q)))
+    (do
+      (fifo-add q 1)
+      (assert (not (fifo-empty? q)))
+      (assert (= 1 (fifo-peek q)))
+      (assert (= 1 (fifo-pop q)))
+      (assert (fifo-empty? q)))
+    (do
+      (fifo-add q 1)
+      (fifo-add q 2)
+      (assert (not (fifo-empty? q)))
+      (assert (= 1 (fifo-peek q)))
+      (assert (= 1 (fifo-pop q)))
+      (assert (= 2 (fifo-pop q)))
+      (assert (fifo-empty? q)))
+    (prn :fifo-build-OK)))
+
+(defn test-input-cell []
+  (let [c (make-cell
+            :slot :mol
+            :value 42)]
+    (assert (= ::cty/cell (ia-type c)))
+    (assert (= (c-value c) 42))
+    (assert (= (c-value-state c) :valid))
+    (assert (= #{} (c-callers c)))
+    (assert (c-input? c))
+    (assert (nil? (c-model c)))
+    (assert (= :mol (c-slot c))))
+  (prn :test-input-cell-OK))
+
+(defn test-cI []
+  (let [c (cI 42)]
+    (assert (= ::cty/cell (ia-type c)))
+    (assert (= (c-value c) 42))
+    (assert (= (c-value-state c) :valid))
+    (assert (= #{} (c-callers c)))
+    (assert (c-input? c))
+    (assert (c-valid? c))
+    (assert (nil? (c-model c))))
+  (prn :test-cI-OK))
+
+
+(defn test-cI+ []
+  (let [c (cI 42 :slot :cool)]
+    (assert (= ::cty/cell (ia-type c)))
+    (assert (c-ref? c))
+    (assert (= (c-value c) 42))
+    (assert (= (c-value-state c) :valid))
+    (assert (= #{} (c-callers c)))
+    (assert (c-input? c))
+    (assert (nil? (c-model c)))
+    (assert (= :cool (c-slot c)(c-slot-name c)))
+    (prn :test-cI+-OK)))
+
+(defn test-cF []
+  (let [c (cF (+ 40 2))]
+    (assert (= ::cty/c-formula (ia-type c)))
+    (assert (fn? (c-rule c)))
+    (assert (= (c-value c) unbound))
+    (assert (= (c-value-state c) :unbound))
+    (assert (= #{} (c-callers c)))
+    (assert (= #{} (c-useds c)))
+    (assert (not (c-input? c)))
+    (assert (nil? (c-model c)))
+    (prn :test-cF-OK)))
+
+(defn test-cF+ []
+  (let [c (cF+ (:optimize false :slot :bingo)
+            (+ 40 2))]
+    (assert (= ::cty/c-formula (ia-type c)))
+    (assert (c-ref? c))
+    (assert (fn? (c-rule c)))
+    (assert (= (c-value c) unbound))
+    (assert (= (c-value-state c) :unbound))
+    (assert (= #{} (c-callers c)))
+    (assert (= #{} (c-useds c)))
+    (assert (not (c-input? c)))
+    (assert (nil? (c-model c)))
+    (assert (not (c-optimize c)))
+    (assert (= :bingo (c-slot c)(c-slot-name c)))
+    (prn :test-cF+-OK)))
+
+(defn t-eph-1 []
+  (cells-init)
+  (data-pulse-next)
+  (let [boct (atom 0)
+        b (cI nil
+            :slot :b
+            :obs (fn-obs
+                   (prn :b-obs-runs!!!)
+                   (swap! boct inc))
+            :ephemeral? true)
+        _ (c-awaken b)
+        crun (atom 0)
+        cobs (atom 0)
+        c (cF+ [:slot :c
+                :obs (fn-obs (swap! cobs inc))]
+            (trx nil :bingo)
+            (swap! crun inc)
+            (prog1
+              (str "Hi " (c-get b))
+              (trx nil :cellread!! @b)))]
+    (assert (c-rule c) "Early no rule")
+    (assert (nil? (c-value b)))
+    (assert (= :valid (c-value-state b)))
+    (assert (c-valid? b))
+    (assert (c-valid? b))
+    (assert (= "Hi " (c-get c)))
+    (assert (= 1 @boct))
+    (assert (= 1 @crun @cobs))
+    (assert (nil? (:value @b)))
+
+    (do
+      (c-reset! b "Mom")
+      (assert (= "Hi Mom" (c-get c)))
+      (assert (= 2 @boct))
+      (assert (= 2 @crun @cobs))
+      (assert (nil? (c-value b)))
+      (assert (nil? (:value @b))))
+
+    (do
+      (c-reset! b "Mom")
+      (assert (= "Hi Mom" (c-get c)))
+      (assert (= 3 @boct))
+      (assert (= 3 @crun))
+      (assert (= 2 @cobs))
+      (assert (nil? (c-value b)))
+      (assert (nil? (:value @b))))
+    (prn :t-eph-1-OK)))
+
+(defn t-cFn []
+  (cells-init)
+  (data-pulse-next)
+
+  (let [a (cI 42 :slot :aa)
+        b (cFn [:slot :bb]
+            (/ (c-get a) 2))
+        c (cF (+ 1 (c-get b)))]
+    (assert (= 21 (c-get b)))
+    (assert (= 22 (c-get c)))
+    (c-reset! b 42)
+    (assert (= 42 (c-get b)))
+    (assert (= 43 (c-get c))))
+  (prn :t-cFn-OK))
+
+(defn t-cFonce []
+  (let [a (cI 42 :slot :aa)
+        b (cFonce [:slot :bb]
+            (/ (c-get a) 2))]
+    (println :bbb b)
+    (assert (= 21 (c-get b)))
+
+    (do
+      (c-reset! a 2)
+      (assert (= 2 (c-get a)))
+      (assert (= 21 (c-get b))))
+    (prn :t-cfonce-ok)))
+
+(defn run-tests []
+  ;(test-rmap)
+  ;(test-fifo-build)
+  ;(test-input-cell)
+  ;(test-cI)
+  (test-cI+)
+  (test-cF)
+  (test-cF+)
+  (t-eph-1)
+  (t-cFn)
+  (t-cFonce)
+  (prn :cell-core-OK))
