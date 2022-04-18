@@ -14,4 +14,6 @@ target
 files
 closure-library
 cljs/archive
+**/.clojuredart
+**/cljd-out
 
