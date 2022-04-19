@@ -16,10 +16,12 @@ Then we added the Matrix code you will find here, including a test suite from th
 Work thru the CLJD Hello World separately to make sure you have your dependencies right. This step can be skipped if you have confidence in your CLJD support (XCode, Dart, Flutter).
 
 ### Step Two
-Download or pull a local copy of the entire [Matrix mono repo](https://github.com/kennytilton/matrix). Now:
+Download or pull a local copy of the entire [Matrix mono repo](https://github.com/kennytilton/matrix).
 
-* `cd matrix/cljd/matrix`
-* In a terminal, start the Flutter debugger: `dart devtools`
+In a terminal:
+
+* `cd matrix/cljd/matrix`;
+* start the Flutter debugger: `dart devtools`.
 
 This ^^^ command does not return. After a few seconds, look for a new browser tab "DevTools for Futter". We like to tear that off and keep it handy because that will be our console.
 
