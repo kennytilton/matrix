@@ -1,0 +1,64 @@
+(ns tiltontec.test.family-kids
+  (:require
+    [tiltontec.util.base
+     :refer [trx prog1 *trx?*]]
+    [tiltontec.util.core :refer [type-of err]]
+    [tiltontec.cell.base
+     :refer [without-c-dependency cells-init c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? ia-type?
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state +pulse+ c-pulse-observed
+             *call-stack* *defer-changes* unbound
+             c-rule c-me c-value-state c-callers caller-ensure
+             unlink-from-callers *causation*
+             c-slot-name c-synaptic? caller-drop
+             c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+             *depender* *not-to-be*
+             *c-prop-depth* md-slot-owning? c-lazy] :as cty]
+    [tiltontec.cell.integrity :refer [with-integrity]]
+    [tiltontec.cell.observer
+     :refer [ fn-obs]]
+    [tiltontec.cell.core
+     :refer [cF cF+ c-reset-next! cFonce cFn
+             cI c-reset! make-cell make-c-formula]]
+    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
+    [tiltontec.model.base :refer [md-cz md-cell]]
+    [tiltontec.model.core
+     :refer [the-kids mdv! md-get  fm! make md-reset!]
+     :as md]
+    ))
+
+(defn k-notq2be []
+  (let [f (md/make-family
+            :ee (cI 2)
+            :kids (cF (the-kids
+                        (when (odd? (md-get me :ee))
+                          (md/make
+                            :name :yep
+                            :value (cF (do
+                                         (let [par (:par @me)]
+                                           (let [ee (md-get par :ee)]
+                                             (* 14 ee))))))))))]
+    (assert (ia-type? f ::md/family))
+    (assert (empty? (md-get f :kids)))
+
+    (do
+      (md-reset! f :ee 3)
+      (assert (not (empty? (md-get f :kids))))
+      (assert (= 42 (mdv! :yep :value f)))
+
+      (prn :ok-42!!!!!!!!)
+      (let [dmw (first (md-get f :kids))]
+        (assert (md-ref? dmw))
+        (md-reset! f :ee 0)
+        (assert (empty? (md-get f :kids)))
+
+        (prn :dmw @dmw :meta (meta dmw))
+        (assert (nil? @dmw))
+        (assert (= :dead (::cty/state (meta dmw))))))))
+
+(defn run-tests []
+  (k-notq2be)
+  (prn :family-kids-OK))
+
+

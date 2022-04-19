@@ -14,63 +14,32 @@
     [tiltontec.cell.base
      :refer [c-ref? md-ref? unbound
              +pulse+ c-slot c-value c-md-name
-             c-model] :as cty]
-
-    [tiltontec.model.macros
-     :refer-macros [pme]]))
-
-#_
-(defmulti observe-by-type (fn [slot-name me new-val old-val c]
-                            [(type-cljd me)]))
-
-#_
-(defmethod observe-by-type :default [slot me new-val old-val c]
-  #_(when (not= old-val unbound)
-      (println :obs-by-typefallthru slot (type-cljd me) new-val)))
-
-#_(defmulti observe (fn [slot-name me new-val old-val c]
-                      [slot-name (type-cljd me)]))
+             c-model] :as cty]))
 
 (def +observe-method+ (atom {}))
 
 (defn observer-register [key observer]
+  (prn :obs-reg key)
   (swap! +observe-method+ assoc key observer))
 
 (def +observe-default-handler+ (atom nil))
 
+(defn observer-get [key]
+  (get @+observe-method+ key))
 (defn observe [slot-name me new-val old-val c]
-  (let [obs (if-let [obs (get +observe-method+ [slot-name (type-cljd me)])]
-              (do (prn :using-slot-obs slot-name (type-cljd me))
+  (let [obs (if-let [obs (observer-get [slot-name (type-cljd me)])]
+              (do ;;(prn :using-slot-obs slot-name (type-cljd me))
                   obs)
-              (if-let [obs (get +observe-method+ (type-cljd me))]
-                (do (prn :using-type-obs slot-name (type-cljd me))
+              (if-let [obs (observer-get (type-cljd me))]
+                (do ;;(prn :using-type-obs slot-name (type-cljd me))
                     obs)
                 (if-let [obs @+observe-default-handler+]
-                  (do (prn :using-default-obs slot-name (type-cljd me))
+                  (do ;;(prn :using-default-obs slot-name (type-cljd me))
                       obs)
-                  (do #_ (prn :no-obs-define-for slot-name (type-cljd me))))))]
+                  (when (= slot-name :kids)
+                    (prn :no-obs-define-for slot-name (type-cljd me)
+                      (keys @+observe-method+))))))]
     (when obs (obs slot-name me new-val old-val c))))
-
-
-;(defmethod observe :default [slot me new-val old-val c]
-;  (if-let [obs @+observe-default-handler+]
-;    (do                                                     ;; (println :app-def-obs-hanler!!!)
-;      (obs slot me new-val old-val c))
-;    (observe-by-type slot me new-val old-val c)))
-
-#_
-(defmacro defobserver [slot types params & body]
-  (assert (keyword? slot) "defobserver> slot should be a keyword.")
-  (let [ftypes (concat types (take-last (- 1 (count types))
-                               '(:tiltontec.cell.base/model
-                                  ;;js/Object js/Object
-                                  )))
-        fparams (concat params
-                  (take-last (- 4 (count params))
-                    '(me new-value old-value c)))]
-    `(defmethod tiltontec.cell.observer/observe
-       [~slot ~@ftypes] [~'slot ~@fparams]
-       ~@body)))
 
 (defmacro fn-obs
   "Shortcut definer for cell-specific observers.
@@ -83,11 +52,11 @@ call parameters: slot, me, new, old, and c."
 (defn c-observe
   ([c why]
    (c-observe c unbound why))
+
   ([c prior-value why]
    (assert (c-ref? c))
    (assert (dart/is? @+pulse+ int))
    (rmap-setf [:pulse-observed c] @+pulse+)
-   ;;(prn :c-observe-calling-observe!!!!! why c)
    (observe (c-slot c) (c-model c) (c-value c) prior-value c)
    (when-let [cell-observer (:obs @c)]
      (cell-observer (c-slot c) (c-model c) (c-value c) prior-value c))))

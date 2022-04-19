@@ -15,7 +15,7 @@
     [tiltontec.cell.observer :refer [fn-obs]]
 
     [tiltontec.cell.core
-     :refer [cI c-reset! make-c-formula]]))
+     :refer [cI c-reset! make-c-formula c-fn]]))
 
 (defn existing-syn [synapse-id]
   (assert (keyword? synapse-id) "Synapse ID must be a keyword")

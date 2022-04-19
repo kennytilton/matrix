@@ -140,8 +140,9 @@
                                    (for [[k v] @obs]
                                      [k (cget v)])))]
                          (swap! obsd update-in [(cget (:a @obs))] conj o)
-                         (println :tag tag :a (cget (:a @obs)))
-                         (println :tag tag :sees o))))
+                         ;(println :tag tag :a (cget (:a @obs)))
+                         ;(println :tag tag :sees o)
+                         )))
         a (cI 0 :obs (fn-obs (println :a-now new)))
         b (cF+ [:obs (obsr :b)]
             (* 10 (cget a)))

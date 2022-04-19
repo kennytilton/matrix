@@ -19,7 +19,7 @@
     [tiltontec.cell.observer
      :refer [defobserver fn-obs]]
     [tiltontec.cell.core
-     :refer [cF cF+ c_F cF_ cI c-reset!]))
+     :refer [cF cF+ c_F cF_ cI c-reset!]]))
 
 
 (defn solid-lazy []
@@ -28,15 +28,15 @@
         a (cI 0)
         x (cF_ [:obs (fn-obs (swap! xo inc))]
             (+ (c-get a) 40))]
-    (is (= unbound (:value @x)))
-    (is (= 0 @xo))
-    (is (= 40 (c-get x)))
-    (is (= 1 @xo))
+    (assert (= unbound (:value @x)))
+    (assert (= 0 @xo))
+    (assert (= 40 (c-get x)))
+    (assert (= 1 @xo))
     (c-reset! a 100)
-    (is (= 1 @xo))
-    (is (= 40 (:value @x)))
-    (is (= 140 (c-get x)))
-    (is (= 2 @xo))
+    (assert (= 1 @xo))
+    (assert (= 40 (:value @x)))
+    (assert (= 140 (c-get x)))
+    (assert (= 2 @xo))
     ))
 
 (defn lazy-until-asked []
@@ -47,19 +47,19 @@
         x (c_F [:obs (fn-obs (swap! xo inc))]
             (swap! xr inc)
             (+ (c-get a) 40))]
-    (is (= unbound (:value @x)))
-    (is (= 0 @xo))
-    (is (= 0 @xr))
-    (is (= 40 (c-get x)))
-    (is (= 1 @xo))
-    (is (= 1 @xr))
+    (assert (= unbound (:value @x)))
+    (assert (= 0 @xo))
+    (assert (= 0 @xr))
+    (assert (= 40 (c-get x)))
+    (assert (= 1 @xo))
+    (assert (= 1 @xr))
     (c-reset! a 100)
-    (is (= 2 @xo))
-    (is (= 2 @xr))
-    (is (= 140 (:value @x)))
-    (is (= 140 (c-get x)))
-    (is (= 2 @xo))
-    (is (= 2 @xr))
+    (assert (= 2 @xo))
+    (assert (= 2 @xr))
+    (assert (= 140 (:value @x)))
+    (assert (= 140 (c-get x)))
+    (assert (= 2 @xo))
+    (assert (= 2 @xr))
     ))
 
 (defn optimize-when-value-t []
@@ -75,19 +75,19 @@
             (when-let [av (c-get a)]
               (when (> av 1)
                 (+ av 40))))]
-    (is (nil? (c-get x)))
-    (is (= #{a} (c-useds x)))
+    (assert (nil? (c-get x)))
+    (assert (= #{a} (c-useds x)))
     (c-reset! a 1)
     (trx nil :reset-finished!!!!!!!!!!)
-    (is (nil? (c-get x)))
-    (is (= #{a} (c-useds x)))
+    (assert (nil? (c-get x)))
+    (assert (= #{a} (c-useds x)))
     (trx nil :reset-2-beginning!!!!!!!!!!!!)
     (c-reset! a 2)
     (trx nil :reset-2-finished!!!!!!!!!!)
-    (is (= 42 (c-get x)))
-    (is (empty? (c-useds x)))
+    (assert (= 42 (c-get x)))
+    (assert (empty? (c-useds x)))
     (trx nil :useds (c-useds x))
-    (is (empty? (c-callers x)))
+    (assert (empty? (c-callers x)))
     ))
 
 (defn run-tests []

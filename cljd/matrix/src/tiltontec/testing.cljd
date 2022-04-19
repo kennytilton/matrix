@@ -1,15 +1,23 @@
 (ns tiltontec.testing
   (:require
-            ;[tiltontec.test.evaluate :refer [run-tests] :as test-eval]
-            ;[tiltontec.test.observer :refer [run-tests] :as test-obs]
-            ;[tiltontec.test.integrity :refer [run-tests] :as test-integ]
-            ;[tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
-            [tiltontec.test.cell-core :refer [run-tests] :as test-cell-core]))
+            [tiltontec.test.evaluate :refer [run-tests] :as test-eval]
+            [tiltontec.test.observer :refer [run-tests] :as test-obs]
+            [tiltontec.test.integrity :refer [run-tests] :as test-integ]
+            [tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
+            [tiltontec.test.synapse :refer [run-tests] :as test-syn]
+            [tiltontec.test.cell-core :refer [run-tests] :as test-cell-core]
+            [tiltontec.test.hello-cells :refer [run-tests] :as hello-cells]
+            [tiltontec.test.model-core :refer [run-tests] :as model-core]
+            [tiltontec.test.family-kids :refer [run-tests] :as fm-kids]))
 
 (defn run-tests []
-  ;(test-eval/run-tests)
-  ;(test-obs/run-tests)
-  ;(test-integ/run-tests)
-  ;(test-lazy/run-tests)
+  (test-eval/run-tests)
+  (test-obs/run-tests)
+  (test-integ/run-tests)
+  (test-lazy/run-tests)
   (test-cell-core/run-tests)
+  (hello-cells/run-tests)
+  (model-core/run-tests)
+  (fm-kids/run-tests)
+  ; TODO (test-syn/run-tests)
   (prn :testing-OK))

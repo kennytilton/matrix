@@ -2,13 +2,13 @@
   (:require
     ["dart:developer" :as dev]
     [tiltontec.util.base :as ub
-     :refer [def-rmap-slots rmap-setf trx prog1]]
-    ;[tiltontec.util.core
-    ; :refer [cl-find set-ify any-ref? err ia-ref
-    ;         make-fifo-queue fifo-empty? fifo-peek fifo-pop
-    ;         fifo-data fifo-add rmap-setf
-    ;         wtrx-test]
-    ; :as utc]
+     :refer [def-rmap-slots trx prog1]]
+    [tiltontec.util.core
+     :refer [cl-find set-ify any-ref? err ia-ref
+             make-fifo-queue fifo-empty? fifo-peek fifo-pop
+             fifo-data fifo-add rmap-setf
+             wtrx-test]
+     :as utc]
     [tiltontec.cell.base
      :refer [without-c-dependency ia-type cells-init
              c-optimized-away? c-formula? c-value c-optimize
@@ -31,13 +31,8 @@
      :refer [with-integrity data-pulse-next]]
     [tiltontec.cell.evaluate :refer [c-get c-value-assume c-awaken
                                      record-dependency ensure-value-is-current]]
-    ;[tiltontec.test.evaluate :refer [run-tests] :as test-eval]
-    ;[tiltontec.test.observer :refer [run-tests] :as test-obs]
-    ;[tiltontec.test.integrity :refer [run-tests] :as test-integ]
-    ;[tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
     ))
 
-#_#_#_#_#_
 (def-rmap-slots jj- boom)
 
 (defn test-rmap []
@@ -47,6 +42,7 @@
 
     (rmap-setf [:value x] 42)
     (assert (= 42 (:value @x)))
+
     (assert (let [j (rmap-setf [:value x] 43)]
               ;(trx nil :xxx x @x (:value @x))
               ;(trx nil :j j (type j))
@@ -100,7 +96,6 @@
     (assert (c-valid? c))
     (assert (nil? (c-model c))))
   (prn :test-cI-OK))
-
 
 (defn test-cI+ []
   (let [c (cI 42 :slot :cool)]
@@ -219,10 +214,9 @@
     (prn :t-cfonce-ok)))
 
 (defn run-tests []
-  ;(test-rmap)
-  ;(test-fifo-build)
-  ;(test-input-cell)
-  ;(test-cI)
+  (test-rmap)
+  (test-fifo-build)
+  (test-cI)
   (test-cI+)
   (test-cF)
   (test-cF+)

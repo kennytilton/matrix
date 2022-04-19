@@ -57,9 +57,9 @@
 
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))
-  (swap! ref assoc slot new-value)
-  ;;(prn :altermeta!! slot new-value)
+  (alter-meta! ref assoc slot new-value)
   new-value)
+
 ;; --- error handling -----------------
 
 (defn err [& bits]
@@ -166,6 +166,7 @@
        (swap! counts update-in path (fnil + 0) n))
      (countit [path] n))))
 
-
+(defn difference [s so]
+  (set (remove so s)))
 
 

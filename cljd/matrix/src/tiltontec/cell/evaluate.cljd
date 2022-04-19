@@ -1,10 +1,9 @@
 (ns tiltontec.cell.evaluate
   (:require
-    ;; [clojure.set :refer [difference]]
     [clojure.string :as cljstr]
     [tiltontec.util.base :refer [wtrx trx prog1]]
     [tiltontec.util.core
-     :refer [any-ref? rmap-setf err rmap-meta-setf set-ify]]
+     :refer [any-ref? rmap-setf err rmap-meta-setf set-ify difference]]
     [tiltontec.cell.base
      :refer [without-c-dependency pcell c-optimized-away? c-formula? c-value c-optimize
              c-unbound? c-input? ia-type
@@ -198,7 +197,7 @@
 ;;; --- awakening ------------------------------------
 
 (defn c-awaken [c]
-  (prn :c-awaken-sees @c (ia-type c))
+  ;(prn :c-awaken-sees @c (ia-type c))
   (case (ia-type c)
     ::cty/c-formula
     (binding [*depender* nil]
@@ -207,8 +206,6 @@
 
     ::cty/cell
     (do
-      (prn :awakening!!! @c)
-      (prn :pulses @+pulse+ (c-pulse-observed c))
       (assert (c-input? c))
       (when (> @+pulse+ (c-pulse-observed c))               ;; safeguard against double-call
         (when-let [me (c-me c)]
@@ -218,7 +215,7 @@
 
     ;; else
     (do
-      (trx :awk-fallthru-entry (ia-type c) (seq? c) (coll? c) (vector? c))
+
       (cond
         (coll? c) (doseq [ce c]
                     (c-awaken ce))
@@ -407,8 +404,7 @@ then clear our record of them."
 
   md-slot-cell-flushed)
 
-(defn difference [s so]
-  (set (remove so s)))
+
 
 (defn propagate
   "A cell:

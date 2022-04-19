@@ -1,0 +1,295 @@
+(ns tiltontec.test.model-core
+  (:require
+    [tiltontec.util.base :refer [trx prog1 *trx?*]]
+    [tiltontec.util.core :refer [type-of err]]
+    [tiltontec.cell.base
+     :refer [without-c-dependency
+             cells-init c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? ia-type?
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state +pulse+ c-pulse-observed
+             *call-stack* *defer-changes* unbound
+             c-rule c-me c-value-state c-callers caller-ensure
+             unlink-from-callers *causation*
+             c-slot-name c-synaptic? caller-drop
+             c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+             *depender* *not-to-be*
+             *c-prop-depth* md-slot-owning? c-lazy] :as cty]
+    [tiltontec.cell.integrity :refer [with-integrity]]
+    [tiltontec.cell.observer :refer [fn-obs]]
+
+    [tiltontec.cell.core
+     :refer [cF cF+ c-reset-next! cFonce cFn
+             cI c-reset! make-cell make-c-formula]]
+
+    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
+    [tiltontec.model.base :refer [md-cz md-cell]]
+    [tiltontec.model.core
+     :refer [make cFkids the-kids mdv! md-get md-name fm-navig fm! make md-reset! md-getx]
+     :as md]
+    ))
+
+(defn fm-0 []
+  (cells-init)
+  (let [u (md/make-family
+            :kon (cI false :slot :kon)
+            :kids (cF ;;(trx :kids-run! *depender*)
+                    (when (md-get me :kon)
+                      (vector
+                        (md/make
+                          :par me
+                          :name :konzo
+                          :kzo (cI 3))))))]
+    (assert (nil? (:kids @u)))
+    (prn :u-cells (:cz (meta u)) (meta u))
+    (let [kc (md-cell u :kids)
+          kon (md-cell u :kon)]
+      (prn :resetting-cell kon)
+      (c-reset! kon true)
+      (assert (= 1 (count (:kids @u))))
+      (assert (md/fm-navig :konzo u :inside? true))
+      )))
+
+(defn fm-2 []
+  (let [u (md/make-family
+            :name :uni
+            :kids (cF (vector
+                        (md/make
+                          :par me
+                          :name :aa)
+                        (md/make
+                          :par me
+                          :name :bb
+                          :kids (cF (vector
+                                      (md/make
+                                        :par me
+                                        :name :bba)
+
+                                      (md/make
+                                        :par me
+                                        :name :bbb)))))))]
+    ;; (assert (fm-navig :bba u :inside? true :must? true))
+    ;; (assert (thrown-with-msg?
+    ;;      Exception #"fm-navig-must-failed"
+    ;;      (fm-navig :bbax u :inside? true :must? true)))
+    ;; (assert (nil? (fm-navig :bbax u :inside? true :must? false)))
+    (let [bba (fm-navig :bba u :inside? true :must? true)]
+      (assert bba)
+      (assert (md/fm-navig :uni bba :inside? true :up? true))
+      (assert (fm-navig :aa bba :inside? false :up? true))
+      (assert (fm-navig :bb bba :inside? true :up? true))
+      (assert (fm-navig :bbb bba :inside? false :up? true))
+      )
+    ))
+
+(defn fm-3 []
+  (let [u (md/make-family
+            :u63 (cF (+ (mdv! :aa :aa42)
+                       (mdv! :bb :bb21)))
+            :kon (cI false)
+            :kids (cF (remove nil?
+                        (vector
+                          (md/make
+                            :par me
+                            :name :aa
+                            :aa42 (cF (* 2 (mdv! :bb :bb21)))
+                            :aa3 (cI 3))
+                          (when (md-get me :kon)
+                            (md/make
+                              :par me
+                              :name :konzo
+                              :kzo (cI 3)))
+                          (md/make
+                            :par me
+                            :name :bb
+                            :bb21 (cF (* 7 (mdv! :aa :aa3))))))))]
+    (assert (= 63 (md-get u :u63)))
+    (assert (= 42 (mdv! :aa :aa42 u)))
+    (assert (= 21 (mdv! :bb :bb21 u)))
+    (assert (nil? (fm-navig :konzo u :must? false)))
+    (c-reset! (md-cell u :kon) true)
+    (assert (:kon @u))
+    (assert (md-cell u :kon))
+    (assert (= 3 (count (:kids @u))))
+    (assert (fm-navig :konzo u :inside? true))
+    ))
+
+(defn fm-3x []
+  (let [u (md/make-family
+            :u63 (cF (+ (mdv! :aa :aa42)
+                       (mdv! :bb :bb21)))
+            :kon (cI false)
+            :kids (cF (the-kids
+                        (md/make
+                          :name :aa
+                          :aa42 (cF (* 2 (mdv! :bb :bb21)))
+                          :aa3 (cI 3))
+                        (when (md-get me :kon)
+                          (md/make
+                            :name :konzo
+                            :kzo (cI 3)))
+                        (md/make
+                          :name :bb
+                          :bb21 (cF (* 7 (mdv! :aa :aa3)))))))]
+    (assert (= 63 (md-get u :u63)))
+    (assert (= 42 (mdv! :aa :aa42 u)))
+    (assert (= 21 (mdv! :bb :bb21 u)))
+    (assert (nil? (fm-navig :konzo u :must? false)))
+    (c-reset! (md-cell u :kon) true)
+    (assert (:kon @u))
+    (assert (md-cell u :kon))
+    (assert (= 3 (count (:kids @u))))
+    (assert (fm-navig :konzo u :inside? true))
+    ))
+
+
+(defn fm-picker []
+  (let [u (md/make-family
+            :kids (cF (the-kids
+                        (md/make :name :picker
+                          :value (cI 42)
+                          :kids (cF (the-kids
+                                      (md/make
+                                        :name :aax)
+                                      (md/make
+                                        :name :bbx))))
+                        (md/make :name :dd
+                          :kzo (cF (let [p (fm-navig :picker me)]
+                                     (println :bingo p)
+                                     (md-get p :value)))))))]
+    (assert (= 42 (mdv! :picker :value u)))
+    (assert (= 42 (mdv! :dd :kzo u)))))
+
+(defn mm-typed []
+  (let [me (md/make
+             :type ::typetest
+             :x2 (cI 2)
+             :age (cF (* (md-get me :x2)
+                        21)))]
+    (assert (= 42 (md-get me :age)))
+    (assert (ia-type? me ::typetest))))
+
+(defn mm-opti-1 []
+  (let [me (md/make
+             :x2 2
+             :age (cF (* 21 (md-get me :x2)))
+             )]
+
+    (assert (= 2 (md-get me :x2)))
+    (assert (= 42 (md-get me :age)))
+    (assert (nil? (md-cell me :age)))
+    ))
+
+(defn mm-install-alive []
+  (let [bct (atom 0)
+        res (do ;; sync
+              (md/make
+                :name "Bob"
+                :action (cI nil
+                          :ephemeral? true)
+                :bogus (cF (if-let [be (md-get me :bogus-e)]
+                             (do
+                               (trx :bingo-e!!!!!!!! be @bct)
+                               (swap! bct inc)
+                               (* 2 be))
+                             (trx :bogus-no-e (:bogus-e @me))))
+                :bogus-e (cI 21 :ephemeral? true)
+                :loc (cF (case (md-get me :action)
+                           :leave :away
+                           :return :home
+                           :missing))))]
+    (println :meta (meta res))
+    (assert (= (:cz (meta res)) (md-cz res)))
+    (assert (= 4 (count (md-cz res))))
+    (assert (every? c-ref? (vals (md-cz res))))
+    (assert (= #{:action :loc :bogus :bogus-e} (set (keys (md-cz res)))))
+    (assert (every? #(= res (c-me  %))  (vals (md-cz res))))
+    (assert (= #{:action :loc :bogus :bogus-e}
+          (set (map #(c-slot %)
+                 (vals (md-cz res))))))
+    (assert (= "Bob" (:name @res)))
+    (assert (= "Bob" (md-name res)))
+    (println :res @res)
+    (assert (= 42 (:bogus @res)))
+    (assert (= nil (:bogus-e @res))) ;; ephemeral, so reset to nil silently
+    (assert (= nil (:action @res)))
+    (println :loc (:loc @res))
+    (assert (= :missing (:loc @res)))
+    (assert (= 1 @bct))
+    (reset! bct 0)
+    (md-reset! res :action :return)
+    (assert (= :home (:loc @res)))
+    (assert (zero? @bct))
+    ))
+
+(defn hello-model []
+  (let [uni (md/make-family
+              :kids (cF (the-kids
+                          (md/make
+                            :name :visitor
+                            :moniker "World"
+                            :action (cI nil
+                                      :ephemeral? true
+                                      :obs (fn [slot me new old c]
+                                             (when new (trx visitor-did new)))))
+                          (md/make
+                            :name :resident
+                            :action (cI nil :ephemeral? true)
+                            :location (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
+                                        (case (md-get me :action)
+                                          :leave :away
+                                          :return :home
+                                          :missing))
+                            :response (cF+ [:obs (fn-obs (when new
+                                                           (trx :r-response new)))
+                                            :ephemeral? true]
+                                        (when (= :home (md-get me :location))
+                                          (when-let [act (mdv! :visitor :action)]
+                                            (case act
+                                              :knock-knock "hello, world")))))
+                          (md/make
+                            :name :alarm
+                            :on-off (cF+ [:obs (fn-obs
+                                                 (trx :telling-alarm-api new))]
+                                      (if (= :home (mdv! :resident :location)) :off :on))
+                            :activity (cF+ [:obs (fn-obs
+                                                   (case new
+                                                     :call-police (trx :auto-dialing-911)
+                                                     nil))]
+                                        (when (= :on (md-get me :on-off))
+                                          (when-let [action (mdv! :visitor :action)]
+                                            (case action
+                                              :smashing-window :call-police
+                                              nil))))))))]
+    (let [viz (fm! :visitor uni)
+          rez (fm! :resident uni)]
+      (assert (not (nil? viz)))
+      (assert (not (nil? rez)))
+      (assert (not (nil? (md-cell rez :action))))
+      (assert (= :missing (mdv! :resident :location uni)))
+      (md-reset! viz :action :knock-knock)
+      (md-reset! viz :action :smashing-window)
+      (assert (not (nil? (md-cell rez :action))))
+      (md-reset! rez :action :return)
+      (assert (= :home (mdv! :resident :location uni)))
+      (md-reset! viz :action :knock-knock))))
+
+(defn run-tests []
+  (fm-0)
+  (prn :fm-0 :ok)
+  (fm-2)
+  (prn :fm-2 :ok)
+  (fm-3)
+  (prn :fm-3 :ok)
+  (fm-3x)
+  (prn :fm-3x :ok)
+  (fm-picker)
+  (prn :fm-picker :ok)
+  (mm-typed)
+  (prn :fm-mm-typed :ok)
+  (mm-opti-1)
+  (prn :fm-opti-1 :ok)
+  (mm-install-alive)
+  (prn :fm-in-alive :ok)
+  (hello-model)
+  (prn :model-core-OK))
