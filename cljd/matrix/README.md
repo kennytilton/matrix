@@ -12,6 +12,8 @@ In our case, we spent a day upgrading XCode and sorting out the Dart and Flutter
 
 Then we added the Matrix code you will find here, including a test suite from the CLJC version. Anyway...
 
+> FLASH! The "Getting Started" example has now also been done using a nascent `mx-flutter` library. Please see that [here](https://github.com/kennytilton/matrix/blob/main/cljd/matrix/src/tiltontec/mx_cljd_world.cljd).
+
 ### Step One
 Work thru the CLJD Hello World separately to make sure you have your dependencies right. This step can be skipped if you have confidence in your CLJD support (XCode, Dart, Flutter).
 
