@@ -1,6 +1,10 @@
 (ns tiltontec.mx-cljd-world
   (:require
+    [clojure.string :as string]
     [tiltontec.cell.base :refer [ia-type unbound] :as cty]
+    [tiltontec.cell.core :as cell
+     :refer [cF cF+ cI]]
+    [tiltontec.model.core :refer [make mget md-kids] :as md]
     [tiltontec.mx-flutter.core :as fx
      :refer [render-fx MaterialApp Center]]
     ["package:flutter/material.dart" :as m
@@ -15,8 +19,12 @@
   (prn :make-fx-app!!)
   (fx/render-fx
     (fx/MaterialApp {}
-      {:title "Welcome to Flutter World"
-       :theme (ThemeData. :primarySwatch m.Colors/red)}
+      {:title "Welcome to Red Flutter World"
+       :theme (cF (let [ttl (mget me :title)]
+                    (prn :hello-ttl!!!!!!! ttl)
+                    (if (string/includes? ttl "Red")
+                      (ThemeData. :primarySwatch m.Colors/red)
+                      (ThemeData. :primarySwatch m.Colors/blue))))}
       (fx/Scaffold {}
         {:appBar (AppBar.
                    :title (Text. (str "BAM " (.now dart:core/DateTime))))}

@@ -7,19 +7,6 @@
             ["package:flutter/painting.dart"
              :refer [TextStyle]]))
 
-#_
-(defn make-app []
-  (MaterialApp.
-    :title "Welcome to Flutter World"
-    :theme (ThemeData. :primarySwatch m.Colors/yellow)
-    :home (Scaffold.
-            :appBar (AppBar. :title (Text. (str "At " (.now dart:core/DateTime))))
-
-            :body (widgets/Text. (str "hello, world v." (rand-int 99))
-                    :style (TextStyle.
-                             :color m.Colors/blue
-                             :fontSize 32.0)))))
-
 (defn make-app []
   (MaterialApp.
     :title "Welcome to Flutter World"
