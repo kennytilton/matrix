@@ -51,3 +51,14 @@
      ~@(concat
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))
+
+(defmacro Center [custom-props fx-props & kids]
+  ;; todo: enforce only one kid
+  `(tiltontec.model.core/make
+     :type ::Center
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :fx-gen #(m/Center.
+                :child (render-fx (first (tiltontec.model.core/md-kids %))))
+     ~@(concat
+         (vec (apply concat (seq fx-props)))
+         (vec (apply concat (seq custom-props))))))
