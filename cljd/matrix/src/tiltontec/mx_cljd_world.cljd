@@ -7,43 +7,47 @@
     [tiltontec.model.core :refer [make mget md-kids] :as md]
     [tiltontec.mx-flutter.core :as fx
      :refer [render-fx MaterialApp Center]]
-    ["package:flutter/material.dart" :as m
-     :refer [Widget MainAxisAlignment Colors Theme
-             FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
     ["package:flutter/widgets.dart"
-     :refer [Text Column StatefulWidget StatelessWidget]]
+     :refer [Text]]
+    ["package:flutter/material.dart" :as m
+     :refer [Colors Theme ThemeData AppBar]]
     ["package:flutter/painting.dart"
      :refer [TextStyle]]))
 
 (defn make-app []
-  (prn :make-fx-app!!)
   (fx/render-fx
+    ;; to keep our macrology simple we defer being smart about which
+    ;; widget option maps are required, so we see lots extra {}'s below.
+    ;; The universal syntax will be:
+    ;;   (widget-name [{flutter-props*} [{app-domain-props*}]] & children)
     (fx/MaterialApp {}
-      {:title "Welcome to Red Flutter World"
-       :theme (cF (let [ttl (mget me :title)]
-                    (prn :hello-ttl!!!!!!! ttl)
-                    (if (string/includes? ttl "Red")
-                      (ThemeData. :primarySwatch m.Colors/red)
-                      (ThemeData. :primarySwatch m.Colors/blue))))}
+      {:title "Welcome to Flutter World"
+       :theme (cF
+                ;; Here we confirm we can have computed values become suitable Flutter values
+                ;; for the Flutter :theme property.
+                ;; To see this, the title ^^ to include one of the supported colors.
+                ;
+                ;; So, we DO compute off another property, viz. the title, but do NOT yet
+                ;; reach out to other widgets to depend on their values. Soon.
+                ;;
+                ;; Note that neither does NOT test reactivity/setState. That comes next.
+                ;;
+                (ThemeData. :primarySwatch
+                    (let [ttl (mget me :title)]
+                      (cond
+                        (string/includes? ttl "Red") m.Colors/red
+                        (string/includes? ttl "Blue") m.Colors/blue
+                        (string/includes? ttl "Green") m.Colors/green
+                        :else m.Colors/yellow))))}
+
+      ;; below we see a mix of mx-flutter factories and CLJD Flutter factories (suffixed by .)
       (fx/Scaffold {}
         {:appBar (AppBar.
-                   :title (Text. (str "BAM " (.now dart:core/DateTime))))}
+                   :title (Text. "Welcome to ClojureDart"))}
         (fx/Center {} {}
           (fx/Text {}
             {:style (TextStyle.
-                      :color m.Colors/blue
+                      :color m.Colors/red
                       :fontSize 32.0)}
             (str "FX Rizing v." (rand-int 99))))))))
-
-#_(defn make-app []
-    (MaterialApp.
-      :title "Welcome to Flutter World"
-      :theme (ThemeData. :primarySwatch m.Colors/yellow)
-      :home (Scaffold.
-              :appBar (AppBar. :title (Text. (str "At " (.now dart:core/DateTime))))
-
-              :body (widgets/Text. (str "hello, world v." (rand-int 99))
-                      :style (TextStyle.
-                               :color m.Colors/blue
-                               :fontSize 32.0)))))
 
