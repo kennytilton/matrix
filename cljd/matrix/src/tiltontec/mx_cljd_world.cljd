@@ -12,18 +12,19 @@
              :refer [TextStyle]]))
 
 (defn make-app []
+  (prn :make-fx-app!!)
   (fx/render-fx
     (fx/MaterialApp {}
       {:title "Welcome to Flutter World"
        :theme (ThemeData. :primarySwatch m.Colors/red)}
-      #_
       (fx/Scaffold {}
         {:appBar (AppBar.
-                   :title (Text. (str "At " (.now dart:core/DateTime))))}
-        (fx/Text {:style (TextStyle.
+                   :title (Text. (str "BAM " (.now dart:core/DateTime))))}
+        (fx/Text {}
+          {:style (TextStyle.
                            :color m.Colors/blue
                            :fontSize 32.0)}
-          (str "hello, world v." (rand-int 99)))))))
+          (str "FX Rizing v." (rand-int 99)))))))
 
 #_
 (defn make-app []
