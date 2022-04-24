@@ -8,7 +8,10 @@
             [tiltontec.util.base :as ub]
             [tiltontec.util.core
              :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
-            [tiltontec.testing :as testing]))
+            [tiltontec.testing :as testing]
+            [tiltontec.cljd-world :as cljdw]
+            [tiltontec.mx-cljd-world :as mxcljdw]
+            ))
 
 ;(set! *print-level* 3)
 ;(set! *print-length* 10)
@@ -17,23 +20,7 @@
 
 (defn main []
   (material/runApp
-    (material/MaterialApp.
-      :title "Welcome to Flutter World"
-      :theme (material/ThemeData. :primarySwatch material.Colors/yellow)
-      :home (material/Scaffold.
-              :appBar (material/AppBar.
-                        :title (widgets/Text. (str "At " (.now dart:core/DateTime))))
-              :body (do
-                      (prn "do-block prn OK" )
-                      (prn "do-block> PRN!" :name "It works now!")
-                      (dart:core/print (str "do-block dart-core-print-says-hi" :and-42 42))
-                      (dart:core/print (dart:core/DateTime. 12 12 12))
-                      ;;(dev/log "dev/log do block")
-                      (widgets/Center.
-                        :child (widgets/Text. (str "hello, world v." (rand-int 999))
-                                 :style (painting/TextStyle.
-                                          :color material.Colors/blue
-                                          :fontSize 32.0)))))))
+    (cljdw/make-app))
   ; not working (dev/log "post-runapp> dev/log>" :name "It works now!")
   ; this works but pauses in debugger, so commented out: (dev/debugger)
   ;(prn "post-runapp> PRN!" :name "It works now!")

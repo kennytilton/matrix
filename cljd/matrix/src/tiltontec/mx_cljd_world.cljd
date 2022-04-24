@@ -1,0 +1,40 @@
+(ns tiltontec.mx-cljd-world
+  (:require
+    [tiltontec.cell.base :refer [ia-type unbound] :as cty]
+    [tiltontec.mx-flutter.core :as fx
+     :refer [render-fx MaterialApp]]
+    ["package:flutter/material.dart" :as m
+           :refer [Widget MainAxisAlignment Colors Theme
+                   FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
+            ["package:flutter/widgets.dart"
+             :refer [Text Column StatefulWidget StatelessWidget]]
+            ["package:flutter/painting.dart"
+             :refer [TextStyle]]))
+
+(defn make-app []
+  (fx/render-fx
+    (fx/MaterialApp {}
+      {:title "Welcome to Flutter World"
+       :theme (ThemeData. :primarySwatch m.Colors/red)}
+      #_
+      (fx/Scaffold {}
+        {:appBar (AppBar.
+                   :title (Text. (str "At " (.now dart:core/DateTime))))}
+        (fx/Text {:style (TextStyle.
+                           :color m.Colors/blue
+                           :fontSize 32.0)}
+          (str "hello, world v." (rand-int 99)))))))
+
+#_
+(defn make-app []
+  (MaterialApp.
+    :title "Welcome to Flutter World"
+    :theme (ThemeData. :primarySwatch m.Colors/yellow)
+    :home (Scaffold.
+            :appBar (AppBar. :title (Text. (str "At " (.now dart:core/DateTime))))
+
+            :body (widgets/Text. (str "hello, world v." (rand-int 99))
+                    :style (TextStyle.
+                             :color m.Colors/blue
+                             :fontSize 32.0)))))
+

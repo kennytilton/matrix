@@ -1,0 +1,55 @@
+(ns tiltontec.mx-flutter.core
+  (:require ["package:flutter/material.dart" :as m
+             :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
+                     FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
+            ["package:flutter/widgets.dart" :as w
+             :refer [Text Center Column StatefulWidget StatelessWidget]]
+            ["package:flutter/painting.dart" :as p
+             :refer [TextStyle]]
+            [tiltontec.cell.base :refer [ia-type unbound] :as cty]
+            [tiltontec.model.core :refer [make mget md-kids] :as md]))
+
+(declare render-MaterialApp)
+
+(defn render-fx [fx]
+  (render-MaterialApp fx)
+  #_
+  (case (ia-type fx)
+    ::MaterialApp (render-MaterialApp fx)
+    (throw (Exception. (str "render-fx passed unknown type: " (ia-type fx))))))
+
+(defn render-MaterialApp [mx]
+  #_ (MaterialApp.
+    :title (mget mx :title)
+    :theme (mget mx :theme)
+    :home (render-fx (first (md-kids mx)))))
+
+(defmacro MaterialApp [custom-props fx-props & kids]
+  `(do
+     #_ (apply tiltontec.model.core/make
+       :type ::MaterialApp
+       :kids (tiltontec.model.core/cFkids ~@kids)
+       [])))
+
+(defmacro Scaffold [custom-props fx-props & kids]
+  `(do
+     #_ (apply tiltontec.model.core/make
+          :type ::MaterialApp
+          :kids (tiltontec.model.core/cFkids ~@kids)
+          [])))
+
+(defmacro Text [custom-props fx-props & kids]
+  `(do
+     #_ (apply tiltontec.model.core/make
+          :type ::MaterialApp
+          :kids (tiltontec.model.core/cFkids ~@kids)
+          [])))
+
+#_
+(defmacro MaterialApp [custom-props fx-props & kids]
+  `(apply tiltontec.model.core/make
+    ;; :type :mx-flutter/MaterialApp
+    :kids (tiltontec.model.core/cFkids ~@~kids)
+     #_
+    ~@(concat (vec (apply concat (seq fx-props)))
+      (vec (apply concat (seq custom-props))))))
