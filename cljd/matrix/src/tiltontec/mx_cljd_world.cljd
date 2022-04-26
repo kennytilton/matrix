@@ -34,7 +34,16 @@
                                    ;;(prn :got-fmt fmt)
                                    (str "At " (second (string/split (str now) #" ")))
                                    #_ (.now dart:core/DateTime)
-                                   #_ ((.format fmt) now))))}
+                                   #_ ((.format fmt) now))))
+         :floatingActionButton (FloatingActionButton.
+                                 :onPressed (fn ^void []
+                                              (prn :BAM-press!!!)
+                                              #_
+                                              (.setState thisPageState
+                                                #(do (swap! counter inc) nil)))
+                                 :tooltip "Increment"
+                                 :child (Icon. Icons/add
+                                          :color Colors/black))}
         (fx/Center {} {}
           #_ (fx/Text {} {:style (TextStyle.
                                 :color m.Colors/red

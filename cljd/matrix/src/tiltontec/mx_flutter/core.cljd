@@ -98,7 +98,8 @@
      :kids (cFkids ~@kids)
      :fx-gen #(m/Scaffold.
                 :appBar (mget % :appBar)
-                :body (render-fx (first (md/md-kids %))))
+                :body (render-fx (first (md/md-kids %)))
+                :floatingActionButton (mget % :floatingActionButton))
      ~@(concat
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))
