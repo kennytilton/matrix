@@ -14,7 +14,9 @@
              FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
     ["package:flutter/painting.dart"
      :refer [TextStyle]]
-    ;;["dart:intl" :as intl]
+    ;["dart:intl" :as intl]
+    [tiltontec.cell.observer
+     :refer [fn-obs]]
     ))
 
 (defn make-app []
@@ -27,37 +29,33 @@
                         (string/includes? ttl "Reed") m.Colors/red
                         :else m.Colors/yellow))))}
       (fx/Scaffold {}
-        {:appBar (AppBar.
-                   :title (Text. (let [now (.now dart:core/DateTime)
-                                       #_#_ fmt (.yMMMd dart:core/DateFormat)]
-                                   ;;(prn :got-now now)
-                                   ;;(prn :got-fmt fmt)
-                                   (str "At " (second (string/split (str now) #" ")))
-                                   #_ (.now dart:core/DateTime)
-                                   #_ ((.format fmt) now))))
+        {:appBar               (AppBar.
+                                 :title (Text. (let [now (.now dart:core/DateTime)
+                                                     #_#_fmt (.yMMMd dart:core/DateFormat)]
+                                                 ;;(prn :got-now now)
+                                                 ;;(prn :got-fmt fmt)
+                                                 ;(str "At " (-> (DateTime/now) (-> (intl.DateFormat/yMMd) .format)))
+                                                 (str "At " (second (string/split (str now) #" ")))
+                                                 #_(.now dart:core/DateTime)
+                                                 #_((.format fmt) now))))
          :floatingActionButton (FloatingActionButton.
                                  :onPressed (fn ^void []
                                               (prn :BAM-press!!!)
-                                              #_
-                                              (.setState thisPageState
-                                                #(do (swap! counter inc) nil)))
+                                              #_(.setState thisPageState
+                                                  #(do (swap! counter inc) nil)))
                                  :tooltip "Increment"
                                  :child (Icon. Icons/add
                                           :color Colors/black))}
         (fx/Center {} {}
-          #_ (fx/Text {} {:style (TextStyle.
-                                :color m.Colors/red
-                                :fontSize 32.0)}
-            (str "FX Rizing v." (rand-int 99)))
-
           (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
             (fx/Text {} {:style (TextStyle.
                                   :color m.Colors/red
                                   :fontSize 32.0)}
               (str "FX Rizing v." (rand-int 99)))
 
-            (fx/Text {} {:style (TextStyle.
-                                  :color m.Colors/green
-                                  :fontSize 32.0)}
-              (str "Cooler " (rand-int 99)))))))))
+            (fx/Text {:z-count (cI 16 :obs (fn-obs (prn :old-new old new (meta me))))}
+              {:style (TextStyle.
+                        :color m.Colors/green
+                        :fontSize 32.0)}
+              (str "Coolio " (mget me :z-count)))))))))
 
