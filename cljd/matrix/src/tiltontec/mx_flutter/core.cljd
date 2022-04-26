@@ -6,17 +6,22 @@
              :refer [Text Center Column StatefulWidget StatelessWidget]]
             ["package:flutter/painting.dart" :as p
              :refer [TextStyle]]
-            [tiltontec.cell.base :refer [ia-type unbound] :as cty]
-            [tiltontec.model.core :refer [make mget md-kids] :as md]))
+            ;;[tiltontec.cell.base :refer [ia-type unbound] :as cty]
+            [tiltontec.util.core
+             :refer [any-ref? rmap-setf err rmap-meta-setf set-ify difference]]
+            [tiltontec.model.core :refer [make mget md-kids mswap!] :as md]))
 
-(declare render-MaterialApp render-Scaffold render-Text)
+;; (declare render-MaterialApp render-Scaffold render-Text)
 
 (defn render-fx [fx]
   ;; (render-MaterialApp fx)
   (let [gen (mget fx :fx-gen)]
     (when-not gen
       (prn :rfx-sees-no-fx-gen!!! fx))
-    (gen fx)))
+    (let [dart-obj (gen fx)]
+      (prn :render-fx-genned dart-obj)
+      (rmap-meta-setf [:refx fx]
+        dart-obj))))
 
 (defmacro MaterialApp [custom-props fx-props & kids]
   `(tiltontec.model.core/make
@@ -37,6 +42,17 @@
      :fx-gen #(m/Scaffold.
                 :appBar (tiltontec.model.core/mget % :appBar)
                 :body (render-fx (first (tiltontec.model.core/md-kids %))))
+     ~@(concat
+         (vec (apply concat (seq fx-props)))
+         (vec (apply concat (seq custom-props))))))
+
+(defmacro Column [custom-props fx-props & kids]
+  `(tiltontec.model.core/make
+     :type ::Column
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :fx-gen #(m/Column.
+                :mainAxisAlignment (tiltontec.model.core/mget % :mainAxisAlignment)
+                :children (mapv render-fx (tiltontec.model.core/md-kids %)))
      ~@(concat
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))

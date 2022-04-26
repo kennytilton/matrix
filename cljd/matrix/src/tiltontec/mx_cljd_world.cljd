@@ -10,44 +10,36 @@
     ["package:flutter/widgets.dart"
      :refer [Text]]
     ["package:flutter/material.dart" :as m
-     :refer [Colors Theme ThemeData AppBar]]
+     :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
+             FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
     ["package:flutter/painting.dart"
-     :refer [TextStyle]]))
+     :refer [TextStyle]]
+    ))
 
 (defn make-app []
   (fx/render-fx
-    ;; to keep our macrology simple we defer being smart about which
-    ;; widget option maps are required, so we see lots extra {}'s below.
-    ;; The universal syntax will be:
-    ;;   (widget-name [{flutter-props*} [{app-domain-props*}]] & children)
     (fx/MaterialApp {}
-      {:title "Welcome to Flutter World"
-       :theme (cF
-                ;; Here we confirm we can have computed values become suitable Flutter values
-                ;; for the Flutter :theme property.
-                ;; To see this, the title ^^ to include one of the supported colors.
-                ;
-                ;; So, we DO compute off another property, viz. the title, but do NOT yet
-                ;; reach out to other widgets to depend on their values. Soon.
-                ;;
-                ;; Note that neither does NOT test reactivity/setState. That comes next.
-                ;;
-                (ThemeData. :primarySwatch
+      {:title "Welcome to Red Flutter World"
+       :theme (cF (ThemeData. :primarySwatch
                     (let [ttl (mget me :title)]
                       (cond
                         (string/includes? ttl "Red") m.Colors/red
-                        (string/includes? ttl "Blue") m.Colors/blue
-                        (string/includes? ttl "Green") m.Colors/green
                         :else m.Colors/yellow))))}
-
-      ;; below we see a mix of mx-flutter factories and CLJD Flutter factories (suffixed by .)
       (fx/Scaffold {}
-        {:appBar (AppBar.
-                   :title (Text. "Welcome to ClojureDart"))}
+        {:appBar (AppBar. :title (Text. "Welcome to ClojureDart"))}
         (fx/Center {} {}
-          (fx/Text {}
-            {:style (TextStyle.
-                      :color m.Colors/red
-                      :fontSize 32.0)}
-            (str "FX Rizing v." (rand-int 99))))))))
+          #_ (fx/Text {} {:style (TextStyle.
+                                :color m.Colors/red
+                                :fontSize 32.0)}
+            (str "FX Rizing v." (rand-int 99)))
+
+          (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
+            (fx/Text {} {:style (TextStyle.
+                                  :color m.Colors/red
+                                  :fontSize 32.0)}
+              (str "FX Rizing v." (rand-int 99)))
+            (fx/Text {} {:style (TextStyle.
+                                  :color m.Colors/green
+                                  :fontSize 32.0)}
+              (str "RSN " (rand-int 99)))))))))
 
