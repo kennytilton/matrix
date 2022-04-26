@@ -4,16 +4,6 @@
 (defn trc [x]
   (dart:core/print (str "trx> " x)))
 
-(defn rmap-meta-setf [[slot ref] new-value]
-  (assert (meta ref))
-  (alter-meta! ref assoc slot new-value)
-  ;;(prn :altermeta!! slot new-value)
-  new-value)
-
-(comment ;;template
-  (rmap-setf [:my-prop me]
-    (gen-value)))
-
 ;; --- easy access to maps in refs ----
 
 (defmacro def-rmap-slots [reader-prefix & slots]

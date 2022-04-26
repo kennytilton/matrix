@@ -42,5 +42,5 @@
             (fx/TextEx {} {:style (TextStyle.
                                   :color m.Colors/green
                                   :fontSize 32.0)}
-              (str "RSN? " (rand-int 99)))))))))
+              (str "Cool " (rand-int 99)))))))))
 
