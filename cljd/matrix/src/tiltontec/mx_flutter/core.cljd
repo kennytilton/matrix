@@ -6,7 +6,7 @@
              :refer [Text Center Column StatefulWidget StatelessWidget]]
             ["package:flutter/painting.dart" :as p
              :refer [TextStyle]]
-            ;;[tiltontec.cell.base :refer [ia-type unbound] :as cty]
+    ;;[tiltontec.cell.base :refer [ia-type unbound] :as cty]
             [tiltontec.util.core
              :refer [any-ref? rmap-setf err rmap-meta-setf set-ify difference]]
             [tiltontec.model.core :refer [make mget md-kids mswap!] :as md]))
@@ -22,6 +22,29 @@
       (prn :render-fx-genned dart-obj)
       (rmap-meta-setf [:refx fx]
         dart-obj))))
+
+(defmacro TextEx [custom-props fx-props & kids]
+  ;; todo: enforce only one kid
+  `(tiltontec.model.core/make
+     :type ::Text
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :fx-gen (fn [me]
+               (reify :extends w/StatefulWidget
+                 (~'createState [this#]
+                   (reify :extends w/State
+                       (~'build [this ctx]
+                         (rmap-meta-setf [:ref me]
+                           (Text. (first (tiltontec.model.core/md-kids me))
+                             :style (tiltontec.model.core/mget me :style)))))))
+               #_(m/Text. (str "x" (first (tiltontec.model.core/md-kids me)))
+                   :style (tiltontec.model.core/mget me :style))
+               )
+     ~@(concat
+         (vec (apply concat (seq fx-props)))
+         (vec (apply concat (seq custom-props))))))
+
+
+
 
 (defmacro MaterialApp [custom-props fx-props & kids]
   `(tiltontec.model.core/make

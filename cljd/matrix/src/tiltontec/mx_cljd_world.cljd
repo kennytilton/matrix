@@ -38,8 +38,9 @@
                                   :color m.Colors/red
                                   :fontSize 32.0)}
               (str "FX Rizing v." (rand-int 99)))
-            (fx/Text {} {:style (TextStyle.
+
+            (fx/TextEx {} {:style (TextStyle.
                                   :color m.Colors/green
                                   :fontSize 32.0)}
-              (str "RSN " (rand-int 99)))))))))
+              (str "RSN? " (rand-int 99)))))))))
 
