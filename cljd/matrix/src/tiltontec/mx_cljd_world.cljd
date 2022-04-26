@@ -14,6 +14,7 @@
              FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
     ["package:flutter/painting.dart"
      :refer [TextStyle]]
+    ;;["dart:intl" :as intl]
     ))
 
 (defn make-app []
@@ -23,10 +24,17 @@
        :theme (cF (ThemeData. :primarySwatch
                     (let [ttl (mget me :title)]
                       (cond
-                        (string/includes? ttl "Red") m.Colors/red
+                        (string/includes? ttl "Reed") m.Colors/red
                         :else m.Colors/yellow))))}
       (fx/Scaffold {}
-        {:appBar (AppBar. :title (Text. "Welcome to ClojureDart"))}
+        {:appBar (AppBar.
+                   :title (Text. (let [now (.now dart:core/DateTime)
+                                       #_#_ fmt (.yMMMd dart:core/DateFormat)]
+                                   ;;(prn :got-now now)
+                                   ;;(prn :got-fmt fmt)
+                                   (str "At " (second (string/split (str now) #" ")))
+                                   #_ (.now dart:core/DateTime)
+                                   #_ ((.format fmt) now))))}
         (fx/Center {} {}
           #_ (fx/Text {} {:style (TextStyle.
                                 :color m.Colors/red
@@ -39,8 +47,8 @@
                                   :fontSize 32.0)}
               (str "FX Rizing v." (rand-int 99)))
 
-            (fx/TextEx {} {:style (TextStyle.
+            (fx/Text {} {:style (TextStyle.
                                   :color m.Colors/green
                                   :fontSize 32.0)}
-              (str "Cool " (rand-int 99)))))))))
+              (str "Cooler " (rand-int 99)))))))))
 
