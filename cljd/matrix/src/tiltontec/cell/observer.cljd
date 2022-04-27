@@ -26,18 +26,19 @@
 
 (defn observer-get [key]
   (get @+observe-method+ key))
+
 (defn observe [slot-name me new-val old-val c]
   (let [obs (if-let [obs (observer-get [slot-name (type-cljd me)])]
-              (do ;;(prn :using-slot-obs slot-name (type-cljd me))
+              (do (prn :using-slot-obs slot-name (type-cljd me))
                   obs)
               (if-let [obs (observer-get (type-cljd me))]
-                (do ;;(prn :using-type-obs slot-name (type-cljd me))
+                (do (prn :using-type-obs slot-name (type-cljd me))
                     obs)
                 (if-let [obs @+observe-default-handler+]
                   (do ;;(prn :using-default-obs slot-name (type-cljd me))
                       obs)
                   (when (= slot-name :kids)
-                    (prn :no-obs-define-for slot-name (type-cljd me)
+                    #_ (prn :no-obs-define-for slot-name (type-cljd me)
                       (keys @+observe-method+))))))]
     (when obs (obs slot-name me new-val old-val c))))
 
@@ -59,6 +60,7 @@ call parameters: slot, me, new, old, and c."
    (rmap-setf [:pulse-observed c] @+pulse+)
    (observe (c-slot c) (c-model c) (c-value c) prior-value c)
    (when-let [cell-observer (:obs @c)]
+     (prn :cell-specific-obs!!!!!! @c)
      (cell-observer (c-slot c) (c-model c) (c-value c) prior-value c))))
 
 

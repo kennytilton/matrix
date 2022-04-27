@@ -38,24 +38,42 @@
                                                  (str "At " (second (string/split (str now) #" ")))
                                                  #_(.now dart:core/DateTime)
                                                  #_((.format fmt) now))))
-         :floatingActionButton (FloatingActionButton.
+         :floatingActionButton (cF (FloatingActionButton.
                                  :onPressed (fn ^void []
-                                              (prn :BAM-press!!!)
-                                              #_(.setState thisPageState
-                                                  #(do (swap! counter inc) nil)))
+                                              (prn :BAM-press!!!-me @me)
+                                              ;; todo ugh. navigation
+                                              (let [zc (md/fm-navig :z-counter me
+                                                         :me? false
+                                                         :inside? true :must? false :up? true)]
+                                                (prn :zc!!!!!!!!! zc)
+                                                (prn :zc!!!!!!!!! (meta zc))
+                                                (prn :zcs!! (:state-ref (meta zc)))
+                                                (prn :zcnum (mget zc :z-count))
+                                                (md/mswap! zc :z-count inc)
+                                                nil))
                                  :tooltip "Increment"
                                  :child (Icon. Icons/add
-                                          :color Colors/black))}
+                                          :color Colors/black)))}
         (fx/Center {} {}
-          (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
+          (fx/Column {:col-name "Yowza"}
+            {:mainAxisAlignment MainAxisAlignment/center}
             (fx/Text {} {:style (TextStyle.
                                   :color m.Colors/red
                                   :fontSize 32.0)}
               (str "FX Rizing v." (rand-int 99)))
 
-            (fx/Text {:z-count (cI 16 :obs (fn-obs (prn :old-new old new (meta me))))}
+            ;; (fx/TextS me)
+
+            (fx/Text {:name :z-counter
+                      :z-count (cI 42
+                                 :obs (fn-obs (prn :old-new old new (meta me))
+                                             (when-let [state (:state-ref (meta me))]
+                                               (prn :BINGO!! state)
+                                               (.setState state (fn [] (do))))))}
               {:style (TextStyle.
                         :color m.Colors/green
                         :fontSize 32.0)}
-              (str "Coolio " (mget me :z-count)))))))))
+              (str "CoolioX " (do
+                               (prn :str-Coolio-meta-check (:z-count @me) (meta me))
+                               (mget me :z-count))))))))))
 

@@ -123,7 +123,7 @@
             (map vec)
             (into {})))
 
-        (prn :meta-cz? (meta me))
+        ;(prn :meta-cz? (meta me))
 
         (with-integrity (:awaken me)
           (md-awaken me)
