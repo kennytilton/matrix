@@ -3,7 +3,7 @@
              :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
                      FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
             ["package:flutter/widgets.dart" :as w
-             :refer [Text Center Column StatefulWidget StatelessWidget]]
+             :refer [Text Center Column State StatefulWidget StatelessWidget]]
             ["package:flutter/painting.dart" :as p
              :refer [TextStyle]]
     ;;[tiltontec.cell.base :refer [ia-type unbound] :as cty]
@@ -46,7 +46,7 @@
      :type ::Text
      :kids (cFkids ~@kids)
      :fx-gen #(do (prn :text-gen-called!!!!!)
-                  (let [r# (reify :extends w/StatefulWidget
+                  (let [r# #_ (reify :extends w/StatefulWidget
                              (createState [this]
                                (util/rmap-meta-setf [:state-ref me]
                                  (reify :extends w/State
@@ -54,7 +54,7 @@
                                      (prn :OK-build-is-running-with-me (meta me))
                                      (w/Text. (first (md-kids %))
                                        :style (mget % :style)))))))
-                        #_ (statefully %
+                        (statefully %
                              (w/Text. (first (md-kids %))
                                :style (mget % :style)))]
                     (prn :gennedtesxt!! (meta %))

@@ -4,17 +4,19 @@
     [tiltontec.cell.base :refer [ia-type unbound] :as cty]
     [tiltontec.cell.core :as cell
      :refer [cF cF+ cI]]
-    [tiltontec.model.core :refer [make mget md-kids] :as md]
+    [tiltontec.model.core :refer [make mget md-kids cFkids] :as md]
     [tiltontec.mx-flutter.core :as fx
      :refer [render-fx MaterialApp Center]]
     ["package:flutter/widgets.dart"
-     :refer [Text]]
+     :refer [Text State StatefulWidget StatelessWidget]]
     ["package:flutter/material.dart" :as m
      :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
              FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
     ["package:flutter/painting.dart"
      :refer [TextStyle]]
     ;["dart:intl" :as intl]
+    [tiltontec.util.core :as util
+     :refer [any-ref? rmap-setf err rmap-meta-setf set-ify difference]]
     [tiltontec.cell.observer
      :refer [fn-obs]]
     ))
@@ -63,11 +65,32 @@
               (str "FX Rizing v." (rand-int 99)))
 
             ;; (fx/TextS me)
+            (tiltontec.model.core/make :type ::Text
+              :name :z-counter
+              :z-count (cI 42
+                         :obs (fn-obs (prn :old-new old new (meta me))
+                                (when-let [^State state (:state-ref (meta me))]
+                                  (prn :BINGO!! state)
+                                  (.setState state (fn [] (do))))))
+              :kids (cFkids (str "CoolioX " (rand-int 1000) ": "(do
+                                          (prn :o-code-str-Coolio-meta-check (:z-count @me) (meta me))
+                                          (mget me :z-count))))
+              :fx-gen #(do (prn :ocode-text-gen-called!!!!!)
+                           (let [r# (reify :extends StatefulWidget
+                                      (createState [this]
+                                        (util/rmap-meta-setf [:state-ref %]
+                                          (reify :extends State
+                                            (build [this ctx]
+                                              (prn :ocode-OK-build-is-running-with-me (meta %))
+                                              (Text. (first (md-kids %))
+                                                :style (mget % :style)))))))]
+                             (prn :gennedtesxt!! (meta %))
+                             r#)))
 
-            (fx/Text {:name :z-counter
+            #_ (fx/Text {:name :z-counter
                       :z-count (cI 42
                                  :obs (fn-obs (prn :old-new old new (meta me))
-                                             (when-let [state (:state-ref (meta me))]
+                                             (when-let [^State state (:state-ref (meta me))]
                                                (prn :BINGO!! state)
                                                (.setState state (fn [] (do))))))}
               {:style (TextStyle.
