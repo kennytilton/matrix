@@ -1,23 +1,104 @@
 (ns tiltontec.testing
   (:require
-            [tiltontec.test.evaluate :refer [run-tests] :as test-eval]
-            [tiltontec.test.observer :refer [run-tests] :as test-obs]
-            [tiltontec.test.integrity :refer [run-tests] :as test-integ]
-            [tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
-            [tiltontec.test.synapse :refer [run-tests] :as test-syn]
-            [tiltontec.test.cell-core :refer [run-tests] :as test-cell-core]
-            [tiltontec.test.hello-cells :refer [run-tests] :as hello-cells]
-            [tiltontec.test.model-core :refer [run-tests] :as model-core]
-            [tiltontec.test.family-kids :refer [run-tests] :as fm-kids]))
+    [tiltontec.util.core :refer [*bam*] :as ub]
+    [tiltontec.test.evaluate :refer [run-tests] :as test-eval]
+    [tiltontec.test.observer :refer [run-tests] :as test-obs]
+    [tiltontec.test.integrity :refer [run-tests] :as test-integ]
+    [tiltontec.test.lazy-cells :refer [run-tests] :as test-lazy]
+    [tiltontec.test.synapse :refer [run-tests] :as test-syn]
+    [tiltontec.test.cell-core :refer [run-tests] :as test-cell-core]
+    [tiltontec.test.hello-cells :refer [run-tests] :as hello-cells]
+    [tiltontec.test.model-core :refer [run-tests] :as model-core]
+    [tiltontec.test.family-kids :refer [run-tests] :as fm-kids]))
+
+;(def ^:dynamic *dyno*)
+
+#_(defn run-tests []
+
+    ;(test-eval/run-tests)
+    ;(test-obs/run-tests)
+    ;(test-integ/run-tests)
+    ;(test-lazy/run-tests)
+    ;(test-cell-core/run-tests)
+    ;(hello-cells/run-tests)
+    ;(model-core/run-tests)
+    ;(fm-kids/run-tests)
+    ; TODO (test-syn/run-tests)
+    (prn :testing-OK))
+
+(def ^:dynamic *boom* nil)
+(def ^:dynamic *biff* nil)
+
 
 (defn run-tests []
-  (test-eval/run-tests)
-  (test-obs/run-tests)
-  (test-integ/run-tests)
-  (test-lazy/run-tests)
-  (test-cell-core/run-tests)
-  (hello-cells/run-tests)
-  (model-core/run-tests)
-  (fm-kids/run-tests)
-  ; TODO (test-syn/run-tests)
-  (prn :testing-OK))
+  (let [c (atom 7)]
+    (binding [*boom* (cons c *boom*)
+              *bam* c
+              *biff* true]
+      (let [callback7 (fn [expected]
+                        (prn :callback-7bound-expected expected :actual @*bam*))]
+        (let [c (atom 42)]
+          (binding [*boom* (cons c *boom*)
+                    *bam* c
+                    *biff* true]
+            (let [callback42 (fn [expected]
+                               (assert (= expected @*bam*))
+                               (prn :callback-42bound-expected expected :actual @*bam*))]
+              (callback7 42)
+              (callback42 42)
+              (let [c (atom 99)]
+                (binding [*boom* (cons c *boom*)
+                          *bam* c
+                          *biff* true]
+                  (prn :before? @*bam*)
+                  (callback7 99)
+                  (callback42 99)
+                  (prn :after @*bam*))))))))))
+
+(defn with-c [ns callbacks]
+  (prn :wc-entry ns (seq ns))
+  (when (seq ns)
+    (let [n (first ns)
+          c (atom n)]
+      (binding [*boom* (cons c *boom*)
+                *bam* c
+                *biff* true]
+        (assert (= c (first *boom*)))
+        (assert (= *bam* c))
+        (doseq [cb callbacks]
+          (prn :before? @*bam*)
+          (cb n)
+          (prn :after @*bam*)
+          (with-c (rest ns) (conj callbacks
+                              (fn [expected]
+                                (assert (= expected @*bam*) (str "unexpected " @*bam* " vs " expected))
+                                (prn :cb-expected expected :actual @*bam*)))))))))
+
+(defn run-tests []
+  (with-c [1 2] []))
+
+#_
+(defn run-tests []
+  (let [c (atom 7)]
+    (binding [*boom* (cons c *boom*)
+              *bam* c
+              *biff* true]
+      (let [callback7 (fn [expected]
+                        (prn :callback-7bound-expected expected :actual @*bam*))]
+        (let [c (atom 42)]
+          (binding [*boom* (cons c *boom*)
+                    *bam* c
+                    *biff* true]
+            (let [callback42 (fn [expected]
+                               (assert (= expected @*bam*))
+                               (prn :callback-42bound-expected expected :actual @*bam*))]
+              (callback7 42)
+              (callback42 42)
+              (let [c (atom 99)]
+                (binding [*boom* (cons c *boom*)
+                          *bam* c
+                          *biff* true]
+                  (prn :before? @*bam*)
+                  (callback7 99)
+                  (callback42 99)
+                  (prn :after @*bam*))))))))))

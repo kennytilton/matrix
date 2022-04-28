@@ -18,7 +18,7 @@
              *depender* *not-to-be*
              *c-prop-depth* md-slot-owning? c-lazy] :as cty]
     [tiltontec.cell.integrity :refer [with-integrity]]
-    [tiltontec.cell.observer :refer [observe observer-register]]
+    [tiltontec.cell.observer :refer [observe observer-register fn-obs]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
     [tiltontec.cell.core
      :refer [cF cF+ c-reset-next! cFonce cFn cI c-reset! make-cell]]
@@ -35,6 +35,18 @@
 (defn md-get [me slot]
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
+  (when (any-ref? me)
+    (if-let [c (md-cell me slot)]
+      (c-get c)
+      (slot @me))))
+
+(defn md-get-ex [me slot]
+  ;; (trx :md-get slot me)
+  (assert me (str "md-get passed nil for me accessing slot: " slot))
+  (when (not= slot :kids)
+    (prn :md-get-ex  slot (any-ref? me) @me)
+    (prn :md-get-ex-slot?  slot @(md-cell me slot) )
+    (prn :md-get-ex-depender?  slot @*depender* ))
   (when (any-ref? me)
     (if-let [c (md-cell me slot)]
       (c-get c)
@@ -323,6 +335,15 @@
 
 (defmacro cFkids [& tree]
   `(cF (assert ~'me "no me for cFkids")
+     ;;(print :cFkids-me!!! (:id (deref ~'me)))
+     (the-kids ~@tree)))
+
+(defmacro cFkidsObs [& tree]
+  `(cF+ [:obs (fn-obs (prn :yep-cfkobs!!! ~'new ~'me)
+                (when-let [^State state# (:state-ref (meta ~'me))]
+                  (prn :BINGO!! state#)
+                  (.setState state# (fn [] (do)))))]
+     (assert ~'me "no me for cFkids")
      ;;(print :cFkids-me!!! (:id (deref ~'me)))
      (the-kids ~@tree)))
 

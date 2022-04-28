@@ -3,7 +3,6 @@
     [tiltontec.util.core :refer [pln rmap-setf]]
 
     [tiltontec.cell.base
-     ;;:refer-macros [without-c-dependency]
      :refer [*depender* c-synapses c-slot c-useds]]
 
     [tiltontec.cell.integrity

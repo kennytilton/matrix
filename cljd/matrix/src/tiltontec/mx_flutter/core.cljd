@@ -45,7 +45,7 @@
   `(tiltontec.model.core/make
      :type ::Text
      :kids (cFkids ~@kids)
-     :fx-gen #(do (prn :text-gen-called!!!!!)
+     :fx-gen #(do ;; (prn :text-gen-called!!!!!)
                   (let [r# #_ (reify :extends w/StatefulWidget
                              (createState [this]
                                (util/rmap-meta-setf [:state-ref me]
@@ -57,7 +57,7 @@
                         (statefully %
                              (w/Text. (first (md-kids %))
                                :style (mget % :style)))]
-                    (prn :gennedtesxt!! (meta %))
+                    ;; (prn :gennedtesxt!! (meta %))
                     r#))
      ~@(concat
          (vec (apply concat (seq fx-props)))

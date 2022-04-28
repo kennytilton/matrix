@@ -1,8 +1,9 @@
 (ns tiltontec.util.core
   (:require [clojure.string :as str :refer [join]]
             [tiltontec.util.base :as utm
-             :refer-macros [prog1 b-when wtrx]]))
+             :refer [prog1 b-when wtrx]]))
 
+(def ^:dynamic *bam* nil)
 ;(defn type-of [x] (type x))
 
 (defn xor [a b]
@@ -57,10 +58,10 @@
 
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))
-  (when (some #{slot} [:state-ref])
+  #_ (when (some #{slot} [:state-ref])
     (prn :rmap-meta-set!!!!!! slot ref new-value))
   (alter-meta! ref assoc slot new-value)
-  (when (some #{slot} [:state-ref])
+  #_ (when (some #{slot} [:state-ref])
     (prn :rmap-meta-set-fini!!!!!! (meta ref)))
 
   new-value)

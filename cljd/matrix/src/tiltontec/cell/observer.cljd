@@ -1,8 +1,7 @@
 (ns tiltontec.cell.observer
   (:require
     [tiltontec.util.base
-     :refer [type-cljd]
-     :refer-macros [trx]]
+     :refer [trx type-cljd]]
 
     [tiltontec.util.core
      :refer [cl-find set-ify any-ref? err ia-ref
@@ -58,9 +57,13 @@ call parameters: slot, me, new, old, and c."
    (assert (c-ref? c))
    (assert (dart/is? @+pulse+ int))
    (rmap-setf [:pulse-observed c] @+pulse+)
+   ;; we do observes specified for types or slots...
    (observe (c-slot c) (c-model c) (c-value c) prior-value c)
+   ;; ...and also do observes specified ad hoc on the cI/cF call.
+   ;; nb that we do not want ad hoc observers to shadow those specified generically
+   ;; indeed, in Lisp observers are progn methods -- they all run.
    (when-let [cell-observer (:obs @c)]
-     (prn :cell-specific-obs!!!!!! @c)
+     ;;(prn :cell-specific-obs!!!!!! @c)
      (cell-observer (c-slot c) (c-model c) (c-value c) prior-value c))))
 
 

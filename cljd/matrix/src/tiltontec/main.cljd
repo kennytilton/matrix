@@ -16,6 +16,7 @@
   (material/runApp
     (mxf/make-app))
 
-  ;(testing/run-tests)
+  (testing/run-tests)
+  (prn :tests-fini)
   ;;(widgets/debugDumpApp)
   )
