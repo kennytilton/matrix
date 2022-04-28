@@ -59,74 +59,30 @@
         (fx/Center {} {}
           (fx/Column {:col-name "Yowza"}
             {:mainAxisAlignment MainAxisAlignment/center}
-            (fx/Text {} {:style (TextStyle.
-                                  :color m.Colors/red
-                                  :fontSize 32.0)}
-              (str "FX Rizing v." (rand-int 99)))
+            (fx/Text {}
+              {:style (TextStyle.
+                            :color m.Colors/black
+                            :fontSize 18.0)}
+              "You have clicked the button this many times:")
 
             ;; (fx/TextS me)
             (tiltontec.model.core/make :type ::Text
               :name :z-counter
               :z-count (cI 42
-                         :obs (fn-obs (prn :zc0unt-old-new old new (meta me))
+                         :obs (fn-obs
                                 (when-let [^State state (:state-ref (meta me))]
-                                  ;; (prn :BINGO-z-counter!! state)
                                   (.setState state (fn [] (do))))))
-              :kids (cFkids (str "CoolioX " (rand-int 1000) ": "
-                              (do
-                                ;;(prn :o-code-str-Coolio-meta-check (:z-count @me) (meta me))
-                                (mget me :z-count))))
-              :fx-gen #(do                                  ;;(prn :ocode-text-gen-called!!!!!)
-                         (let [r# (reify :extends StatefulWidget
-                                    (createState [this]
-                                      (util/rmap-meta-setf [:state-ref %]
-                                        (reify :extends State
-                                          (build [this ctx]
-                                            ;;(prn :ocode-OK-build-is-running-with-me (meta %))
+              :kids (cFkids (str (mget me :z-count)))
+              :fx-gen #(let [r# (reify :extends StatefulWidget
+                                  (createState [this]
+                                    (util/rmap-meta-setf [:state-ref %]
+                                      (reify :extends State
+                                        (build [this ctx]
+                                          (let [theme (Theme/of ctx)]
                                             (Text. (first (md-kids %))
-                                              :style (mget % :style)))))))]
-                           ;;(prn :gennedtesxt!! (meta %))
-                           r#)))
-
-            (tiltontec.model.core/make :type ::Text
-              :name :z-counter-x2
-              :zx2 (cF+ [:obs (fn-obs (prn :zx2!!!!!!!!!-old-new old new (meta me))
-                                (when-let [^State state (:state-ref (meta me))]
-                                  ;; (prn :BINGO-z-counter!! state)
-                                  (.setState state (fn [] (do)))))]
-                     (prn :zx2-runs!!!!!! @*depender*)
-                     (let [zc (md/fm-navig :z-counter me
-                                :me? false
-                                :inside? false :must? false :up? true)]
-                       (assert zc)
-                       (let [zx1 (md/md-get-ex zc :z-count)]
-                         (prn :zx2-sees!!! zx1)
-                         (* 2 (md/md-get-ex zc :z-count)))))
-              ;; todo when we get to multi-kids, use keys to make efficient since we do not manipulate DOM
-              :kids (md/cFkids
-                      (str "Computio " (mget me :zx2)))
-              :fx-gen #(do (prn :ocode-text-gen-called!!!!!)
-                           (let [r# (reify :extends StatefulWidget
-                                      (createState [this]
-                                        (util/rmap-meta-setf [:state-ref %]
-                                          (reify :extends State
-                                            (build [this ctx]
-                                              (prn :ocode-OK-build-is-running-with-me (meta %))
-                                              (Text. (first (md-kids %))
-                                                :style (mget % :style)))))))]
-                             (prn :gennedtesxt!! (meta %))
-                             r#)))
-
-            #_(fx/Text {:name    :z-counter
-                        :z-count (cI 42
-                                   :obs (fn-obs (prn :old-new old new (meta me))
-                                          (when-let [^State state (:state-ref (meta me))]
-                                            (prn :BINGO!! state)
-                                            (.setState state (fn [] (do))))))}
-                {:style (TextStyle.
-                          :color m.Colors/green
-                          :fontSize 32.0)}
-                (str "CoolioX " (do
-                                  (prn :str-Coolio-meta-check (:z-count @me) (meta me))
-                                  (mget me :z-count))))))))))
+                                              :style (.headline4 (.textTheme theme))
+                                              ;; todo work out how mx widgets can see ctx
+                                              #_ (mget % :style))))))))]
+                         ;;(prn :gennedtesxt!! (meta %))
+                         r#))))))))
 
