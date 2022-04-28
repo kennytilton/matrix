@@ -42,10 +42,10 @@
                                      :child (Icon. Icons/add :color Colors/black)))}
         (fx/Center {} {}
           (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
-            (fx/Text {} {:style (TextStyle.
+            (fx/TextEx {} {:style (TextStyle.
                                   :color m.Colors/black
                                   :fontSize 18.0)}
-              "You have clicked the button this many times:")
+              "You have clicked the button so many times:")
 
             (fx/TextEx {:name :z-counter
                         :z-count (cI 0
