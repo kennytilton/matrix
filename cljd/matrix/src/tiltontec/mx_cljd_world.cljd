@@ -24,65 +24,45 @@
 (defn make-app []
   (fx/render-fx
     (fx/MaterialApp {}
-      {:title "Welcome to Red Flutter World"
-       :theme (cF (ThemeData. :primarySwatch
-                    (let [ttl (mget me :title)]
-                      (cond
-                        (string/includes? ttl "Reed") m.Colors/red
-                        :else m.Colors/yellow))))}
+      {:title "Welcome to mxFlutter World"
+       :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
       (fx/Scaffold {}
         {:appBar               (AppBar.
-                                 :title (Text. (let [now (.now dart:core/DateTime)
-                                                     #_#_fmt (.yMMMd dart:core/DateFormat)]
-                                                 ;;(prn :got-now now)
-                                                 ;;(prn :got-fmt fmt)
-                                                 ;(str "At " (-> (DateTime/now) (-> (intl.DateFormat/yMMd) .format)))
-                                                 (str "At " (second (string/split (str now) #" ")))
-                                                 #_(.now dart:core/DateTime)
-                                                 #_((.format fmt) now))))
+                                 :title (Text. "mxFlutter Home Page"))
          :floatingActionButton (cF (FloatingActionButton.
                                      :onPressed (fn ^void []
-                                                  (prn :BAM-press!!!-me @me)
-                                                  ;; todo ugh. navigation
+                                                  ;; todo ugh. navigation.
+                                                  ;; todo inside is necessary because me is the scaffold
                                                   (let [zc (md/fm-navig :z-counter me
                                                              :me? false
-                                                             :inside? true :must? false :up? true)]
-                                                    ;(prn :zc!!!!!!!!! zc)
-                                                    ;(prn :zc!!!!!!!!! (meta zc))
-                                                    ;(prn :zcs!! (:state-ref (meta zc)))
-                                                    ;(prn :zcnum (mget zc :z-count))
+                                                             :inside? true :must? true :up? true)]
                                                     (md/mswap! zc :z-count inc)
                                                     nil))
                                      :tooltip "Increment"
-                                     :child (Icon. Icons/add
-                                              :color Colors/black)))}
+                                     :child (Icon. Icons/add :color Colors/black)))}
         (fx/Center {} {}
-          (fx/Column {:col-name "Yowza"}
-            {:mainAxisAlignment MainAxisAlignment/center}
-            (fx/Text {}
-              {:style (TextStyle.
-                            :color m.Colors/black
-                            :fontSize 18.0)}
+          (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
+            (fx/Text {} {:style (TextStyle.
+                                  :color m.Colors/black
+                                  :fontSize 18.0)}
               "You have clicked the button this many times:")
 
-            ;; (fx/TextS me)
             (tiltontec.model.core/make :type ::Text
               :name :z-counter
-              :z-count (cI 42
+              :z-count (cI 0
                          :obs (fn-obs
                                 (when-let [^State state (:state-ref (meta me))]
                                   (.setState state (fn [] (do))))))
               :kids (cFkids (str (mget me :z-count)))
-              :fx-gen #(let [r# (reify :extends StatefulWidget
-                                  (createState [this]
-                                    (util/rmap-meta-setf [:state-ref %]
-                                      (reify :extends State
-                                        (build [this ctx]
-                                          (let [theme (Theme/of ctx)]
-                                            (Text. (first (md-kids %))
-                                              :style (.headline4 (.textTheme theme))
-                                              ;; todo work out how mx widgets can see ctx
-                                              #_ (mget % :style))))))))]
-                         ;;(prn :gennedtesxt!! (meta %))
-                         r#))))))))
+              ;; move next into macro or dedicated fn
+              :fx-gen #(reify :extends StatefulWidget
+                         (createState [this]
+                           (util/rmap-meta-setf [:state-ref %]
+                             (reify :extends State
+                               (build [this ctx]
+                                 (let [theme (Theme/of ctx)]
+                                   (Text. (first (md-kids %))
+                                     :style (.headline4 (.textTheme theme))
+                                     ;; todo work out how mx widgets can see ctx
+                                     #_ (mget % :style)))))))))))))))
 
