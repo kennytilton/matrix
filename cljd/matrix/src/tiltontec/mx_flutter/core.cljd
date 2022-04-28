@@ -80,10 +80,10 @@
      :fx-gen TextEx-gen
      #_ (fn [me]
           (reify :extends w/StatefulWidget
-            (~'createState [this#]
+            (~'createState [this]
               (reify :extends w/State
                 (~'build [this ctx]
-                  (tiltontec.util.core/rmap-meta-setf [:ref me]
+                  (tiltontec.util.core/rmap-meta-setf [:state-ref me]
                     (Text. (first (tiltontec.model.core/md-kids me))
                       :style (tiltontec.model.core/mget me :style)))))))
           #_(m/Text. (str "x" (first (tiltontec.model.core/md-kids me)))
