@@ -7,16 +7,19 @@
             ["dart:math" :as mth]
             [tiltontec.testing :as testing]
             [tiltontec.cljd-world :as cljdw]
-            [tiltontec.mx-cljd-world :as mxf]
+            [tiltontec.mx-cljd-world :as mxworld]
+            [tiltontec.mx-flutter.core :as mxf]
             ))
 
 (def version (atom nil :meta {}))
 
 (defn main []
+  (mxf/load-widget-specs)
   (material/runApp
-    (mxf/make-app))
+    (mxworld/make-app))
 
   (testing/run-tests)
   (prn :tests-fini)
   ;;(widgets/debugDumpApp)
+  (prn :widgets!!! @mxf/*widget-spec*)
   )
