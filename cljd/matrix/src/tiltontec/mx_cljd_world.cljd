@@ -47,6 +47,16 @@
                                   :fontSize 18.0)}
               "You have clicked the button this many times:")
 
+            (fx/TextEx {:name :z-counter
+                        :z-count (cI 0
+                                   :obs (fn-obs
+                                          (when-let [^State state (:state-ref (meta me))]
+                                            (.setState state (fn [] (do))))))}
+              {:style (TextStyle.
+                        :color m.Colors/red
+                        :fontSize 32.0)}
+              (str (mget me :z-count)))
+            #_
             (tiltontec.model.core/make :type ::Text
               :name :z-counter
               :z-count (cI 0
