@@ -42,12 +42,12 @@
                                      :child (Icon. Icons/add :color Colors/black)))}
         (fx/Center {} {}
           (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
-            (fx/TextEx {} {:style (TextStyle.
+            (fx/Text {} {:style (TextStyle.
                                   :color m.Colors/black
                                   :fontSize 18.0)}
               "You have clicked the button so many times:")
 
-            (fx/TextEx {:name :z-counter
+            (fx/Text {:name :z-counter
                         :z-count (cI 0
                                    :obs (fn-obs
                                           (when-let [^State state (:state-ref (meta me))]
