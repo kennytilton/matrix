@@ -1,12 +1,12 @@
 (ns tiltontec.mx-cljd-world
   (:require
     [clojure.string :as string]
-    [tiltontec.cell.base :refer [ia-type unbound *depender*] :as cty ]
+    [tiltontec.cell.base :refer [ia-type unbound *depender*] :as cty]
     [tiltontec.cell.core :as cell
      :refer [cF cF+ cI]]
     [tiltontec.model.core :refer [make mget md-kids cFkids] :as md]
     [tiltontec.mx-flutter.core :as fx
-     :refer [render-fx MaterialApp Center]]
+     :refer [render-fx MaterialApp Center TTText]]
     ["package:flutter/widgets.dart"
      :refer [Text State StatefulWidget StatelessWidget]]
     ["package:flutter/material.dart" :as m
@@ -46,33 +46,19 @@
                                   :color m.Colors/black
                                   :fontSize 18.0)}
               "You have clicked the button so many times:")
-
-            (fx/Text {:name :z-counter
-                        :z-count (cI 0
-                                   :obs (fn-obs
-                                          (when-let [^State state (:state-ref (meta me))]
-                                            (.setState state (fn [] (do))))))}
-              {:style (TextStyle.
+            (fx/Text {:name    :z-counter
+                      :z-count (cI 0
+                                 :obs (fn-obs
+                                        (when-let [^State state (:state-ref (meta me))]
+                                          (.setState state (fn [] (do))))))}
+              ;; a custom builder is the best I can think of to make the Dart context
+              ;; available to someone codeing a Matrix widget
+              {:builder (fn [me ctx]
+                          (prn :custom-builder!)
+                          (Text. (str (mget me :z-count))
+                            :style (.headline4 (.textTheme (Theme/of ctx)))))
+               #_#_ :style (TextStyle.
                         :color m.Colors/red
                         :fontSize 32.0)}
-              (str (mget me :z-count)))
-            #_
-            (tiltontec.model.core/make :type ::Text
-              :name :z-counter
-              :z-count (cI 0
-                         :obs (fn-obs
-                                (when-let [^State state (:state-ref (meta me))]
-                                  (.setState state (fn [] (do))))))
-              :kids (cFkids (str (mget me :z-count)))
-              ;; move next into macro or dedicated fn
-              :fx-gen #(reify :extends StatefulWidget
-                         (createState [this]
-                           (util/rmap-meta-setf [:state-ref %]
-                             (reify :extends State
-                               (build [this ctx]
-                                 (let [theme (Theme/of ctx)]
-                                   (Text. (first (md-kids %))
-                                     :style (.headline4 (.textTheme theme))
-                                     ;; todo work out how mx widgets can see ctx
-                                     #_ (mget % :style)))))))))))))))
+              (str (mget me :z-count)))))))))
 

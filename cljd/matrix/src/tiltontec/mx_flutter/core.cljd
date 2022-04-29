@@ -12,20 +12,27 @@
             [tiltontec.model.core :refer [make mget md-kids mswap! cFkids] :as md]))
 
 
-(defprotocol DartWidget
-  (parts [this] "eg, Scaffold: [:appBar :body :floatingActionButton ...]"))
+(defprotocol TDartWidget
+  (parts [this] "eg, Scaffold [:appBar :body :floatingActionButton ...]"))
 
+#_
 (deftype TScaffold []
   ;;:type-only true
-  DartWidget
+  TDartWidget
   (parts [this]
     [:appBar :body :actionButton]))
 
-(deftype TText []
+(deftype TTText []
   ;;:type-only true
-  DartWidget
+  TDartWidget
   (parts [this]
     [:child :style]))
+
+(deftype TScaffold []
+  ;;:type-only true
+  TDartWidget
+  (parts [this]
+    [:appBar :body :actionButton]))
 
 (defn render-fx [fx]
   ;; (render-MaterialApp fx)
@@ -43,6 +50,33 @@
             (prn :OK-build-is-running-with-me (meta me))
             dart-obj))))))
 
+(defn statefully-ex [me builder]
+  (reify :extends w/StatefulWidget
+    (createState [this]
+      (util/rmap-meta-setf [:state-ref me]
+        (reify :extends w/State
+          (build [this ctx]
+            (prn :statefully-ex-builder-runs!!)
+            (builder me ctx)))))))
+
+(defn TextEx-gen-ex [me]
+  (statefully-ex me
+    (fn [me ctx]
+      (if-let [builder (mget me :builder)]
+        (builder me ctx)
+        (w/Text. (first (md/md-kids me))
+          :style (tiltontec.model.core/mget me :style))))))
+
+(defmacro Text [custom-props fx-props & kids]
+  ;; todo: enforce only one kid
+  `(tiltontec.model.core/make
+     :type ::Text
+     :dart-type (parts (tiltontec.mx-flutter.core/TTText.))
+     :kids (tiltontec.model.core/cFkids ~@kids)
+     :fx-gen TextEx-gen-ex
+     ~@(concat
+         (vec (apply concat (seq fx-props)))
+         (vec (apply concat (seq custom-props))))))
 
 (defn TextEx-gen [me]
   (reify :extends w/StatefulWidget
@@ -50,20 +84,9 @@
       (util/rmap-meta-setf [:state-ref me]
         (reify :extends w/State
           (build [this ctx]
-            (prn :TextGen-build (parts (TText.)))
+            (prn :TextGen-build (parts (TTText.)))
             (w/Text. (first (md/md-kids me))
               :style (tiltontec.model.core/mget me :style))))))))
-
-(defmacro Text [custom-props fx-props & kids]
-  ;; todo: enforce only one kid
-  `(tiltontec.model.core/make
-     :type ::Text
-     ;;:dart-type (TText.)
-     :kids (tiltontec.model.core/cFkids ~@kids)
-     :fx-gen TextEx-gen
-     ~@(concat
-         (vec (apply concat (seq fx-props)))
-         (vec (apply concat (seq custom-props))))))
 
 #_(defmacro Text [custom-props fx-props & kids]
     ;; todo: enforce only one kid
