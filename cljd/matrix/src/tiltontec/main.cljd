@@ -13,13 +13,27 @@
 
 (def version (atom nil :meta {}))
 
+#_#_
+(defprotocol DartWidget
+  (parts [this] "eg, Scaffold: [:appBar :body :floatingActionButton ...]"))
+
+(deftype TScaffold []
+  ;;:type-only true
+  DartWidget
+  (parts [this]
+    [:appBar :body :actionButton]))
+
 (defn main []
   (mxf/load-widget-specs)
   (material/runApp
     (mxworld/make-app))
 
-  (testing/run-tests)
+  ;;(testing/run-tests)
   (prn :tests-fini)
   ;;(widgets/debugDumpApp)
-  (prn :widgets!!! @mxf/*widget-spec*)
+  ;;(prn :widgets!!! (parts (TScaffold.)))
+  ;(prn :widgets!!! (all-parts (Scaffold.)))
+  #_ (let [c {:mx-type (Scaffold.)}]
+    (prn :x-parts (parts (:mx-type c)))
+    (prn :x-parts (parts (:mx-type c))))
   )

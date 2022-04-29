@@ -188,20 +188,20 @@
   (binding [*depender* c
             *call-stack* (cons c *call-stack*)
             *defer-changes* true]
-    (prn :calc-n-depender (= *depender* c) (c-slot *depender*)(c-slot c))
+    ;(prn :calc-n-depender (= *depender* c) (c-slot *depender*)(c-slot c))
     (assert (= c (first *call-stack*)) "callstack binding NG")
-    ;; ----> enable this to break early (assert (= c *depender*) "c <> *depender* binding failed")
+    (assert (= c *depender*) "c <> *depender* binding failed")
     ;; remove asserts ^^ to get this to fure
-    (when (not= c *depender*)
+    #_ (when (not= c *depender*)
       (prn :not=!!!! @c :depender @*depender*)
       (prn :call-stack (map deref *call-stack*)))
 
     (unlink-from-used c :pre-rule-clear)
     (assert (c-rule c) (str "No rule in %s type %s" (:slot c) (ia-type @c)))
 
-    (prn :calc-n-depender-before (c-slot *depender*)(c-slot c))
+    ;(prn :calc-n-depender-before (c-slot *depender*)(c-slot c))
     (let [raw-value ((c-rule c) c)
-          _ (prn :calc-n-depender-after (c-slot *depender*)(c-slot c))
+          ;_ (prn :calc-n-depender-after (c-slot *depender*)(c-slot c))
           prop-code? (and (c-synaptic? c)
                        (vector? raw-value)
                        (contains? (meta raw-value) :propagate))]
