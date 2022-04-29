@@ -27,7 +27,7 @@
      :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
     (fx/Scaffold {}
       {:appBar               (AppBar.
-                               :title (Text. "mxFlutter Home Page"))
+                               :title (Text. "mxFlutter  Home Page"))
        :floatingActionButton (cF (FloatingActionButton.
                                    :onPressed (fn ^void []
                                                 ;; todo ugh. navigation.

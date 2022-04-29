@@ -6,24 +6,21 @@
      :refer [cF cF+ cI]]
     [tiltontec.model.core :refer [make mget md-kids cFkids] :as md]
     [tiltontec.mx-flutter.core :as fx
-     :refer [render-fx MaterialApp Center TTText]]
-    ["package:flutter/widgets.dart"
-     :refer [Text State StatefulWidget StatelessWidget]]
-    ["package:flutter/material.dart" :as m
-     :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
-             FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
-    ["package:flutter/painting.dart"
-     :refer [TextStyle]]))
+     :refer [render-fx MaterialApp Scaffold Center Text]]
+    #_ ["package:flutter/widgets.dart" :as w
+     :refer [Text]] ;; State StatefulWidget StatelessWidget]]
+    ["package:flutter/material.dart" :as m :refer [AppBar Colors ThemeData]]
+    ["package:flutter/painting.dart" :refer [TextStyle] :as p]))
 
 (defn make-app []
-  (fx/MaterialApp {}
+  (MaterialApp {}
     {:title "Welcome to mxFlutter World"
-     :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
-    (fx/Scaffold {}
-      {:appBar               (AppBar.
-                               :title (Text. "Welcome to mxFlutter"))}
-      (fx/Center {} {}
-        (fx/Text {} {:style (TextStyle.
+     :theme (m/ThemeData. :primarySwatch m.Colors/blue)}
+    (Scaffold {}
+      {:appBar               (m/AppBar.
+                               :title (Text {}{} "Welcome to mxFlutter"))}
+      (Center {} {}
+        (fx/Text {} {:style (p/TextStyle.
                               :color m.Colors/black
                               :fontSize 32.0)}
           "hello, world\\n")))))
