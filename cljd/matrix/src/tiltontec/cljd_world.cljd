@@ -1,24 +1,20 @@
 (ns tiltontec.cljd-world
   (:require
-    [clojure.string :as string]
     [tiltontec.cell.base :refer [ia-type unbound *depender*] :as cty]
-    [tiltontec.cell.core :as cell
-     :refer [cF cF+ cI]]
-    [tiltontec.model.core :refer [make mget md-kids cFkids] :as md]
+    [tiltontec.model.core :refer [mget] :as md]
     [tiltontec.mx-flutter.core :as fx
      :refer [render-fx MaterialApp Scaffold Center Text]]
-    #_ ["package:flutter/widgets.dart" :as w
-     :refer [Text]] ;; State StatefulWidget StatelessWidget]]
-    ["package:flutter/material.dart" :as m :refer [AppBar Colors ThemeData]]
+     ;; State StatefulWidget StatelessWidget]]
+    ["package:flutter/material.dart" :as m :refer [AppBar Colors Text ThemeData]]
     ["package:flutter/painting.dart" :refer [TextStyle] :as p]))
 
 (defn make-app []
   (MaterialApp {}
-    {:title "Welcome to mxFlutter World"
+    {:title "Welcome to mxFlutter"
      :theme (m/ThemeData. :primarySwatch m.Colors/blue)}
     (Scaffold {}
       {:appBar               (m/AppBar.
-                               :title (Text {}{} "Welcome to mxFlutter"))}
+                               :title (mText. "Welcome to mxFlutter"))}
       (Center {} {}
         (fx/Text {} {:style (p/TextStyle.
                               :color m.Colors/black
