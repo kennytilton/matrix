@@ -22,43 +22,42 @@
     ))
 
 (defn make-app []
-  (fx/render-fx
-    (fx/MaterialApp {}
-      {:title "Welcome to mxFlutter World"
-       :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
-      (fx/Scaffold {}
-        {:appBar               (AppBar.
-                                 :title (Text. "mxFlutter Home Page"))
-         :floatingActionButton (cF (FloatingActionButton.
-                                     :onPressed (fn ^void []
-                                                  ;; todo ugh. navigation.
-                                                  ;; todo inside is necessary because me is the scaffold
-                                                  (let [zc (md/fm-navig :z-counter me
-                                                             :me? false
-                                                             :inside? true :must? true :up? true)]
-                                                    (md/mswap! zc :z-count inc)
-                                                    nil))
-                                     :tooltip "Increment"
-                                     :child (Icon. Icons/add :color Colors/black)))}
-        (fx/Center {} {}
-          (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
-            (fx/Text {} {:style (TextStyle.
-                                  :color m.Colors/black
-                                  :fontSize 18.0)}
-              "You have clicked the button so many times:")
-            (fx/Text {:name    :z-counter
-                      :z-count (cI 0
-                                 :obs (fn-obs
-                                        (when-let [^State state (:state-ref (meta me))]
-                                          (.setState state (fn [] (do))))))}
-              ;; a custom builder is the best I can think of to make the Dart context
-              ;; available to someone codeing a Matrix widget
-              {:builder (fn [me ctx]
-                          (prn :custom-builder!)
-                          (Text. (str (mget me :z-count))
-                            :style (.headline4 (.textTheme (Theme/of ctx)))))
-               #_#_ :style (TextStyle.
-                        :color m.Colors/red
-                        :fontSize 32.0)}
-              (str (mget me :z-count)))))))))
+  (fx/MaterialApp {}
+    {:title "Welcome to mxFlutter World"
+     :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
+    (fx/Scaffold {}
+      {:appBar               (AppBar.
+                               :title (Text. "mxFlutter Home Page"))
+       :floatingActionButton (cF (FloatingActionButton.
+                                   :onPressed (fn ^void []
+                                                ;; todo ugh. navigation.
+                                                ;; todo inside is necessary because me is the scaffold
+                                                (let [zc (md/fm-navig :z-counter me
+                                                           :me? false
+                                                           :inside? true :must? true :up? true)]
+                                                  (md/mswap! zc :z-count inc)
+                                                  nil))
+                                   :tooltip "Increment"
+                                   :child (Icon. Icons/add :color Colors/black)))}
+      (fx/Center {} {}
+        (fx/Column {} {:mainAxisAlignment MainAxisAlignment/center}
+          (fx/Text {} {:style (TextStyle.
+                                :color m.Colors/black
+                                :fontSize 18.0)}
+            "You have clicked the button so many times:")
+          (fx/Text {:name    :z-counter
+                    :z-count (cI 0
+                               :obs (fn-obs
+                                      (when-let [^State state (:state-ref (meta me))]
+                                        (.setState state (fn [] (do))))))}
+            ;; a custom builder is the best I can think of to make the Dart context
+            ;; available to someone codeing a Matrix widget
+            {:builder (fn [me ctx]
+                        (prn :custom-builder!)
+                        (Text. (str (mget me :z-count))
+                          :style (.headline4 (.textTheme (Theme/of ctx)))))
+             #_#_ :style (TextStyle.
+                           :color m.Colors/red
+                           :fontSize 32.0)}
+            (str (mget me :z-count))))))))
 

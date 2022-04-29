@@ -1,21 +1,30 @@
 (ns tiltontec.cljd-world
-  (:require ["package:flutter/material.dart" :as m
-             :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
-                     FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
-            ["package:flutter/widgets.dart"
-             :refer [Text Center Column StatefulWidget StatelessWidget]]
-            ["package:flutter/painting.dart"
-             :refer [TextStyle]]))
+  (:require
+    [clojure.string :as string]
+    [tiltontec.cell.base :refer [ia-type unbound *depender*] :as cty]
+    [tiltontec.cell.core :as cell
+     :refer [cF cF+ cI]]
+    [tiltontec.model.core :refer [make mget md-kids cFkids] :as md]
+    [tiltontec.mx-flutter.core :as fx
+     :refer [render-fx MaterialApp Center TTText]]
+    ["package:flutter/widgets.dart"
+     :refer [Text State StatefulWidget StatelessWidget]]
+    ["package:flutter/material.dart" :as m
+     :refer [MaterialApp Widget Scaffold MainAxisAlignment Colors Theme
+             FloatingActionButton Icon Icons ThemeData runApp AppBar State]]
+    ["package:flutter/painting.dart"
+     :refer [TextStyle]]))
 
 (defn make-app []
-  (MaterialApp.
-    :title "Welcome to Flutter World"
-    :theme (ThemeData. :primarySwatch m.Colors/yellow)
-    :home (Scaffold.
-            :appBar (AppBar.
-                      :title (Text. (str "At " (.now dart:core/DateTime))))
-            :body (Center.
-                    :child (widgets/Text. (str "hello, world v." (rand-int 99))
-                             :style (TextStyle.
-                                      :color m.Colors/blue
-                                      :fontSize 32.0))))))
+  (fx/MaterialApp {}
+    {:title "Welcome to mxFlutter World"
+     :theme (cF (ThemeData. :primarySwatch m.Colors/blue))}
+    (fx/Scaffold {}
+      {:appBar               (AppBar.
+                               :title (Text. "Welcome to mxFlutter"))}
+      (fx/Center {} {}
+        (fx/Text {} {:style (TextStyle.
+                              :color m.Colors/black
+                              :fontSize 32.0)}
+          "hello, world\\n")))))
+

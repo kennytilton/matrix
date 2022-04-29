@@ -6,10 +6,9 @@
             ["dart:developer" :as dev]
             ["dart:math" :as mth]
             [tiltontec.testing :as testing]
-            [tiltontec.cljd-world :as cljdw]
+            [tiltontec.cljd-world :as hello]
             [tiltontec.mx-cljd-world :as mxworld]
-            [tiltontec.mx-flutter.core :as mxf]
-            ))
+            [tiltontec.mx-flutter.core :as fx]))
 
 (def version (atom nil :meta {}))
 
@@ -23,9 +22,10 @@
     [:appBar :body :actionButton]))
 
 (defn main []
-  (mxf/load-widget-specs)
+  (fx/load-widget-specs)
   (material/runApp
-    (mxworld/make-app))
+    (fx/render-fx
+      (hello/make-app)))
 
   ;;(testing/run-tests)
   (prn :tests-fini)
