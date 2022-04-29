@@ -56,7 +56,6 @@
       (util/rmap-meta-setf [:state-ref me]
         (reify :extends w/State
           (build [this ctx]
-            (prn :statefully-ex-builder-runs!!)
             (builder me ctx)))))))
 
 (defn TextEx-gen-ex [me]
@@ -77,52 +76,6 @@
      ~@(concat
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))
-
-(defn TextEx-gen [me]
-  (reify :extends w/StatefulWidget
-    (createState [this]
-      (util/rmap-meta-setf [:state-ref me]
-        (reify :extends w/State
-          (build [this ctx]
-            (prn :TextGen-build (parts (TTText.)))
-            (w/Text. (first (md/md-kids me))
-              :style (tiltontec.model.core/mget me :style))))))))
-
-#_(defmacro Text [custom-props fx-props & kids]
-    ;; todo: enforce only one kid
-    `(tiltontec.model.core/make
-       :type ::Text
-       :kids (tiltontec.model.core/cFkids ~@kids)
-       :fx-gen #(m/Text. (first (tiltontec.model.core/md-kids %))
-                  :style (tiltontec.model.core/mget % :style))
-       ~@(concat
-           (vec (apply concat (seq fx-props)))
-           (vec (apply concat (seq custom-props))))))
-
-#_
-(defmacro Text [custom-props fx-props & kids]
-  ;; todo: enforce only one kid
-  `(tiltontec.model.core/make
-     :type ::Text
-     :kids (cFkids ~@kids)
-     :fx-gen #(do ;; (prn :text-gen-called!!!!!)
-                  (let [r# #_ (reify :extends w/StatefulWidget
-                             (createState [this]
-                               (util/rmap-meta-setf [:state-ref me]
-                                 (reify :extends w/State
-                                   (build [this ctx]
-                                     (prn :OK-build-is-running-with-me (meta me))
-                                     (w/Text. (first (md-kids %))
-                                       :style (mget % :style)))))))
-                        (statefully %
-                             (w/Text. (first (md-kids %))
-                               :style (mget % :style)))]
-                    ;; (prn :gennedtesxt!! (meta %))
-                    r#))
-     ~@(concat
-         (vec (apply concat (seq fx-props)))
-         (vec (apply concat (seq custom-props))))))
-
 
 (defmacro MaterialApp [custom-props fx-props & kids]
   `(tiltontec.model.core/make
@@ -166,7 +119,6 @@
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))
 
-
 (defmacro Center [custom-props fx-props & kids]
   ;; todo: enforce only one kid
   `(tiltontec.model.core/make
@@ -178,47 +130,3 @@
          (vec (apply concat (seq fx-props)))
          (vec (apply concat (seq custom-props))))))
 
-#_#_
-        (deftype TextSState [me]
-          :extends State
-          (^Widget build [me ctx]
-            (prn :TextSState-build-sees me)
-            (Text. (str "Bowza " (mget me :col-name)))))
-
-        (deftype TextS [me]
-          :extends StatefulWidget
-          (^TextSState createState [this]
-            (prn :TEXTS-crestate-sees-me me)
-            (TextSState.
-              ;; the counter:
-              #_ (atom 0)
-              me)))
-
-#_#_(defn TextEx-gen [me]
-      (reify :extends w/StatefulWidget
-        (createState [this]
-          (util/rmap-meta-setf [:state-ref me]
-            (reify :extends w/State
-              (build [this ctx]
-                (w/Text. (first (md-kids me))
-                  :style (mget me :style))))))))
-        (defmacro TextEx [custom-props fx-props & kids]
-          ;; todo: enforce only one kid
-          `(tiltontec.model.core/make
-             :type ::Text
-             :kids (cFkids ~@kids)
-             :fx-gen TextEx-gen
-             #_(fn [me]
-                 (reify :extends w/StatefulWidget
-                   (~'createState [this#]
-                     (reify :extends w/State
-                       (~'build [this ctx]
-                         (tiltontec.util.core/rmap-meta-setf [:ref me]
-                           (Text. (first (tiltontec.model.core/md-kids me))
-                             :style (tiltontec.model.core/mget me :style)))))))
-                 #_(m/Text. (str "x" (first (tiltontec.model.core/md-kids me)))
-                     :style (tiltontec.model.core/mget me :style))
-                 )
-             ~@(concat
-                 (vec (apply concat (seq fx-props)))
-                 (vec (apply concat (seq custom-props))))))

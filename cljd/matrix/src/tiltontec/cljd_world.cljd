@@ -14,7 +14,7 @@
      :theme (m/ThemeData. :primarySwatch m.Colors/blue)}
     (Scaffold {}
       {:appBar               (m/AppBar.
-                               :title (mText. "Welcome to mxFlutter"))}
+                               :title (m/Text. "Welcome to mxFlutter"))}
       (Center {} {}
         (fx/Text {} {:style (p/TextStyle.
                               :color m.Colors/black
