@@ -74,7 +74,7 @@
 
 (defmethod err :default [& bits]
   (throw (#?(:cljs js/Error. :clj Exception.)
-           (str/join " " (cons "jz/err>" bits)))))
+           (str/join " " (cons "mxerr>" bits)))))
 
 (defn flz [x]
   (if (isa? (type x) #?(:cljs cljs.core.LazySeq

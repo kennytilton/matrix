@@ -1,5 +1,7 @@
 (ns tiltontec.model.core-test
   (:require
+    [clojure.string :as str]
+    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format] :as pp]
    #?(:clj [clojure.test :refer :all]
       :cljs [cljs.test
              :refer-macros [deftest is are]])
@@ -297,3 +299,23 @@
 #?(:cljs (do
            (cljs.test/run-tests)
            ))
+
+ ;; not appropriate for lein test:
+(deftest ad-hoc-errmsg
+  (let [thing (make ;; :type ::adhoc
+                :title "THING"
+                :slot :state
+                :flush-my-cell (cF 42)
+                :state :init-state ;; should be (cI :init-state)
+                :derived-prop (cF+ [:obs (fn [slot me new old cell]
+                                           (prn :new!!! new))]
+                                (let [value (mget me :state)]
+                                  (cond
+                                    (str/includes? value "osc") (prn "OSC MESSAGE")
+                                    (str/includes? value "midi") (prn "MIDI MESSAGE")
+                                    :else (prn "PRIMITIVE VALUE")))))]
+    (do
+      (mset! thing :state "osc") ;; should fail informatively
+      #_ (catch Exception e
+        (pp/pprint (.getMessage e))))
+    (is true)))

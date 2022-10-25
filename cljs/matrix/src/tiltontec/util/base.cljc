@@ -79,7 +79,6 @@
                  (~(keyword slot#) (meta ~'ref)))) slots)))
 
 (defn type-cljc [x]
-  #?(:clj (type x)
-     :cljs (or (when-let [m (meta x)]
-                 (:type m))
-             (type x))))
+  (if-let [m (meta x)]
+    (:type m :no-mx-type-in-meta)
+    (type x)))

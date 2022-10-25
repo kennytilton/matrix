@@ -80,15 +80,23 @@
     (do                                                     ;; (println :gotc!)
       (c-reset! c new-value))
     (do
-      (println :reset-oops)
-      (println :reset-meta (meta me))
-      (println :cz (:cz (meta me)))
+      ;(println :reset-meta (meta me))
+      ;(println :cz (:cz (meta me)))
       (if (contains? @me slot)
-        (err str "change not mediated by cell " slot "/" (ia-type me))
-        (err str "change to slot not mediated by cell and map lacks slot "
-          slot "
-         ;; but has " (str (keys @me))
-          )))))
+        (do
+          (err str
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/md-reset! to the property '" slot "', which is not mediated by an input cell.\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> intended new value is [" new-value "]; initial value was [" (get @me slot :no-such-slot) "].\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> instance is of type " (type-cljc me) ".\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> full instance is " @me "\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> instance meta is " (meta me) "\n.")
+          )
+        (err str
+          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> change to non-existent slot \"" slot "\".\n"
+          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> FYI, known slots are" (keys @me))
+          ))))
 
 (defn mset! [me slot new-value]
   (md-reset! me slot new-value))
@@ -111,7 +119,6 @@
     :else
     (#?(:clj dosync :cljs do)
       ;;(println :md-making (nth arg-list 1))
-
       (let [iargs (apply hash-map arg-list)
             me (#?(:clj ref :cljs atom)
                  (merge {:par *par*}
@@ -124,9 +131,8 @@
                                         unbound
                                         v))))
                      (into {})))
-                 :meta (merge
-                         {:state :nascent}
-                         (select-keys iargs [:type])))]
+                 :meta {:state :nascent
+                        :type (get iargs :type ::cty/model)})]
         (assert (meta me))
         #_(when-not (:par @me)
             (println :no-par!!!! me))

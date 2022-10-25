@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cljs/fluxchallenge/checkos/cljs-http" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cljs/helix-todo-mvc" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/js/matrix/js/closure-library" vcs="Git" />
   </component>
 </project>
