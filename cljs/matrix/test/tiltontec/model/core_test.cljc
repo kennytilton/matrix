@@ -300,13 +300,14 @@
            (cljs.test/run-tests)
            ))
 
-#_ ;; not appropriate for lein test:
+;; not appropriate for lein test. leave commented out when not being developed.
+#_
 (deftest ad-hoc-errmsg-need-CI
   (let [thing (make ;; :type ::adhoc
                 :title "THING"
                 ;; :slot :state
                 ;; :flush-my-cell (cF 42) ;; testing that cells without dependencies get optimized away for efficiency
-                :state :init-state ;; should be (cI :init-state)
+                :state :init-state ;; the fix: (cI :init-state)
                 :derived-prop (cF+ [:obs (fn [slot me new old cell]
                                            (prn :new!!! new))]
                                 (let [value (mget me :state)]
@@ -316,16 +317,15 @@
                                     :else (prn "PRIMITIVE VALUE")))))]
     (do
       (mset! thing :state "osc") ;; should fail informatively
-      #_ (catch Exception e
-        (pp/pprint (.getMessage e))))
+      )
     (is true)))
 
 ;; not appropriate for lein test
-#_ (deftest ad-hoc-errmsg-need-CFn
+#_ (deftest ad-hoc-errmsg-need-cFn
   (let [thing (make ;; :type ::adhoc
                 :title "THING"
                 :state (cI :init-state)
-                :derived-prop (cF+ [:obs (fn [slot me new old cell]
+                :derived-prop (cF+n [:obs (fn [slot me new old cell]
                                            (prn :derived-prop-obs-new!!! new :old old :cell @cell))]
                                 (let [value (mget me :state)]
                                   (cond

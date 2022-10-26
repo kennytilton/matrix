@@ -233,7 +233,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (let [me (c-model c)]
       (err str
         "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-slot-name c) "', which is not mediated by an input cell.\n"
-        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cFn'. eg: (make... :answer (cFn <computation>)).\n"
+        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cFn' or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
         "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
         "..> FYI: intended new value is [" new-value "].\n"
         "..> FYI: the non-input cell is " @c "\n"

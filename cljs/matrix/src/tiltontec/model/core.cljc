@@ -87,16 +87,16 @@
         (do
           (err str
             "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/md-reset! to the property '" slot "', which is not mediated by an input cell.\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> intended new value is [" new-value "]; initial value was [" (get @me slot :no-such-slot) "].\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> instance is of type " (type-cljc me) ".\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> full instance is " @me "\n"
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> instance meta is " (meta me) "\n.")
+            "...> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
+            "...> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
+            "...> FYI: intended new value is [" new-value "]; initial value was [" (get @me slot :no-such-slot) "].\n"
+            "...> FYI: instance is of type " (type-cljc me) ".\n"
+            "...> FYI: full instance is " @me "\n"
+            "...> FYI: instance meta is " (meta me) "\n.")
           )
         (err str
-          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> change to non-existent slot \"" slot "\".\n"
-          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> FYI, known slots are" (keys @me))
+          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> mswap!/mset!/md-reset! was attempted to non-existent slot \"" slot "\".\n"
+          "...> FYI: known slots are" (keys @me))
           ))))
 
 (defn mset! [me slot new-value]
