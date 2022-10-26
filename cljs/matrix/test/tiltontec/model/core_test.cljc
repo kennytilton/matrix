@@ -300,12 +300,12 @@
            (cljs.test/run-tests)
            ))
 
- ;; not appropriate for lein test:
-(deftest ad-hoc-errmsg
+#_ ;; not appropriate for lein test:
+(deftest ad-hoc-errmsg-need-CI
   (let [thing (make ;; :type ::adhoc
                 :title "THING"
-                :slot :state
-                :flush-my-cell (cF 42)
+                ;; :slot :state
+                ;; :flush-my-cell (cF 42) ;; testing that cells without dependencies get optimized away for efficiency
                 :state :init-state ;; should be (cI :init-state)
                 :derived-prop (cF+ [:obs (fn [slot me new old cell]
                                            (prn :new!!! new))]
@@ -319,3 +319,19 @@
       #_ (catch Exception e
         (pp/pprint (.getMessage e))))
     (is true)))
+
+;; not appropriate for lein test
+#_ (deftest ad-hoc-errmsg-need-CFn
+  (let [thing (make ;; :type ::adhoc
+                :title "THING"
+                :state (cI :init-state)
+                :derived-prop (cF+ [:obs (fn [slot me new old cell]
+                                           (prn :derived-prop-obs-new!!! new :old old :cell @cell))]
+                                (let [value (mget me :state)]
+                                  (cond
+                                    (str/includes? value "osc") "OSC MESSAGE"
+                                    (str/includes? value "midi") "MIDI MESSAGE"
+                                    :else (str "Unexpected state: " value)))))]
+    (do
+      (mset! thing :derived-prop "MSET! MESSAGE SHOULD HAVE FAILED") ;; should fail informatively)
+    (is true))))

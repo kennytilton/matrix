@@ -1,7 +1,9 @@
 (ns tiltontec.cell.core
   (:require
 
-    [tiltontec.util.core :refer [rmap-setf]]
+    [tiltontec.util.core
+     :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
+
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
@@ -224,8 +226,21 @@
   "The moral equivalent of a Common Lisp SETF, and indeed
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
+
   ;; (println :c-reset new-value)
   (cond
+    (not (c-input? c))
+    (let [me (c-model c)]
+      (err str
+        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-slot-name c) "', which is not mediated by an input cell.\n"
+        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cFn'. eg: (make... :answer (cFn <computation>)).\n"
+        "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
+        "..> FYI: intended new value is [" new-value "].\n"
+        "..> FYI: the non-input cell is " @c "\n"
+        "..> FYI: instance is of type " (type-cljc me) ".\n"
+        "..> FYI: full instance is " @me "\n"
+        "..> FYI: instance meta is " (meta me) "\n."))
+
     *defer-changes*
     (do (println :c-reset-rejecting-undeferred! (c-slot c))
       #_ (throw (#?(:clj Exception. :cljs js/Error.)

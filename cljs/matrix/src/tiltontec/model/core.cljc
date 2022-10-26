@@ -80,8 +80,9 @@
     (do                                                     ;; (println :gotc!)
       (c-reset! c new-value))
     (do
-      ;(println :reset-meta (meta me))
-      ;(println :cz (:cz (meta me)))
+      (println :reset-meta slot (meta me))
+      (println :reset-meta-flushed slot (:cells-flushed (meta me)))
+      (println :cz (:cz (meta me)))
       (if (contains? @me slot)
         (do
           (err str
