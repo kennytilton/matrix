@@ -1,5 +1,6 @@
 (ns tiltontec.cell.base
   (:require
+    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
    #?(:cljs [tiltontec.util.base :as utm
              :refer-macros [prog1 b-when def-rmap-slots]]
       :clj  [tiltontec.util.base :as utm
@@ -142,8 +143,12 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (def-rmap-slots c-
   me slot state input? rule pulse pulse-last-changed pulse-observed
-  useds users callers optimize ephemeral?
+  useds users callers optimize ephemeral? code
   lazy synapses synaptic?)
+
+(defn c-code$ [c]
+  (with-out-str (binding [*print-level* false]
+                  (pprint (:code @c)))))
 
 (defn c-value [c]
   (assert (any-ref? c))

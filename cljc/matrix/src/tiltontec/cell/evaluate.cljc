@@ -1,5 +1,7 @@
 (ns tiltontec.cell.evaluate
   (:require
+    [clojure.string :as str]
+    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [clojure.set :refer [difference]]
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
@@ -15,7 +17,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state +pulse+ c-pulse-observed
+                      c-state +pulse+ c-pulse-observed c-code$
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -193,6 +195,24 @@
   * Well, we also look to see if a synaptic cell has attached a
   propagaion code to a vector used to wrap the raw value, which we then unpack."
   [c]
+  ;(when (some #{c} ))
+  ;(prn :cnlink-entry c (count *call-stack*) (some #{c} *call-stack*))
+  (when (some #{c} *call-stack*)
+    (let [me (c-model c)
+          slot (c-slot-name c)]
+      (err str
+        "MXAPI_COMPUTE_CYCLE_DETECTED> cyclic dependency detected while computing slot '"
+        slot "' of model '" (c-md-name c) "'.\n"
+        "...> formula for " slot ":\n"
+        (c-code$ c)
+        "\n...> full cell: \n"
+        @c
+        "\n\n...> callstack, latest first: \n"
+        (str/join "\n" (mapv (fn [cd]
+                               (str "....> md-name:" (c-md-name cd) " slot: "(c-slot-name cd)
+                                "\n....>    code:" (c-code$ cd)))
+                         *call-stack*)))))
+
   (binding [*call-stack* (cons c *call-stack*)
             *depender* c
             *defer-changes* true]

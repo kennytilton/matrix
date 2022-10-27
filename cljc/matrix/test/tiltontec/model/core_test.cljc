@@ -321,6 +321,7 @@
     (is true)))
 
 ;; not appropriate for lein test
+
 #_ (deftest ad-hoc-errmsg-need-cFn
   (let [thing (make ;; :type ::adhoc
                 :title "THING"
@@ -335,3 +336,22 @@
     (do
       (mset! thing :derived-prop "MSET! MESSAGE SHOULD HAVE FAILED") ;; should fail informatively)
     (is true))))
+
+;; not suitable for `lein test`
+#_
+(deftest ad-hoc-errmsg-cF-dependency-cycle
+  (let [thing (make ;; :type ::adhoc
+                :name :thingy
+                :title "cycle test"
+                :val-0 (cF+ [:obs (fn [slot me new old cell]
+                                    (prn :val-0-obs-new!!! new :old old :cell @cell))]
+                         (str :val-0 " val-2> "(mget me :val-2)))
+                 ;; (cI "0")
+                :val-1 (cF+ [:obs (fn [slot me new old cell]
+                                            (prn :val-1-obs-new!!! new :old old :cell @cell))]
+                           (str :val-1 " val-0> "(mget me :val-0)))
+                :val-2 (cF+ [:obs (fn [slot me new old cell]
+                                    (prn :val-1-obs-new!!! new :old old :cell @cell))]
+                         (str :val-2 " val-1> "(mget me :val-1))))]
+    (prn :thing-should-not-get-this-far @thing)
+    (is true)))
