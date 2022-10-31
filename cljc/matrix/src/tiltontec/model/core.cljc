@@ -80,13 +80,13 @@
     (do                                                     ;; (println :gotc!)
       (c-reset! c new-value))
     (do
-      (println :reset-meta slot (meta me))
-      (println :reset-meta-flushed slot (:cells-flushed (meta me)))
-      (println :cz (:cz (meta me)))
+      ;(println :reset-meta slot (meta me))
+      ;(println :reset-meta-flushed slot (:cells-flushed (meta me)))
+      ;(println :cz (:cz (meta me)))
       (if (contains? @me slot)
         (do
           (err str
-            "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/md-reset! to the property '" slot "', which is not mediated by an input cell.\n"
+            "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/md-reset! to the property '" slot "', which is not mediated by any cell.\n"
             "...> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
             "...> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
             "...> FYI: intended new value is [" new-value "]; initial value was [" (get @me slot :no-such-slot) "].\n"

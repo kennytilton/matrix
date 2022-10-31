@@ -25,8 +25,8 @@
                      *depender* *not-to-be* 
                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
    #?(:cljs [tiltontec.cell.integrity
-             :refer-macros [with-integrity]]
-      :clj [tiltontec.cell.integrity :refer [with-integrity]])
+             :refer-macros [with-integrity with-cc]]
+      :clj [tiltontec.cell.integrity :refer [with-integrity with-cc]])
    #?(:clj [tiltontec.cell.observer
             :refer [defobserver fn-obs]]
       :cljs [tiltontec.cell.observer
@@ -354,4 +354,19 @@
                                     (prn :val-1-obs-new!!! new :old old :cell @cell))]
                          (str :val-2 " val-1> "(mget me :val-1))))]
     (prn :thing-should-not-get-this-far @thing)
+    (is true)))
+
+#_
+(deftest ad-hoc-errmsg-undeferred-change
+  (let [thing (make ;; :type ::adhoc
+                :name :thingy
+                :title "undeferred change test"
+                :change-count (cI 0)
+                :value (cI 42 :obs (fn [slot me new old cell]
+                                     (do ;; the fix: with-cc :test-err-msg
+                                       (mswap! me :change-count inc)) ;; <= change by observer must be deferred
+                                       )))]
+    (prn :MAYBE-should-not-get-this-far (mget thing :value)(mget thing :change-count))
+    (mswap! thing :value inc)
+    (prn :DEF-should-not-get-this-far (mget thing :value)(mget thing :change-count))
     (is true)))

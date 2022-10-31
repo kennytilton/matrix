@@ -227,13 +227,12 @@
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
 
-  ;; (println :c-reset new-value)
   (cond
     (not (c-input? c))
     (let [me (c-model c)]
       (err str
         "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-slot-name c) "', which is not mediated by an input cell.\n"
-        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cFn' or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
+        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI', 'cFn', or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
         "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
         "..> FYI: intended new value is [" new-value "].\n"
         "..> FYI: the non-input cell is " @c "\n"
@@ -242,10 +241,18 @@ in the CL version of Cells SETF itself is the change API dunction."
         "..> FYI: instance meta is " (meta me) "\n."))
 
     *defer-changes*
-    (do (println :c-reset-rejecting-undeferred! (c-slot c))
-      #_ (throw (#?(:clj Exception. :cljs js/Error.)
-       (cl-format t "c-reset!> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
-                       (c-slot c)))))
+    (let [slot (c-slot-name c)
+          me (c-model c)]
+        (err str
+          "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" slot "' by an observer detected."
+          "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
+          "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
+          "...> FYI: intended new value is [" new-value "]; current value is [" (get @me slot :no-such-slot) "].\n"
+          "...> FYI: instance is of type " (type-cljc me) ".\n"
+          "...> FYI: full instance is " @me "\n"
+          "...> FYI: instance meta is " (meta me) "\n.")
+        #_ (err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
+                       (c-slot c))))
     ;-----------------------------------
     (some #{(c-lazy c)} [:once-asked :always true])
     (c-value-assume c new-value nil)
@@ -271,6 +278,7 @@ allow an observer to explicitly queue a c-reset! for
 execution as soon as the current change is manifested."
   `(cond
      (not *within-integrity*)
+     ;; todo new error to test and document
      (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
                         (c-slot ~f-c)))
      ;---------------------------------------------
