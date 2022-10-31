@@ -2,7 +2,9 @@
 
 Welcome to the "mono" repo for Matrix, a generic, fine-grained, reactive engine that began as Common Lisp [Cells](https://github.com/kennytilton/cells) twenty-five years ago. Gasp.
 
-Of most interest to many will be the application of Matrix to Web and mobile app development. We are actively documenting the Web solution in a new [mxWeb Training](https://github.com/kennytilton/mxweb-trainer) app/tutorial. That perforce will explain Matrix itself, so the curious might start there.
+Of most interest to many will be the application of Matrix to Web and mobile app development, and now ClojureDart/Flutter UI development. We were actively documenting the Web solution in a new [mxWeb Training](https://github.com/kennytilton/mxweb-trainer) app/tutorial when ClojureDart came along.
+
+[Flutter/MX](https://github.com/kennytilton/flutter-mx), implemented with ClojureDart, has successfully reached the proof-of-concept stage. Next up is sufficient documentation of Matrix to support those interested in exploring Flutter/MX or any Matrix-wrapped front end.
 
 This repo contains:
 * Clojure/ClJS version [here](https://github.com/kennytilton/matrix/tree/main/cljs/matrix);
@@ -11,9 +13,11 @@ This repo contains:
 * wrappers for XHR and localStorage, with more to come.
 
 Here is our road map, absent requests for specific implementations for evaluation/adoption:
-* a hands-on, progressive Matrix+CLJS+mxWeb learning experience, linking to...
+* Matrix overview
+* a hands-on, progressive Flutter/MX learning experience, linking to...
 * ...reference-style documentation as needed and...
 * ...new `clojure.test` content serving also to demonstrate advanced Matrix features;
+* the same ^^^ for mxWeb;
 * the same ^^^ for Javascript;
 * the same for CLJS ReactNative.
 
