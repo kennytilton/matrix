@@ -370,3 +370,11 @@
     (mswap! thing :value inc)
     (prn :DEF-should-not-get-this-far (mget thing :value)(mget thing :change-count))
     (is true)))
+
+#_
+(deftest ad-hoc-errmsg-mget-no-such-slot
+  (let [thing (make ;; :type ::adhoc
+                :name :thingy
+                :value (cI 42))]
+    (prn :should-NOT-get-this-far (mget thing :valu-mistype))
+    (is true)))

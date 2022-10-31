@@ -51,10 +51,15 @@
 (defn md-get [me slot]
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
-  (when (any-ref? me)
-    (if-let [c (md-cell me slot)]
-      (c-get c)
-      (slot @me))))
+  (if (not (contains? @me slot))
+    (when (not= slot :kids)
+      (err str
+        "MXAPI_ILLEGAL_GET_NOSUCHSLOT> mget was attempted on non-existent slot \"" slot "\".\n"
+        "...> FYI: known slots are" (keys @me)))
+    (when (any-ref? me)
+      (if-let [c (md-cell me slot)]
+        (c-get c)
+        (slot @me)))))
 
 (defn mget [me slot] (md-get me slot))
 
@@ -97,7 +102,7 @@
         (err str
           "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> mswap!/mset!/md-reset! was attempted to non-existent slot \"" slot "\".\n"
           "...> FYI: known slots are" (keys @me))
-          ))))
+        ))))
 
 (defn mset! [me slot new-value]
   (md-reset! me slot new-value))
@@ -133,7 +138,7 @@
                                         v))))
                      (into {})))
                  :meta {:state :nascent
-                        :type (get iargs :type ::cty/model)})]
+                        :type  (get iargs :type ::cty/model)})]
         (assert (meta me))
         #_(when-not (:par @me)
             (println :no-par!!!! me))
@@ -207,8 +212,8 @@
                     (apply hash-map options))]
       (binding [*depender* (if (:wocd? options) nil *depender*)]
         (or (and (:me? options)
-                 (fget= what where)
-                 where)
+              (fget= what where)
+              where)
 
           (when-let [par (:par @where)]
             (fasc what par
@@ -248,29 +253,29 @@
         (when (any-ref? where)
           ;(println :f)
           (or (and (:me? options)
-                   (fget= what where)
-                   where)
+                (fget= what where)
+                where)
 
             (and (:inside? options)
-                 (if-let [kids (md-get where :kids)]
-                   (do
-                     (trx nil :inside-kids!!! (:name @where))
-                     (if-let [netkids (remove #{(:skip options)} kids)]
-                       (do
-                         (some #(fget what %
-                                  :me? true
-                                  :inside? true
-                                  :up? false) netkids))
-                       (trx nil :no-net-kids)))
-                   (trx nil :inside-no-kids (:name @where))))
+              (if-let [kids (md-get where :kids)]
+                (do
+                  (trx nil :inside-kids!!! (:name @where))
+                  (if-let [netkids (remove #{(:skip options)} kids)]
+                    (do
+                      (some #(fget what %
+                               :me? true
+                               :inside? true
+                               :up? false) netkids))
+                    (trx nil :no-net-kids)))
+                (trx nil :inside-no-kids (:name @where))))
 
             (and (:up? options)
-                 (when-let [par (:par @where)]
-                   (fget what par
-                     :up? true
-                     :me? true
-                     :skip where
-                     :inside? true)))
+              (when-let [par (:par @where)]
+                (fget what par
+                  :up? true
+                  :me? true
+                  :skip where
+                  :inside? true)))
 
             (when (:must? options)
               (err :fget-must-failed what where options))))))))
