@@ -7,7 +7,8 @@
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
-              :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots type-cljc]]
+              :refer [type-cljc]
+              :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
        :clj [tiltontec.util.base :refer :all])
 
     #?(:clj [tiltontec.cell.base :refer :all :as cty]
