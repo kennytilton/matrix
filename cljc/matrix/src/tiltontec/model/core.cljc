@@ -4,7 +4,8 @@
   (:require
     [clojure.set :refer [difference]]
     #?(:cljs [tiltontec.util.base
-              :refer-macros [trx prog1 *trx?* def-rmap-slots type-cljc]]
+              :refer [type-cljc]
+              :refer-macros [trx prog1 *trx?* def-rmap-slots]]
        :clj  [tiltontec.util.base
               :refer :all])
     [tiltontec.util.core
