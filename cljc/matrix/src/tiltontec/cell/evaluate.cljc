@@ -22,7 +22,7 @@
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
                       c-synaptic? caller-drop c-md-name
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot
+                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     [tiltontec.cell.observer :refer [c-observe]]

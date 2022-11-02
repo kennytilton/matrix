@@ -7,7 +7,7 @@
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
-              :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
+              :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots type-cljc]]
        :clj [tiltontec.util.base :refer :all])
 
     #?(:clj [tiltontec.cell.base :refer :all :as cty]
@@ -22,7 +22,7 @@
                       c-synapses
                       unlink-from-callers *causation*
                       c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot
+                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
