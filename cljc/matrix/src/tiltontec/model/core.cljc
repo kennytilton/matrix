@@ -53,7 +53,8 @@
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
   (if (not (contains? @me slot))
-    (when (not= slot :kids)
+    nil ;; ugh. CLJS version has non-Cell .dom-cache
+    #_ (when (not= slot :kids)
       (err str
         "MXAPI_ILLEGAL_GET_NOSUCHSLOT> mget was attempted on non-existent slot \"" slot "\".\n"
         "...> FYI: known slots are" (keys @me)))

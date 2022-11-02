@@ -25,7 +25,7 @@
   ;; from event handlers and the like.
   (let [id (mget me :id)]
     (assert id)
-    (or (mget me :dom-cache)
+    (or (:dom-cache @me) ;; todo this should be backdoor sth or in meta or sth
       (if-let [dom (dom/getElement (str id))]
         (backdoor-reset! me :dom-cache dom)
         (println :style-no-element id :found)))))
