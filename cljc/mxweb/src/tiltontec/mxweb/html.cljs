@@ -55,7 +55,7 @@
   ;; from event handlers and the like.
   (let [id (mget me :id)]
     (assert id)
-    (or (mget me :dom-cache)
+    (or (:dom-cache @me) ;; todo make this another backdoor fn (and use meta?)
       (if-let [dom (dom/getElement (str id))]
         (backdoor-reset! me :dom-cache dom)
         #_(println :benign?-html-no-element id :found)))))
@@ -214,7 +214,8 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
-  (fget #(str/includes? (class-to-class-string (mget % :class)) (kw$ class))
+  (fget #(when-let [its-class (mget % :class)]
+           (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
     where :me? false :up? true))
 
 (defn mxu-find-tag

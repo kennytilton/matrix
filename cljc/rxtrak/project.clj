@@ -1,4 +1,4 @@
-(defproject rxtrak "0.1.0-SNAPSHOT"
+(defproject rxtrak "0.1.1-SNAPSHOT"
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -16,9 +16,9 @@
                  [cheshire "5.8.0"]
                  [com.taoensso/tufte "1.1.2"]
                  ;; todo bring up to date
-                 [tiltontec/matrix "4.1.7-SNAPSHOT"]
-                 [tiltontec/mxxhr "0.1.5-SNAPSHOT"]
-                 [tiltontec/mxweb "0.2.2-SNAPSHOT"]]
+                 [tiltontec/matrix "4.1.8-SNAPSHOT"]
+                 [tiltontec/mxxhr "0.1.7-SNAPSHOT"]
+                 [tiltontec/mxweb "0.2.3-SNAPSHOT"]]
 
   :source-paths ["src"]
 

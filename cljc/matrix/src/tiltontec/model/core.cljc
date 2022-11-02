@@ -53,10 +53,9 @@
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
   (if (not (contains? @me slot))
-    nil ;; ugh. CLJS version has non-Cell .dom-cache
-    #_ (when (not= slot :kids)
+    nil #_ (when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
       (err str
-        "MXAPI_ILLEGAL_GET_NOSUCHSLOT> mget was attempted on non-existent slot \"" slot "\".\n"
+        "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\".\n"
         "...> FYI: known slots are" (keys @me)))
     (when (any-ref? me)
       (if-let [c (md-cell me slot)]
@@ -102,7 +101,7 @@
             "...> FYI: instance meta is " (meta me) "\n.")
           )
         (err str
-          "MXAPI_ILLEGAL_MUTATE_NOSUCHSLOT> mswap!/mset!/md-reset! was attempted to non-existent slot \"" slot "\".\n"
+          "MXAPI_ILLEGAL_MUTATE_NO_SUCH_SLOT> mswap!/mset!/md-reset! was attempted to non-existent slot \"" slot "\".\n"
           "...> FYI: known slots are" (keys @me))
         ))))
 
