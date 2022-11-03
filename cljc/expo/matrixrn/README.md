@@ -26,9 +26,6 @@ More soon in a Wiki walk-through of these POC examples.
 ## Running the demo project
 In a terminal:
 * clone the entire [Matrix repo](https://github.com/kennytilton/matrix);
-* `git checkout master` (Prolly not necessary.)
-* `cd (matrix location)/cljs/matrix`;
-* `lein install` (Installs latest Matrix locally until I figure out Clojars new security scheme.)
 * `cd (matrix location)/cljs/expo/matrixrn`;
 * `npm install`
 * `npx shadow-cljs watch app` to start compilation;
