@@ -13,8 +13,8 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
-    "expo": "^42.0.0",
-    "expo-cli": "4.10.0",
+    "expo": "^46.0.16",
+    "expo-cli": "4.13.0",
     "expo-status-bar": "~1.0.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -24,7 +24,7 @@
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
-    "@expo/webpack-config": "^0.14.0",
+    "@expo/webpack-config": "^0.17.3",
     "babel-preset-expo": "8.3.0",
     "shadow-cljs": "^2.15.3"
   },
