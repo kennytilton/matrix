@@ -44,7 +44,7 @@ Start the application in a browser:
 * `lein fig:build`; or
 * `clj -M:build`
 
-Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to `localhost:9500`.
+Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to `localhost:9500`. And pardon the cosmetics. They were better until we tacked on the refill date and NIH Adverse Events lookup. Cleanup RSN.
 
 ## License
 
