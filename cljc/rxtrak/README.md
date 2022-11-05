@@ -44,7 +44,7 @@ Start the application in a browser:
 * `lein fig:build`; or
 * `clj -M:build`
 
-Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to (localhost:9500)[http://localhost:9500/#/]. 
+Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to `localhost:9500`.
 
 ## License
 
