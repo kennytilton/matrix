@@ -1,6 +1,16 @@
 {:deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.clojure/clojurescript {:mvn/version "1.11.4"}
         ;; sablono/sablono {:mvn/version "0.8.6"}
+        com.cognitect/transit-cljs {:mvn/version "0.8.280"}
+        com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+        funcool/bide {:mvn/version "1.7.0"}
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        cljs-http/cljs-http {:mvn/version "0.1.46"}
+        cheshire/cheshire {:mvn/version "5.8.1"}
+        com.taoensso/tufte {:mvn/version "2.4.5"}
+        tiltontec/matrix {:mvn/version "4.1.8-SNAPSHOT"}
+        tiltontec/mxxhr {:mvn/version "0.1.7-SNAPSHOT"}
+        tiltontec/mxweb {:mvn/version "0.2.3-SNAPSHOT"}
         }
  :paths ["src" "resources" "target"]
  :aliases {:build {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}
