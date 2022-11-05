@@ -27,7 +27,7 @@ By "natural" we mean "without giving architecture any thought", React components
 Our FB heros made clear that their library only managed the view. Matrix applications extend the declarative/functional model to any aspect we care enough about to glue. Tcl/Tk, GTk, OpenGL, a persistent CLOS database, a Postgres implementation of a graph DB, browser local storage, Ajax XHR requests have all been connected in one seamless dataflow network in various Matrix applications. mxWeb itself is hundreds of lines of code extending dataflow to the DOM, obviating any need for VDOM and its diffing.
 
 ### Enough yapping
-The rest of this page describes how to run the completed demo. Over in the documentation we will wlak you through how to build it yourself, introducing first Matrix dataflow and then the mxWeb un-framework.
+The rest of this page describes how to run the completed demo. Over in the documentation we will walk you through how to build it yourself, introducing first Matrix dataflow and then the mxWeb un-framework.
 
 ## Development
 
@@ -41,22 +41,10 @@ Tidy up:
 * `lein clean`
 
 Start the application in a browser:
-* `lein fig:build`
+* `lein fig:build`; or
+* `clj -M:build`
 
-This ^^^ will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
-* `(js/alert "Am I connected?")`
-
-...and you should see an alert in the browser window.
-
-To clean all compiled files:
-* `lein clean`
-
-To create a production build run:
-* `lein clean`
-* `lein fig:min`
-
+Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to `localhost:9500`. And pardon the cosmetics. They were better until we tacked on the refill date and NIH Adverse Events lookup. Cleanup RSN.
 
 ## License
 
