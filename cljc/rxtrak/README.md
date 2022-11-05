@@ -41,22 +41,10 @@ Tidy up:
 * `lein clean`
 
 Start the application in a browser:
-* `lein fig:build`
+* `lein fig:build`; or
+* `clj -M:build`
 
-This ^^^ will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
-* `(js/alert "Am I connected?")`
-
-...and you should see an alert in the browser window.
-
-To clean all compiled files:
-* `lein clean`
-
-To create a production build run:
-* `lein clean`
-* `lein fig:min`
-
+Check your browser. The rxTrak app should open automatically in your desktop web browser. If not, navigate to (localhost:9500)[http://localhost:9500/#/]. 
 
 ## License
 
