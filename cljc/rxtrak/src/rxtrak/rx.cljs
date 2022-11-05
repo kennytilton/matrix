@@ -46,8 +46,6 @@
     :items-completed (cF (p :completed (doall (filter rx-completed (mget me :items)))))
     :items-active (cF (let [is (mget me :items)
                             active (doall (remove rx-completed is))]
-                        (prn :is is)
-                        (prn :acts active)
                         active #_
                         (p :active (doall (remove rx-completed is)))))
 

@@ -1,0 +1,10 @@
+{:deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/clojurescript {:mvn/version "1.11.4"}
+        ;; sablono/sablono {:mvn/version "0.8.6"}
+        }
+ :paths ["src" "resources" "target"]
+ :aliases {:build {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}
+                                com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+                                ;; to silence SL4J warnings
+                                org.slf4j/slf4j-nop {:mvn/version "1.7.30"}}
+                   :main-opts ["-m" "figwheel.main" "-b" "rxtrak" "-r"]}}}

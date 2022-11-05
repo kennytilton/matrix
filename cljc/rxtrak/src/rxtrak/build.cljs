@@ -110,7 +110,7 @@
   [(section {:class "todoapp"}
      (std-clock)
      (header {:class "header"}
-       (h1 "&#x211e;Trak")
+       (h1 "&#x211e;TrakBam")
        (rx-entry-field))
 
      (rx-list-items)
@@ -254,11 +254,8 @@
   [where class]
   (without-c-dependency
     (let [fc (name class)]
-      (println :my-find-seeking fc)
       (fget (fn [mx]
-              (let [mc (mget mx :class)]
-                (println (mget mx :tag) :mc mc)
-                (= fc mc)))
+              (= fc (mget mx :class)))
         where :me? false :up? true))))
 
 (defn check-interactions [me]
@@ -268,7 +265,6 @@
                               :margin "24px"
                               :display (cF (let [ul (mxu-find-class (:tag @me) "todo-list")]
                                              (assert ul)
-                                             ;;(println :sellll (mget ul :selections))
                                              (if (> (count (mget ul :selections)) 1)
                                                "block" "none")))
                               :display "block"))

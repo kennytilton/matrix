@@ -166,7 +166,7 @@
                              (or (:fake-delay @xhr) 0)))))
 
                      (do
-                       (prn :NO-success :stat (:status response)
+                       #_ (prn :NO-success :stat (:status response)
                          :ecode (:error-code response)
                          :etext (:error-text response))
 
@@ -198,7 +198,7 @@
 
 (defn xhr-response [xhr]
   (assert-xhr xhr :response)
-  (println :xresp-sees!!! (mget xhr :uri)
+  #_ (println :xresp-sees!!! (mget xhr :uri)
     (mget xhr :response) :keys!! (keys (mget xhr :response)))
   (mget xhr :response))
 

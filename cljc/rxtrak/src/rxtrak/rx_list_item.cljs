@@ -146,13 +146,13 @@
                           (tmc/from-string
                             (form/getValue (.-target %)))))
 
-          :disabled (cF (rx-completed rx))
+          :disabled  (cF (rx-completed rx))
 
           :style     (cFonce (make-css-inline me
                                :border "none"
                                :font-size "14px"
                                :display (cF (if (and (rx-completed rx)
-                                                     (not (rx-due-by rx)))
+                                                  (not (rx-due-by rx)))
                                               "none" "block"))
 
                                :background-color (cF (when-let [clock (mxu-find-class (:tag @me) "std-clock")]
@@ -179,32 +179,21 @@
   (button {:class   "li-show"
            :style   (cF (str "display:"
                           (or (when-let [xhr (mget me :ae)]
-                                (prn :bam-got-xhr!!!!!!!! xhr)
                                 (let [aes (xhr-response xhr)]
                                   (when (= 200 (:status aes))
-                                    (prn :aes-found-200! aes)
                                     "block")))
                             "none")))
            :onclick #(js/alert "Feature not yet implemented.")}
 
-    {:ae (cF+ [:obs (fn-obs
-                      (when-not (or (= old unbound) (nil? old))
-                        (not-to-be old))
-                      (println :new-ae? new))]
-           (when (mget (mxu-find-class me "ae-autocheck") :on?)
-             (prn :auto-check-on!!!!!!!!)
-             (println :ae-auto-check! (rx-title rx))
-             (println :url (pp/cl-format nil ae-by-brand
-                             (js/encodeURIComponent (rx-title rx))))
-             (make-xhr (pp/cl-format nil ae-by-brand
-                         (js/encodeURIComponent (rx-title rx)))
-               {:name name :send? true})))
-     :aeresponse (cF+ [:obs (fn-obs
-                              (println :newresponse new))]
-                   (when-let [lookup (mget me :ae)]
-                     (prn :lookup!!!!!!!! lookup)
-                     (xhr-response lookup)))
-     }
+    {:ae         (cF+ [:obs (fn-obs
+                              (when-not (or (= old unbound) (nil? old))
+                                (not-to-be old)))]
+                   (when (mget (mxu-find-class me "ae-autocheck") :on?)
+                     (make-xhr (pp/cl-format nil ae-by-brand
+                                 (js/encodeURIComponent (rx-title rx)))
+                       {:name name :send? true})))
+     :aeresponse (cF (when-let [lookup (mget me :ae)]
+                       (xhr-response lookup)))}
 
     (span {:style "font-size:0.7em;margin:2px;margin-top:0;vertical-align:top"}
       "View Adverse Events")))
