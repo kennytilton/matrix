@@ -1,30 +1,16 @@
 (ns tiltontec.learn.b001-boiler
   (:require
-    [clojure.string :as str]
-    [clojure.pprint :refer [pprint cl-format] :as pp]
     [clojure.test :refer :all]
     [tiltontec.util.base
      :refer :all]
-    [tiltontec.util.core :refer [type-of err]]
-    [tiltontec.cell.base :refer :all :as cty]
-    [tiltontec.cell.integrity :refer [with-integrity with-cc]]
-    [tiltontec.cell.observer
-     :refer [defobserver fn-obs]]
-
+    [tiltontec.cell.base :refer :all]
     [tiltontec.cell.core :refer :all]
-
-    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
-    [tiltontec.model.base :refer [md-cz md-cell]]
+    [tiltontec.model.base :refer [md-cz]]
     [tiltontec.model.core :refer :all :as md]
-    ))
+    [tiltontec.learn.util :refer :all]))
 
-(defn pgr-prn [& bits]
-  (prn :-----)
-  (apply prn bits))
-
-(defn obs-slot-new [slot me new old cell]
-  (prn slot :now new))
-
+;;; Forward
+;;; --------------------------------
 ;;; The big win for a reactive library like Matrix comes when
 ;;; managing a complex interface while a user thrashes away
 ;;; at the controls, and we will get to that, but first lets get
@@ -35,6 +21,7 @@
 ;;; does have a few twists, especially getting useful behavior out of
 ;;; a DAG of cascading calculations. We will see this soon.
 ;;;
+;;; Example: A boiler for a building heating system
 ;;; --------------------------------
 ;;; We begin by modelling (poorly) the boiler of a furnace in
 ;;; in the basement of an apartment building. Hopefully the
@@ -43,7 +30,7 @@
 ;;; If not, ping @kennytilton in the #matrix channel of the Clojurians slack
 
 (deftest boiler-1
-  (cells-init) ;; make sure each test is isolated
+  (cells-init)                                              ;; make sure each test is isolated
 
   (let [boiler (md/make
                  :water-capacity 100
@@ -61,7 +48,7 @@
                  ;
                  ; Input cells are like spreadsheet cells the user just
                  ; changes at will. When we get to a proper UI, they will
-                 ; be changed by  event handlers processing user actions.
+                 ; be changed by event handlers processing user actions.
 
                  :filled-ratio (cF (/ (mget me :water-amt)
                                      (mget me :water-capacity)))
@@ -77,17 +64,29 @@
 
     (mset! boiler :water-amt 10)
     ; mset! destructively modifies a model property
-    ; we are lower, but right at the minimum "=" boundary. Still OK.
+    ; we are lower, but right at the minimum "=" boundary. Still OK. We confirm:
     (is (not (mget boiler :water-low?)))
 
     (mset! boiler :water-amt 5)
-    ;; ^^ now too low.
+    ;; ^^ now we are too low. Confirm:
     (is (mget boiler :water-low?))))
 
 ;;; Super. All the tests pass. But it is hard to imagine what is going on
-;;; with the reactive dataflow.
+;;; with the reactive dataflow. So next we introduce a new feature, so-called "observers".
+;;;
+;;; Most reactive libraries use the term "observer" incorrectly. An observer views an
+;;; activity without participating, like UN observers of a conflict. Matrix uses this
+;;; sense of the word. (In the ClojureDart version of Matrix we have begun using
+;;; the term "watch". If the mountain will not come to Mohammed...).
+;;;
+;;; In this next verbose version of boiler-1, we use print statements in formulas as
+;;; well as observers to make concrete the reactive dataflow. The reader is encouraged to add
+;;; their own prints where they like. To add or modify an observer, consult the definition
+;;; 'util/obs-slot-new'.
+;;;
+
 (deftest boiler-1-verbose
-  (cells-init) ;; make sure each test is isolated
+  (cells-init)                                              ;; make sure each test is isolated
 
   (pgr-prn :beginning-b001-boiler)
   (let [boiler (md/make
@@ -105,15 +104,19 @@
                                  ;; ^^^ Observers should only act outside the reactive model, so they can be dispatched in the  middle
                                  ;; of a reactive propagation.
                                  ;;
-                                 ;; That said, observers _can_ effect reactive change, but only if they enqueue changes for application after
-                                 ;; the current change propagates. Even this constraint _can_ be bypassed, at the developer's risk.
+                                 ;; That said, observers _can_ effect reactive change, but only if** they enqueue changes for application after
+                                 ;; the current change propagates. For example, in the next version of the boiler we will have the water-low?
+                                 ;; observer add water when it sees the condition arise!
                                  ;;
-                                 ;; Final note: when observers are used to "drive" entire other frameworks, we probably need to
-                                 ;; orchestrate how a bunch of different effects execute. This is done via an advanced
+                                 ;; ** Even this constraint _can_ be bypassed, at the developer's risk!
+                                 ;;
+                                 ;; Final note: when observers are used to "drive" entire other frameworks such as Tcl/Tk, we may need to
+                                 ;; orchestrate how multiple side effects in one "pulse" execute. This is done via an advanced
                                  ;; feature in which we run the Matrix with a so-called "client-queue-handler".
+                                 ;;
                                  (prn :computing :filled-ratio)
                                  (/ (mget me :water-amt)
-                                     (mget me :water-capacity)))
+                                   (mget me :water-capacity)))
                  ; ^^ an interim computation, useful as documentation
                  ; even if only the water-low? rule uses it
                  ; cF is short for "cell Formulaic"
@@ -121,7 +124,7 @@
                  :water-low? (cF+ [:obs obs-slot-new]
                                (prn :computing :water-low?)
                                (< (mget me :filled-ratio)
-                                   (mget me :filled-ratio-min))))]
+                                 (mget me :filled-ratio-min))))]
 
     (pgr-prn :boiler-built)
     (prn :nb!! "See all that logging before we could say :boiler-built? Matrix brings an instance to life upon creation.")
@@ -141,3 +144,35 @@
     (is (mget boiler :water-low?))
 
     (pgr-prn :fini!)))
+
+;;; Note: see learn.solution.b001-boiler for solutions.
+;;;
+;;; Practice exercise 1: Implement a low-water alarm
+;;;   Motivation:
+;;;      Our boiler should never run out of water. This means the maintenance crew needs
+;;;      to be alerted in time for them to add water.
+;;;   Your mission:
+;;;      1. add a new :alarm-status property computed thus:
+;;;         a. if the filled ratio >= the 150% of the minimum, the alarm status should be the keyword :off;
+;;;         b. if the ratio >= the minimum, the status s.b. :light-flashing;
+;;;         c. else the status s.b. :siren-sounding.
+;;;      2. use an observer to simply display the latest :alarm-property. For real app we would
+;;;         use the API of various alarm devices to actually activate/deactivate lights and sirens.
+;;;         This then is a classic example of how Matrix "spreadsheets" do more than just compute
+;;;         new cell values.
+;;;      3. add a test mutation in which the water level goes below half the minimum.
+;;;      4. Add clojure.test/is assertions to confirm.
+;;;
+;;; Practice exercise 2: Alarm siren override
+;;;   Motivation:
+;;;      Common practice with audible alarms is to provide a way for the responders to silence
+;;;      the alarm once they are addressing the problem, so it does not distract them.
+;;;   Your mission:
+;;;      1. Add a new :alarm-override property:
+;;;         a. model this as an input property;
+;;;         b. make the initial value :off;
+;;;         c. modify the :alarm-status rule so it decides :light-flashing
+;;;            instead of :siren-sounding if the :alarm-override is :on;
+;;;      2. Add a test mutation to turn :on the alarm override after the mutation
+;;;         that would trigger the siren.
+;;;      3. Add tests to confirm expected behavior.
