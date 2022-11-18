@@ -78,8 +78,22 @@
 
                  :alarm-status (cF+ [:obs obs-slot-new]
                                  (prn :computing :alarm-status)
-                                 (let [fill (mget me :filled-ratio)
-                                       fill-min (mget me :filled-ratio-min)]
+                                 ; N.B! note below that we do not mget the :alarm-override? value
+                                 ; until it matters, ie, until we have decided the situation is worthy of a siren.
+                                 ; Put another way, if there is plenty of water, we do not need to know
+                                 ; if the siren should be overridden.
+                                 ;
+                                 ; Why does this matter? Generally it does not! But MGET establishes a dependency, linking this cell to another,
+                                 ; causing this rule to run whenever the other cell changes. Usually this will be
+                                 ; a negligible waste, but the habit could hurt some day, and readability is diminished.
+                                 ;
+                                 ; Moral: write code naturally, reading other values when they are needed.
+                                 ; Do not write big LETs pulling everything that _might_ be needed
+                                 ; into local variables.
+                                 ;
+                                 (let [fill-min (mget me :filled-ratio-min)
+                                       fill (mget me :filled-ratio)]
+                                   ; these provide DRY and are always needed, so LET is fine
                                    (cond
                                      (>= fill (* 1.5 fill-min)) :off
                                      (>= fill fill-min) :light-flashing

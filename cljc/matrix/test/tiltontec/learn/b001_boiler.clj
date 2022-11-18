@@ -151,28 +151,29 @@
 ;;;   Motivation:
 ;;;      Our boiler should never run out of water. This means the maintenance crew needs
 ;;;      to be alerted in time for them to add water.
-;;;   Your mission:
+;;;   Your mission: modify boiler-1-verbose as specified next.
 ;;;      1. add a new :alarm-status property computed thus:
 ;;;         a. if the filled ratio >= the 150% of the minimum, the alarm status should be the keyword :off;
 ;;;         b. if the ratio >= the minimum, the status s.b. :light-flashing;
 ;;;         c. else the status s.b. :siren-sounding.
-;;;      2. use an observer to simply display the latest :alarm-property. For real app we would
+;;;      2. use an observer to simply display the latest :alarm-property. For a real app we would
 ;;;         use the API of various alarm devices to actually activate/deactivate lights and sirens.
 ;;;         This then is a classic example of how Matrix "spreadsheets" do more than just compute
 ;;;         new cell values.
-;;;      3. add a test mutation in which the water level goes below half the minimum.
+;;;      3. the existing water-amt mutations are fine as is; they satisfy the conditions for the two levels of alarm.
 ;;;      4. Add clojure.test/is assertions to confirm.
 ;;;
 ;;; Practice exercise 2: Alarm siren override
 ;;;   Motivation:
 ;;;      Common practice with audible alarms is to provide a way for the responders to silence
 ;;;      the alarm once they are addressing the problem, so it does not distract them.
-;;;   Your mission:
+;;;   Your mission: start from your solution to exercise 1.
 ;;;      1. Add a new :alarm-override property:
 ;;;         a. model this as an input property;
-;;;         b. make the initial value :off;
+;;;         b. make the initial value :off; and
 ;;;         c. modify the :alarm-status rule so it decides :light-flashing
-;;;            instead of :siren-sounding if the :alarm-override is :on;
-;;;      2. Add a test mutation to turn :on the alarm override after the mutation
-;;;         that would trigger the siren.
-;;;      3. Add tests to confirm expected behavior.
+;;;            instead of :siren-sounding if the :alarm-override is :on.
+;;;      2. Add a test mutation to turn :on the alarm override after the water-amt mutation
+;;;         that would trigger the siren (to 5).
+;;;      3. Add tests to confirm expected behavior: first :light-flashing, then :siren-sounding, then
+;;;         back to :light-flashing.
