@@ -189,6 +189,10 @@
 (defn mx-par [me]
   (:par @me))
 
+(comment
+  (let [scheme [90 :c 50 :a 80 :b]]
+    (apply sorted-map scheme)))
+
 (defn fget= [seek poss]
   (assert (or (any-ref? poss) (string? poss))
     (str "poss not ref " (string? poss)))
