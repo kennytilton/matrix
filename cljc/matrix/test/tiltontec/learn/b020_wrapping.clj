@@ -61,19 +61,21 @@
                                                      *defer-changes* false]
                                              (prn :ae-lookup-obs-OK-handler :def *defer-changes* :within *within-integrity*
                                                :chgs (:change (integrity/ufb-counts)) :uri new)
-                                             (do ;; with-integrity (:change :lookup-ok)
+                                             (with-integrity (:change :lookup-ok)
                                                (prn :ae-lookup-obs-OK-handler-WI!!-setting :def *defer-changes* :within *within-integrity*
                                                  :chgs (:change (integrity/ufb-counts)) :uri new)
                                                (mset! me :ae-response (:status response))
                                                (prn :ae-lookup-obs-OK-handler-WI!!-set-BACK :def *defer-changes* :within *within-integrity*
                                                  :chgs (:change (integrity/ufb-counts)) :uri new))))
                                          (fn [exception]
-                                           (let [edata (:data (bean exception))]
-                                             (prn :exception!! {:status (:status edata)
-                                                                :body   (parse-json$ (:body edata))})
-                                             (with-integrity (:change :lookup-ng)
-                                               (prn :inside-wi!!! (:status edata))
-                                               (mset! me :ae-response (:status edata))))))))]
+                                           (binding [*within-integrity* false
+                                                     *defer-changes* false]
+                                             (let [edata (:data (bean exception))]
+                                               (prn :exception!! {:status (:status edata)
+                                                                  :body   (parse-json$ (:body edata))})
+                                               (with-integrity (:change :lookup-ng)
+                                                 (prn :inside-wi!!! (:status edata))
+                                                 (mset! me :ae-response (:status edata)))))))))]
                           (when-let [name (mget me :drug-name)]
                             (format ae-lookup name))))]
     ;(is (nil? (mget rx :drug-name)))
@@ -81,7 +83,7 @@
     (prn :TOP-RX_MADE!!!!!!!!!!!!)
     (prn :TOP-preset-adderall :def *defer-changes* :within *within-integrity*
       :chgs (integrity/ufb-counts))
-    (mset! rx :drug-name "adderall")
+    (mset! rx :drug-name "cats")
     (prn :TOP-POST-SET-adderall-PRESLEEP :def *defer-changes* :within *within-integrity*
       :chgs (integrity/ufb-counts))
     (Thread/sleep 5000)
