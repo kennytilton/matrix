@@ -20,21 +20,21 @@
 (comment
 
   (let [xhr (client/get (format ae-lookup "cats")
-    {:async? true}
-    (fn [response]
-      (prn :xhr-send-response!!!  (:status response) )
+              {:async? true}
+              (fn [response]
+                (prn :xhr-send-response!!! (:status response))
 
-      #_ (if (mdead? xhr)
-        (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
-        (do
-          ;;(cpr :hitting-with-cc *within-integrity*)
-          (with-cc :xhr-handler-sets-responded
-            (md-reset! xhr :response {:status (:status response)
-                                      :body   ((:body-parser @xhr) (:body response))})))))
-    (fn [exception]
-      ;;(prn "xhr-send> raw exception" exception)
-      (let [edata (:data (bean exception))]
-        (prn :xhr-exception!!! (:status edata) (parse-json$ (:body edata))))))]
+                #_(if (mdead? xhr)
+                    (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                    (do
+                      ;;(cpr :hitting-with-cc *within-integrity*)
+                      (with-cc :xhr-handler-sets-responded
+                        (md-reset! xhr :response {:status (:status response)
+                                                  :body   ((:body-parser @xhr) (:body response))})))))
+              (fn [exception]
+                ;;(prn "xhr-send> raw exception" exception)
+                (let [edata (:data (bean exception))]
+                  (prn :xhr-exception!!! (:status edata) (parse-json$ (:body edata))))))]
     (prn :xhr xhr)))
 
 (deftest adverse-event-lookup
@@ -44,27 +44,29 @@
              :drug-name (cI nil :obs obs-slot-new)
              :background-color (cF+ [:obs obs-slot-new]
                                  (case (mget me :ae-response)
-                                     200 :green
-                                     404 :red
-                                     :none))
+                                   200 :green
+                                   404 :red
+                                   :none))
              :ae-response (cI nil :obs obs-slot-new)
              :ae-lookup (cF+ [:obs (fn [slot me new prior cell]
                                      (obs-slot-new slot me new prior cell)
                                      (prn :ae-lookup-obs-entry :def *defer-changes* :within *within-integrity*
-                                       :chgs (:change (integrity/ufb-counts)) :uri  new)
+                                       :chgs (:change (integrity/ufb-counts)) :uri new)
                                      (when new
                                        (prn :getting-uri!!!!!!!!! new)
-                                       (client/get new ;; (format ae-lookup new)
+                                       (client/get new      ;; (format ae-lookup new)
                                          {:async? true}
                                          (fn [response]
-                                           (prn :ae-lookup-obs-OK-handler :def *defer-changes* :within *within-integrity*
-                                             :chgs (:change (integrity/ufb-counts)) :uri  new)
-                                           (with-integrity (:change :lookup-ok)
-                                             (prn :ae-lookup-obs-OK-handler-WI!!-setting :def *defer-changes* :within *within-integrity*
-                                               :chgs (:change (integrity/ufb-counts)) :uri  new)
-                                             (mset! me :ae-response (:status response))
-                                             (prn :ae-lookup-obs-OK-handler-WI!!-set-BACK :def *defer-changes* :within *within-integrity*
-                                               :chgs (:change (integrity/ufb-counts)) :uri  new)))
+                                           (binding [*within-integrity* false
+                                                     *defer-changes* false]
+                                             (prn :ae-lookup-obs-OK-handler :def *defer-changes* :within *within-integrity*
+                                               :chgs (:change (integrity/ufb-counts)) :uri new)
+                                             (do ;; with-integrity (:change :lookup-ok)
+                                               (prn :ae-lookup-obs-OK-handler-WI!!-setting :def *defer-changes* :within *within-integrity*
+                                                 :chgs (:change (integrity/ufb-counts)) :uri new)
+                                               (mset! me :ae-response (:status response))
+                                               (prn :ae-lookup-obs-OK-handler-WI!!-set-BACK :def *defer-changes* :within *within-integrity*
+                                                 :chgs (:change (integrity/ufb-counts)) :uri new))))
                                          (fn [exception]
                                            (let [edata (:data (bean exception))]
                                              (prn :exception!! {:status (:status edata)
@@ -77,13 +79,16 @@
     ;(is (nil? (mget rx :drug-name)))
     ;(is (nil? (mget rx :ae-lookup)))
     (prn :TOP-RX_MADE!!!!!!!!!!!!)
+    (prn :TOP-preset-adderall :def *defer-changes* :within *within-integrity*
+      :chgs (integrity/ufb-counts))
     (mset! rx :drug-name "adderall")
-    (prn :TOP-called-mset!!!!!!!!!!!!!!!!!!)
-    (Thread/sleep 3000)
-    (prn :TOP-sleep-fini!!!!!!!!!!!!!!! )
-    (prn :ufb (integrity/ufb-counts))
+    (prn :TOP-POST-SET-adderall-PRESLEEP :def *defer-changes* :within *within-integrity*
+      :chgs (integrity/ufb-counts))
+    (Thread/sleep 5000)
+    (prn :TOP-SLEEP-fini :def *defer-changes* :within *within-integrity*
+      :chgs (integrity/ufb-counts))
 
-    (prn :TOP-FINAL-mget!!!!!!!!!!!!!!!!!!!!)
+    (prn :TOP-FINAL-mget!!!!!!!!!!!!!!!!!!!! (:ae-response @rx))
     (prn :response (mget rx :ae-response) (:ae-response @rx))
     (prn :rx!!!! @rx)
     ))
@@ -97,4 +102,4 @@
 
 (comment
 
-  (  adverse-event-lookup2))
+  (adverse-event-lookup2))

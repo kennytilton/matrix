@@ -12,7 +12,9 @@
                  [com.cognitect/transit-cljs "0.8.264"]
 
                  [clj-http "3.10.3"]
-                 [cheshire "5.10.0"]]
+                 [cheshire "5.10.0"]
+                 [org.clojure/java.data "1.0.95"]
+                 [org.clojure/tools.reader "1.3.6"]]
   #_ [[org.clojure/clojure "1.10.0"]
       [org.clojure/clojurescript "1.10.773"]
       [clj-http "3.10.3"]

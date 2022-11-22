@@ -192,7 +192,7 @@
 
           :else (binding [*within-integrity* true
                           *defer-changes* false]
-                  (println :cwi-go-!!!!!!!)
+                  (println :cwi-go-!!!!!!! *within-integrity*)
                   (when (or (zero? @+pulse+)
                           (= opcode :change))
                     (data-pulse-next [:cwi opcode defer-info]))
@@ -204,7 +204,8 @@
                     (do                                     ;; tufte/p :finbiz
                       (finish-business))
                     (ufb-assert-q-empty :tell-dependents)
-                    (ufb-assert-q-empty :change))))))))
+                    (ufb-assert-q-empty :change)
+                    (println :cw-unbinding!!!!!!!! (ufb-counts)))))))))
 
 
 
