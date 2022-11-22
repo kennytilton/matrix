@@ -16,27 +16,27 @@
 
 (defn set-ify [x]
   (cond
-   (nil? x) #{}
-   (sequential? x) (set x)
-   :else #{x}))
+    (nil? x) #{}
+    (sequential? x) (set x)
+    :else #{x}))
 
 (defn cl-find [sought coll]
   (when-not (nil? sought)
     (some #{sought} coll)))
 
 #?(:cljs
-  (defn uuidv4 []
-      (letfn [(hex [] (.toString (rand-int 16) 16))]
-             (let [rhex (.toString (bit-or 0x8 (bit-and 0x3 (rand-int 16))) 16)]
-                  (uuid
-                    (str (hex) (hex) (hex) (hex)
-                         (hex) (hex) (hex) (hex) "-"
-                         (hex) (hex) (hex) (hex) "-"
-                         "4"   (hex) (hex) (hex) "-"
-                         rhex  (hex) (hex) (hex) "-"
-                         (hex) (hex) (hex) (hex)
-                         (hex) (hex) (hex) (hex)
-                         (hex) (hex) (hex) (hex)))))))
+   (defn uuidv4 []
+     (letfn [(hex [] (.toString (rand-int 16) 16))]
+       (let [rhex (.toString (bit-or 0x8 (bit-and 0x3 (rand-int 16))) 16)]
+         (uuid
+           (str (hex) (hex) (hex) (hex)
+             (hex) (hex) (hex) (hex) "-"
+             (hex) (hex) (hex) (hex) "-"
+             "4" (hex) (hex) (hex) "-"
+             rhex (hex) (hex) (hex) "-"
+             (hex) (hex) (hex) (hex)
+             (hex) (hex) (hex) (hex)
+             (hex) (hex) (hex) (hex)))))))
 
 ;; --- refs with maps conveniences -------------------
 
@@ -45,7 +45,7 @@
 
 (defn any-ref? [x]
   (instance? #?(:cljs cljs.core.Atom
-                :clj clojure.lang.Ref) x))
+                :clj  clojure.lang.Ref) x))
 
 (defn rmap-setf [[slot ref] new-value]
   (assert (any-ref? ref)
@@ -70,25 +70,28 @@
 (defmulti err (fn [a1 & args] (fn? a1)))
 
 (defmethod err true [fn & mas]
+  (prn :err-true)
   (err (apply fn mas)))
 
 (defmethod err :default [& bits]
+  (prn :err-def)
+  (throw (Exception. "err default"))
+  #_
   (throw (#?(:cljs js/Error. :clj Exception.)
            (str/join " " (cons "mxerr>" bits)))))
 
 (defn flz [x]
   (if (isa? (type x) #?(:cljs cljs.core.LazySeq
-                        :clj clojure.lang.LazySeq))
+                        :clj  clojure.lang.LazySeq))
     (vec (doall x))
     x))
-#_
-(flz (map even? [1 2 3]))
+#_(flz (map even? [1 2 3]))
 
 (defn wtrx-test [n]
   (wtrx
-   (0 10 "test" n)
-   (when (> n 0)
-     (wtrx-test (dec n)))))
+    (0 10 "test" n)
+    (when (> n 0)
+      (wtrx-test (dec n)))))
 
 ;; --- deftest support ---------------------
 ;; These next two are lame because they just
@@ -99,13 +102,13 @@
 
 (defn slot-users [me slot]
   (set (map :slotq
-            (map deref
-                 (:callers @(slot @me) #{})))))
+         (map deref
+           (:callers @(slot @me) #{})))))
 
 (defn slot-useds [me slot]
   (set (map :slot
-            (map deref
-                 (:useds @(slot @me) #{})))))
+         (map deref
+           (:useds @(slot @me) #{})))))
 
 ;;; --- FIFO Queue -----------------------------
 
@@ -126,8 +129,8 @@
 (defn fifo-pop [q]
   (when-not (fifo-empty? q)
     (utm/prog1
-     (first @q)
-     (#?(:clj alter :cljs swap!) q subvec 1))))
+      (first @q)
+      (#?(:clj alter :cljs swap!) q subvec 1))))
 
 ;;; --- detritus ----------------------
 
@@ -150,21 +153,21 @@
   (if (string? (first r))
     (println (pr-str r))
     (when (or (= k :force)
-              (some #{k} [*plnk-keys*]))                        ;; [:qxme :addk])
+            (some #{k} [*plnk-keys*]))                      ;; [:qxme :addk])
       (println (pr-str r)))))
 
 (defn now []
-  #?(:clj (System/currentTimeMillis)
-    :cljs (.getTime (js/Date.))))
+  #?(:clj  (System/currentTimeMillis)
+     :cljs (.getTime (js/Date.))))
 
 ;;; --- json -----------------------------
 #?(:cljs
-  (defn map-to-json [map]
-    (trx/write (trx/writer :json) map)))
+   (defn map-to-json [map]
+     (trx/write (trx/writer :json) map)))
 
 #?(:cljs
-  (defn json-to-map [json]
-    (trx/read (trx/reader :json) json)))
+   (defn json-to-map [json]
+     (trx/read (trx/reader :json) json)))
 
 ;;; --- counting ----------------
 

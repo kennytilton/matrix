@@ -4,7 +4,6 @@
     [tiltontec.util.base
      :refer :all]
     [tiltontec.cell.base :refer :all]
-    [tiltontec.cell.integrity :refer [with-integrity with-cc]]
     [tiltontec.cell.core :refer :all]
     [tiltontec.model.base :refer [md-cz]]
     [tiltontec.model.core :refer :all :as md]
@@ -32,16 +31,20 @@
 
     (pgr-prn :mutating :sound-heard :knock-knock)
     (mset! world :sound-heard :knock-knock)
+    (is (= nil (mget world :sound-heard))) ;; WOW! That mset! was  indeed ephemeral!!
     (is (= :who-is-there? (mget world :speech)))
 
     (pgr-prn :mutating :sound-heard :world)
     (mset! world :sound-heard :world)
+    (is (= nil (mget world :sound-heard)))
     (is (= [:hello :world] (mget world :speech)))
 
     (pgr-prn :mutating :sound-heard-5-times :world)
     (reset! sound-count 0)
     (dotimes [_ 5]
-      (mset! world :sound-heard :world))
+      (mset! world :sound-heard :world)
+      (is (= nil (mget world :sound-heard)))
+      (is (= [:hello :world] (mget world :speech))))
 
     (is (= @sound-count 5))
 

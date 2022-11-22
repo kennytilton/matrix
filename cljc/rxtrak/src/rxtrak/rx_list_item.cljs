@@ -189,10 +189,13 @@
                               (when-not (or (= old unbound) (nil? old))
                                 (not-to-be old)))]
                    (when (mget (mxu-find-class me "ae-autocheck") :on?)
+                     (prn :sending (pp/cl-format nil ae-by-brand
+                                     (js/encodeURIComponent (rx-title rx))))
                      (make-xhr (pp/cl-format nil ae-by-brand
                                  (js/encodeURIComponent (rx-title rx)))
                        {:name name :send? true})))
      :aeresponse (cF (when-let [lookup (mget me :ae)]
+                       (prn :aeresponse-lookup lookup)
                        (xhr-response lookup)))}
 
     (span {:style "font-size:0.7em;margin:2px;margin-top:0;vertical-align:top"}

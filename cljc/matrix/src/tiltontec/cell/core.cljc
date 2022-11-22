@@ -9,9 +9,9 @@
     #?(:cljs [tiltontec.util.base
               :refer [type-cljc]
               :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
-       :clj [tiltontec.util.base :refer :all])
+       :clj  [tiltontec.util.base :refer :all])
 
-    #?(:clj [tiltontec.cell.base :refer :all :as cty]
+    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [c-optimized-away? c-formula? c-value c-optimize
@@ -28,14 +28,14 @@
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
     #?(:clj
-    [tiltontec.cell.observer :refer :all]
+       [tiltontec.cell.observer :refer :all]
        :cljs [tiltontec.cell.observer
               :refer-macros [fn-obs]
               :refer []])
 
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:clj
-    [tiltontec.cell.integrity :refer :all]
+       [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
@@ -48,21 +48,21 @@
 
 (defn make-cell [& kvs]
   (let [options (apply hash-map kvs)]
-    (#?(:clj ref :cljs atom) (merge {:value unbound
-                                     ::cty/state :nascent
-                                     :pulse 0
+    (#?(:clj ref :cljs atom) (merge {:value              unbound
+                                     ::cty/state         :nascent
+                                     :pulse              0
                                      :pulse-last-changed 0
-                                     :pulse-observed 0
-                                     :callers #{}
-                                     :synapses #{}          ;; these stay around between evaluations
+                                     :pulse-observed     0
+                                     :callers            #{}
+                                     :synapses           #{} ;; these stay around between evaluations
                                      ;; todo: if a rule branches away from a synapse
                                      ;;       it needs to be GCed so it starts fresh
-                                     :lazy false            ;; not a predicate (can hold, inter alia, :until-asked)
-                                     :ephemeral? false
-                                     :input? true}
+                                     :lazy               false ;; not a predicate (can hold, inter alia, :until-asked)
+                                     :ephemeral?         false
+                                     :input?             true}
 
-                              options)
-         :meta {:type :tiltontec.cell.base/cell})))
+                               options)
+      :meta {:type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
   (let [options (apply hash-map kvs)
@@ -71,20 +71,20 @@
     (assert (fn? rule))
 
 
-    (#?(:clj ref :cljs atom) (merge {:value unbound
-                                     ::cty/state :nascent   ;; s/b :unbound?
-                                     :pulse 0
+    (#?(:clj ref :cljs atom) (merge {:value              unbound
+                                     ::cty/state         :nascent ;; s/b :unbound?
+                                     :pulse              0
                                      :pulse-last-changed 0
-                                     :pulse-observed 0
-                                     :callers #{}
-                                     :useds #{}
-                                     :lazy false
-                                     :ephemeral? false
-                                     :optimize true         ;; this can also be :when-not-nil
-                                     :input? false}         ;; not redundant: can start with rule, continue as input
+                                     :pulse-observed     0
+                                     :callers            #{}
+                                     :useds              #{}
+                                     :lazy               false
+                                     :ephemeral?         false
+                                     :optimize           true ;; this can also be :when-not-nil
+                                     :input?             false} ;; not redundant: can start with rule, continue as input
 
-                              options)
-         :meta {:type :tiltontec.cell.base/c-formula})))
+                               options)
+      :meta {:type :tiltontec.cell.base/c-formula})))
 
 ;;___________________ constructors _______________________________
 ;; I seem to have created a zillion of these, but I normally
@@ -97,7 +97,7 @@
            ~'cell ~c
            ~'slot-name (c-slot ~c)
            ~'cache (c-value ~c)]
-      ~@body)))
+       ~@body)))
 
 (defmacro c-fn [& body]
   `(c-fn-var (~'slot-c#) ~@body))
@@ -132,94 +132,94 @@
 
 (defmacro c_Fn [& body]
   `(make-c-formula
-    :code '(without-c-dependency ~@body)
-    :input? true
-    :lazy :until-asked
-    :value unbound
-    :rule (c-fn (without-c-dependency ~@body))))
+     :code '(without-c-dependency ~@body)
+     :input? true
+     :lazy :until-asked
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-dbg [& body]
   `(make-c-formula
-    :code '(without-c-dependency ~@body)
-    :input? true
-    :debug true
-    :value unbound
-    :rule (c-fn (without-c-dependency ~@body))))
+     :code '(without-c-dependency ~@body)
+     :input? true
+     :debug true
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-until [args & body]
   `(make-c-formula
-    :optimize :when-value-t
-    :code '~body
-    :input? true
-    :value unbound
-    :rule (c-fn ~@body)
-    ~@args))
+     :optimize :when-value-t
+     :code '~body
+     :input? true
+     :value unbound
+     :rule (c-fn ~@body)
+     ~@args))
 
 (defmacro cFonce [& body]
   `(make-c-formula
-    :code '(without-c-dependency ~@body)
-    :input? nil
-    :value unbound
-    :rule (c-fn (without-c-dependency ~@body))))
+     :code '(without-c-dependency ~@body)
+     :input? nil
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro c_1 [& body]
   `(make-c-formula
-    :code '(without-c-dependency ~@body)
-    :input? nil
-    :lazy true
-    :value unbound
-    :rule (c-fn (without-c-dependency ~@body))))
+     :code '(without-c-dependency ~@body)
+     :input? nil
+     :lazy true
+     :value unbound
+     :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF1 [& body]
   `(cFonce ~@body))
 
 (defmacro cFdbg [& body]
   `(make-c-formula
-    :code '~body
-    :value unbound
-    :debug true
-    :rule (c-fn ~@body)))
+     :code '~body
+     :value unbound
+     :debug true
+     :rule (c-fn ~@body)))
 
-(defmacro cF_  [[& options] & body]
+(defmacro cF_ [[& options] & body]
   `(make-c-formula
-    ~@options
-    :code '~body
-    :value unbound
-    :lazy true
-    :rule (c-fn ~@body)))
+     ~@options
+     :code '~body
+     :value unbound
+     :lazy true
+     :rule (c-fn ~@body)))
 
 (defmacro c_F [[& options] & body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
-    ~@options
-    :code '~body
-    :value unbound
-    :lazy :until-asked
-    :rule (c-fn ~@body)))
+     ~@options
+     :code '~body
+     :value unbound
+     :lazy :until-asked
+     :rule (c-fn ~@body)))
 
 (defmacro c_Fdbg [& body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
-    :code '~body
-    :value unbound
-    :lazy :until-asked
-    :rule (c-fn ~@body)
-    :debug true))
+     :code '~body
+     :value unbound
+     :lazy :until-asked
+     :rule (c-fn ~@body)
+     :debug true))
 
 ;; todo add validation somewhere of lazy option
 
 (defmacro c-formula [[& kvs] & body]
   `(make-c-formula
-    :code '~body                                            ;; debug aid
-    :value unbound
-    :rule (c-fn ~@body)
-    ~@keys))
+     :code '~body                                           ;; debug aid
+     :value unbound
+     :rule (c-fn ~@body)
+     ~@keys))
 
 (defn cI [value & option-kvs]
   (apply make-cell
-         :value value
-         :input? true
-         option-kvs))
+    :value value
+    :input? true
+    option-kvs))
 
 ;; --- where change and animation begin -------
 
@@ -228,6 +228,8 @@
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
 
+
+  (prn :cset! :def *defer-changes* @c new-value)
   (cond
     (not (c-input? c))
     (let [me (c-model c)]
@@ -244,25 +246,29 @@ in the CL version of Cells SETF itself is the change API dunction."
     *defer-changes*
     (let [slot (c-slot-name c)
           me (c-model c)]
-        (err str
-          "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" slot "' by an observer detected."
-          "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
-          "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
-          "...> FYI: intended new value is [" new-value "]; current value is [" (get @me slot :no-such-slot) "].\n"
-          "...> FYI: instance is of type " (type-cljc me) ".\n"
-          "...> FYI: full instance is " @me "\n"
-          "...> FYI: instance meta is " (meta me) "\n.")
-        #_ (err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
-                       (c-slot c))))
+      (prn :err!!!!!!!!!!)
+
+      (throw (Exception. "def err!!!!!"))
+      #_ (err
+        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" slot "' by an observer detected."
+        "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
+        "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
+        "...> FYI: intended new value is [" new-value "]; current value is [" (get @me slot :no-such-slot) "].\n"
+        "...> FYI: instance is of type " (type-cljc me) ".\n"
+        "...> FYI: full instance is " @me "\n"
+        "...> FYI: instance meta is " (meta me) "\n.")
+      #_(err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
+               (c-slot c))))
     ;-----------------------------------
     (some #{(c-lazy c)} [:once-asked :always true])
     (c-value-assume c new-value nil)
     ;-------------------------------------------
     :else
     (do                                                     ;; tufte/p :wi-cvassume-sync
-     (#?(:clj dosync :cljs do)
-     (with-integrity (:change (c-slot c))
-         (c-value-assume c new-value nil))))))
+      (#?(:clj dosync :cljs do)
+        (with-integrity (:change (c-slot c))
+          (prn :inside-wi!!!-cval-assuming new-value)
+          (c-value-assume c new-value nil))))))
 
 (defn c-reset! [c new-value]
   (cset!> c new-value))
@@ -281,15 +287,15 @@ execution as soon as the current change is manifested."
      (not *within-integrity*)
      ;; todo new error to test and document
      (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
-                        (c-slot ~f-c)))
+              (c-slot ~f-c)))
      ;---------------------------------------------
      :else
      (ufb-add :change
-              [:c-reset-next!
-               (fn [~'opcode ~'defer-info]
-                 (let [c# ~f-c
-                       new-value# ~f-new-value]
-                   (call-c-reset-next! c# new-value#)))])))
+       [:c-reset-next!
+        (fn [~'opcode ~'defer-info]
+          (let [c# ~f-c
+                new-value# ~f-new-value]
+            (call-c-reset-next! c# new-value#)))])))
 
 (defmacro cset-next!>
   "Completely untested!!!!!!!!!!!!!!!"
@@ -305,6 +311,6 @@ execution as soon as the current change is manifested."
     ;;-------------------------------------------
     :else
     (#?(:cljs do :clj dosync)
-     (c-value-assume c new-value nil))))
+      (c-value-assume c new-value nil))))
 
 

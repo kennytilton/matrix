@@ -31,8 +31,7 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-cc with-integrity]
               :refer []]
-       :clj
-             [tiltontec.cell.integrity :refer :all])
+       :clj [tiltontec.cell.integrity :refer :all])
 
     #?(:cljs [tiltontec.util.base
               :refer [type-cljc]
@@ -50,8 +49,6 @@
               :refer-macros [fn-obs]
               :refer [observe observe-by-type]])
 
-    ;cool-----
-
     #?(:clj
              [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
@@ -63,9 +60,6 @@
      :refer [mget fasc fm! make md-reset! mswap! backdoor-reset!
              mx-par]
      :as md]
-
-    ;cool------
-
 
     #?(:clj
              [clj-http.client :as client]
@@ -96,8 +90,6 @@
                 ((if keywordize keywordize-keys identity)
                  (t/read r j$)))))))
 
-
-
 #_(let [uri ae-adderall]
     (client/get uri
       {:async? true}
@@ -117,14 +109,14 @@
 (defn xhr-send [xhr]
 
   (let [uri (mget xhr :uri)]
-    ;(prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
+    (prn :xhr-send-is-sending-uri (:id @xhr) uri (keys @xhr))
     (#?(:clj alter :cljs swap!) xhr assoc :send-time (now))
 
     #?(:clj  (client/get uri
                {:async? true}
 
                (fn [response]
-                 ;(prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
+                 (prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
                  (countit [:xhr :reponse])
                  (if (mdead? xhr)
                    (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
@@ -138,7 +130,7 @@
                  ;;(prn "xhr-send> raw exception" exception)
                  (let [edata (:data (bean exception))]
 
-                   ;(prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
+                   (prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
                    (when-not (mdead? xhr)
                      (with-cc :xhr-handler-sets-error
                        (md-reset! xhr :response {:status (:status edata)

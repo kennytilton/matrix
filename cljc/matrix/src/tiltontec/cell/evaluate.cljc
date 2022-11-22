@@ -131,14 +131,14 @@
   notices if a standalone  cell has never been observed."
 
   [c]
-  #_(when (= (c-slot c) :title)
+  (when (= (c-slot c) :ae-response)
       (println :cget-entry (c-slot c) (ia-type (c-model c))
         (if *depender* (c-slot *depender*) :nodepender)))
   (cond
     (c-ref? c) (prog1
                  (with-integrity ()
                    (let [prior-value (c-value c)]
-                     #_(println :cget-to-evic (c-slot c) (ia-type (c-model c)))
+                     (println :cget-to-evic (c-slot c) (ia-type (c-model c)))
                      (when *depender*
                        (str "asker="
                          (c-slot *depender*)
@@ -146,7 +146,7 @@
                      (prog1
 
                        (let [ev (ensure-value-is-current c :c-read nil)]
-                         ;; (when (= (c-slot c) :title) (println :evic ev))
+                         (when (= (c-slot c) :ae-response) (println :evic ev))
                          ev)
                        ;; this is new here, intended to awaken standalone cells JIT
                        ;; /do/ might be better inside evic, or test here

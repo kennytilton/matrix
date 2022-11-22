@@ -1,4 +1,4 @@
-(ns mxxhr.core-test
+(ns tiltontec.mxxhr.core-test
   (:require
     [clojure.test :refer :all]
     [clojure.string :as str]
@@ -25,7 +25,7 @@
                       mx-par]
               :as md])
 
-    [mxxhr.core
+    [tiltontec.mxxhr.core
      :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status xhr-response
              xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
              xhr-selection xhr-to-map xhr-name-to-map]]

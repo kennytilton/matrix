@@ -52,14 +52,18 @@
 (defn md-get [me slot]
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
+  (assert (any-ref? me) (str "md-get passed non-model for me accessing slot: " slot ": " me))
   (if (not (contains? @me slot))
-    nil #_ (when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
+    (prn :md-get>nosuchslot slot @me) #_ nil #_ (when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
       (err str
         "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\".\n"
         "...> FYI: known slots are" (keys @me)))
-    (when (any-ref? me)
+    (do ;; when (any-ref? me)
+      (prn :MD_GETany-ref!! slot)
       (if-let [c (md-cell me slot)]
-        (c-get c)
+        (let [hunh (c-get c)]
+          (prn :md-get-cgot hunh)
+          hunh)
         (slot @me)))))
 
 (defn mget [me slot] (md-get me slot))
@@ -84,6 +88,7 @@
   (assert me)
   (if-let [c (md-cell me slot)]
     (do                                                     ;; (println :gotc!)
+      (prn :got-c c)
       (c-reset! c new-value))
     (do
       ;(println :reset-meta slot (meta me))
@@ -106,6 +111,7 @@
         ))))
 
 (defn mset! [me slot new-value]
+  (prn :mset!-entry slot new-value)
   (md-reset! me slot new-value))
 
 (defn mswap! [me slot swap-fn & swap-fn-args]
