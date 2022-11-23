@@ -228,8 +228,6 @@
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
 
-
-  (prn :cset! :def *defer-changes* @c new-value)
   (cond
     (not (c-input? c))
     (let [me (c-model c)]
@@ -246,10 +244,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     *defer-changes*
     (let [slot (c-slot-name c)
           me (c-model c)]
-      (prn :err!!!!!!!!!!)
-
-      (throw (Exception. "def err!!!!!"))
-      #_ (err
+      (err
         "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" slot "' by an observer detected."
         "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
         "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
@@ -267,7 +262,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (do                                                     ;; tufte/p :wi-cvassume-sync
       (#?(:clj dosync :cljs do)
         (with-integrity (:change (c-slot c))
-          (prn :inside-wi!!!-cval-assuming new-value)
+          ;;(prn :inside-wi!!!-cval-assuming new-value)
           (c-value-assume c new-value nil))))))
 
 (defn c-reset! [c new-value]

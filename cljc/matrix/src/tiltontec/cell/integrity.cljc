@@ -160,14 +160,12 @@
   ;  (assert (cl-find opcode +ufb-opcodes+)
   ;          (str "Invalid opcode for with-integrity: %s. Allowed values: %s"
   ;                  opcode +ufb-opcodes+)))
-  (when (and opcode *within-integrity*)
+  #_ (when (and opcode *within-integrity*)
     (println :cwi opcode *within-integrity* defer-info))
   (do                                                       ;; wtrx (0 100 "cwi-begin" opcode *within-integrity*)
     (do                                                     ;; hun-stopped
       (#?(:cljs do :clj dosync)
         (cond
-          ;; hhack (c-stopped) (println :cwi-sees-stop!!!!!!!!!!!)
-
           *within-integrity*
           (if opcode
             (prog1
@@ -186,26 +184,21 @@
             ;;
             ;; If you have read this comment.
             ;;
-            (do
-              (pln :cwi-bypassing-integrity!!! opcode defer-info)
-              (action opcode defer-info)))
+            (action opcode defer-info))
 
           :else (binding [*within-integrity* true
                           *defer-changes* false]
-                  (println :cwi-go-!!!!!!! *within-integrity*)
                   (when (or (zero? @+pulse+)
                           (= opcode :change))
                     (data-pulse-next [:cwi opcode defer-info]))
 
-                  ;;(pln :cwi-action!! opcode )
                   (prog1
                     (action opcode defer-info)
 
                     (do                                     ;; tufte/p :finbiz
                       (finish-business))
                     (ufb-assert-q-empty :tell-dependents)
-                    (ufb-assert-q-empty :change)
-                    (println :cw-unbinding!!!!!!!! (ufb-counts)))))))))
+                    (ufb-assert-q-empty :change))))))))
 
 
 

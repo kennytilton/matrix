@@ -59,11 +59,9 @@
         "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\".\n"
         "...> FYI: known slots are" (keys @me)))
     (do ;; when (any-ref? me)
-      (prn :MD_GETany-ref!! slot)
+      ;;(prn :MD_GETany-ref!! slot)
       (if-let [c (md-cell me slot)]
-        (let [hunh (c-get c)]
-          (prn :md-get-cgot hunh)
-          hunh)
+        (c-get c)
         (slot @me)))))
 
 (defn mget [me slot] (md-get me slot))
@@ -88,7 +86,7 @@
   (assert me)
   (if-let [c (md-cell me slot)]
     (do                                                     ;; (println :gotc!)
-      (prn :got-c c)
+      ;;(prn :got-c c)
       (c-reset! c new-value))
     (do
       ;(println :reset-meta slot (meta me))
@@ -111,7 +109,7 @@
         ))))
 
 (defn mset! [me slot new-value]
-  (prn :mset!-entry slot new-value)
+  ;;(prn :mset!-entry slot new-value)
   (md-reset! me slot new-value))
 
 (defn mswap! [me slot swap-fn & swap-fn-args]
