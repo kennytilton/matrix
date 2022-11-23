@@ -154,6 +154,14 @@
       *call-stack* '()]
      ~@body))
 
+(defmacro with-async-change [id & body]
+  `(binding
+     [*within-integrity* false
+      *defer-changes* false
+      *call-stack* '()]
+     (with-integrity [:change ~id]
+       ~@body)))
+
 (defn call-with-integrity [opcode defer-info action]
   ;;; hhack
   ;    (when opcode
