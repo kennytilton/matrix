@@ -70,13 +70,9 @@
 (defmulti err (fn [a1 & args] (fn? a1)))
 
 (defmethod err true [fn & mas]
-  (prn :err-true)
   (err (apply fn mas)))
 
 (defmethod err :default [& bits]
-  (prn :err-def)
-  (throw (Exception. "err default"))
-  #_
   (throw (#?(:cljs js/Error. :clj Exception.)
            (str/join " " (cons "mxerr>" bits)))))
 

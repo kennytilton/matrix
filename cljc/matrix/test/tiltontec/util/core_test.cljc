@@ -64,10 +64,11 @@
 (deftest err-handling
   (is (thrown? #?(:cljs js/Error :clj Exception)
         (err "boom")))
-  (is (thrown-with-msg?
+   (is (thrown-with-msg?
         #?(:cljs js/Error :clj Exception)
         #"oom"
-        (err "boom")))
+        (err str "boom")))
+
   (is (thrown-with-msg?
         #?(:cljs js/Error :clj Exception)
         #"Hi mom"
