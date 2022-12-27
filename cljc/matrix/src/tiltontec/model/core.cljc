@@ -198,7 +198,17 @@
   (let [scheme [90 :c 50 :a 80 :b]]
     (apply sorted-map scheme)))
 
-(defn fget= [seek poss]
+(defn fget=
+  "Return true if 'poss' is the matrix reference we 'seek'
+
+   There are 4 branches to this.
+
+   'poss' is not a ref, return false
+   'seek' is a fn?, we return result of invoke it with 'poss'
+   'seek' is a keyword?, we return true if it is = with (:name poss)
+   :else compare 'poss' and 'seek' directly using ="
+
+  [seek poss]
   (assert (or (any-ref? poss) (string? poss))
     (str "poss not ref " (string? poss)))
   ;; (println :fget= (fn? seek) (keyword? seek))
@@ -216,7 +226,17 @@
     :else (do (trx :fget=-else-pplain=! seek)
               (= seek poss))))
 
-(defn fasc [what where & options]
+(defn fasc
+  "Search matrix ascendents for 'what', starting at 'where'
+
+   See fget= for options about 'what' can be
+
+   if :me? is true, and (fget= what where) return 'where'
+
+   if (:par @where) returns a parent, recurse up the family tree
+
+   return an error when (:must? options) is true and we nothing is found"
+  [what where & options]
   (when (and where what)
     (let [options (merge {:me? false :wocd? true}
                     (apply hash-map options))]
@@ -250,7 +270,16 @@
           :default
           (recur (rest sibs)))))))
 
-(defn fget [what where & options]
+(defn fget
+  "Search matrix ascendents and descendents for 'what', starting at 'where'
+
+   if :me? is true, and (fget= what where) return 'where' (:me? is false by default)
+
+   if :inside? is true, try kids recursively (after removing any listed in :skip option)
+
+   if :up? is true, invoke fget on ancestor (skipping 'where')"
+  {:style/indent 1}
+  [what where & options]
   ;;(println :fget-entry (if (any-ref? where) [(:tag @where)(:class @where)] where) (any-ref? where))
   (when (and where what (any-ref? where))
     ;(println :w)
@@ -290,56 +319,66 @@
             (when (:must? options)
               (err :fget-must-failed what where options))))))))
 
-(defn fm! [what where]
+(defn fm!
+  "Search matrix ascendents and descendents from node 'where', for 'what', throwing an error when not found"
+  [what where]
   (fget what where :me? false :inside? true :must? true :up? true))
 
-(defmacro mdv! [what slot & [me]]
+(defmacro mdv!
+  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
+  [what slot & [me]]
   (let [me (or me 'me)]
     `(md-get (tiltontec.model.core/fm! ~what ~me) ~slot)))
 
 (defn mxu-find-name
-  "Search up the matrix from node 'where' looking for element with given name"
+  "Search matrix ascendents from node 'where' looking for element with given name"
   [where name]
   (fget #(= name (md-get % :name))
     where :me? false :up? true :inside? false))
 
 (defmacro fmu [name & [me]]
+  "Search matrix ascendents from node 'me' (defaulting to 'me in current scope) looking for element with given name"
   (let [me-ref (or me 'me)]
     `(let [name# ~name]
        (fget #(= name# (md-get % :name))
          ~me-ref :me? false :up? true :inside? false))))
 
 (defn mxu-find-id
-  "Search up the matrix from node 'where' looking for element with given id"
+  "Search matrix ascendents from node 'where' looking for element with given id"
   [where id]
   (fget #(= id (md-get % :id))
     where :me? false :up? true :inside? false))
 
 (defn mxu-find-type
-  "Search matrix ascendants only from node 'me' for first with given tag"
+  "Search matrix ascendants from node 'me' for first with given tag"
   [me type]
   (assert me)
   (fasc (fn [visited]
           (= type (ia-type visited))) me))
 
-(defn fmi-w-class [where class]
+(defn fmi-w-class
+  "Search matrix descendents from 'where' for first with given :class"
+  [where class]
   (fget #(when (any-ref? %)
            (= class (md-get % :class)))
     where :inside? true :up? false))
 
 (defn mxi-find
-  "Search matrix below node 'where' for node with property and value"
+  "Search matrix descendents from node 'where' for node with property and value"
   [where property value]
   (fget #(when (any-ref? %)
            (= value (md-get % property)))
     where :inside? true :up? false))
 
-(defn fmo [me id-name]
+(defn fmo
+  "Search matrix ascendents from node 'me' for 'id-name', trying first as a name, then as an id"
+  [me id-name]
   (or (mxu-find-name me id-name)
     (mxu-find-id me id-name)
     (throw (str "fmo> not id or name " id-name))))
 
 (defn fmov
+  "Use 'fmo' and extract :value (or slot indicated by :slot-name)"
   ([me id-name]
    (fmov me id-name :value))
   ([me id-name slot-name]
@@ -348,18 +387,27 @@
        (mget mx slot-name)
        (throw (str "fmov> " id-name " lacks " slot-name " property"))))))
 
-(defmacro the-kids [& tree]
+(defmacro the-kids
+  "Macro to flatten kids in 'tree' and relate them to 'me' via the *par* dynamic binding"
+  [& tree]
   `(binding [*par* ~'me]
      (assert *par*)
      ;;(println :bingo-par (any-ref? *par*))
      (doall (remove nil? (flatten (list ~@tree))))))
 
-(defmacro cFkids [& tree]
+(defmacro cFkids
+  "Syntax sugar for formulae that define :kids slots"
+  [& tree]
   `(cF (assert ~'me "no me for cFkids")
      ;;(print :cFkids-me!!! (:id (deref ~'me)))
      (the-kids ~@tree)))
 
-(defn kid-values-kids [me x-kids]
+(defn kid-values-kids
+  "A pattern commonly employed in matrix applications is to define a :kid-factory on some
+   'parent' cell, and use it to enrich the value extracted from the parent's kid cells.
+
+   This function maps across the :kids-values, invoking the factory as it goes"
+  [me x-kids]
   (let [k-key (md-get me :kid-key)
         _ (assert k-key)
         x-kids (when (not= x-kids unbound)
@@ -375,4 +423,3 @@
             (binding [*par* me]
               (k-factory me kid-value))))
         (md-get me :kid-values)))))
-
