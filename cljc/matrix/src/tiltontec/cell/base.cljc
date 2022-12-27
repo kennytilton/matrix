@@ -45,6 +45,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn when-bound [x]
   (when (not= x unbound) x))
 
+(defn cache-value [cache]
+  (when-bound cache))
+
 (defonce uncurrent (gensym "uncurrent-formulaic-value"))
 
 (def ^:dynamic *not-to-be* false)
@@ -192,9 +195,19 @@ rule to get once behavior or just when fm-traversing to find someone"
 ;; --- dependency maintenance --------------------------------
 
 (defn caller-ensure [used new-caller]
-  ;; (trx :caller-ensure :used (c-slot used) (c-slot new-caller))
-  (#?(:clj alter :cljs swap!)
-   used assoc :callers (conj (c-callers used) new-caller)))
+  #_ (when (= :event (c-slot used))
+    (trx :caller-ensure :used (c-slot used) (c-slot new-caller) (:debug @used)))
+  (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller))
+
+  (when (and ;; (not (some #{(c-slot used)} [:event :poss-team]))
+          (> (count (c-callers used)) 50))
+    ;; freeze
+    ;; (c-debug? used :uct)
+    (let [cct (count (c-callers used))]
+      (when (zero? (mod cct 10))
+        (prn :----------------------------------------)
+        (reset! last-c (c-callers used))
+        (prn :caller-ct (c-slot used) cct :new-c (c-slot new-caller))))))
 
 (defn caller-drop [used caller]
   (#?(:clj alter :cljs swap!)
@@ -239,4 +252,8 @@ rule to get once behavior or just when fm-traversing to find someone"
   ;; hhack
   false)
 
-(defn c-debug [c tag])
+(defn c-debug? [c tag]
+  (when-let [dbg (:debug @c)]
+    (or (true? dbg)
+      (= dbg tag)
+      (and (coll? dbg) (some #{tag} dbg)))))

@@ -94,13 +94,24 @@
 (defmacro c-fn-var [[c] & body]
   `(fn [~c]
      (let [~'me (c-model ~c)
-           ~'cell ~c
-           ~'slot-name (c-slot ~c)
-           ~'cache (c-value ~c)]
+           ~'_cell ~c
+           ~'_slot-name (c-slot ~c)
+           ~'_cache (c-value ~c)]
+       ~@body)))
+
+(defmacro c-fn-var-ex [[c] & body]
+  `(fn [~c]
+     (let [~'me (c-model ~c)
+           ~'_cell ~c
+           ~'_slot-name (c-slot ~c)
+           ~'_cache (c-value ~c)]
        ~@body)))
 
 (defmacro c-fn [& body]
   `(c-fn-var (~'slot-c#) ~@body))
+
+(defmacro c-fn-ex [& body]
+  `(c-fn-var-ex (~'slot-c#) ~@body))
 
 (defmacro cF [& body]
   `(make-c-formula
@@ -214,6 +225,36 @@
      :value unbound
      :rule (c-fn ~@body)
      ~@keys))
+
+(defmacro cf-freeze [value]
+  `(do
+     (rmap-setf [:optimize ~'_cell] :freeze)
+     nil))
+
+(defmacro with-c-associating [& body]
+  `(let [curr# (when-not (= ~'_cache tiltontec.cell.base/unbound) ~'_cache)]
+     (if-let [[new-key# new-value#] (do ~@body)]
+       (assoc curr# new-key# new-value#)
+       curr#)))
+
+(defmacro with-c-accumulating [& body]
+  `(let [curr# (if (= ~'_cache tiltontec.cell.base/unbound) 0 ~'_cache)]
+     (if-let [[new-op# new-value#] (do ~@body)]
+       (new-op# curr# new-value#)
+       curr#)))
+
+(defmacro with-c-conj [initial-value & body]
+  `(let [curr# (if (= ~'_cache tiltontec.cell.base/unbound)
+                 ~initial-value
+                 ~'_cache)]
+     (if-let [new-elt# (do ~@body)]
+       (conj curr# new-elt#)
+       curr#)))
+
+(defmacro with-c-latest [& body]
+  `(let [curr# (when-not (= ~'_cache tiltontec.cell.base/unbound) ~'_cache)]
+     (or (do ~@body)
+       curr#)))
 
 (defn cI [value & option-kvs]
   (apply make-cell

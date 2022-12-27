@@ -296,7 +296,8 @@
     (prog1 new-value                                        ;; sans doubt
       (without-c-dependency
         (let [prior-value (c-value c)
-              prior-state (c-value-state c)]
+              prior-state (c-value-state c)
+              callers (c-callers c)] ;; copy callers before possible optimize-away
 
           ;; --- cell maintenance ---
           ;; hhhack: new for 4/19/2016: even if no news at
@@ -312,12 +313,29 @@
           (when (and (c-model c)
                   (not (c-synaptic? c)))
             (md-slot-value-store (c-model c) (c-slot c) new-value))
-          ;;(trx :val-stored new-value)
+
           (c-pulse-update c :slotv-assume)
           #_(println :maybe-propping (c-slot c) new-value
               :priorstate prior-state
               :propcode propagation-code
               :changed? (c-value-changed? c new-value prior-value))
+
+          #_ (when (and (c-formula? c)
+                  (= :freeze (c-optimize c)))
+            ;; (prn :opti-freeze!!!!!! (c-slot c))
+            (unlink-from-used c :freeze))
+          #_ (when (= :events (c-slot c))
+            (println :cvass!!!!! (c-slot c)(count(c-useds c))
+              (mapv c-slot (c-useds c))
+              (c-value-changed? c new-value prior-value)
+              propagation-code))
+
+          ;;; we optimize here because even if unchanged we may not have c-useds
+
+          (when-let [optimize (and (c-formula? c)
+                                (c-optimize c))]
+            (optimize-away?! c prior-value))
+
           (when (or (not (some #{prior-state} [:valid :uncurrent]))
                   (= propagation-code true)                 ;; forcing
                   (when-not (= propagation-code false)
@@ -328,18 +346,8 @@
             ;; we may be overridden by a :no-propagate below, but anyway
             ;; we now can look to see if we can be optimized away
             ;;(trx :sth-happened)
-            (let [callers (c-callers c)]                    ;; get a copy before we might optimize away
-              (when-let [optimize (and (c-formula? c)
-                                    (c-optimize c))]
-
-                (case optimize
-                  :when-value-t (when (c-value c)
-                                  (trx nil :when-value-t (c-slot c))
-                                  (unlink-from-used c :when-value-t))
-                  true (optimize-away?! c prior-value)))
-
+            (let []
               ;; --- data flow propagation -----------
-
               (when-not (or (= propagation-code :no-propagate)
                           (c-optimized-away? c))
                 (assert (map? @c))
@@ -350,12 +358,12 @@
 
 ;; --- unlinking ----------------------------------------------
 (defn unlink-from-used [c why]
-  "Tell dependencies they need not notify us when they change,
-then clear our record of them."
-  (for [used (c-useds c)]
+  "Tell dependencies they need not notify us when they change, then clear our record of them."
+  (doseq [used (c-useds c)]
     (do
       (rmap-setf [:callers used] (disj (c-callers used) c))))
-
+  #_ (when (= :freeze why)
+       (prn :freeze-lose-useds (c-slot c)))
   (rmap-setf [:useds c] #{}))
 
 (defn md-cell-flush [c]
@@ -378,14 +386,28 @@ then clear our record of them."
 
   [c prior-value]
   (when (and (c-formula? c)
-          (empty? (c-useds c))
+          (or (empty? (c-useds c))
+            (= :freeze (c-optimize c))
+            (and (= :when-value-t (c-optimize c))
+              (seq (c-value c))))
           (c-optimize c)
           (not (c-optimized-away? c))                       ;; c-streams (FNYI) may come this way repeatedly even if optimized away
           (c-valid? c)                                      ;; /// when would this not be the case? and who cares?
           (not (c-synaptic? c))                             ;; no slot to cache invariant result, so they have to stay around)
           (not (c-input? c)))                               ;; yes, dependent cells can be inputp
 
-    ;;(println :optimizing-away!!!! (c-slot c)(c-useds c))
+    ;; (println :optimizing-away!!!! (c-slot c))
+
+    (when (= :freeze (c-optimize c))
+      ;; we could just blindly call unlink-from-unused since normally
+      ;; we are here because there are no useds, but the precision may pay off some day
+      ;; (prn :freexe-unused-unlink (c-slot c) (count (c-useds c)))
+      (let [useds (c-useds c)]
+        (unlink-from-used c :freeze)
+        (doseq [ud useds]
+          (assert (not (some #{c} (c-callers ud)))))
+        (assert (zero? (count (c-useds c))))))
+
     (rmap-setf [::cty/state c] :optimized-away)             ;; leaving this for now, but we toss
     ; the cell below. hhack
     (c-observe c prior-value :opti-away)
@@ -397,7 +419,8 @@ then clear our record of them."
 
     ;; let callers know they need not check us for currency again
     (doseq [caller (seq (c-callers c))]
-      (#?(:clj alter :cljs swap!) caller assoc :useds (remove #{c} (c-useds caller)))
+      (rmap-setf [:useds caller] (disj (c-useds caller) c))
+
       (caller-drop c caller)
       ;;; (trc "nested opti" c caller)
       ;;(optimize-away?! caller) ;; rare but it happens when rule says (or .cache ...)
