@@ -232,9 +232,9 @@
      nil))
 
 (defmacro with-c-associating [& body]
-  `(let [curr# (when-not (= ~'_cache tiltontec.cell.base/unbound) ~'_cache)]
-     (if-let [[new-key# new-value#] (do ~@body)]
-       (assoc curr# new-key# new-value#)
+  `(let [curr# (if (= ~'_cache tiltontec.cell.base/unbound) {} ~'_cache)]
+     (if-let [key-values# (do ~@body)]
+       (merge curr# (apply hash-map key-values#))
        curr#)))
 
 (defmacro with-c-accumulating [& body]
