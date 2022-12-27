@@ -389,7 +389,7 @@
           (or (empty? (c-useds c))
             (= :freeze (c-optimize c))
             (and (= :when-value-t (c-optimize c))
-              (seq (c-value c))))
+              (not (nil? (c-value c)))))
           (c-optimize c)
           (not (c-optimized-away? c))                       ;; c-streams (FNYI) may come this way repeatedly even if optimized away
           (c-valid? c)                                      ;; /// when would this not be the case? and who cares?

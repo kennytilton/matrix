@@ -54,8 +54,9 @@
   (assert me (str "md-get passed nil for me accessing slot: " slot))
   (assert (any-ref? me) (str "md-get passed non-model for me accessing slot: " slot ": " me))
   (if (not (contains? @me slot))
-    (prn :md-get>nosuchslot slot @me) #_ nil #_ (when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
-      (err str
+    (do #_ (prn :md-get>nosuchslot slot @me)
+      ;;(when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
+     #_ (err str
         "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\".\n"
         "...> FYI: known slots are" (keys @me)))
     (do ;; when (any-ref? me)
