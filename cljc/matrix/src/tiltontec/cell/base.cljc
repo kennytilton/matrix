@@ -1,12 +1,12 @@
 (ns tiltontec.cell.base
   (:require
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
-   #?(:cljs [tiltontec.util.base :as utm
-             :refer-macros [prog1 b-when def-rmap-slots]]
-      :clj  [tiltontec.util.base :as utm
-             :refer :all])
-   #?(:cljs [cljs.test
-             :refer-macros [deftest is]])
+    #?(:cljs [tiltontec.util.base :as utm
+              :refer-macros [prog1 b-when def-rmap-slots]]
+       :clj  [tiltontec.util.base :as utm
+              :refer :all])
+    #?(:cljs [cljs.test
+              :refer-macros [deftest is]])
 
     #?(:cljs [tiltontec.util.core
               :refer [cl-find set-ify any-ref? err ia-ref
@@ -14,7 +14,7 @@
                       fifo-data fifo-add rmap-setf
                       wtrx-test]
               :as ut]
-       :clj [tiltontec.util.core :refer :all :as ut])))
+       :clj  [tiltontec.util.core :refer :all :as ut])))
 
 
 ;; --- the Cells beef -----------------------
@@ -25,8 +25,8 @@
 
 (defn cells-init []
   #?(:cljs (reset! +pulse+ 0)
-     :clj (dosync
-           (ref-set +pulse+ 0))))
+     :clj  (dosync
+             (ref-set +pulse+ 0))))
 
 (def ^:dynamic *causation* '())
 (def ^:dynamic *call-stack* nil)
@@ -59,10 +59,10 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def ^:dynamic *c-prop-depth* 0)
 
 (def +c-debug+ (atom false))
-(def ^:dynamic +stop+ (atom false)) ;; emergency brake
+(def ^:dynamic +stop+ (atom false))                         ;; emergency brake
 
 (defmacro pcell [tag c]
-  `(println :pcell ~tag (c-slot ~c)(c-state ~c)))
+  `(println :pcell ~tag (c-slot ~c) (c-state ~c)))
 
 ;; --- procedure division ----------------------
 
@@ -75,19 +75,19 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defmacro without-c-dependency [& body]
   `(binding [*depender* nil]
-      ~@body))
+     ~@body))
 
 (defmacro cpr [& r]
   `(without-c-dependency
-    (pln @+pulse+ ~@r)))
+     (pln @+pulse+ ~@r)))
 
 (defn +cause []
-    (first *causation*))
+  (first *causation*))
 
 ;; --- 19000 ----------------------------------
 
 (defn c-stopper [why]
-  (reset! +stop+ why)) ;; in webserver, make sure each thread binds this freshly
+  (reset! +stop+ why))                                      ;; in webserver, make sure each thread binds this freshly
 
 (def +c-stopper+ (atom c-stopper))
 
@@ -103,20 +103,20 @@ rule to get once behavior or just when fm-traversing to find someone"
   `(when-not @+stop+
      ~@body))
 
-(defn ustack$ [tag] ;; debug aid
-  (str tag "ustack> "(vec (map (fn [c] (:slot @c)) *call-stack*))))
+(defn ustack$ [tag]                                         ;; debug aid
+  (str tag "ustack> " (vec (map (fn [c] (:slot @c)) *call-stack*))))
 
 (defn c-assert
   ([assertion] (when-not assertion
-                 (println #_ ut/err "c-assert anon failed")))
+                 (println #_ut/err "c-assert anon failed")))
   ([assertion fmt$ & fmt-args]
    (when-not +stop+
-           (when-not assertion
-                   (println #_ ut/err (str "c-assert> " fmt$ fmt-args))))))
+     (when-not assertion
+       (println #_ut/err (str "c-assert> " fmt$ fmt-args))))))
 
 (defn c-break [& args]
   (when-not +stop+
-    (println #_ ut/err (str args))))
+    (println #_ut/err (str args))))
 
 (defn c-warn [& args]
   (when-not +stop+
@@ -129,11 +129,11 @@ rule to get once behavior or just when fm-traversing to find someone"
 (derive ::c-formula ::cell)
 
 (defn ia-type [it]
- #?(:clj (type it)
-    :cljs (cond
-            (instance? cljs.core.Atom it)
-            (:type (meta it))
-            :default (type it))))
+  #?(:clj  (type it)
+     :cljs (cond
+             (instance? cljs.core.Atom it)
+             (:type (meta it))
+             :default (type it))))
 
 (defn ia-type? [it typ]
   (isa? (ia-type it) typ))
@@ -157,14 +157,14 @@ rule to get once behavior or just when fm-traversing to find someone"
   (assert (any-ref? c))
   (cond
     (and (c-ref? c)
-         (map? @c)) (:value @c)
+      (map? @c)) (:value @c)
     :else @c))
 
 (defn c-optimized-away? [c]
   (cond
     (c-ref? c) (or (not (map? @c))
                  (not (contains? @c ::state))
-                   (= :optimized-away (::state @c)))
+                 (= :optimized-away (::state @c)))
     :else true))
 
 (defn c-model [rc]
@@ -195,23 +195,21 @@ rule to get once behavior or just when fm-traversing to find someone"
 ;; --- dependency maintenance --------------------------------
 
 (defn caller-ensure [used new-caller]
-  #_ (when (= :event (c-slot used))
-    (trx :caller-ensure :used (c-slot used) (c-slot new-caller) (:debug @used)))
+  #_(when (= :event (c-slot used))
+      (trx :caller-ensure :used (c-slot used) (c-slot new-caller) (:debug @used)))
   (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller))
 
-  (when (and ;; (not (some #{(c-slot used)} [:event :poss-team]))
-          (> (count (c-callers used)) 50))
-    ;; freeze
-    ;; (c-debug? used :uct)
-    (let [cct (count (c-callers used))]
-      (when (zero? (mod cct 10))
-        (prn :----------------------------------------)
-        (reset! last-c (c-callers used))
-        (prn :caller-ct (c-slot used) cct :new-c (c-slot new-caller))))))
+  #_(when (and                                              ;; (not (some #{(c-slot used)} [:event :poss-team]))
+            (> (count (c-callers used)) 50))
+      (let [cct (count (c-callers used))]
+        (when (zero? (mod cct 10))
+          (prn :----------------------------------------)
+          (reset! last-c (c-callers used))
+          (prn :caller-ct (c-slot used) cct :new-c (c-slot new-caller))))))
 
 (defn caller-drop [used caller]
   (#?(:clj alter :cljs swap!)
-   used assoc :callers (disj (c-callers used) caller)))
+    used assoc :callers (disj (c-callers used) caller)))
 
 (defn unlink-from-callers [c]
   (for [caller (c-callers c)]
@@ -229,14 +227,14 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn md-ref? [x]
   ;;(trx :md-ref?-sees x)
   (and (any-ref? x)))
-       ;; hhack (ia-type? x ::model)
+;; hhack (ia-type? x ::model)
 
 
 ;; --- mdead? ---
 
 (defmulti mdead? (fn [me]
                    (assert (or (nil? me)
-                               (md-ref? me)))
+                             (md-ref? me)))
                    [(type (when me @me))]))
 
 (defmethod mdead? :default [me]
@@ -246,7 +244,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;;---
 
-#?(:cljs (set! *print-level* 3)) ;; cells are recursive data for now
+#?(:cljs (set! *print-level* 3))                            ;; cells are recursive data for now
 
 (defn md-slot-owning? [class-name slot-name]
   ;; hhack
