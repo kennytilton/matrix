@@ -125,11 +125,6 @@
     (is (c-optimized-away? e))
     (is (= 4 @ect))))
 
-:answer (cF (let [result (* 2 (mget me :factor))]
-              (if (= result 42)
-                (cf-freeze result)
-                result)))
-
 (deftest t-opti-late-via-cf-freeze
   ; testing the usual case where a formula turns out, on first evaluation, not to depend on
   ; any cell, as well as the case where, once evaluated, on a subsequent evaluation a
