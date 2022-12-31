@@ -69,8 +69,6 @@
     (is (= (c-get c) 42))
     ))
 
-
-
 (deftest t-formula-2
   (let [b (cI 2)
         cct (atom 0)
@@ -95,7 +93,6 @@
     ))
 
 (def yowza (atom 0))
-
 
 (deftest t-in-reset
   (reset! yowza 0)
@@ -136,78 +133,10 @@
     (is (= 2 @cct))
     ))
 
-(deftest t-opti-immediate
-  ; testing the usual case where a formula turns out, on first evaluation, not to depend on
-  ; any cell.
-  (cells-init)
-
-  (let [a (cI 1 :slot :aa)
-        b (cF+ [:slot :bb]
-            42) ;; should optimize away
-        c (cF+ [:slot :cc]
-            (inc (c-get b))) ;; should recursively optimize away, since b should
-        d (cF+ [:slot :dd]
-            (if (< (c-get a) 3)
-              (+ (c-get a) (c-get b)(c-get c))
-              17))
-        ect (atom 0)
-        e (let [frozen (atom nil)]
-            (cF+ [:slot :ee]
-              (swap! ect inc)
-              (prn :efrz @ect @frozen)
-              (if @frozen
-                _cache
-                (if (< (c-get a) 3)
-                  (+ (c-get a) (c-get b)(c-get c))
-                  (do (reset! frozen true)
-                      _cache)))))]
-    (#?(:clj dosync :cljs do)
-      (is (= (c-get a) 1))
-      (is (= (c-get b) 42))
-      (is (= (c-get c) 43))
-      (is (= (c-get d) 86))
-      (is (c-optimized-away? b))
-      (is (not (seq (c-useds b))))
-      (is (c-optimized-away? c))
-      (is (not (seq (c-useds c))))
-      (is (not (c-optimized-away? d)))
-      (is (= 1 (count (c-useds d))))
-      (is (= 86 (c-get e)))
-      (is (not (c-optimized-away? e)))
-      (is (= 1 (count (c-useds e))))
-      (is (= 1 @ect))
-      )
-
-    (c-swap! a inc)
-    (is (= (c-get a) 2))
-    (is (= (c-get d) 87))
-    (is (= (c-get e) 87))
-    (is (= 2 @ect))
-
-    (c-swap! a inc)
-    (is (= (c-get a) 3))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (= 3 @ect))
-
-    (c-swap! a inc)
-    (is (= (c-get a) 4))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (not (seq (c-useds e))))
-    (is (c-optimized-away? e))
-    (is (= 4 @ect))
-
-    (c-swap! a inc)
-    (is (= (c-get a) 5))
-    (is (c-optimized-away? e))
-    (is (= 4 @ect))))
-    
 ;;; --- The Pentagram of Death: a hard use case for data integrity ------
 
 #_
 (alter-var-root #'*trx?* not)
-
 
 (deftest pentagram-of-death
   ;;
@@ -390,13 +319,6 @@
     (is (= (c-get b) 5))
     (is (= 1 @ob))
     (is (= 2 @cct))))
-    
-(deftest opti-away
-  (let [aa (cF 42)]
-    (is (= 42 (c-get aa)))
-    (println :aa @aa)
-    (is (c-optimized-away? aa))
-    (is (= 42 @aa))))
 
 #?(:cljs (do
            (cljs.test/run-tests)
