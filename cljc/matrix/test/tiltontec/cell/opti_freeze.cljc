@@ -125,6 +125,10 @@
     (is (c-optimized-away? e))
     (is (= 4 @ect))))
 
+:answer (cF (let [result (* 2 (mget me :factor))]
+              (if (= result 42)
+                (cf-freeze result)
+                result)))
 
 (deftest t-opti-late-via-cf-freeze
   ; testing the usual case where a formula turns out, on first evaluation, not to depend on
@@ -144,12 +148,9 @@
         ect (atom 0)
         e (cF+ [:slot :ee]
             (swap! ect inc)
-            (prn :efrz @ect)
             (if (< (c-get a) 3)
               (+ (c-get a) (c-get b) (c-get c))
-              (do
-                (prn :cfreezing-e _cache)
-                (cf-freeze _cache))))]
+              (cf-freeze _cache)))]
     (#?(:clj dosync :cljs do)
       (is (= (c-get a) 1))
       (is (= (c-get b) 42))
@@ -164,24 +165,20 @@
       (is (= 86 (c-get e)))
       (is (not (c-optimized-away? e)))
       (is (= 1 (count (c-useds e))))
-      (is (= 1 @ect))
-      )
+      (is (= 1 @ect)))
 
-    (prn :bumping-a-to (+ 1 (c-get a)))
     (c-swap! a inc)
     (is (= (c-get a) 2))
     (is (= (c-get d) 87))
     (is (= (c-get e) 87))
     (is (= 2 @ect))
 
-    (prn :bumping-a-to (+ 1 (c-get a)))
     (c-swap! a inc)
     (is (= (c-get a) 3))
     (is (= (c-get d) 17))
     (is (= (c-get e) 87))
     (is (= 3 @ect))
 
-    (prn :bumping-a-to (+ 1 (c-get a)))
     (c-swap! a inc)
     (is (= (c-get a) 4))
     (is (= (c-get d) 17))
