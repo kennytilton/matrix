@@ -312,6 +312,9 @@ in the CL version of Cells SETF itself is the change API dunction."
 (defn cswap!> [c swap-fn & swap-fn-args]
   (cset!> c (apply swap-fn (<cget c) swap-fn-args)))
 
+(defn c-swap! [c swap-fn & swap-fn-args]
+  (cset!> c (apply swap-fn (<cget c) swap-fn-args)))
+
 
 (defmacro c-reset-next! [f-c f-new-value]
   "Observers should have side-effects only outside the

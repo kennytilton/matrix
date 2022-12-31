@@ -131,7 +131,7 @@
   notices if a standalone  cell has never been observed."
 
   [c]
-  #_ (when (= (c-slot c) :ae-response)
+  #_(when (= (c-slot c) :ae-response)
       (println :cget-entry (c-slot c) (ia-type (c-model c))
         (if *depender* (c-slot *depender*) :nodepender)))
   (cond
@@ -209,8 +209,8 @@
         @c
         "\n\n...> callstack, latest first: \n"
         (str/join "\n" (mapv (fn [cd]
-                               (str "....> md-name:" (c-md-name cd) " slot: "(c-slot-name cd)
-                                "\n....>    code:" (c-code$ cd)))
+                               (str "....> md-name:" (c-md-name cd) " slot: " (c-slot-name cd)
+                                 "\n....>    code:" (c-code$ cd)))
                          *call-stack*)))))
 
   (binding [*call-stack* (cons c *call-stack*)
@@ -297,21 +297,18 @@
       (without-c-dependency
         (let [prior-value (c-value c)
               prior-state (c-value-state c)
-              callers (c-callers c)] ;; copy callers before possible optimize-away
+              callers (c-callers c)]                        ;; copy callers before possible optimize-away
 
           ;; --- cell maintenance ---
-          ;; hhhack: new for 4/19/2016: even if no news at
-          ;; least honor the reset!
+          ;; even if no news at least honor the reset!
           ;;
           (rmap-setf [:value c] new-value)
           (rmap-setf [::cty/state c] :awake)
-          #_(trx :new-vlue-installed (c-slot c)
-              new-value
-              (:value c))
+          #_(trx :new-vlue-installed (c-slot c) new-value (:value c))
           ;;
           ;; --- model maintenance ---
-          (when (and (c-model c)
-                  (not (c-synaptic? c)))
+          (when (and (c-model c)                            ; redundant with next check, but logic is impeccable
+                  (not (c-synaptic? c)))                    ; synapses just manage cell state, no model property
             (md-slot-value-store (c-model c) (c-slot c) new-value))
 
           (c-pulse-update c :slotv-assume)
@@ -320,18 +317,8 @@
               :propcode propagation-code
               :changed? (c-value-changed? c new-value prior-value))
 
-          #_ (when (and (c-formula? c)
-                  (= :freeze (c-optimize c)))
-            ;; (prn :opti-freeze!!!!!! (c-slot c))
-            (unlink-from-used c :freeze))
-          #_ (when (= :events (c-slot c))
-            (println :cvass!!!!! (c-slot c)(count(c-useds c))
-              (mapv c-slot (c-useds c))
-              (c-value-changed? c new-value prior-value)
-              propagation-code))
-
-          ;;; we optimize here because even if unchanged we may not have c-useds
-
+          ; we optimize here because even if unchanged we may not have c-useds,
+          ; now that, with the :freeze option, we are doing "late" optimize-away
           (when-let [optimize (and (c-formula? c)
                                 (c-optimize c))]
             (optimize-away?! c prior-value))
@@ -340,19 +327,14 @@
                   (= propagation-code true)                 ;; forcing
                   (when-not (= propagation-code false)
                     (c-value-changed? c new-value prior-value)))
-            ;;
             ;; --- something happened ---
-            ;;
             ;; we may be overridden by a :no-propagate below, but anyway
             ;; we now can look to see if we can be optimized away
-            ;;(trx :sth-happened)
             (let []
               ;; --- data flow propagation -----------
               (when-not (or (= propagation-code :no-propagate)
                           (c-optimized-away? c))
                 (assert (map? @c))
-                #_(println :propping!!!! (c-slot c) new-value prior-value
-                    :to-caller-ct (count callers))
                 (propagate c prior-value callers)))))))))
 
 
@@ -362,8 +344,6 @@
   (doseq [used (c-useds c)]
     (do
       (rmap-setf [:callers used] (disj (c-callers used) c))))
-  #_ (when (= :freeze why)
-       (prn :freeze-lose-useds (c-slot c)))
   (rmap-setf [:useds c] #{}))
 
 (defn md-cell-flush [c]
@@ -376,7 +356,6 @@
 ;; --- optimize away ------------------------------------------
 ;; optimizing away cells who turn out not to depend on anyone 
 ;; saves a lot of work at runtime.
-
 
 (defn optimize-away?!
   "Optimizes away cells who turn out not to depend on anyone, 
@@ -395,13 +374,10 @@
           (c-valid? c)                                      ;; /// when would this not be the case? and who cares?
           (not (c-synaptic? c))                             ;; no slot to cache invariant result, so they have to stay around)
           (not (c-input? c)))                               ;; yes, dependent cells can be inputp
-
     ;; (println :optimizing-away!!!! (c-slot c))
-
     (when (= :freeze (c-optimize c))
       ;; we could just blindly call unlink-from-unused since normally
       ;; we are here because there are no useds, but the precision may pay off some day
-      ;; (prn :freexe-unused-unlink (c-slot c) (count (c-useds c)))
       (let [useds (c-useds c)]
         (unlink-from-used c :freeze)
         (doseq [ud useds]
@@ -425,8 +401,7 @@
       ;;; (trc "nested opti" c caller)
       ;;(optimize-away?! caller) ;; rare but it happens when rule says (or .cache ...)
       (ensure-value-is-current caller :opti-used c))        ;; this will get round to optimizing
-    ; them if necessary, and if not they do need
-    ; to have one last notification if this was
+    ; them if necessary, and if not they still need to have one last notification if this was
     ; a rare mid-life optimization
     (#?(:clj ref-set :cljs reset!) c (c-value c))
     ))
@@ -488,13 +463,10 @@
   - notifies its callers of its change;
   - calls any observer; and
   - if ephemeral, silently reverts to nil."
-
   ;; /do/ support other values besides nil as the "resting" value 
 
   [c prior-value callers]
-
   ;; (trx :propagate (:slot @c))
-
   (cond
     *one-pulse?* (when *custom-propagater*
                    (*custom-propagater* c prior-value))
