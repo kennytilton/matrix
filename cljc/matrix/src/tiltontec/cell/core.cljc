@@ -229,7 +229,7 @@
 (defmacro cf-freeze [value]
   `(do
      (rmap-setf [:optimize ~'_cell] :freeze)
-     nil))
+     value))
 
 (defmacro with-c-associating [& body]
   `(let [curr# (if (= ~'_cache tiltontec.cell.base/unbound) {} ~'_cache)]
