@@ -189,3 +189,21 @@
           (is (= (c-get a) 5))
           (is (c-optimized-away? e))
           (is (= 4 @ect)))))
+
+(deftest t-freeze-default
+  ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
+  (cells-init)
+
+  (let [a (cI 1 :slot :aa)
+        b (cF+ [:slot :bb]
+            (if (= 2 (c-get a))
+              (cf-freeze)
+              42))]
+    (is (= 1 (c-get a)))
+    (is (= 42 (c-get b)))
+    (c-swap! a inc)
+    (is (= 2 (c-get a)))
+    (is (= 42 (c-get b)))
+    (is (c-optimized-away? b))
+    (is (not (seq (c-callers a))))))
+
