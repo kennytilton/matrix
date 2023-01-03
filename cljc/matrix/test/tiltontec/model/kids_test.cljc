@@ -1,4 +1,3 @@
-
 (ns tiltontec.model.kids-test
   (:require
    #?(:clj [clojure.test :refer :all]

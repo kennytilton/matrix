@@ -46,9 +46,7 @@
              :as md])
    ))
 
-#?(:cljs
-   (set! *print-level* 2)
-   :clj (set! *print-level* 2))
+#?(:cljs (set! *print-level* 3))
 
 (deftest fm-0
   (cells-init)
@@ -106,7 +104,8 @@
            :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))
            :kon (cI false)
-           :kids (cF (remove nil?
+           :kids (cF (doall
+                       (remove nil?
                              (vector
                               (md/make
                                :par me
@@ -121,7 +120,7 @@
                               (md/make
                                :par me
                                :name :bb
-                               :bb21 (cF (* 7 (mdv! :aa :aa3))))))))]
+                               :bb21 (cF (* 7 (mdv! :aa :aa3)))))))))]
     (is (= 63 (md-get u :u63)))
     (is (= 42 (mdv! :aa :aa42 u)))
     (is (= 21 (mdv! :bb :bb21 u)))
@@ -133,7 +132,7 @@
     (is (fget :konzo u :inside? true))
     ))
     
-(deftest fm-3x
+(deftest fm-3x ;; using the-kids macro
   (let [u (md/make
            :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))

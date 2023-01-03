@@ -52,8 +52,7 @@
     (is (= #{} (c-callers c)))
     (is (c-input? c))
     (is (nil? (c-model c)))
-    (is (= :mol (c-slot c)))
-    ))
+    (is (= :mol (c-slot c)))))
 
 (deftest test-c-in
   (let [c (cI 42)]
