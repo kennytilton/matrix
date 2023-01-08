@@ -71,7 +71,8 @@
 
   (cond
     ; --------------------------------------------------
-    *not-to-be*                                             ; we got kicked off during not-to-be processing
+    *not-to-be*
+    ; we got kicked off during not-to-be processing
     ; just return what we have if valid, else nil
     (cond
       (c-unbound? c)
@@ -89,7 +90,8 @@
 
     ;; --- also easy with an optimize edge case lost to history -------
     (and (c-input? c)
-      (c-valid? c)                                          ;; a cFn (ruled-then-input) cell will not be valid at first
+      (c-valid? c)
+      ;; a cFn (ruled-then-input) cell will not be valid at first
       (not (and (c-formula? c)
              (= (c-optimize c) :when-value-t)
              (nil? (c-value c)))))
@@ -104,12 +106,12 @@
     (or (not (c-valid? c))
       (loop [[used & urest] (seq (c-useds c))]
         (when used
-          ;;(pcell :cnset-evicing used)
-          ;;(pcell :cnset-user c)
           (ensure-value-is-current used :nested c)
-          ;; now see if it actually changed
-          ;; (println :pulse-checks (c-slot used)(c-pulse-last-changed used)(c-slot c)(c-pulse c))
-          (or (> (c-pulse-last-changed used) (c-pulse c))
+          ;; now see if it actually changed; maybe it just got made current because no
+          ;; dependency was out of date. If so, that alone does not mean we need to re-run.
+          (prn :evic (c-slot used) (c-pulse-last-changed used)(c-pulse used)(c-pulse-observed c)(c-pulse c))
+          (or (when-let [last-changed (c-pulse-last-changed used)]
+                (> last-changed (c-pulse c)))
             (recur urest)))))
     (do                                                     ;; we seem to need update, but...
       (when-not (c-current? c)
@@ -328,15 +330,13 @@
                   (when-not (= propagation-code false)
                     (c-value-changed? c new-value prior-value)))
             ;; --- something happened ---
-            ;; we may be overridden by a :no-propagate below, but anyway
-            ;; we now can look to see if we can be optimized away
-            (let []
-              ;; --- data flow propagation -----------
-              (when-not (or (= propagation-code :no-propagate)
-                          (c-optimized-away? c))
-                (assert (map? @c))
-                (propagate c prior-value callers)))))))))
-
+            (when-not (c-optimized-away? c)
+              (rmap-setf [:pulse-last-changed c] @+pulse+))
+            ;; --- data flow propagation -----------
+            (when-not (or (= propagation-code :no-propagate)
+                        (c-optimized-away? c))
+              (assert (map? @c))
+              (propagate c prior-value callers))))))))
 
 ;; --- unlinking ----------------------------------------------
 (defn unlink-from-used [c why]
@@ -473,9 +473,6 @@
     ;; ----------------------------------
     :else
     (do
-      ;;(println :upd-pulse-last-chg-to @+pulse+ c)
-      (rmap-setf [:pulse-last-changed c] @+pulse+)
-
       (binding [*depender* nil
                 *call-stack* nil
                 *c-prop-depth* (inc *c-prop-depth*)

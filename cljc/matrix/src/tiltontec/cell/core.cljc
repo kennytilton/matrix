@@ -23,7 +23,7 @@
                       c-synapses
                       unlink-from-callers *causation*
                       c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
+                      c-pulse  c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
@@ -51,7 +51,7 @@
     (#?(:clj ref :cljs atom) (merge {:value              unbound
                                      ::cty/state         :nascent
                                      :pulse              0
-                                     :pulse-last-changed 0
+                                     :pulse-last-changed nil
                                      :pulse-observed     0
                                      :callers            #{}
                                      :synapses           #{} ;; these stay around between evaluations
@@ -74,7 +74,7 @@
     (#?(:clj ref :cljs atom) (merge {:value              unbound
                                      ::cty/state         :nascent ;; s/b :unbound?
                                      :pulse              0
-                                     :pulse-last-changed 0
+                                     :pulse-last-changed nil
                                      :pulse-observed     0
                                      :callers            #{}
                                      :useds              #{}
