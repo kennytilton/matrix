@@ -34,13 +34,15 @@
      (#?(:clj alter :cljs swap!) +pulse+ inc))))            ;; hhack try as commute
 
 (defn c-current? [c]
-  (= (c-pulse c) @+pulse+))
+  (and (c-pulse c)
+    (= (c-pulse c) @+pulse+)))
 
 (defn c-pulse-update [c key]
   ;(pcell :pulse-upd c)
   ;(println :pulse-upd-opti (c-optimized-away? c))
   (when-not (c-optimized-away? c)
-    (assert (>= @+pulse+ (c-pulse c)))
+    (assert (or (nil? (c-pulse c))
+              (>= @+pulse+ (c-pulse c))))
     (#?(:clj alter :cljs swap!) c assoc :pulse @+pulse+)))
 
 ;; --- ufb utils ----------------------------

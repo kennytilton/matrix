@@ -114,8 +114,8 @@
             (recur urest)))))
     (do                                                     ;; we seem to need update, but...
       (when-not (c-current? c)
-        ;;(println :not-current-so-calc!!!!!!! (c-slot c)(c-state c)(c-valid? c))
-        ;; happens if dependent changed and its observer read/updated me
+        ;; Q: how can it be current after above checks indicating not current?
+        ;; A: if dependent changed during above loop over used and its observer read/updated me
         (calculate-and-set c :evic ensurer))
       (c-value c))
 

@@ -50,7 +50,7 @@
   (let [options (apply hash-map kvs)]
     (#?(:clj ref :cljs atom) (merge {:value              unbound
                                      ::cty/state         :nascent
-                                     :pulse              0
+                                     :pulse              nil
                                      :pulse-last-changed nil
                                      :pulse-observed     nil
                                      :callers            #{}
@@ -73,7 +73,7 @@
 
     (#?(:clj ref :cljs atom) (merge {:value              unbound
                                      ::cty/state         :nascent ;; s/b :unbound?
-                                     :pulse              0
+                                     :pulse              nil
                                      :pulse-last-changed nil
                                      :pulse-observed     nil
                                      :callers            #{}

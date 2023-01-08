@@ -118,7 +118,6 @@
         c (cF+ [:slot :c
                 :obs (fn-obs (swap! cobs inc))]
                (trx nil :bingo-c-run (swap! crun inc))
-
                (prog1
                 (str "Hi " (c-get b))
                 (trx nil :cellread!! @b)))]
