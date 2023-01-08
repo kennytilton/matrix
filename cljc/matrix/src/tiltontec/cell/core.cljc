@@ -52,7 +52,7 @@
                                      ::cty/state         :nascent
                                      :pulse              0
                                      :pulse-last-changed nil
-                                     :pulse-observed     0
+                                     :pulse-observed     nil
                                      :callers            #{}
                                      :synapses           #{} ;; these stay around between evaluations
                                      ;; todo: if a rule branches away from a synapse
@@ -75,7 +75,7 @@
                                      ::cty/state         :nascent ;; s/b :unbound?
                                      :pulse              0
                                      :pulse-last-changed nil
-                                     :pulse-observed     0
+                                     :pulse-observed     nil
                                      :callers            #{}
                                      :useds              #{}
                                      :lazy               false

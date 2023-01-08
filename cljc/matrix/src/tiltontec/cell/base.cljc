@@ -192,6 +192,11 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn c-valid? [rc]
   (= :valid (c-value-state rc)))
 
+(defn c-pulse-unobserved [c]
+  (if-let [pulse-observed (c-pulse-observed c)]
+    (> @+pulse+ pulse-observed)
+    true))
+
 ;; --- dependency maintenance --------------------------------
 
 (defn caller-ensure [used new-caller]

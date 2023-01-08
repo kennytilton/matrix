@@ -15,7 +15,6 @@
   (cells-init)                                              ;; make sure each test is isolated
   (let [alert (md/make
                 :open? (cI false :obs (fn [slot me new old cell]
-                                        (prn :obs-open-now new)
                                         (when new
                                           (go
                                             (let [delay (timeout 1000)]

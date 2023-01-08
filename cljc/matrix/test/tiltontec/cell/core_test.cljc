@@ -117,30 +117,32 @@
         cobs (atom 0)
         c (cF+ [:slot :c
                 :obs (fn-obs (swap! cobs inc))]
-               (trx :bingo-c-run)
-               (swap! crun inc)
+               (trx nil :bingo-c-run (swap! crun inc))
+
                (prog1
                 (str "Hi " (c-get b))
                 (trx nil :cellread!! @b)))]
-    (c-awaken b)
     (assert (c-rule c) "Early no rule")
+    (is (= 0 @boct))
+    (c-awaken b)
 
     (is (nil? (c-value b)))
-    (trx :valstate (c-value-state b))
     (is (= :valid (c-value-state b)))
     (is (c-valid? b))
+    (is (= 1 @boct))
     (trx nil b)
     (trx nil @b)
     (is (c-valid? b))
+
     (is (= "Hi " (c-get c)))
-    (is (= 0 @boct))
+    (is (= 1 @boct))
     (is (= 1 @crun @cobs))
     (is (nil? (:value @b)))
 
     (do
       (c-reset! b "Mom")
       (is (= "Hi Mom" (c-get c)))
-      (is (= 1 @boct))
+      (is (= 2 @boct))
       (is (= 2 @crun @cobs))
       (is (nil? (c-value b)))
       (is (nil? (:value @b))))
@@ -148,7 +150,7 @@
     (do
       (c-reset! b "Mom")
       (is (= "Hi Mom" (c-get c)))
-      (is (= 2 @boct))
+      (is (= 3 @boct)) ;; b as eph reverts to nil, so "Mom" was new again
       (is (= 3 @crun))
       (is (= 2 @cobs))
       (is (nil? (c-value b)))

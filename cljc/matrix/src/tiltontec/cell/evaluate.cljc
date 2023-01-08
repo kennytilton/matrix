@@ -109,7 +109,6 @@
           (ensure-value-is-current used :nested c)
           ;; now see if it actually changed; maybe it just got made current because no
           ;; dependency was out of date. If so, that alone does not mean we need to re-run.
-          (prn :evic (c-slot used) (c-pulse-last-changed used)(c-pulse used)(c-pulse-observed c)(c-pulse c))
           (or (when-let [last-changed (c-pulse-last-changed used)]
                 (> last-changed (c-pulse c)))
             (recur urest)))))
@@ -155,7 +154,7 @@
                        ;; to see if c-model is nil? (trying latter...)
                        (when (and (nil? (c-model c))
                                (= (c-state c) :nascent)
-                               (> @+pulse+ (c-pulse-observed c)))
+                               (c-pulse-unobserved c))
                          (rmap-setf [::cty/state c] :awake)
                          (c-observe c prior-value :cget)
                          (ephemeral-reset c)))))
@@ -254,7 +253,7 @@
 
   (#?(:clj dosync :cljs do)
     ;;(prn :awk-c c @+pulse+ (c-pulse-observed c)(c-value-state c))
-    (when (> @+pulse+ (c-pulse-observed c))                 ;; safeguard against double-call
+    (when (c-pulse-unobserved c)                 ;; safeguard against double-call
       (when-let [me (c-me c)]
         (rmap-setf [(c-slot c) me] (c-value c)))
       (c-observe c :cell-awaken)
@@ -497,7 +496,7 @@
 
         (when-not (c-optimized-away? c)                     ;; they get observed at the time
           ;;(trx :not-opti!!!! @c)
-          (when (or (> @+pulse+ (c-pulse-observed c))
+          (when (or (c-pulse-unobserved c)
                   (some #{(c-lazy c)}
                     [:once-asked :always true]))            ;; messy: these can get setfed/propagated twice in one pulse+
             ;;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
