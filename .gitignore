@@ -5,6 +5,7 @@
 **/.idea
 **/*.iml
 **/node_modules
+**/archive
 cljs-out
 .nrepl-port
 .rebel_readline_history
