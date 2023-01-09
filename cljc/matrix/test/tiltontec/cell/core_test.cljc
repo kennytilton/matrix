@@ -43,6 +43,7 @@
 
 
 (deftest test-input
+  (cells-init)
   (let [c (make-cell 
              :slot :mol
              :value 42)]
@@ -55,6 +56,7 @@
     (is (= :mol (c-slot c)))))
 
 (deftest test-c-in
+  (cells-init)
   (let [c (cI 42)]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value c) 42))
@@ -66,6 +68,7 @@
     ))
 
 (deftest test-c-in+
+  (cells-init)
   (let [c (cI 42 :slot :cool)]
     (is (c-ref? c))
     (is (= (c-value c) 42))
@@ -77,6 +80,7 @@
     ))
 
 (deftest test-c-formula
+  (cells-init)
   (let [c (cF (+ 40 2))]
     (is (ia-type? c ::cty/c-formula))
     (is (fn? (c-rule c)))
@@ -89,6 +93,7 @@
     ))
 
 (deftest t-cF+
+  (cells-init)
   (let [c (cF+ (:optimize false :slot :bingo)
                (trx nil :cool)
                (+ 40 2))]
@@ -158,6 +163,7 @@
 
 
 (deftest t-cFn
+  (cells-init)
   (let [a (cI 42 :slot :aa)
         b (cFn [:slot :bb]
               (/ (c-get a) 2))
@@ -169,6 +175,7 @@
     (is (= 43 (c-get c)))))
 
 (deftest t-cFonce
+  (cells-init)
   (let [a (cI 42 :slot :aa)
         b (cFonce [:slot :bb]
               (/ (c-get a) 2))]
