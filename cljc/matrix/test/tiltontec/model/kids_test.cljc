@@ -45,6 +45,7 @@
    ))
 
 (deftest k-notq2be
+  (cells-init)
   (let [f (md/make ::md/family
             :ee (cI 2)
             :kids (cF (the-kids

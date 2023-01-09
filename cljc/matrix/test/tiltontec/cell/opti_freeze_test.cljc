@@ -1,4 +1,4 @@
-(ns tiltontec.cell.opti-freeze
+(ns tiltontec.cell.opti-freeze-test
   (:require
     #?(:clj  [clojure.test :refer :all]
        :cljs [cljs.test
@@ -40,6 +40,7 @@
     ))
 
 (deftest opti-away
+  (cells-init)
   (let [aa (cF 42)]
     (is (= 42 (c-get aa)))
     (println :aa @aa)

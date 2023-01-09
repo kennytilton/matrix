@@ -123,7 +123,8 @@
 
 ;; --------------------------------------------------------
 
-(deftest see-into-fn 
+(deftest see-into-fn
+  (cells-init)
   (let [sia (cI 0)
         rsic (atom false)
         sic (cF (reset! rsic true)
@@ -139,6 +140,7 @@
     (is (= (c-get sib) 2))))
 
 (deftest obs-sees-current
+  (cells-init)
   ;
   ; Confirm that observers only see values current with
   ; the current update. Todo: have observers kick off deferred
@@ -178,6 +180,7 @@
       (is (apply = v)))))
 
 (deftest no-prop-no-obs
+  (cells-init)
   (let [sia (cI 0)
 
         obs (atom false)

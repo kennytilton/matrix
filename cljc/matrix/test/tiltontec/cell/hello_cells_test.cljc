@@ -39,6 +39,7 @@
    ))
 
 (deftest hw-01
+  (cells-init)
   (let [v ;;"visitor"
         {:name "World"
          :action (make-cell :value "knocks"
@@ -51,6 +52,7 @@
     (is (=  (c-get (:action v)) "knocks"))))
 
 (deftest hw-02
+  (cells-init)
   (let [obs-action (atom nil)
         v ;;"visitor"
         {:name "World"
@@ -66,6 +68,7 @@
     (is (= "knocks" @obs-action))))
 
 (deftest hw-03
+  (cells-init)
   (let [action (atom nil)
         obs-action (fn [slot me new old c]
                      (reset! action new)
@@ -86,6 +89,7 @@
   (println :gobs> slot new old))
 
 (deftest hw-04
+  (cells-init)
   (let [r-action (cI nil
                        :slot :r-action
                        :obs gobs)
@@ -105,6 +109,7 @@
     (is (= :away (c-get r-loc)))))
 
 (deftest hw-5
+  (cells-init)
   (println :--go------------------)
   (let [obs-action (fn [slot me new old c]
                      (println slot new old))
@@ -128,6 +133,7 @@
     (is (= :home (c-get r-loc)))))
 
 (deftest hello-world
+  (cells-init)
   (println :--go------------------)
   (let [obs-action (fn [slot me new old c]
                      (println slot new old))
@@ -155,6 +161,7 @@
     (c-reset! (:action v) :knock-knock)))
 
 (deftest hello-world-2
+  (cells-init)
   (println :--go------------------)
   (let [obs-action (fn [slot me new old c]
                      (when new (trx visitor-did new)))

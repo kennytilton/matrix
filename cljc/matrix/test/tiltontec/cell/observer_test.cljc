@@ -41,6 +41,7 @@
 #?(:cljs (set! *print-level* 3))
 
 (deftest t-formula
+  (cells-init)
   (let [bingo (atom false)
         c (cF+ [:slot :bingo
                 :obs (fn-obs
@@ -62,6 +63,7 @@
 (def bingo2 (atom false))
 
 (deftest test-input
+  (cells-init)
   (let [c (cI 42 :slot :bingo2
                 :obs (fn-obs (reset! bingo2 true)))]
     (is (ia-type? c ::cty/cell))
@@ -76,6 +78,7 @@
     ))
 
 (deftest t-custom-obs
+  (cells-init)
   (let [bobs (atom nil)
         b (cI 2 :slot :bb
                 :obs (fn-obs

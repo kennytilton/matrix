@@ -68,6 +68,7 @@
       )))
 
 (deftest fm-2
+  (cells-init)
   (let [u (md/make
            :name :uni
            :kids (cF (vector
@@ -100,6 +101,7 @@
     ))
 
 (deftest fm-3
+  (cells-init)
   (let [u (md/make
            :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))
@@ -133,6 +135,7 @@
     ))
     
 (deftest fm-3x ;; using the-kids macro
+  (cells-init)
   (let [u (md/make
            :u63 (cF (+ (mdv! :aa :aa42)
                        (mdv! :bb :bb21)))
@@ -162,6 +165,7 @@
 
     
 (deftest fm-picker
+  (cells-init)
   (let [u (md/make
             :kids (cF (the-kids
                         (md/make :name :picker
@@ -181,6 +185,7 @@
 (derive ::typetest ::cty/model)
 
 (deftest mm-typed
+  (cells-init)
   (let [me (md/make
             :type ::typetest
             :x2 (cI 2)
@@ -190,6 +195,7 @@
     (is (ia-type? me ::typetest))))
 
 (deftest mm-opti-1
+  (cells-init)
    (let [me (md/make
               :x2 2
               :age (cF (* 21 (md-get me :x2)))
@@ -201,6 +207,7 @@
      ))
 
 (deftest mm-install-alive
+  (cells-init)
    (let [bct (atom 0)
          res (do ;; sync
               (md/make
@@ -243,6 +250,7 @@
     ))
 
 (deftest hello-model
+  (cells-init)
   (let [uni (md/make
              ::md/family
              :kids (cF (the-kids
@@ -299,7 +307,7 @@
            (cljs.test/run-tests)
            ))
 
-;; not appropriate for lein test. leave commented out when not being developed.
+;; NOTA BENE! tests below are not appropriate for lein test. leave commented out when not being developed. Use ad hoc.
 #_
 (deftest ad-hoc-errmsg-need-CI
   (let [thing (make ;; :type ::adhoc
