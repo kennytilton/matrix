@@ -43,6 +43,7 @@
 #?(:cljs (set! *print-level* 3))
 
 (deftest test-input
+  (cells-init)
   (let [c (cI 42 :slot :bingo)]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value-state c) :valid))
@@ -55,6 +56,7 @@
     ))
 
 (deftest t-formula
+  (cells-init)
   (let [c (cF (+ 40 2))]
     (is (isa? ::cty/c-formula ::cty/cell))
     (is (ia-type? c ::cty/cell))
@@ -70,6 +72,7 @@
     ))
 
 (deftest t-formula-2
+  (cells-init)
   (let [b (cI 2)
         cct (atom 0)
         dct (atom 0)
@@ -95,6 +98,7 @@
 (def yowza (atom 0))
 
 (deftest t-in-reset
+  (cells-init)
   (reset! yowza 0)
   (is (= @yowza 0))
   (let [b (cI 2 :slot :yowza
