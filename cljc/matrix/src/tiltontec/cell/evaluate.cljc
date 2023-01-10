@@ -14,7 +14,7 @@
     #?(:clj  [tiltontec.cell.base :refer :all :as cty]
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency pcell]
-              :refer [c-optimized-away? c-formula? c-value c-optimize
+              :refer [c-optimized-away? c-pulse-unobserved? c-formula? c-value c-optimize
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state +pulse+ c-pulse-observed c-code$
@@ -154,7 +154,7 @@
                        ;; to see if c-model is nil? (trying latter...)
                        (when (and (nil? (c-model c))
                                (= (c-state c) :nascent)
-                               (c-pulse-unobserved c))
+                               (c-pulse-unobserved? c))
                          (rmap-setf [::cty/state c] :awake)
                          (c-observe c prior-value :cget)
                          (ephemeral-reset c)))))
@@ -253,7 +253,7 @@
 
   (#?(:clj dosync :cljs do)
     ;;(prn :awk-c c @+pulse+ (c-pulse-observed c)(c-value-state c))
-    (when (c-pulse-unobserved c)                 ;; safeguard against double-call
+    (when (c-pulse-unobserved? c)                 ;; safeguard against double-call
       (when-let [me (c-me c)]
         (rmap-setf [(c-slot c) me] (c-value c)))
       (c-observe c :cell-awaken)
@@ -496,7 +496,7 @@
 
         (when-not (c-optimized-away? c)                     ;; they get observed at the time
           ;;(trx :not-opti!!!! @c)
-          (when (or (c-pulse-unobserved c)
+          (when (or (c-pulse-unobserved? c)
                   (some #{(c-lazy c)}
                     [:once-asked :always true]))            ;; messy: these can get setfed/propagated twice in one pulse+
             ;;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
