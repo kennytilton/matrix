@@ -445,4 +445,4 @@
                      (if-let [body (xhr?-ok-body (mget me :xhr))]
                        (do
                          (merge {:when (now)} body))
-                       (when-bound cache))))))))
+                       (when-bound _cache))))))))

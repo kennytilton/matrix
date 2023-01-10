@@ -158,7 +158,7 @@
                                :background-color (cF (when-let [clock (mxu-find-class (:tag @me) "std-clock")]
                                                        (if-let [due (rx-due-by rx)]
                                                          (if (rx-completed rx)
-                                                           cache ;; cF expansion has cache (prior value) in lexical scope
+                                                           _cache ;; cF expansion has _cache (prior value) in lexical scope
                                                            (let [time-left (- due (mget clock :clock))]
                                                              (cond
                                                                (neg? time-left) "red"

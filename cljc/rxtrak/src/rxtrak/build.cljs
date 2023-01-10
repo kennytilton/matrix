@@ -171,8 +171,8 @@
        :kid-factory (fn [me rx]
                       (rx-list-item me rx (mx-find-matrix me)))}
 
-      ;; cache is prior value for this implicit 'kids' slot; k-v-k uses it for diffing
-      (kid-values-kids me cache))))
+      ;; _cache is prior value for this implicit 'kids' slot; k-v-k uses it for diffing
+      (kid-values-kids me _cache))))
 
 ;; -- toggle-all -------------------------------------
 

@@ -676,9 +676,9 @@
 ;                 (when-let [xhr (with-synapse (:home-page [])
 ;                                  ;; the dependency on site will trigger a re-run of
 ;                                  ;; this synapse generator, displacing the old
-;                                  (pln :syn-rule-makes+sends-new-xhr!!!!!!! @sends (type cache))
-;                                  (when-not (= cache unbound)
-;                                    (not-to-be cache))
+;                                  (pln :syn-rule-makes+sends-new-xhr!!!!!!! @sends (type _cache))
+;                                  (when-not (= _cache unbound)
+;                                    (not-to-be _cache))
 ;                                  (swap! sends inc)
 ;                                  (let [s (c-get site)]
 ;                                    (send-xhr s)))]
