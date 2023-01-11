@@ -79,7 +79,7 @@
 
 (defn ^:dev/after-load after-load []
   (js/console.log "after load")
-  (main!))
+  (main))
 
 (defn ^:dev/before-load before-load []
   (js/console.log "before load"))
