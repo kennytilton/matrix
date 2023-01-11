@@ -9,9 +9,9 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [matrix mset! mget mswap!] :as md]
-            [mxweb.gen
+            [tiltontec.mxweb.gen
              :refer [evt-mx dom-tag]]
-            [mxweb.gen-macro
+            [tiltontec.mxweb.gen-macro
              :refer-macros [section header i h1 input footer p a span label ul li div button]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
@@ -103,6 +103,7 @@
                            (:title (pref :job-sort))))
            :onclick  (fn [e]
                        (let [me (evt-mx e)]
+                         (prn :sortbar-click! (mget me :selected))
                          (if (mget me :selected)
                            (pref-swap! :job-sort
                              update :order #(* -1 %))

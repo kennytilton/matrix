@@ -8,9 +8,9 @@
             [tiltontec.model.core
              :refer-macros [with-par fmu]
              :refer [matrix mset! mget mswap!]]
-            [mxweb.gen
+            [tiltontec.mxweb.gen
              :refer [evt-mx]]
-            [mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
+            [tiltontec.mxweb.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]
             [whoshiring.preferences :refer [pref pref! pref-toggle!]]))

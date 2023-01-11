@@ -98,8 +98,10 @@
                      (when-let [c (mget me :content)]
                        [(tag-dom-create c)])))]
 
-         (when (some #{:list} (:attr-keys @me))
+         #_ (when (some #{:list} (:attr-keys @me))
            ;; todo investigate why this was necessary
+           ;; now throws an error
+           ;; TypeError: Cannot set property list of #<HTMLInputElement> which has only a getter
            (.setAttribute dom "list" (mget me :list)))
          dom)))))
 

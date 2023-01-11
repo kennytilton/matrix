@@ -6,9 +6,9 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [matrix mset! mget mswap!] :as md]
-            [mxweb.gen
+            [tiltontec.mxweb.gen
              :refer [evt-mx]]
-            [mxweb.gen-macro :refer-macros [textarea img section header h1 input footer p a span label ul li div button br]]
+            [tiltontec.mxweb.gen-macro :refer-macros [textarea img section header h1 input footer p a span label ul li div button br]]
             [whoshiring.job-memo :refer [job-memo job-memo-set! job-memo-swap!]]))
 
 ;;; --- stars ------------------------------------------

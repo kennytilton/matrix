@@ -7,9 +7,9 @@
     [tiltontec.model.core
      :refer-macros [with-par mdv! mx-par fmu]
      :refer [matrix mset! mget mswap! fget *par*] :as md]
-    [mxweb.gen
+    [tiltontec.mxweb.gen
      :refer [evt-mx]]
-    [mxweb.gen-macro
+    [tiltontec.mxweb.gen-macro
      :refer-macros [img section header h1 input footer p a
                     pre code span i label ul li div button br]]
     [whoshiring.control-panel :as ctl]
@@ -162,7 +162,7 @@
      :kid-key       #(mget % :job)
      :kid-values    (cF (take (or (pref :max-jobs-to-show) 999999)
                           (mget me :sorted-jobs)))}
-    (md/kid-values-kids me cache)))
+    (md/kid-values-kids me _cache)))
 
 
 
