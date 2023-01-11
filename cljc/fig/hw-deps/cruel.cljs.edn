@@ -1,0 +1,3 @@
+^{:log-syntax-error-style :concise
+  :css-dirs ["resources/public/css"]}
+{:main hello.cruel-world}
