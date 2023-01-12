@@ -97,7 +97,7 @@
           init-open? "&#x25be" "&#x25b8")
         echo-widget)
       (div {:class (cF (str "osBody "
-                         (slide-in-rule cell
+                         (slide-in-rule _cell
                            (mdv! osc-name :on-off))))
             :style (cF {:background "#ff6600"
                         :padding    "6px"

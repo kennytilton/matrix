@@ -36,7 +36,7 @@
             :onclick #(job-memo-swap! job :applied not)}
       {:name :applied})
     (label {:for   (str "applied?" (:hn-id job))
-            :style (cF (str "color:" (if (mget job :applied) "red" "black")))}
+            :style (cF (str "color:" (if (job-memo job :applied) "red" "black")))}
       "Applied")))
 
 (defn note-toggle [job]

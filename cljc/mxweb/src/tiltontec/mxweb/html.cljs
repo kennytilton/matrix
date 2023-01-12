@@ -55,7 +55,7 @@
   ;; from event handlers and the like.
   (let [id (mget me :id)]
     (assert id)
-    (or (:dom-cache @me) ;; todo make this another backdoor fn (and use meta?)
+    (or (:dom-cache @me)                                    ;; todo make this another backdoor fn (and use meta?)
       (if-let [dom (dom/getElement (str id))]
         (backdoor-reset! me :dom-cache dom)
         #_(println :benign?-html-no-element id :found)))))
@@ -65,17 +65,16 @@
     (str/join " " (map kw$ c))
     (kw$ c)))
 
-(defn tag-attrs [mx]
-  (let [beef (remove nil? (for [k (:attr-keys @mx)]
-                            (when-let [v (mget mx k)]
-                              #_ (when (and                    ;;(= :bad-css (:name @mx))
-                                      (= k :class))
-                                (pln :tag-class-attr (or (:name @mx) (:id @mx) :anon-mx) k v
-                                  (class-to-class-string v)))
-                              [(kw$ k) (case k
-                                          :style (tagcss/style-string v)
-                                          :class (class-to-class-string v)
-                                          (kw$ v))])))]
+(defn tag-properties [mx]
+  (let [beef (remove nil?
+               (for [k (:attr-keys @mx)]
+                 (when-let [v (when-not (some #{k} [:list])
+                                ;; :list gets set via setAttribute; cannot be set as property
+                                (mget mx k))]
+                   [(kw$ k) (case k
+                              :style (tagcss/style-string v)
+                              :class (class-to-class-string v)
+                              (kw$ v))])))]
     (apply js-obj
       (apply concat beef))))
 
@@ -90,19 +89,20 @@
                       (dom/appendChild frag (tag-dom-create tag))))
                   frag)
      :default
-     (do                                                    ;;(pln :domcre-attrs (:attr-keys @me))
+     (do
+       ;; (pln :tagdomcre-attrs (:attr-keys @me))
        (let [dom (apply dom/createDom (mget me :tag)
-                   (tag-attrs me)
-                   (concat                                  ;; to-do: need this?
+                   (tag-properties me)
+                   (concat
                      (map #(tag-dom-create % dbg) (mget me :kids))
                      (when-let [c (mget me :content)]
                        [(tag-dom-create c)])))]
-
-         #_ (when (some #{:list} (:attr-keys @me))
-           ;; todo investigate why this was necessary
-           ;; now throws an error
-           ;; TypeError: Cannot set property list of #<HTMLInputElement> which has only a getter
-           (.setAttribute dom "list" (mget me :list)))
+         (when (some #{:list} (:attr-keys @me))
+           ;; if offered as property to createDom we get:
+           ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
+           ;; which is misleading: we /can/ set the attribute.
+           (when-let [list-id (mget me :list)]
+             (.setAttribute dom "list" (mget me :list))))
          dom)))))
 
 (def +true-html+ {::type "type"})
