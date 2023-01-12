@@ -77,14 +77,14 @@
     #_ (when-let [route-starter (mget app-matrix :router-starter)]
          (route-starter))))
 
-(defn ^:dev/after-load after-load []
-  (js/console.log "after load")
-  (main))
+;(defn ^:dev/after-load after-load []
+;  (js/console.log "after load")
+;  (main))
+;
+;(defn ^:dev/before-load before-load []
+;  (js/console.log "before load"))
 
-(defn ^:dev/before-load before-load []
-  (js/console.log "before load"))
-
-(main)
+;(main)
 
 
 ;(ns whoshiring.core)

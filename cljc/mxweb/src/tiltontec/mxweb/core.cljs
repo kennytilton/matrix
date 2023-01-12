@@ -17,10 +17,10 @@
     ;;[tiltontec.mxweb.example.testing :as app]
     ;;[tiltontec.mxweb.example.todomvc :as app]
     ;;[tiltontec.mxweb.example.gentle-intro :as app]
-    ;[tiltontec.mxweb.example.ticktock :as app] ;; use ticktock.html to get css
+    [tiltontec.mxweb.example.ticktock :as app] ;; use ticktock.html to get css
     ;;[tiltontec.mxweb.example.pipeline.core :as app] ;; use pipeline.html to get css
     ;;[tiltontec.mxweb.example.startwatch :as app] ;; use startwatch.html to get css
-    [tiltontec.mxweb.example.flux-challenge :as app]
+    ;[tiltontec.mxweb.example.flux-challenge :as app]
     )
   (:import [goog.date UtcDateTime]))
 
