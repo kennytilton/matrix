@@ -17,7 +17,7 @@
               :refer [c-optimized-away? c-pulse-unobserved? c-formula? c-value c-optimize
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state +pulse+ c-pulse-observed c-code$
+                      c-state *pulse* c-pulse-observed c-code$
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -28,7 +28,7 @@
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
-              :refer [*one-pulse?* c-current? c-pulse-update]]
+              :refer [ c-current? c-pulse-update]]
        :clj  [tiltontec.cell.integrity :refer :all])))
 
 
@@ -252,7 +252,7 @@
   ;
 
   (#?(:clj dosync :cljs do)
-    ;;(prn :awk-c c @+pulse+ (c-pulse-observed c)(c-value-state c))
+    ;;(prn :awk-c c @*pulse* (c-pulse-observed c)(c-value-state c))
     (when (c-pulse-unobserved? c)                 ;; safeguard against double-call
       (when-let [me (c-me c)]
         (rmap-setf [(c-slot c) me] (c-value c)))
@@ -330,7 +330,7 @@
                     (c-value-changed? c new-value prior-value)))
             ;; --- something happened ---
             (when-not (c-optimized-away? c)
-              (rmap-setf [:pulse-last-changed c] @+pulse+))
+              (rmap-setf [:pulse-last-changed c] @*pulse*))
             ;; --- data flow propagation -----------
             (when-not (or (= propagation-code :no-propagate)
                         (c-optimized-away? c))
@@ -451,8 +451,6 @@
 
 ;;--------------- change propagation  ----------------------------
 
-(def ^:dynamic *custom-propagater* nil)
-
 (declare propagate-to-callers
 
   md-slot-cell-flushed)
@@ -467,8 +465,8 @@
   [c prior-value callers]
   ;; (trx :propagate (:slot @c))
   (cond
-    *one-pulse?* (when *custom-propagater*
-                   (*custom-propagater* c prior-value))
+    *one-pulse?* (when *custom-propagator*
+                   (*custom-propagator* c prior-value))
     ;; ----------------------------------
     :else
     (do
@@ -492,7 +490,7 @@
               (not-to-be ownee))))
 
         (propagate-to-callers c callers)
-        ;;(trx :obs-chkpulse!!!!!!!! @+pulse+ (c-pulse-observed c))
+        ;;(trx :obs-chkpulse!!!!!!!! @*pulse* (c-pulse-observed c))
 
         (when-not (c-optimized-away? c)                     ;; they get observed at the time
           ;;(trx :not-opti!!!! @c)
@@ -545,7 +543,7 @@
                 ; even if I have been optimized away cuz they need to know."
                 ; Note this is why callers must be supplied, having been copied
                 ; before the optimization step.
-                (do #_(trx :not-propping @+pulse+ (c-slot c)
+                (do #_(trx :not-propping @*pulse* (c-slot c)
                         ;; :val (c-value c)
                         :to (c-slot caller) :caller         ;; @caller
                         (c-state caller) :current (c-current? caller)

@@ -16,7 +16,7 @@
 
    [tiltontec.cell.base
     :refer [c-ref? md-ref? unbound
-            +pulse+ c-slot c-value c-md-name
+            *pulse* c-slot c-value c-md-name
             c-model] :as cty]
 
    #?(:clj [tiltontec.model.macros :refer :all]
@@ -67,8 +67,8 @@ call parameters: slot, me, new, old, and c."
    (c-observe c unbound why))
   ([c prior-value why]
    (assert (c-ref? c))
-   (assert (integer? @+pulse+))
-   (rmap-setf [:pulse-observed c] @+pulse+)
+   (assert (integer? @*pulse*))
+   (rmap-setf [:pulse-observed c] @*pulse*)
    (observe (c-slot c)(c-model c)(c-value c) prior-value c)
    (when-let [cell-observer (:obs @c)]
      (cell-observer (c-slot c)(c-model c)(c-value c) prior-value c))))

@@ -13,7 +13,7 @@
              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                      c-unbound? c-input? ia-type? ia-type
                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                     c-state +pulse+ c-pulse-observed c-assert
+                     c-state *pulse* c-pulse-observed c-assert
                      *call-stack* *defer-changes* unbound
                      c-rule c-me c-value-state c-callers caller-ensure
                      unlink-from-callers *causation* c-md-name

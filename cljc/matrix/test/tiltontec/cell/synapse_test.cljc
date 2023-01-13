@@ -16,7 +16,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? ia-type? cells-init
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state +pulse+ c-pulse-observed
+                      c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       *causation*

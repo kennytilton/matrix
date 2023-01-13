@@ -18,15 +18,20 @@
 
 
 ;; --- the Cells beef -----------------------
+(defn pulse-initial []
+  (#?(:clj ref :cljs atom) 0))
 
-(def +pulse+ (#?(:clj ref :cljs atom) 0))
+(def ^:dynamic *pulse* (pulse-initial))
+(def ^:dynamic *custom-propagator* nil)
+(def ^:dynamic *one-pulse?* false)
+(def ^:dynamic *dp-log* false)
 
-(defn pulse-now [] @+pulse+)
+(defn pulse-now [] @*pulse*)
 
 (defn cells-init []
-  #?(:cljs (reset! +pulse+ 0)
+  #?(:cljs (reset! *pulse* 0)
      :clj  (dosync
-             (ref-set +pulse+ 0))))
+             (ref-set *pulse* 0))))
 
 (def ^:dynamic *causation* '())
 (def ^:dynamic *call-stack* nil)
@@ -51,11 +56,28 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defonce uncurrent (gensym "uncurrent-formulaic-value"))
 
 (def ^:dynamic *not-to-be* false)
-(def ^:dynamic *unfinished-business* nil)
+
+;;; --- unfinished business post state change ------------------------
+
+(def +ufb-opcodes+ [:tell-dependents
+                    :awaken
+                    :client
+                    :ephemeral-reset
+                    :change])
+
+(defn unfin-biz-build []
+  (into {} (for [i +ufb-opcodes+]
+             [i (#?(:cljs atom :clj ref) [])])))
+
+(def ^:dynamic *unfinished-business*
+  (unfin-biz-build))
+
+;;; -----------------------------
+
 (def ^:dynamic *within-integrity* false)
 
 ;; --- debug stuff -----------------------------
-(def ^:dynamic *finbiz-id* 0)
+
 (def ^:dynamic *c-prop-depth* 0)
 
 (def +c-debug+ (atom false))
@@ -70,7 +92,7 @@ rule to get once behavior or just when fm-traversing to find someone"
   ([] (cells-reset {}))
   ([options]
    (reset! +c-debug+ (:debug options false))
-   (reset! +pulse+ 0)
+   (reset! *pulse* 0)
    (reset! +client-q-handler+ (:client-queue-handler options))))
 
 (defmacro without-c-dependency [& body]
@@ -79,7 +101,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defmacro cpr [& r]
   `(without-c-dependency
-     (pln @+pulse+ ~@r)))
+     (pln @*pulse* ~@r)))
 
 (defn +cause []
   (first *causation*))
@@ -194,23 +216,13 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn c-pulse-unobserved? [c]
   (if-let [pulse-observed (c-pulse-observed c)]
-    (> @+pulse+ pulse-observed)
+    (> @*pulse* pulse-observed)
     true))
 
 ;; --- dependency maintenance --------------------------------
 
 (defn caller-ensure [used new-caller]
-  #_(when (= :event (c-slot used))
-      (trx :caller-ensure :used (c-slot used) (c-slot new-caller) (:debug @used)))
-  (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller))
-
-  #_(when (and                                              ;; (not (some #{(c-slot used)} [:event :poss-team]))
-            (> (count (c-callers used)) 50))
-      (let [cct (count (c-callers used))]
-        (when (zero? (mod cct 10))
-          (prn :----------------------------------------)
-          (reset! last-c (c-callers used))
-          (prn :caller-ct (c-slot used) cct :new-c (c-slot new-caller))))))
+  (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller)))
 
 (defn caller-drop [used caller]
   (#?(:clj alter :cljs swap!)

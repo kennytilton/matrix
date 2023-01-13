@@ -11,7 +11,7 @@
      :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
     #?(:cljs [tiltontec.cell.base
               :refer-macros [pcell un-stopped]
-              :refer [+pulse+ c-pulse c-optimized-away?
+              :refer [*pulse* c-pulse c-optimized-away?
                       +client-q-handler+ c-stopped
                       *within-integrity* *defer-changes*
                       *depender* caller-ensure]]
@@ -21,51 +21,35 @@
 
 #?(:cljs (set! *print-level* 3))
 
-(def ^:dynamic *one-pulse?* false)
-
-(def ^:dynamic *dp-log* false)
-
 (defn data-pulse-next
   ([] (data-pulse-next :anon))
   ([pulse-info]
    (when-not *one-pulse?*
      (when *dp-log*
-       (trx "dp-next> " (inc @+pulse+) pulse-info))
-     (#?(:clj alter :cljs swap!) +pulse+ inc))))            ;; hhack try as commute
+       (trx "dp-next> " (inc @*pulse*) pulse-info))
+     (#?(:clj alter :cljs swap!) *pulse* inc))))            ;; hhack try as commute
 
 (defn c-current? [c]
   (and (c-pulse c)
-    (= (c-pulse c) @+pulse+)))
+    (= (c-pulse c) @*pulse*)))
 
 (defn c-pulse-update [c key]
   ;(pcell :pulse-upd c)
   ;(println :pulse-upd-opti (c-optimized-away? c))
   (when-not (c-optimized-away? c)
     (assert (or (nil? (c-pulse c))
-              (>= @+pulse+ (c-pulse c))))
-    (#?(:clj alter :cljs swap!) c assoc :pulse @+pulse+)))
+              (>= @*pulse* (c-pulse c))))
+    (#?(:clj alter :cljs swap!) c assoc :pulse @*pulse*)))
 
 ;; --- ufb utils ----------------------------
 
-(def +ufb-opcodes+ [:tell-dependents
-                    :awaken
-                    :client
-                    :ephemeral-reset
-                    :change])
-
-(def unfin-biz
-  ;; no nested finbiz allowed as of now, so just
-  ;; build it and in use fill the queues, ufb -do them, and
-  ;; ensure they are empty before continuing.
-  (into {} (for [i +ufb-opcodes+]
-             [i (#?(:cljs atom :clj ref) [])])))
 
 (defn ufb-counts []
-  (into {} (for [[k v] unfin-biz]
+  (into {} (for [[k v] *unfinished-business*]
              [k (count @v)])))
 
 (defn ufb-queue [opcode]
-  (or (opcode unfin-biz)
+  (or (opcode *unfinished-business*)
     (err (str "ufb-queue> opcode unknown: " opcode))))
 
 (defn ufb-add [opcode continuation]
@@ -81,8 +65,6 @@
 ;; --- the ufb and integrity beef ----------------------
 ;;    proper ordering of state propagation
 
-
-(def ^:dynamic *ufb-do-q* nil)                              ;; debug aid
 
 (defn ufb-do
   ([opcode]
@@ -194,7 +176,7 @@
 
           :else (binding [*within-integrity* true
                           *defer-changes* false]
-                  (when (or (zero? @+pulse+)
+                  (when (or (zero? @*pulse*)
                           (= opcode :change))
                     (data-pulse-next [:cwi opcode defer-info]))
 

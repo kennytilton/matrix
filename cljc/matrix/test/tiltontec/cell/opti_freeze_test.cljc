@@ -15,7 +15,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? ia-type?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state +pulse+ c-pulse-observed
+                      c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -40,12 +40,12 @@
     ))
 
 (deftest opti-away
-  (cells-init)
-  (let [aa (cF 42)]
-    (is (= 42 (c-get aa)))
-    (println :aa @aa)
-    (is (c-optimized-away? aa))
-    (is (= 42 @aa))))
+  (with-mx
+    (let [aa (cF 42)]
+      (is (= 42 (c-get aa)))
+      (println :aa @aa)
+      (is (c-optimized-away? aa))
+      (is (= 42 @aa)))))
 
 (deftest t-opti-late-sans-freeze
   ; testing the usual case where a formula turns out, on first evaluation, not to depend on
@@ -62,149 +62,141 @@
   ; set the cell :optimize property to :freeze, to signal that the cell should be
   ; optimized away.
   ;
-  (cells-init)
+  (with-mx
+    (let [a (cI 1 :slot :aa)
+          b (cF+ [:slot :bb]
+              42)                                           ;; should optimize away
+          c (cF+ [:slot :cc]
+              (inc (c-get b)))                              ;; should recursively optimize away, since b should
+          d (cF+ [:slot :dd]
+              (if (< (c-get a) 3)
+                (+ (c-get a) (c-get b) (c-get c))
+                17))
+          ect (atom 0)
+          e (let [frozen (atom nil)]
+              (cF+ [:slot :ee]
+                (swap! ect inc)
+                (prn :efrz @ect @frozen)
+                (if @frozen
+                  _cache
+                  (if (< (c-get a) 3)
+                    (+ (c-get a) (c-get b) (c-get c))
+                    (do (reset! frozen true)
+                        _cache)))))]
+      (#?(:clj dosync :cljs do)
+        (is (= (c-get a) 1))
+        (is (= (c-get b) 42))
+        (is (= (c-get c) 43))
+        (is (= (c-get d) 86))
+        (is (c-optimized-away? b))
+        (is (not (seq (c-useds b))))
+        (is (c-optimized-away? c))
+        (is (not (seq (c-useds c))))
+        (is (not (c-optimized-away? d)))
+        (is (= 1 (count (c-useds d))))
+        (is (= 86 (c-get e)))
+        (is (not (c-optimized-away? e)))
+        (is (= 1 (count (c-useds e))))
+        (is (= 1 @ect))
+        )
 
-  (let [a (cI 1 :slot :aa)
-        b (cF+ [:slot :bb]
-            42)                                             ;; should optimize away
-        c (cF+ [:slot :cc]
-            (inc (c-get b)))                                ;; should recursively optimize away, since b should
-        d (cF+ [:slot :dd]
-            (if (< (c-get a) 3)
-              (+ (c-get a) (c-get b) (c-get c))
-              17))
-        ect (atom 0)
-        e (let [frozen (atom nil)]
-            (cF+ [:slot :ee]
-              (swap! ect inc)
-              (prn :efrz @ect @frozen)
-              (if @frozen
-                _cache
-                (if (< (c-get a) 3)
-                  (+ (c-get a) (c-get b) (c-get c))
-                  (do (reset! frozen true)
-                      _cache)))))]
-    (#?(:clj dosync :cljs do)
-      (is (= (c-get a) 1))
-      (is (= (c-get b) 42))
-      (is (= (c-get c) 43))
-      (is (= (c-get d) 86))
-      (is (c-optimized-away? b))
-      (is (not (seq (c-useds b))))
-      (is (c-optimized-away? c))
-      (is (not (seq (c-useds c))))
-      (is (not (c-optimized-away? d)))
-      (is (= 1 (count (c-useds d))))
-      (is (= 86 (c-get e)))
-      (is (not (c-optimized-away? e)))
-      (is (= 1 (count (c-useds e))))
-      (is (= 1 @ect))
-      )
+      (c-swap! a inc)
+      (is (= (c-get a) 2))
+      (is (= (c-get d) 87))
+      (is (= (c-get e) 87))
+      (is (= 2 @ect))
 
-    (c-swap! a inc)
-    (is (= (c-get a) 2))
-    (is (= (c-get d) 87))
-    (is (= (c-get e) 87))
-    (is (= 2 @ect))
+      (c-swap! a inc)
+      (is (= (c-get a) 3))
+      (is (= (c-get d) 17))
+      (is (= (c-get e) 87))
+      (is (= 3 @ect))
 
-    (c-swap! a inc)
-    (is (= (c-get a) 3))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (= 3 @ect))
+      (c-swap! a inc)
+      (is (= (c-get a) 4))
+      (is (= (c-get d) 17))
+      (is (= (c-get e) 87))
+      (is (not (seq (c-useds e))))
+      (is (c-optimized-away? e))
+      (is (= 4 @ect))
 
-    (c-swap! a inc)
-    (is (= (c-get a) 4))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (not (seq (c-useds e))))
-    (is (c-optimized-away? e))
-    (is (= 4 @ect))
-
-    (c-swap! a inc)
-    (is (= (c-get a) 5))
-    (is (c-optimized-away? e))
-    (is (= 4 @ect))))
+      (c-swap! a inc)
+      (is (= (c-get a) 5))
+      (is (c-optimized-away? e))
+      (is (= 4 @ect)))))
 
 (deftest t-opti-late-via-cf-freeze
   ; testing the usual case where a formula turns out, on first evaluation, not to depend on
   ; any cell, as well as the case where, once evaluated, on a subsequent evaluation a
   ; cell has no dependencies.
-  (cells-init)
+  (with-mx
+    (let [a (cI 1 :slot :aa)
+          b (cF+ [:slot :bb]
+              42)                                           ;; should optimize away
+          c (cF+ [:slot :cc]
+              (inc (c-get b)))                              ;; should recursively optimize away, since b should
+          d (cF+ [:slot :dd]
+              (if (< (c-get a) 3)
+                (+ (c-get a) (c-get b) (c-get c))
+                17))
+          ect (atom 0)
+          e (cF+ [:slot :ee]
+              (swap! ect inc)
+              (if (< (c-get a) 3)
+                (+ (c-get a) (c-get b) (c-get c))
+                (cf-freeze _cache)))]
+      (#?(:clj dosync :cljs do)
+        (is (= (c-get a) 1))
+        (is (= (c-get b) 42))
+        (is (= (c-get c) 43))
+        (is (= (c-get d) 86))
+        (is (c-optimized-away? b))
+        (is (not (seq (c-useds b))))
+        (is (c-optimized-away? c))
+        (is (not (seq (c-useds c))))
+        (is (not (c-optimized-away? d)))
+        (is (= 1 (count (c-useds d))))
+        (is (= 86 (c-get e)))
+        (is (not (c-optimized-away? e)))
+        (is (= 1 (count (c-useds e))))
+        (is (= 1 @ect)))
 
-  (let [a (cI 1 :slot :aa)
-        b (cF+ [:slot :bb]
-            42)                                             ;; should optimize away
-        c (cF+ [:slot :cc]
-            (inc (c-get b)))                                ;; should recursively optimize away, since b should
-        d (cF+ [:slot :dd]
-            (if (< (c-get a) 3)
-              (+ (c-get a) (c-get b) (c-get c))
-              17))
-        ect (atom 0)
-        e (cF+ [:slot :ee]
-            (swap! ect inc)
-            (if (< (c-get a) 3)
-              (+ (c-get a) (c-get b) (c-get c))
-              (cf-freeze _cache)))]
-    (#?(:clj dosync :cljs do)
-      (is (= (c-get a) 1))
-      (is (= (c-get b) 42))
-      (is (= (c-get c) 43))
-      (is (= (c-get d) 86))
-      (is (c-optimized-away? b))
-      (is (not (seq (c-useds b))))
-      (is (c-optimized-away? c))
-      (is (not (seq (c-useds c))))
-      (is (not (c-optimized-away? d)))
-      (is (= 1 (count (c-useds d))))
-      (is (= 86 (c-get e)))
-      (is (not (c-optimized-away? e)))
-      (is (= 1 (count (c-useds e))))
-      (is (= 1 @ect)))
+      (c-swap! a inc)
+      (is (= (c-get a) 2))
+      (is (= (c-get d) 87))
+      (is (= (c-get e) 87))
+      (is (= 2 @ect))
 
-    (c-swap! a inc)
-    (is (= (c-get a) 2))
-    (is (= (c-get d) 87))
-    (is (= (c-get e) 87))
-    (is (= 2 @ect))
+      (c-swap! a inc)
+      (is (= (c-get a) 3))
+      (is (= (c-get d) 17))
+      (is (= (c-get e) 87))
+      (is (= 3 @ect))
 
-    (c-swap! a inc)
-    (is (= (c-get a) 3))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (= 3 @ect))
-
-    (c-swap! a inc)
-    (is (= (c-get a) 4))
-    (is (= (c-get d) 17))
-    (is (= (c-get e) 87))
-    (is (not (seq (c-useds e))))
-    (is (c-optimized-away? e))
-    ; unlike the artificial freeze, the cf-freeze mechanism does not require
-    ; an extra invocation during which no dependencies are sampled in order to
-    ; get optimized away. cf-freeze optimizes on the spot.
-    (is (= 3 @ect))
-
-    #_(do (c-swap! a inc)
-          (is (= (c-get a) 5))
-          (is (c-optimized-away? e))
-          (is (= 4 @ect)))))
+      (c-swap! a inc)
+      (is (= (c-get a) 4))
+      (is (= (c-get d) 17))
+      (is (= (c-get e) 87))
+      (is (not (seq (c-useds e))))
+      (is (c-optimized-away? e))
+      ; unlike the artificial freeze, the cf-freeze mechanism does not require
+      ; an extra invocation during which no dependencies are sampled in order to
+      ; get optimized away. cf-freeze optimizes on the spot.
+      (is (= 3 @ect)))))
 
 (deftest t-freeze-default
   ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
-  (cells-init)
-
-  (let [a (cI 1 :slot :aa)
-        b (cF+ [:slot :bb]
-            (if (= 2 (c-get a))
-              (cf-freeze)
-              42))]
-    (is (= 1 (c-get a)))
-    (is (= 42 (c-get b)))
-    (c-swap! a inc)
-    (is (= 2 (c-get a)))
-    (is (= 42 (c-get b)))
-    (is (c-optimized-away? b))
-    (is (not (seq (c-callers a))))))
+  (with-mx
+    (let [a (cI 1 :slot :aa)
+          b (cF+ [:slot :bb]
+              (if (= 2 (c-get a))
+                (cf-freeze)
+                42))]
+      (is (= 1 (c-get a)))
+      (is (= 42 (c-get b)))
+      (c-swap! a inc)
+      (is (= 2 (c-get a)))
+      (is (= 42 (c-get b)))
+      (is (c-optimized-away? b))
+      (is (not (seq (c-callers a)))))))
 

@@ -17,7 +17,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? unbound
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state +pulse+ c-pulse-observed
+                      c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       c-synapses
@@ -37,7 +37,7 @@
     #?(:clj
        [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]
+              :refer-macros [with-integrity unfin-biz-build]
               :refer []])
     [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume
                                      record-dependency ensure-value-is-current]]))
@@ -353,4 +353,21 @@ execution as soon as the current change is manifested."
     (#?(:cljs do :clj dosync)
       (c-value-assume c new-value nil))))
 
+(defn call-with-mx [fn]
+  (binding [*pulse* (pulse-initial)
+            *within-integrity* false
+            *unfinished-business* (unfin-biz-build)
+            *causation* '()
+            *call-stack* nil
+            *depender* nil
+            *defer-changes* false
+            *not-to-be* false
+            *custom-propagator* nil
+            *c-prop-depth* 0
+            *one-pulse?* false
+            *dp-log* false]
+    (fn)))
 
+(defmacro with-mx [&  body]
+  `(call-with-mx
+     (fn [] ~@body)))
