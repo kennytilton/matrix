@@ -68,15 +68,11 @@
   (or (opcode unfin-biz)
     (err (str "ufb-queue> opcode unknown: " opcode))))
 
-(defn ufb-queue-ensure [opcode]
-  "vestigial"
-  (ufb-queue opcode))
-
 (defn ufb-add [opcode continuation]
-  (fifo-add (ufb-queue-ensure opcode) continuation))
+  (fifo-add (ufb-queue opcode) continuation))
 
 (defn ufb-assert-q-empty [opcode]
-  (if-let [uqp (fifo-peek (ufb-queue-ensure opcode))]
+  (if-let [uqp (fifo-peek (ufb-queue opcode))]
     (do
       (err (str "ufb queue %s not empty, viz %s")
         opcode uqp))
@@ -108,7 +104,7 @@
             (ufb-do :awaken)
 
             (recur
-              (if (fifo-peek (ufb-queue-ensure :tell-dependents))
+              (if (fifo-peek (ufb-queue :tell-dependents))
                 :tell-dependents
                 :handle-clients)))
 
