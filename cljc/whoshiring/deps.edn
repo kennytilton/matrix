@@ -2,4 +2,5 @@
          com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
          tiltontec/matrix                {:mvn/version "4.1.8-SNAPSHOT" #_ "0.1.7-SNAPSHOT"}
          tiltontec/mxweb                 {:mvn/version "0.2.4-SNAPSHOT" #_ "0.1.8-SNAPSHOT"}}
+ :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
  :paths ["src" "target" "resources"]}

@@ -68,7 +68,7 @@
 
 (defn main []
   (println "[main]: loading")
-  (let [root (gdom/getElement "tagroot") ;; must be defined in index.html
+  (let [root (gdom/getElement "app") ;; must be defined in index.html
         app-matrix (matrix-build!)
         app-dom (tag-dom-create
                   (mget app-matrix :mx-dom))]
@@ -84,7 +84,7 @@
 ;(defn ^:dev/before-load before-load []
 ;  (js/console.log "before load"))
 
-;(main)
+(main)
 
 
 ;(ns whoshiring.core)
