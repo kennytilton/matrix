@@ -18,7 +18,7 @@
                       c-unbound? c-input? unbound
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
-                      *call-stack* *defer-changes*
+                      *call-stack* *defer-changes* *custom-propagator*
                       c-rule c-me c-value-state c-callers caller-ensure
                       c-synapses unfin-biz-build
                       unlink-from-callers *causation*
