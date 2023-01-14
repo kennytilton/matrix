@@ -20,7 +20,7 @@
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
-                      c-synapses
+                      c-synapses unfin-biz-build
                       unlink-from-callers *causation*
                       c-synaptic? caller-drop
                       c-pulse  c-ephemeral? c-slot c-slot-name
@@ -37,7 +37,7 @@
     #?(:clj
        [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity unfin-biz-build]
+              :refer-macros [with-integrity]
               :refer []])
     [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume
                                      record-dependency ensure-value-is-current]]))
