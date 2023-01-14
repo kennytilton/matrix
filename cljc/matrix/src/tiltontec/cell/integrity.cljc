@@ -11,7 +11,7 @@
      :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
     #?(:cljs [tiltontec.cell.base
               :refer-macros [pcell un-stopped]
-              :refer [*pulse* c-pulse c-optimized-away?
+              :refer [*pulse* c-pulse c-optimized-away? *one-pulse?* *dp-log* *unfinished-business*
                       +client-q-handler+ c-stopped
                       *within-integrity* *defer-changes*
                       *depender* caller-ensure]]

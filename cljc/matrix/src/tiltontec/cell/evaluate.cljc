@@ -28,7 +28,8 @@
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
-              :refer [ c-current? c-pulse-update]]
+              :refer [ c-current? c-pulse-update *one-pulse?* *dp-log* *unfinished-business*
+                      *custom-propagator*]]
        :clj  [tiltontec.cell.integrity :refer :all])))
 
 
