@@ -15,6 +15,8 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency pcell]
               :refer [c-optimized-away? c-pulse-unobserved? c-formula? c-value c-optimize
+                      *one-pulse?* *dp-log* *unfinished-business*
+                      *custom-propagator*
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
@@ -28,8 +30,7 @@
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
-              :refer [ c-current? c-pulse-update *one-pulse?* *dp-log* *unfinished-business*
-                      *custom-propagator*]]
+              :refer [c-current? c-pulse-update ]]
        :clj  [tiltontec.cell.integrity :refer :all])))
 
 
