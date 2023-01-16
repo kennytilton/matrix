@@ -18,7 +18,7 @@
 (defn tag-checkbox
   ;; todo: test variants
   ([me id label-text initial-state attrs aux]
-   (make-tag "div"
+   (tiltontec.mxweb.gen/make-tag "div"
      (assoc attrs :id id)
      (merge {:on? (cI initial-state)}
             aux)

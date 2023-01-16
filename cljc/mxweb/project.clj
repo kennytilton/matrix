@@ -11,7 +11,7 @@
                  [clj-http "3.10.3"]
                  [cljs-http "0.1.46"]
                  [cheshire "5.10.0"]
-                 [com.taoensso/tufte "2.2.0"]
+                 [com.taoensso/tufte "2.4.5"]
                  [tiltontec/matrix "4.2.0-SNAPSHOT"]
                  [tiltontec/mxxhr "0.2.0-SNAPSHOT"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
