@@ -13,7 +13,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
-    [tiltontec.mxweb.base :refer [kw$]]
+    [tiltontec.mxweb.base :refer [kw$ tag-dom]]
     [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
@@ -47,18 +47,6 @@
 (defn map-less-nils [m]
   (apply dissoc m
     (for [[k v] m :when (nil? v)] k)))
-
-(defn tag-dom [me]
-  ;; This will return nil when 'me' is being awakened and rules
-  ;; are firing for the first time, because 'me' has not yet
-  ;; been installed in the actual DOM, so call this only
-  ;; from event handlers and the like.
-  (let [id (mget me :id)]
-    (assert id)
-    (or (:dom-cache @me)                                    ;; todo make this another backdoor fn (and use meta?)
-      (if-let [dom (dom/getElement (str id))]
-        (backdoor-reset! me :dom-cache dom)
-        #_(println :benign?-html-no-element id :found)))))
 
 (defn class-to-class-string [c]
   (if (coll? c)
