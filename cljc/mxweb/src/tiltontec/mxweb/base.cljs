@@ -6,6 +6,8 @@
      :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]))
 
+(def ^:dynamic *mxweb-trace* false)
+
 (defn tag? [me]
   (= (type-cljc me) :mxweb.base/tag))
 
@@ -16,14 +18,24 @@
     (name kw)
     kw))
 
+(defn mxwprn [& bits]
+  (when *mxweb-trace*
+    (apply prn :mxweb> bits)))
+
 (defn tag-dom [me]
   ;; This will return nil when 'me' is being awakened and rules
   ;; are firing for the first time, because 'me' has not yet
   ;; been installed in the actual DOM, so call this only
   ;; from event handlers and the like.
-  (let [id (mget me :id)]
-    (assert id)
-    (or (:dom-cache @me)                                    ;; todo make this another backdoor fn (and use meta?)
-      (if-let [dom (dom/getElement (str id))]
-        (backdoor-reset! me :dom-cache dom)
-        #_(println :benign?-html-no-element id :found)))))
+  (let [id (mget me :id)
+        dom-x (:dom-x (meta me))
+        dom (or (:dom-cache @me)
+                (backdoor-reset! me :dom-cache (dom/getElement (str id))))
+        ]
+    (when (nil? dom) (mxwprn :id-not-in-dom-or-cache id))
+    (when (nil? dom-x) (mxwprn :no-dom-x (meta me)))
+    (if (= dom dom-x)
+      (mxwprn :dom-same!!!! dom)
+      (mxwprn :don-not-eq dom (:dom-x (meta me))))
+
+    (or dom dom-x)))

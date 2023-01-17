@@ -9,7 +9,8 @@
     [tiltontec.model.core :as md]
 
     [goog.dom :as dom]
-    [tiltontec.mxweb.html :refer [tag-dom-create *mxweb-trace*]]
+    [tiltontec.mxweb.base :refer [ *mxweb-trace*]]
+    [tiltontec.mxweb.html :refer [tag-dom-create ]]
 
     ;; [tiltontec.mxweb.mxintro.rxtrak :as app] ;; Intro app for Lisp-NYC, 2018
 
@@ -42,5 +43,5 @@
   (set! (.-innerHTML root) nil)
   (dom/appendChild root app-dom)
   (when-let [route-starter (md/mget app-matrix :router-starter)]
-    (prn :starting-router)
+    ;; (prn :starting-router)
     (route-starter)))

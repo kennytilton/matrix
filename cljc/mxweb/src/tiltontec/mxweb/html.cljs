@@ -3,8 +3,9 @@
     [clojure.string :as str]
     [clojure.walk :refer [stringify-keys]]
     [cljs.pprint :as pp]
+    [tiltontec.util.core
+     :refer [any-ref? rmap-setf err rmap-meta-setf set-ify pln]]
     [tiltontec.util.base :refer [type-cljc]]
-    [tiltontec.util.core :refer [pln]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
@@ -13,7 +14,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
-    [tiltontec.mxweb.base :refer [kw$ tag-dom]]
+    [tiltontec.mxweb.base :refer [kw$ tag-dom *mxweb-trace*]]
     [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
@@ -25,8 +26,6 @@
     [goog.dom.forms :as form]
 
     [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]))
-
-(def ^:dynamic *mxweb-trace* false)
 
 (defn tagfo [me]
   (if (string? me)
@@ -85,6 +84,7 @@
                      (map #(tag-dom-create % dbg) (mget me :kids))
                      (when-let [c (mget me :content)]
                        [(tag-dom-create c)])))]
+         (rmap-meta-setf [:dom-x me] dom)
          (when (some #{:list} (:attr-keys @me))
            ;; if offered as property to createDom we get:
            ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
