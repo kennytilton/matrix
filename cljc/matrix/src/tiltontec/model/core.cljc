@@ -392,14 +392,12 @@
   [& tree]
   `(binding [*par* ~'me]
      (assert *par*)
-     ;;(println :bingo-par (any-ref? *par*))
      (doall (remove nil? (flatten (list ~@tree))))))
 
 (defmacro cFkids
   "Syntax sugar for formulae that define :kids slots"
   [& tree]
   `(cF (assert ~'me "no me for cFkids")
-     ;;(print :cFkids-me!!! (:id (deref ~'me)))
      (the-kids ~@tree)))
 
 (defn kid-values-kids

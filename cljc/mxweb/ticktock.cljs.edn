@@ -1,2 +1,2 @@
 ^{:css-dirs ["resources/public/css"]}
-{:main tiltontec.example.ticktock.core}
+{:main tiltontec.example.ticktock}
