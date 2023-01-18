@@ -23,8 +23,8 @@
     (nil? dom) (do (println :outthetop!!!)
                    nil)
 
-    ;; where we specify string content to, eg, button, we get an
-    ;; automatic span for the string that has no ID. Hopefully, where
+    ;; where we specify string content to eg button we get an
+    ;; automatic span for the string that has no ID. Hopefully where
     ;; dom-tiltontec.mxweb is requested they will be OK with us tracking the nearest ascendant.
     (= "" (.-id dom)) (do ;;(println :no-id-try-pa (.-parentNode dom))
                           (dom-tag (.-parentNode dom)))
@@ -36,7 +36,7 @@
                  tag))))
 
 (defn make-tag [tag attrs aux cFkids]
-  ;;(prn :make-tiltontec.mxweb tiltontec.mxweb attrs aux)
+  ;; (prn :make-tag tag :attrs (keys attrs) :aux (keys aux))
   (let [tag-id (str (or (:id attrs)
                         (str tag "-" (swap! +tag-sid+ inc))))
         mx-tag (apply make

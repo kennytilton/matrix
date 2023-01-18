@@ -52,6 +52,29 @@
     (str/join " " (map kw$ c))
     (kw$ c)))
 
+;; goog.dom.setProperties = function(element, properties) {
+;  goog.object.forEach(properties, function(val, key) {
+;    if (val && val.implementsGoogStringTypedString) {
+;      val = val.getTypedStringValue();
+;    }
+;    if (key == 'style') {
+;      element.style.cssText = val;
+;    } else if (key == 'class') {
+;      element.className = val;
+;    } else if (key == 'for') {
+;      element.htmlFor = val;
+;    } else if (goog.dom.DIRECT_ATTRIBUTE_MAP_.hasOwnProperty(key)) {
+;      element.setAttribute(goog.dom.DIRECT_ATTRIBUTE_MAP_[key], val);
+;    } else if (
+;        goog.string.startsWith(key, 'aria-') ||
+;        goog.string.startsWith(key, 'data-')) {
+;      element.setAttribute(key, val);
+;    } else {
+;      element[key] = val;
+;    }
+;  });
+;};
+
 (defn tag-properties [mx]
   (let [beef (remove nil?
                (for [k (:attr-keys @mx)]
@@ -65,6 +88,20 @@
     (apply js-obj
       (apply concat beef))))
 
+(defn svg-dom-create [me dbg]
+  (let [svg (.createElementNS js/document "http://www.w3.org/2000/svg"
+              (mget me :tag))]
+    (rmap-meta-setf [:dom-x me] svg)
+    (.setAttributeNS svg
+      "http://www.w3.org/2000/xmlns/"
+      "xmlns:xlink"
+      "http://www.w3.org/1999/xlink")
+    (doseq [ak (:attr-keys @me)]
+      (.setAttribute svg (kw$ ak) (str (ak @me))))
+    (doseq [kid (mget me :kids)]
+      (.appendChild svg (svg-dom-create kid dbg)))
+    svg))
+
 (defn tag-dom-create
   ([me] (tag-dom-create me false))
   ([me dbg]
@@ -75,9 +112,10 @@
                     (when tag                               ;; tolerate nils
                       (dom/appendChild frag (tag-dom-create tag))))
                   frag)
+     (= "svg" (mget me :tag)) (svg-dom-create me dbg)
      :default
      (do
-       ;; (pln :tagdomcre-attrs (:attr-keys @me))
+       ;(pln :tagdomcre (mget me :tag) :attrs (:attr-keys @me))
        (let [dom (apply dom/createDom (mget me :tag)
                    (tag-properties me)
                    (concat
@@ -91,6 +129,12 @@
            ;; which is misleading: we /can/ set the attribute.
            (when-let [list-id (mget me :list)]
              (.setAttribute dom "list" (mget me :list))))
+         (when (some #{:gs-w} (:attr-keys @me))
+           ;; if offered as property to createDom we get:
+           ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
+           ;; which is misleading: we /can/ set the attribute.
+           (when-let [gs-w (mget me :gs-w)]
+             (.setAttribute dom "gs-w" (mget me :gs-w))))
          dom)))))
 
 (def +true-html+ {::type "type"})
@@ -192,7 +236,7 @@
             :class (classlist/set dom (class-to-class-string newv))
             :checked (set! (.-checked dom) newv)
             (do
-              ;(pln :obs-by-type-genset slot newv)
+              (pln :obs-by-type-setAttr-onknown (name slot) newv)
               (.setAttribute dom (name slot) newv))))
 
         (+inline-css+ slot)

@@ -1,5 +1,5 @@
 (ns tiltontec.mxweb.gen-macro
-  (:refer-clojure :exclude [map meta time])
+  (:refer-clojure :exclude [map meta time filter set symbol use])
   (:require
     [tiltontec.mxweb.gen :refer [make-tag]]))
 
@@ -44,3 +44,14 @@
   p param picture plaintext pre progress q rp rt rtc ruby
   s samp script section select shadow slot small source spacer span strike strong style sub summary sup
   table tbody td template textarea tfoot th thead time title tr track tt u ul var video wbr xmp)
+
+(deftags altGlyph altGlyphDef altGlyphItem animate animateColor animateMotionexample
+  animateTransformexample circle circleexample clipPath cursor defs desc discardexample ellipse
+  ellipseexample feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix
+  feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA feFuncB
+  feFuncG feFuncR feGaussianBlur feImage feMerge feMergeNode feMorphology feOffset
+  fePointLight feSpecularLighting feSpotLight feTile feTurbulence
+  filter font font-face font-face-format font-face-name font-face-src font-face-uri foreignObject
+  g glyph glyphRef hatch hatchpath hkern image line linearGradient marker mask metadata
+  missing-glyph mpathexample path pattern polygon polyline radialGradient rect
+  set solidcolor stop svg switch symbol text textPath title tref tspan use view vkern)
