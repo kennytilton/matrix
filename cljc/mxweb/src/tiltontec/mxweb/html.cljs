@@ -97,7 +97,7 @@
       "xmlns:xlink"
       "http://www.w3.org/1999/xlink")
     (doseq [ak (:attr-keys @me)]
-      (prn :svg-create-attr (kw$ ak)(attr-val$ (ak @me)))
+      ;;(prn :svg-create-attr (kw$ ak)(attr-val$ (ak @me)))
       (.setAttribute svg (kw$ ak) (attr-val$ (ak @me))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))

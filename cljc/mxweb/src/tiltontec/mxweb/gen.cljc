@@ -40,7 +40,7 @@
                  tag))))
 
 (defn attr-val$ [val]
-  (prn :attr-val$-sees val (keyword? val))
+  ;(prn :attr-val$-sees val (keyword? val))
   (cond
     (string? val) val
     (keyword? val) (name val)
