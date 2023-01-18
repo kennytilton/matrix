@@ -129,12 +129,11 @@
            ;; which is misleading: we /can/ set the attribute.
            (when-let [list-id (mget me :list)]
              (.setAttribute dom "list" (mget me :list))))
-         (when (some #{:gs-w} (:attr-keys @me))
-           ;; if offered as property to createDom we get:
-           ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
-           ;; which is misleading: we /can/ set the attribute.
-           (when-let [gs-w (mget me :gs-w)]
-             (.setAttribute dom "gs-w" (mget me :gs-w))))
+         (doseq [attr-key (:attr-keys @me)]
+           (when (str/includes? (name attr-key) "-")
+             (when-let [attr-val (mget me attr-key)]
+               (prn :setting-attr attr-key attr-val)
+               (.setAttribute dom (name attr-key) attr-val))))
          dom)))))
 
 (def +true-html+ {::type "type"})
