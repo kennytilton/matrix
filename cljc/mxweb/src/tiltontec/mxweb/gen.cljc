@@ -1,12 +1,16 @@
 (ns tiltontec.mxweb.gen
   (:refer-clojure :exclude [map meta time])
   (:require
-    #?(:cljs [goog.dom.forms :as form])
+    [clojure.string :as str]
+    #?(:cljs
+       [goog.dom.forms :as form]
+       )
     #?(:clj [clojure.pprint :refer :all]
-       :cljs cljs.pprint :clj :refer [pprint cl-format])
-            [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
-            [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
-            [tiltontec.model.core :refer [make mget] :as md]))
+       :cljs [cljs.pprint :refer [pprint cl-format]])
+    [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
+    [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
+    [tiltontec.model.core :refer [make mget] :as md]
+    ))
 
 (defn tagfo [me]
   (select-keys @me [:id :tag :class :name]))
@@ -35,10 +39,19 @@
                                   " of dom " dom))
                  tag))))
 
+(defn attr-val$ [val]
+  (prn :attr-val$-sees val (keyword? val))
+  (cond
+    (string? val) val
+    (keyword? val) (name val)
+    (coll? val) (str/join " " (mapv attr-val$ val))
+    :else (str val)))
+
 (defn make-tag [tag attrs aux cFkids]
   ;; (prn :make-tag tag :attrs (keys attrs) :aux (keys aux))
-  (let [tag-id (str (or (:id attrs)
-                        (str tag "-" (swap! +tag-sid+ inc))))
+  (let [tag-id (if-let [id (:id attrs)]
+                 (attr-val$ id)
+                 (str tag "-" (swap! +tag-sid+ inc)))
         mx-tag (apply make
                       :type :mxweb.base/tag
                       :tag tag

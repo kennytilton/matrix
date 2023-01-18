@@ -14,7 +14,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
-    [tiltontec.mxweb.base :refer [kw$ attr$ tag-dom *mxweb-trace*]]
+    [tiltontec.mxweb.base :refer [kw$ attr-val$ tag-dom *mxweb-trace*]]
     [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
@@ -97,7 +97,8 @@
       "xmlns:xlink"
       "http://www.w3.org/1999/xlink")
     (doseq [ak (:attr-keys @me)]
-      (.setAttribute svg (kw$ ak) (attr$ (ak @me))))
+      (prn :svg-create-attr (kw$ ak)(attr-val$ (ak @me)))
+      (.setAttribute svg (kw$ ak) (attr-val$ (ak @me))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))
     svg))
@@ -128,12 +129,12 @@
            ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
            ;; which is misleading: we /can/ set the attribute.
            (when-let [list-id (mget me :list)]
-             (.setAttribute dom "list" (mget me :list))))
+             (.setAttribute dom "list" (attr-val$ list-id))))
          (doseq [attr-key (:attr-keys @me)]
            (when (str/includes? (name attr-key) "-")
              (when-let [attr-val (mget me attr-key)]
-               (prn :setting-attr attr-key attr-val)
-               (.setAttribute dom (name attr-key) attr-val))))
+               (prn :setting-attr (name attr-key) (attr-val$ attr-val))
+               (.setAttribute dom (name attr-key) (attr-val$ attr-val)))))
          dom)))))
 
 (def +true-html+ {::type "type"})

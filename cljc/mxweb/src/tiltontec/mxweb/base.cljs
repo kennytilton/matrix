@@ -19,11 +19,12 @@
     (name kw)
     kw))
 
-(defn attr$ [val]
+(defn attr-val$ [val]
+  (prn :attr-val$-sees val (keyword? val))
   (cond
     (string? val) val
     (keyword? val) (name val)
-    (coll? val) (str/join " " (map attr$ val))
+    (coll? val) (str/join " " (map attr-val$ val))
     :else (str val)))
 
 (defn mxwprn [& bits]

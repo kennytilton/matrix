@@ -6,7 +6,7 @@
              :refer [matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
             [tiltontec.mxweb.gen :refer [evt-mx target-value]]
             [tiltontec.mxweb.gen-macro
-             :refer-macros [svg circle p span div text
+             :refer-macros [svg circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon]]
             [tiltontec.mxweb.html :refer [tag-dom-create]]))
 
@@ -38,15 +38,26 @@
     (path {:d ["M20,230" "Q40,205" "50,230" "T90,230"]
            :fill :none :stroke :blue :stroke-width 5})))
 
+(defn radial-gradient []
+  ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
+  (svg {:width 120 :height 240}
+    (defs
+      (radialGradient {:id :RG1}
+        (stop {:offset "0%" :stop-color :red})
+        (stop {:offset "100%" :stop-color :blue})))
+    (rect {:x 10 :y 10 :rx 15 :ry 15 :width 100 :height 100
+           ;;:stroke :black :stroke-width 5
+           :fill "url(#RG1"})))
+
 (defn main []
   (println "[main]: loading")
   (let [root (gdom/getElement "app") ;; must be defined in index.html
-        app-matrix (md/make
-                     :mx-dom (cFonce (md/with-par me
-                                       [(basic-shapes)])))
+        app-matrix (md/make :mx-dom (cFonce (md/with-par me
+                                              [#_ (three-circles)
+                                               (radial-gradient)
+                                               (basic-shapes)])))
         app-dom (tag-dom-create
                   (mget app-matrix :mx-dom))]
-    (prn :dom!!! (.-outerHTML app-dom))
     (set! (.-innerHTML root) nil)
     (gdom/appendChild root app-dom)))
 
