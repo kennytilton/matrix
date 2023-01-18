@@ -14,7 +14,7 @@
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
-    [tiltontec.mxweb.base :refer [kw$ tag-dom *mxweb-trace*]]
+    [tiltontec.mxweb.base :refer [kw$ attr$ tag-dom *mxweb-trace*]]
     [tiltontec.mxweb.style
      :refer [style-string] :as tagcss]
 
@@ -97,7 +97,7 @@
       "xmlns:xlink"
       "http://www.w3.org/1999/xlink")
     (doseq [ak (:attr-keys @me)]
-      (.setAttribute svg (kw$ ak) (str (ak @me))))
+      (.setAttribute svg (kw$ ak) (attr$ (ak @me))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))
     svg))

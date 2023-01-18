@@ -1,5 +1,6 @@
 (ns tiltontec.mxweb.base
   (:require
+    [clojure.string :as str]
     [goog.dom :as dom]
     [tiltontec.util.base :refer [type-cljc]]
     [tiltontec.model.core
@@ -17,6 +18,13 @@
   (if (keyword? kw)
     (name kw)
     kw))
+
+(defn attr$ [val]
+  (cond
+    (string? val) val
+    (keyword? val) (name val)
+    (coll? val) (str/join " " (map attr$ val))
+    :else (str val)))
 
 (defn mxwprn [& bits]
   (when *mxweb-trace*
