@@ -2,9 +2,19 @@
 
 The [Matrix](https://github.com/kennytilton/matrix/tree/master/cljs/matrix) dataflow library applied to the Web. 
 
-An [mxWb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) is under construction. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
+An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) is under construction. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
 
 Yes, MatrixRN is under construction.
+
+### Just Run It
+
+mxWeb is a library, but can also be run as a Web app to try examples.
+
+To run the current example, just:
+```bash
+cd matrix/cljc/mxweb
+clojure -M -m figwheel.main --build svg-examples --repl
+```
 
 ### Overview
 
