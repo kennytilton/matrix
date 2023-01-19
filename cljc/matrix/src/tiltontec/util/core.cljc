@@ -55,7 +55,7 @@
   (assert (map? @ref)
     (pln "model.util.core/rmap-setf> slot:" slot
       "new-value:" new-value
-      "failed assertion map? on ref:" ref))
+      "failed assertion map? on ref:" @ref))
   (#?(:clj alter :cljs swap!) ref assoc slot new-value)
   new-value)
 

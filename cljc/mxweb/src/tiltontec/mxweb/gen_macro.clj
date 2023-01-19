@@ -30,9 +30,40 @@
                        ~~tag-name {} {}
                        (tiltontec.model.core/cFkids ~@~vargs)))))))
 
+(defmacro defsvg [svg]
+  (let [kids (gensym "kids")
+        vargs (gensym "vargs")
+        svg-name (gensym "mxweb-name")]
+    `(defmacro ~svg [& ~vargs]
+       (let [~svg-name (str '~svg)]
+         (cond
+           (nil? ~vargs)
+           `(tiltontec.mxweb.gen/make-svg ~~svg-name {} {} nil)
+
+           (map? (first ~vargs))
+           (cond
+             (map? (second ~vargs))
+             `(tiltontec.mxweb.gen/make-svg ~~svg-name ~(first ~vargs) ~(second ~vargs)
+                ~(when-let [~kids (seq (nthrest ~vargs 2))]
+                   `(tiltontec.model.core/cFkids ~@~kids)))
+
+             :default `(tiltontec.mxweb.gen/make-svg
+                         ~~svg-name ~(first ~vargs)
+                         {}
+                         ~(when-let [~kids (seq (nthrest ~vargs 1))]
+                            `(tiltontec.model.core/cFkids ~@~kids))))
+
+           :default `(tiltontec.mxweb.gen/make-svg
+                       ~~svg-name {} {}
+                       (tiltontec.model.core/cFkids ~@~vargs)))))))
+
 (defmacro deftags [& tags]
   `(do ~@(for [tag tags]
            `(deftag ~tag))))
+
+(defmacro defsvgs [& svgs]
+  `(do ~@(for [svg svgs]
+           `(defsvg ~svg))))
 
 (deftags a abbr acronym address applet area article aside audio b base basefont bdi bdo bgsound big blink
   blockquote body br button canvas caption center cite code col colgroup command content
@@ -45,7 +76,7 @@
   s samp script section select shadow slot small source spacer span strike strong style sub summary sup
   table tbody td template textarea tfoot th thead time title tr track tt u ul var video wbr xmp)
 
-(deftags altGlyph altGlyphDef altGlyphItem animate animateColor animateMotionexample
+(defsvgs altGlyph altGlyphDef altGlyphItem animate animateColor animateMotionexample
   animateTransformexample circle circleexample clipPath cursor defs desc discardexample ellipse
   ellipseexample feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix
   feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA feFuncB

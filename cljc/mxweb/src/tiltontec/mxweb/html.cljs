@@ -98,7 +98,7 @@
       "http://www.w3.org/1999/xlink")
     (doseq [ak (:attr-keys @me)]
       ;;(prn :svg-create-attr (kw$ ak)(attr-val$ (ak @me)))
-      (.setAttribute svg (kw$ ak) (attr-val$ (ak @me))))
+      (.setAttributeNS svg nil (kw$ ak) (attr-val$ (ak @me))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))
     svg))
@@ -206,7 +206,6 @@
 
 (def +inline-css+ (set [:display]))
 
-
 (defmethod observe-by-type [:mxweb.base/tag] [slot me newv oldv _]
   (when (not= oldv unbound)
     (when-let [dom (tag-dom me)]
@@ -235,13 +234,53 @@
                         (.removeAttribute dom "disabled"))
             :class (classlist/set dom (class-to-class-string newv))
             :checked (set! (.-checked dom) newv)
+            :value (.setAttribute dom "value" (str newv)) ;; eg, progress indicator
+            ;; todo cleanup
+            :stroke (do (prn :ignore-stroke newv))
             (do
-              (pln :obs-by-type-setAttr-onknown (name slot) newv)
+              (pln :obs-by-type-setAttr-onknown (name slot) me newv)
               (.setAttribute dom (name slot) newv))))
 
         (+inline-css+ slot)
         (throw (js/Error. (str "tiltontec.mxweb obs sees oldskool style: " slot)))))))
 
+#_ (defmethod observe-by-type [:mxweb.base/svg] [slot me newv oldv _]
+     (when (not= oldv unbound)
+       (when-let [dom (tag-dom me)]
+         #_(when *mxweb-trace*
+             (when-not (some #{slot} [:tick])
+               (pln :observing-tagtype (tagfo me) slot newv oldv)))
+
+         (cond
+           (= slot :content)
+           (do                                                 ;;(pln :setting-html-content newv dom)
+             (.requestAnimationFrame js/window
+               #(do                                            ;;(prn :ani-frame! newv)
+                  (set! (.-innerHTML dom) newv))))
+
+           (some #{slot} (:attr-keys @me))
+           (do
+             ;;(pln :dom-hit-attr!!!! (tagfo me) slot newv oldv)
+             (case slot
+               :style (do
+                        ;;(prn :obs-style (style-string newv))
+                        (set! (.-style dom) (style-string newv)))
+
+               :hidden (set! (.-hidden dom) newv)
+               :disabled (if newv
+                           (.setAttribute dom "disabled" true)
+                           (.removeAttribute dom "disabled"))
+               :class (classlist/set dom (class-to-class-string newv))
+               :checked (set! (.-checked dom) newv)
+               :value (.setAttribute dom "value" (str newv)) ;; eg, progress indicator
+               ;; todo cleanup
+               :stroke (do #_ (prn :ignore-stroke newv))
+               (do
+                 (pln :obs-by-type-setAttr-onknown (name slot) me newv)
+                 (.setAttribute dom (name slot) newv))))
+
+           (+inline-css+ slot)
+           (throw (js/Error. (str "tiltontec.mxweb obs sees oldskool style: " slot)))))))
 ;;; --- local storage ------------------------
 
 (defn mxu-find-class

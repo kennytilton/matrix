@@ -9,10 +9,10 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [fmo matrix mset! mget mswap!] :as md]
+            [tiltontec.mxweb.base :refer [tag? kw$ tag-dom]]
             [tiltontec.mxweb.html
              :refer [io-read io-upsert io-clear-storage
-                     tag-dom-create
-                     tagfo tag-dom
+                     tag-dom-create tagfo
                      dom-has-class dom-ancestor-by-tag]
              :as mxweb]
             [tiltontec.mxweb.gen :refer [evt-mx]]
@@ -48,7 +48,7 @@
                           (mset! me :value (utl/target-val %)))}
     {:value (cI (:hnId (nth (gMonthlies-cljs) 0)))}
     (map #(let [{:keys [hnId desc]} %]
-            (g/option {:value hnId} desc))
+            (g/option {}{:value hnId} desc))
       (gMonthlies-cljs))))
 
 (defn hn-month-link []

@@ -25,6 +25,9 @@
     (string? val) val
     (keyword? val) (name val)
     (coll? val) (str/join " " (map attr-val$ val))
+    (fn? val) (do
+                (prn "attr-val$ raw!!!!")
+                val)
     :else (str val)))
 
 (defn mxwprn [& bits]

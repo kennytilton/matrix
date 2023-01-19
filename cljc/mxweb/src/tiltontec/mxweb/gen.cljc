@@ -45,7 +45,12 @@
     (string? val) val
     (keyword? val) (name val)
     (coll? val) (str/join " " (mapv attr-val$ val))
+    (fn? val) (do
+                (prn "gen/attr-val$ raw!!!!")
+                val)
     :else (str val)))
+
+;;; --- TAG --------------------------------------------------
 
 (defn make-tag [tag attrs aux cFkids]
   ;; (prn :make-tag tag :attrs (keys attrs) :aux (keys aux))
@@ -79,7 +84,38 @@
   (swap! tag-by-id dissoc (mget me :id))
   (not-to-be-self me))
 
-;;; n.b. Above list of tags needs to be extended, or just use make-tiltontec.mxweb
+;;; --- SVG --------------------------------------------------
+
+(defn make-svg [svg attrs aux cFkids]
+  ;; (prn :make-svg svg :attrs (keys attrs) :aux (keys aux))
+  (let [svg-id (if-let [id (:id attrs)]
+                 (attr-val$ id)
+                 ;; we'll piggyback some of the tag infrastructure
+                 (str svg "-" (swap! +tag-sid+ inc)))
+        mx-svg (apply make
+                 :type :mxweb.base/svg
+                 :tag svg
+                 :id svg-id
+                 :attr-keys (distinct (conj (keys attrs) :id))
+                 :kids cFkids
+                 (concat (vec (apply concat (seq (dissoc attrs :id))))
+                   (vec (apply concat (seq aux)))))]
+    ;;(println :made-tiltontec.mxweb!! tiltontec.mxweb-id (keys @mx-tiltontec.mxweb))
+    (swap! tag-by-id assoc svg-id mx-svg)
+    mx-svg))
+
+(defmethod not-to-be [:mxweb.base/svg] [me]
+  ;; todo: worry about leaks
+  (when-let [style (:style @me)]
+    (when (md-ref? style)
+      (not-to-be style)))
+
+  (doseq [k (:kids @me)]
+    (when (md-ref? k)
+      (not-to-be k)))
+
+  (swap! tag-by-id dissoc (mget me :id))
+  (not-to-be-self me))
 
 ;;; --- event conveniences -------------------
 

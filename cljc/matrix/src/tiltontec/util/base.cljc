@@ -83,33 +83,3 @@
     (:type m :no-mx-type-in-meta)
     (type x)))
 
-(comment
-  (def tags '( animate animateColor animateMotionexample animateTransformexample discardexample mpathexample set
-               circleexample ellipseexample line polygon polyline rect
-               defs g marker mask missing-glyph pattern svg switch symbol
-               desc metadata title
-               feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix feDiffuseLighting
-               feDisplacementMap feDropShadow feFlood feFuncA feFuncB feFuncG feFuncR feGaussianBlur
-               feImage feMerge feMergeNode feMorphology feOffset feSpecularLighting feTile feTurbulence
-               font font-face font-face-format font-face-name font-face-src font-face-uri hkern vkern
-               linearGradient radialGradient stop
-               circle ellipse image line path polygon polyline rect text use
-               feDistantLight fePointLight feSpotLight
-               clipPath defs hatch linearGradient marker mask metadata pattern radialGradient script
-               style symbol title
-               hatch linearGradient pattern radialGradient solidcolor
-               circle ellipse foreignObject g image line path polygon polyline rect svg switch symbol text textPath tspan use
-               line path polygon polyline rect
-               defs g svg symbol use
-               altGlyph altGlyphDef altGlyphItem glyph glyphRef textPath text tref tspan
-               altGlyph textPath tref tspan
-               clipPath cursor filter foreignObject hatchpath script style view
-               ;; --obsolete
-               animateColor cursor
-               font font-face font-face-format font-face-name font-face-src font-face-uri
-               glyph glyphRef
-               hkern
-               missing-glyph
-               tref
-               vkern))
-  (count (sort (distinct tags))))
