@@ -45,10 +45,8 @@
       (rect {:x      60 :y 10 :rx 10 :ry 10 :width 30 :height 30
              :stroke :black :stroke-width 5 :fill :transparent})
       (circle {:cx 25 :cy 75 :r 20 :stroke :red :stroke-width 5 :fill :transparent})
-      (ellipse {:cx (cF (let [clock (fmu :clock)
-                              tick (mget clock :tick)]
-                          ;(prn :tick tick (Math/floor (/ tick 10)) (- tick (* 10 (Math/floor (/ tick 10)))))
-                          (+ 75 (* 5 (- tick (* 10 (Math/floor (/ tick 10))))))))
+      (ellipse {:cx (cF (let [tick (mget (fmu :clock) :tick)]
+                          (+ 75 (* 10 (- tick (* 10 (Math/floor (/ tick 10))))))))
                 :cy 75 :rx 20 :ry 5 :stroke :red :stroke-width 5 :fill :transparent})
       (line {:x1 10 :x2 50 :y1 110 :y2 150 :stroke :orange :stroke-width 5})
       (polyline {:points [60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145]
