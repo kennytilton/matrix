@@ -37,20 +37,19 @@
   (div
     (svg {:width 200 :height 250}
       (rect {:x            10 :y 10 :width 30 :height 30
-             :stroke       (cF+ [:obs (fn [_ me new-c _ _]
-                                        (if-let [svg (:dom-x (meta me))]
-                                          (.setAttributeNS svg nil "stroke"
-                                            (name new-c))
-                                          (do
-                                            (prn :no-svg-but (keys (meta me)) me))))]
-                             (let [clock (fmu :clock)
-                                   tick (mget clock :tick)]
-                               (if (even? tick) :red :black)))
+             :stroke       (cF (let [clock (fmu :clock)
+                                     tick (mget clock :tick)]
+                                 (if (even? tick) :red :black)))
+             :onclick      (fn foo [e] (prn :hi-mom))       ;;"alert('hi mom')"
              :stroke-width 5 :fill :transparent})
       (rect {:x      60 :y 10 :rx 10 :ry 10 :width 30 :height 30
              :stroke :black :stroke-width 5 :fill :transparent})
       (circle {:cx 25 :cy 75 :r 20 :stroke :red :stroke-width 5 :fill :transparent})
-      (ellipse {:cx 75 :cy 75 :rx 20 :ry 5 :stroke :red :stroke-width 5 :fill :transparent})
+      (ellipse {:cx (cF (let [clock (fmu :clock)
+                              tick (mget clock :tick)]
+                          ;(prn :tick tick (Math/floor (/ tick 10)) (- tick (* 10 (Math/floor (/ tick 10)))))
+                          (+ 75 (* 5 (- tick (* 10 (Math/floor (/ tick 10))))))))
+                :cy 75 :rx 20 :ry 5 :stroke :red :stroke-width 5 :fill :transparent})
       (line {:x1 10 :x2 50 :y1 110 :y2 150 :stroke :orange :stroke-width 5})
       (polyline {:points [60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145]
                  :stroke :orange :stroke-width 5 :fill :transparent})
@@ -65,29 +64,31 @@
 (defn main []
   (println "[main]: loading")
   (let [root (gdom/getElement "app")                        ;; must be defined in index.html
-        app-matrix (md/make :mx-dom (cFonce (md/with-par me
-                                              (div
-                                                (div {:class   "example-clock"
-                                                      :style   "color:red"
-                                                      :content (cF (if (mget me :tick)
-                                                                     (-> (js/Date.)
-                                                                       .toTimeString
-                                                                       (str/split " ")
-                                                                       first)
-                                                                     "*checks watch*"))}
-                                                  {:name   :clock
-                                                   :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
-                                                   :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))
-                                                   })
-                                                (div {:style   {:background-color "cyan"}
-                                                      :onclick (fn [e]
-                                                                 (prn :curr-target (.-currentTarget e))
-                                                                 (prn :top-click-keys (.getKeys goog/object e)))}
-                                                  (span "hi mom xyx")
-                                                  #_(three-circles)
-                                                  #_(radial-gradient)
-                                                  (basic-shapes)
-                                                  )))))
+        app-matrix
+        (md/make :mx-dom
+          (cFonce (md/with-par me
+                    (div
+                      (div {:class   "example-clock"
+                            :style   "color:red"
+                            :content (cF (if (mget me :tick)
+                                           (-> (js/Date.)
+                                             .toTimeString
+                                             (str/split " ")
+                                             first)
+                                           "*checks watch*"))}
+                        {:name   :clock
+                         :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
+                         :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))
+                         })
+                      (div {:style   {:background-color "cyan"}
+                            :onclick (fn [e]
+                                       (prn :curr-target (.-currentTarget e))
+                                       #_(prn :top-click-keys (.getKeys goog/object e)))}
+                        (span "hi mom xyx")
+                        #_(three-circles)
+                        #_(radial-gradient)
+                        (basic-shapes)
+                        )))))
         app-dom (tag-dom-create
                   (mget app-matrix :mx-dom))]
     (set! (.-innerHTML root) nil)
