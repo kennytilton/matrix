@@ -7,8 +7,18 @@
             [tiltontec.mxweb.gen :refer [evt-mx target-value]]
             [tiltontec.mxweb.gen-macro
              :refer-macros [svg circle p span div text radialGradient defs stop
-                            rect ellipse line polyline path polygon script]]
+                            rect ellipse line polyline path polygon script use]]
             [tiltontec.mxweb.html :refer [tag-dom-create]]))
+
+(defn wall-clock []
+  (div {:class   "example-clock"
+        :style   "color:red"
+        :content (cF (if (mget me :tick)
+                       (-> (js/Date.) .toTimeString (str/split " ") first)
+                       "*checks watch*"))}
+    {:name   :clock
+     :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
+     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))}))
 
 (defn three-circles []
   (svg {:viewBox "0 0 300 100"
@@ -38,14 +48,12 @@
   (div
     (svg {:width 200 :height 250}
       (rect {:x            10 :y 10 :width 30 :height 30
-             :stroke       (cF (if (even? (mget (fmu :clock) :tick))
-                                 :red :black))
+             :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :red :black))
              :onclick      (cF (fn foo [e]
                                  (prn :on-click-hi-mom e me)))
              :stroke-width 5 :fill :transparent})
       (rect {:x       60 :y 10 :rx 10 :ry 10 :width 30 :height 30
-             :stroke  :black :stroke-width 5
-             :fill (cI :transparent)
+             :stroke  :black :stroke-width 5 :fill (cI :transparent)
              :onclick (cF (fn foo [e]
                             (mset! me :fill :red)))})
       (circle {:cx 25 :cy 75 :r 20 :stroke :red :stroke-width 5 :fill :transparent})
@@ -58,15 +66,16 @@
       (polygon {:points [50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180]
                 :stroke :green :stroke-width 5 :fill :transparent})
       (path {:d    ["M20,230" "Q40,205" "50,230" "T90,230"]
-             :fill :none :stroke :blue :stroke-width 5})
-      )))
+             :fill :none :stroke :blue :stroke-width 5}))))
 
+;;; --- event handler  -----------------------------------
 (defn cljfn->js
   [^js/Object resolved]
   (let [_n (.-name (.-sym resolved))
         _ns (.-ns (.-sym resolved))]
-    (prn :cljfnjs-gens (str _ns "." _n "()"))
-    (str _ns "." _n "()")))
+    (str/replace
+      (str _ns "." _n "()")
+      #"-" "_")))
 
 (defn ^:export svgClick [e]
   (js/console.log "SA")
@@ -80,34 +89,38 @@
         }
     (circle {:cx 5 :cy 5 :r 4})))
 
+(defn use-blue []
+  ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
+  (div
+    (p "try clicking each circle")
+    (svg {:viewBox "0 0 30 10"}
+      (circle {:id           "myCircle" :cx 5 :cy 5 :r 4
+               :stroke-width (cI 1)
+               :fill         (cI :black)
+               :onclick      (cF #(mset! me :fill :orange))
+               :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :red :blue))}
+        {:name :used-circle})
+      (use {:href    "#myCircle" :x 10 :fill :blue
+            :onclick (cF #(mset! (fmu :used-circle) :stroke-width 2))})
+      (use {:href    "#myCircle" :x 20 :fill :white
+            :onclick (cF #(mset! (fmu :used-circle) :stroke-width 0.2))
+            ;; we demonstrate next that most attribute overrides are ignored by USE
+            :stroke  :red}))))
 
 (defn main []
   (println "[main]: loading")
-  (let [root (gdom/getElement "app")                        ;; must be defined in index.html
+  (let [root (gdom/getElement "app")                        ;; "app" must be ID of DIV defined in index.html
         app-matrix
         (md/make :mx-dom
           (cFonce (md/with-par me
                     (div
-                      (div {:class   "example-clock"
-                            :style   "color:red"
-                            :content (cF (if (mget me :tick)
-                                           (-> (js/Date.)
-                                             .toTimeString
-                                             (str/split " ")
-                                             first)
-                                           "*checks watch*"))}
-                        {:name   :clock
-                         :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
-                         :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))
-                         })
-                      (div {:style {:background-color "cyan"}
-                            #_#_:onclick (fn [e]
-                                           (prn :curr-target (.-currentTarget e))
-                                           #_(prn :top-click-keys (.getKeys goog/object e)))}
-                        (span "hi mom xyx")
+                      (wall-clock)
+                      (div {:style {:background-color "cyan"}}
+                        (span "Hi, Mom!")
                         #_(three-circles)
                         #_(radial-gradient)
-                        (basic-shapes)
+                        ;(basic-shapes)
+                        (use-blue)
                         )))))
         app-dom (tag-dom-create
                   (mget app-matrix :mx-dom))]
