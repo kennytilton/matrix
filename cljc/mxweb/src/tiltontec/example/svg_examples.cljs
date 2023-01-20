@@ -32,18 +32,22 @@
     (rect {:x    10 :y 10 :rx 15 :ry 15 :width 100 :height 100
            :fill "url(#RG1"})))
 
+
 (defn basic-shapes []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes
   (div
     (svg {:width 200 :height 250}
       (rect {:x            10 :y 10 :width 30 :height 30
-             :stroke       (cF (let [clock (fmu :clock)
-                                     tick (mget clock :tick)]
-                                 (if (even? tick) :red :black)))
-             :onclick      (fn foo [e] (prn :hi-mom))       ;;"alert('hi mom')"
+             :stroke       (cF (if (even? (mget (fmu :clock) :tick))
+                                 :red :black))
+             :onclick      (cF (fn foo [e]
+                                 (prn :on-click-hi-mom e me)))
              :stroke-width 5 :fill :transparent})
-      (rect {:x      60 :y 10 :rx 10 :ry 10 :width 30 :height 30
-             :stroke :black :stroke-width 5 :fill :transparent})
+      (rect {:x       60 :y 10 :rx 10 :ry 10 :width 30 :height 30
+             :stroke  :black :stroke-width 5
+             :fill (cI :transparent)
+             :onclick (cF (fn foo [e]
+                            (mset! me :fill :red)))})
       (circle {:cx 25 :cy 75 :r 20 :stroke :red :stroke-width 5 :fill :transparent})
       (ellipse {:cx (cF (let [tick (mget (fmu :clock) :tick)]
                           (+ 75 (* 10 (- tick (* 10 (Math/floor (/ tick 10))))))))
@@ -57,6 +61,24 @@
              :fill :none :stroke :blue :stroke-width 5})
       )))
 
+(defn cljfn->js
+  [^js/Object resolved]
+  (let [_n (.-name (.-sym resolved))
+        _ns (.-ns (.-sym resolved))]
+    (prn :cljfnjs-gens (str _ns "." _n "()"))
+    (str _ns "." _n "()")))
+
+(defn ^:export svgClick [e]
+  (js/console.log "SA")
+  (js/console.log e))
+
+(defn clickr []
+  (svg {:viewBox "0 0 10 10"
+        :x       200
+        :width   100
+        :onclick "tiltontec.example.svg_examples.svgClick();" ;;(cljfn->js (resolve 'svgClick))
+        }
+    (circle {:cx 5 :cy 5 :r 4})))
 
 
 (defn main []
@@ -78,10 +100,10 @@
                          :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
                          :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))
                          })
-                      (div {:style   {:background-color "cyan"}
-                            :onclick (fn [e]
-                                       (prn :curr-target (.-currentTarget e))
-                                       #_(prn :top-click-keys (.getKeys goog/object e)))}
+                      (div {:style {:background-color "cyan"}
+                            #_#_:onclick (fn [e]
+                                           (prn :curr-target (.-currentTarget e))
+                                           #_(prn :top-click-keys (.getKeys goog/object e)))}
                         (span "hi mom xyx")
                         #_(three-circles)
                         #_(radial-gradient)

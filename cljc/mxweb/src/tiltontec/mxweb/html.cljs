@@ -96,9 +96,16 @@
       "http://www.w3.org/2000/xmlns/"
       "xmlns:xlink"
       "http://www.w3.org/1999/xlink")
-    (doseq [ak (:attr-keys @me)]
-      ;;(prn :svg-create-attr (kw$ ak)(attr-val$ (ak @me)))
-      (.setAttributeNS svg nil (kw$ ak) (attr-val$ (ak @me))))
+    (doseq [ak (:attr-keys @me)
+            :let [ak$ (name ak)
+                  av (ak @me)]]
+      (if (fn? av)
+          (.addEventListener svg
+            (if (= "on" (subs ak$ 0 2))
+              (subs ak$ 2) ak$)
+            ;; todo add warning
+            av)
+        (.setAttributeNS svg nil ak$ (attr-val$ av))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))
     svg))
