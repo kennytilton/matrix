@@ -17,8 +17,8 @@
                        (-> (js/Date.) .toTimeString (str/split " ") first)
                        "*checks watch*"))}
     {:name   :clock
-     :tick   (cI (.getSeconds (js/Date.)) :ephemeral? true)
-     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000))}))
+     :tick   (cI (.getSeconds (js/Date.)))
+     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 5000))}))
 
 (defn three-circles []
   (svg {:viewBox "0 0 300 100"
@@ -91,21 +91,53 @@
 
 (defn use-blue []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
+  ;;
+  ;; Interesting if we watch the console: click either clone and the listeners for
+  ;; both the original and clone fire.
+  ;;
   (div
-    (p "try clicking each circle")
-    (svg {:viewBox "0 0 30 10"}
+    (p "Try clicking and shift-clicking each circle. Re-load page to reset; undo is undone.")
+    (svg {:viewBox "0 0 40 10"}
+      {:include-other? (cI true)}
       (circle {:id           "myCircle" :cx 5 :cy 5 :r 4
                :stroke-width (cI 1)
                :fill         (cI :black)
-               :onclick      (cF #(mset! me :fill :orange))
-               :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :red :blue))}
+               :onclick      (cF (fn [evt]
+                                   (prn :onclick-circle-original)
+                                   (if (.-shiftKey evt)
+                                     (let [my-svg (:dom-x (meta me))
+                                           parent (.-parentNode my-svg)]
+                                       (.removeChild parent my-svg))
+                                     (mset! me :fill :orange))))
+               :stroke       (cF (let [tick (mget (fmu :clock) :tick)]
+                                   (if (even? tick) :red :blue)))}
         {:name :used-circle})
       (use {:href    "#myCircle" :x 10 :fill :blue
-            :onclick (cF #(mset! (fmu :used-circle) :stroke-width 2))})
+            :onclick (cF (fn [evt]
+                           (prn :onclick-circle-2)
+                           (if (.-shiftKey evt)
+                             (let [my-svg (:dom-x (meta me))
+                                   parent (.-parentNode my-svg)]
+                               (.removeChild parent my-svg))
+                             (mset! (fmu :used-circle) :stroke-width 2))))}
+        {:name :user-2})
       (use {:href    "#myCircle" :x 20 :fill :white
-            :onclick (cF #(mset! (fmu :used-circle) :stroke-width 0.2))
+            :onclick (cF (fn [evt]
+                           (prn :onclick-circle-3)
+                           (mset! (fmu :used-circle) :stroke-width 0.2)))
             ;; we demonstrate next that most attribute overrides are ignored by USE
-            :stroke  :red}))))
+            :stroke  :red})
+      (when (mget me :include-other?)
+        (circle {:id           "myOtherCircle" :cx 35 :cy 5 :r 2
+                 :stroke-width (cI 1)
+                 :fill         (cI :cyan)
+                 :onclick      (cF (fn [evt]
+                                     (prn :onclick-other-circle)
+                                     (if (.-shiftKey evt)
+                                       (mset! (mx-par me) :include-other? false)
+                                       (mset! me :fill :yellow))))
+                 :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}
+          {:name :used-circle})))))
 
 (defn main []
   (println "[main]: loading")

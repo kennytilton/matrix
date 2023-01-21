@@ -211,6 +211,58 @@
                      (dom/removeChildren pdom)
                      (dom/appendChild pdom frag)))))))
 
+(defn svg-dom [me]
+  (:dom-x (meta me)))
+
+(defmethod observe [:kids :mxweb.base/svg] [_ me newv oldv _]
+  (when (not= oldv unbound)
+    (prn :svkids-change!!!!!! (count newv) (count oldv))
+    (let [pdom (svg-dom me)
+          lost (clojure.set/difference (set oldv) (set newv))
+          gained (clojure.set/difference (set newv) (set oldv))]
+      (assert pdom)
+      (cond
+        (and (= (set newv) (set oldv))
+          (not (= oldv newv)))
+        ;; simply reordered children
+        (let [frag (.createDocumentFragment js/document)]
+          (doseq [newk newv]
+            (dom/appendChild frag
+              (.removeChild pdom (svg-dom newk))))
+          ;; should not be necessary...
+          ;;(prn :reorder-rmechild pdom (dom/getFirstElementChild pdom))
+          (dom/removeChildren pdom)
+          (dom/appendChild pdom frag))
+
+        (empty? gained)
+        ;; just lose the lost
+        (doseq [oldk lost]
+          (.removeChild pdom (svg-dom oldk))
+          (when-not (string? oldk)
+            ; (println :obs-tag-kids-dropping (tagfo oldk))
+            (not-to-be oldk)))
+
+        :default (let [frag (.createDocumentFragment js/document)]
+                   ;; GC lost from matrix;
+                   ;; move retained kids from pdom into fragment,
+                   ;; add all new kids to fragment, and do so preserving
+                   ;; order dictated by newk:
+                   (doseq [oldk lost]
+                     (when-not (string? oldk)
+                       ;; no need to remove dom, all children replaced below.
+                       (not-to-be oldk)))
+
+                   (doseq [newk newv]
+                     (dom/appendChild frag
+                       (if (some #{newk} oldv)
+                         (.removeChild pdom (svg-dom newk))
+                         (do                              ; (println :obs-tag-kids-building-new-dom (tagfo newk))
+                           (svg-dom-create newk false)))))
+
+                   ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
+                   (dom/removeChildren pdom)
+                   (dom/appendChild pdom frag))))))
+
 (def +inline-css+ (set [:display]))
 
 (defmethod observe-by-type [:mxweb.base/tag] [slot me newv oldv _]
@@ -253,11 +305,14 @@
 
 (defmethod observe-by-type [:mxweb.base/svg] [slot me newv oldv _]
   (when (not= oldv unbound)
-    (if-let [svg (:dom-x (meta me))]
-      (.setAttributeNS svg nil (name slot)
-        (attr-val$ newv))
-      (do
-        (prn :no-svg-but (keys (meta me)) me)))))
+    (cond
+      (some #{slot} (:attr-keys @me))
+      (if-let [svg (:dom-x (meta me))]
+        (.setAttributeNS svg nil (name slot)
+          (attr-val$ newv))
+        (do
+          (prn :no-svg-but (keys (meta me)) me)))
+      :else (prn :ignoring-svg-prop-change slot))))
 
 ;;; --- local storage ------------------------
 
