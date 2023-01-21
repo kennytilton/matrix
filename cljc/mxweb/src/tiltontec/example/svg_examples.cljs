@@ -1,11 +1,14 @@
 (ns tiltontec.example.svg-examples
   (:require [clojure.string :as str]
+            [clojure.walk :as walk]
             [goog.dom :as gdom]
+            [goog.object :as gobj]
             [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [fmu matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
             [tiltontec.mxweb.gen :refer [evt-mx target-value]]
             [tiltontec.mxweb.gen-macro
+             :refer [jso-map]
              :refer-macros [svg circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon script use]]
             [tiltontec.mxweb.html :refer [tag-dom-create]]))
@@ -89,6 +92,12 @@
         }
     (circle {:cx 5 :cy 5 :r 4})))
 
+(defn domx [me]
+  (:dom-x (meta me)))
+
+(defn svgx [me]
+  (:svg-x (meta me)))
+
 (defn use-blue []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
   ;;
@@ -99,40 +108,43 @@
     (p "Try clicking and shift-clicking each circle. Re-load page to reset; undo is undone.")
     (svg {:viewBox "0 0 40 10"}
       {:include-other? (cI true)}
-      (circle {:id           "myCircle" :cx 5 :cy 5 :r 4
+      (circle {:id           "myCircle" :cx 5 :cy 5
+               :r (cI 4)
                :stroke-width (cI 1)
                :fill         (cI :black)
                :onclick      (cF (fn [evt]
-                                   (prn :onclick-circle-original)
-                                   (if (.-shiftKey evt)
-                                     (let [my-svg (:dom-x (meta me))
-                                           parent (.-parentNode my-svg)]
-                                       (.removeChild parent my-svg))
-                                     (mset! me :fill :orange))))
+                                   (let [e (walk/keywordize-keys
+                                             (jso-map evt))]
+                                     ;; check that it was not a "use" clone that got clicked.
+                                     (when (= (domx me) (:target e))
+                                       (prn :onclick-circle-original)
+                                       (if (.-shiftKey evt)
+                                         (mset! me :stroke-width 1.5)
+                                         (mset! me :fill :orange))))))
                :stroke       (cF (let [tick (mget (fmu :clock) :tick)]
                                    (if (even? tick) :red :blue)))}
         {:name :used-circle})
-      (use {:href    "#myCircle" :x 10 :fill :blue
+      (use {:id      "use-2"
+            :href    "#myCircle" :x 10 :fill :blue
             :onclick (cF (fn [evt]
-                           (prn :onclick-circle-2)
                            (if (.-shiftKey evt)
-                             (let [my-svg (:dom-x (meta me))
-                                   parent (.-parentNode my-svg)]
-                               (.removeChild parent my-svg))
+                             (mset! (fmu :used-circle) :fill :transparent)
                              (mset! (fmu :used-circle) :stroke-width 2))))}
         {:name :user-2})
-      (use {:href    "#myCircle" :x 20 :fill :white
+      (use {:id      "use-3"
+            :href    "#myCircle" :x 20 :fill :white
             :onclick (cF (fn [evt]
-                           (prn :onclick-circle-3)
-                           (mset! (fmu :used-circle) :stroke-width 0.2)))
+                           (if (.-shiftKey evt)
+                             (mset! (fmu :used-circle) :r 2)
+                             (mset! (fmu :used-circle) :stroke-width 0.2))))
             ;; we demonstrate next that most attribute overrides are ignored by USE
-            :stroke  :red})
+            :stroke  :red}
+        {:name :user-3})
       (when (mget me :include-other?)
         (circle {:id           "myOtherCircle" :cx 35 :cy 5 :r 2
                  :stroke-width (cI 1)
                  :fill         (cI :cyan)
                  :onclick      (cF (fn [evt]
-                                     (prn :onclick-other-circle)
                                      (if (.-shiftKey evt)
                                        (mset! (mx-par me) :include-other? false)
                                        (mset! me :fill :yellow))))
@@ -160,17 +172,3 @@
     (gdom/appendChild root app-dom)))
 
 (main)
-
-(defn obj->clj
-  [obj]
-  (if (goog.isObject obj)
-    (-> (fn [result key]
-          (let [v (goog.object/get obj key)]
-            (if (= "function" (goog/typeOf v))
-              (do (prn :ignoing-fn)
-                  result)
-              (do
-                (prn :keeping key v)
-                (assoc result key (obj->clj v))))))
-      (reduce {} (.getKeys goog/object obj)))
-    obj))

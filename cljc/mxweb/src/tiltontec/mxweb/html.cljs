@@ -92,6 +92,7 @@
   (let [svg (.createElementNS js/document "http://www.w3.org/2000/svg"
               (mget me :tag))]
     (rmap-meta-setf [:dom-x me] svg)
+    (rmap-meta-setf [:svg-x me] svg)
     (.setAttributeNS svg
       "http://www.w3.org/2000/xmlns/"
       "xmlns:xlink"
@@ -140,7 +141,7 @@
          (doseq [attr-key (:attr-keys @me)]
            (when (str/includes? (name attr-key) "-")
              (when-let [attr-val (mget me attr-key)]
-               (prn :setting-attr (name attr-key) (attr-val$ attr-val))
+               ;; (prn :setting-attr (name attr-key) (attr-val$ attr-val))
                (.setAttribute dom (name attr-key) (attr-val$ attr-val)))))
          dom)))))
 
@@ -216,7 +217,7 @@
 
 (defmethod observe [:kids :mxweb.base/svg] [_ me newv oldv _]
   (when (not= oldv unbound)
-    (prn :svkids-change!!!!!! (count newv) (count oldv))
+    ;; (prn :svkids-change!!!!!! (count newv) (count oldv))
     (let [pdom (svg-dom me)
           lost (clojure.set/difference (set oldv) (set newv))
           gained (clojure.set/difference (set newv) (set oldv))]
@@ -312,7 +313,7 @@
           (attr-val$ newv))
         (do
           (prn :no-svg-but (keys (meta me)) me)))
-      :else (prn :ignoring-svg-prop-change slot))))
+      :else (do #_ (prn :ignoring-svg-prop-change slot)))))
 
 ;;; --- local storage ------------------------
 
