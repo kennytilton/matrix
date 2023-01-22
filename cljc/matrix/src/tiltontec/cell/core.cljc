@@ -20,8 +20,7 @@
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* *custom-propagator*
                       c-rule c-me c-value-state c-callers caller-ensure
-                      c-synapses unfin-biz-build
-                      unlink-from-callers *causation*
+                      c-synapses unfin-biz-build *causation*
                       c-synaptic? caller-drop
                       c-pulse  c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be* *within-integrity*

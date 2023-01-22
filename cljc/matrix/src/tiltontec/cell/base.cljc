@@ -229,9 +229,11 @@ rule to get once behavior or just when fm-traversing to find someone"
     used assoc :callers (disj (c-callers used) caller)))
 
 (defn unlink-from-callers [c]
-  (for [caller (c-callers c)]
+  (assert (c-ref? c) (str :ulk-from-caller-entry c))
+  (doseq [caller (c-callers c)]
+    (assert (c-ref? caller) (str :ulk-from-caller-caller caller c))
     (caller-drop c caller))
-  (rmap-setf [:callers c] nil))
+  (rmap-setf [:callers c] nil :unlink-from-callers))
 
 ;; debug aids --------------
 
@@ -272,3 +274,29 @@ rule to get once behavior or just when fm-traversing to find someone"
     (or (true? dbg)
       (= dbg tag)
       (and (coll? dbg) (some #{tag} dbg)))))
+
+(defn minfo [me]
+  (cond
+    (nil? me) :NIL-MD
+    (not (any-ref? me)) :NOT-ANY-REF
+    (not (md-ref? me)) :NOT-MD
+    :else [(or (:name @me) :anon)
+              (meta me)]))
+
+(defn cinfo [c]
+  (cond
+    (nil? c) :NIL-C
+    (not (any-ref? c)) :NOT-ANY-REF-C
+    (not (c-ref? c)) :NOT-C-REF
+    :else [(ia-type c)
+           (c-slot-name c)
+           (c-md-name c)
+           (:pulse @c)
+           (c-value-state c)
+           [(count (:useds @c))
+            (count (:callers @c))]]))
+
+(defn dpc [cell & bits]
+  (when (c-debug? cell :dpc)
+    (apply prn bits)))
+

@@ -1,7 +1,7 @@
 (ns whoshiring.job-memo-ui
   (:require [whoshiring.ui-common :as utl]
             [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn-dbg]
              :refer [cI c-reset! make-cell]]
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
@@ -45,7 +45,7 @@
          :title   "Show/hide editor for your own notes"
          :onclick #(mswap! (evt-mx %) :editing not)}
     {:name    :note-toggle
-     :editing (cFn (pos? (count (job-memo job :notes))))}
+     :editing (cFn-dbg (pos? (count (job-memo job :notes))))}
     "Notes"))
 
 (defn exclude-job [job]

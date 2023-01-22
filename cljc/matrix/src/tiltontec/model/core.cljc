@@ -18,8 +18,7 @@
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers caller-ensure
-                      unlink-from-callers *causation*
+                      c-rule c-me c-value-state c-callers caller-ensure *causation*
                       c-synaptic? caller-drop
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
                       *depender* *not-to-be*

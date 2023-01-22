@@ -47,17 +47,21 @@
   (instance? #?(:cljs cljs.core.Atom
                 :clj  clojure.lang.Ref) x))
 
-(defn rmap-setf [[slot ref] new-value]
-  (assert (any-ref? ref)
-    (pln "model.util.core/rmap-setf> slot:" slot
-      "new-value:" new-value
-      "failed assertion any-ref? on ref:" ref))
-  (assert (map? @ref)
-    (pln "model.util.core/rmap-setf> slot:" slot
-      "new-value:" new-value
-      "failed assertion map? on ref:" @ref))
-  (#?(:clj alter :cljs swap!) ref assoc slot new-value)
-  new-value)
+(defn rmap-setf
+  ([[slot ref] new-value]
+   (rmap-setf [slot ref] new-value nil))
+  ([[slot ref] new-value tag]
+   (assert (any-ref? ref)
+     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+       "new-value:" new-value
+       "failed assertion any-ref? on ref:" ref))
+   (when-not (map? @ref)
+     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+       "new-value:" (or new-value :NIL)
+       "failed assertion map? on ref:" @ref)
+     (assert false))
+   (#?(:clj alter :cljs swap!) ref assoc slot new-value)
+   new-value))
 
 (defn rmap-meta-setf [[slot ref] new-value]
   (assert (meta ref))

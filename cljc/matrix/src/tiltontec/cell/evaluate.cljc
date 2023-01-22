@@ -20,7 +20,7 @@
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
-                      *call-stack* *defer-changes*
+                      *call-stack* *defer-changes* dpc
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
                       c-synaptic? caller-drop c-md-name
@@ -30,7 +30,7 @@
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
-              :refer [c-current? c-pulse-update ]]
+              :refer [c-current? c-pulse-update]]
        :clj  [tiltontec.cell.integrity :refer :all])))
 
 
@@ -238,10 +238,9 @@
                         :cljs (:type (meta c)))))
 
 (defmethod c-awaken :default [c]
-  (trx :awk-fallthru-entry (type c) (seq? c) (coll? c) (vector? c))
   (cond
-    (coll? c) (doall (for [ce c]
-                       (c-awaken ce)))
+    (coll? c) (doseq [ce c]
+                (c-awaken ce))
     :else
     (println :c-awaken-fall-thru (if (any-ref? c)
                                    [:ref-of (type c) @c]
@@ -255,7 +254,7 @@
 
   (#?(:clj dosync :cljs do)
     ;;(prn :awk-c c @*pulse* (c-pulse-observed c)(c-value-state c))
-    (when (c-pulse-unobserved? c)                 ;; safeguard against double-call
+    (when (c-pulse-unobserved? c)                           ;; safeguard against double-call
       (when-let [me (c-me c)]
         (rmap-setf [(c-slot c) me] (c-value c)))
       (c-observe c :cell-awaken)
@@ -342,10 +341,13 @@
 ;; --- unlinking ----------------------------------------------
 (defn unlink-from-used [c why]
   "Tell dependencies they need not notify us when they change, then clear our record of them."
-  (doseq [used (c-useds c)]
-    (do
-      (rmap-setf [:callers used] (disj (c-callers used) c))))
-  (rmap-setf [:useds c] #{}))
+  (do ;; wtrx [0 999 :unlink-from-used why :user c]
+
+    (doseq [used (c-useds c)]
+      (do
+        (assert (map? @used) (str "unlink-from-used-used-not-map" @used :user c))
+        (rmap-setf [:callers used] (disj (c-callers used) c) :unlink-from-used)))
+    (rmap-setf [:useds c] #{})))
 
 (defn md-cell-flush [c]
   (assert (c-ref? c))
@@ -410,26 +412,25 @@
 ;; --- c-quiesce -----------
 
 (defn c-quiesce [c]
-  (assert c)
   (unlink-from-callers c)
   (unlink-from-used c :quiesce)
-  (#?(:clj ref-set :cljs reset!) c :dead-c))
+  (#?(:clj ref-set :cljs reset!) c [:dead-c @c]))
 
 ;; --- not-to-be --
 
 (defn not-to-be-self [me]
-  (doseq [c (vals (:cz (meta me)))]
-    (when c                                                 ;; not if optimized away
-      (c-quiesce c)))
-  (#?(:clj ref-set :cljs reset!) me nil)
-  (rmap-meta-setf [::cty/state me] :dead))
+  (do ;; wtrx [0 1000 :not2be-self (cty/minfo me)]
+    (doseq [c (vals (:cz (meta me)))]
+      (when c                                               ;; not if optimized away
+        (c-quiesce c)))
+    (#?(:clj ref-set :cljs reset!) me nil)
+    (rmap-meta-setf [::cty/state me] :dead)))
 
 (defmulti not-to-be (fn [me]
                       (assert (md-ref? me))
                       [(ia-type me)]))
 
 (defmethod not-to-be :default [me]
-  (println :not2be-default (type (when me @me)) (:id @me) me)
   (not-to-be-self me))
 
 ;----------------- change detection ---------------------------------

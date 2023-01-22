@@ -158,6 +158,15 @@
                           (when-not (js/Number.isNaN lim)
                             (pref! :max-jobs-to-show lim))))})))
 
+(defn debug-tool []
+  (button {:style   {:font-size "1em"
+                     :min-width "96px"}
+           :onclick (fn [e]
+                      (pref! :max-jobs-to-show
+                        (if (= 2 (pref :max-jobs-to-show))
+                          3 2)))
+           :content "Debug"}))
+
 (defn job-expansion-control []
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
@@ -190,6 +199,7 @@
       (job-count)
       (excluded-toggle)
       (result-limit)
+      (debug-tool)
       (job-expansion-control))))
 
 ;;; --- the control panel -------------------------------------
