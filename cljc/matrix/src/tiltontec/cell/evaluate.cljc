@@ -21,9 +21,9 @@
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
                       *call-stack* *defer-changes* dpc minfo cinfo
-                      c-rule c-me c-value-state c-callers caller-ensure
+                      c-rule c-me c-value-state c-callers dependency-record
                       unlink-from-callers *causation*
-                      c-synaptic? unlink-dependency c-md-name
+                      c-synaptic? dependency-drop c-md-name
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
@@ -53,14 +53,6 @@
         ;; their own internal slot of model FNYI
         (#?(:clj alter :cljs swap!) me assoc (:slot @rc) nil))
       (#?(:clj alter :cljs swap!) rc assoc :value nil))))
-
-(defn record-dependency [used]
-  (when-not (c-optimized-away? used)
-    (assert *depender*)
-    (trx nil :reco-dep!!! :used (c-slot used) :caller (c-slot *depender*))
-    (rmap-setf [:useds *depender*]
-      (conj (c-useds *depender*) used))
-    (caller-ensure used *depender*)))
 
 (declare calculate-and-set)
 
@@ -161,7 +153,7 @@
                          (c-observe c prior-value :cget)
                          (ephemeral-reset c)))))
                  (when *depender*
-                   (record-dependency c)))
+                   (dependency-record c)))
     (any-ref? c) @c
     :else c))
 
@@ -386,7 +378,7 @@
 
     ;; let callers know they need not check us for currency again
     (doseq [caller (seq (c-callers c))]
-      (unlink-dependency c caller)
+      (dependency-drop c caller)
       (ensure-value-is-current caller :opti-used c))        ;; this will get round to optimizing
     ; them if necessary, and if not they still need to have one last notification if this was
     ; a rare mid-life optimization

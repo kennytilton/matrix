@@ -224,10 +224,14 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;; --- dependency maintenance --------------------------------
 
-(defn caller-ensure [used new-caller]
-  (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller)))
+(defn dependency-record [used]
+  (when-not (c-optimized-away? used)
+    (assert *depender*)
+    (rmap-setf [:useds *depender*]
+      (conj (c-useds *depender*) used))
+    (rmap-setf [:callers used] (conj (c-callers used) *depender*))))
 
-(defn unlink-dependency [used caller]
+(defn dependency-drop [used caller]
   (rmap-setf [:useds caller] (disj (c-useds caller) used))
   (rmap-setf [:callers used] (disj (c-callers used) caller)))
 
@@ -236,12 +240,8 @@ rule to get once behavior or just when fm-traversing to find someone"
     (apply prn bits)))
 
 (defn unlink-from-callers [c]
-  (assert (c-ref? c) (str :ulk-from-caller-entry c))
   (doseq [caller (c-callers c)]
-    (assert (c-ref? caller) (str :ulk-from-caller-caller caller c))
-    (dpc c :dropping-caller caller)
-    (unlink-dependency c caller))
-  (rmap-setf [:callers c] nil :unlink-from-callers))
+    (dependency-drop c caller)))
 
 ;; debug aids --------------
 
@@ -289,7 +289,7 @@ rule to get once behavior or just when fm-traversing to find someone"
     (not (any-ref? me)) :NOT-ANY-REF
     (not (md-ref? me)) :NOT-MD
     :else [(or (:name @me) :anon)
-              (meta me)]))
+           (meta me)]))
 
 (defn cinfo [c]
   (cond
