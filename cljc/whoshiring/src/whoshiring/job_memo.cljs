@@ -20,6 +20,7 @@
 ;;; --- job memo: user annotations ----------------------------
 
 (defn make-job-memo [month-hn-id job-hn-id]
+  (prn :creating-job-memo month-hn-id job-hn-id )
   (md/make ::job-memo
     :month-hn-id month-hn-id
     :job-hn-id job-hn-id
@@ -29,6 +30,7 @@
     :notes (cI nil)))
 
 (defn load-job-memo [{:keys [month-hn-id job-hn-id stars excluded applied notes]}]
+  (prn :loading-job-memo month-hn-id job-hn-id )
   (md/make ::job-memo
     :month-hn-id month-hn-id
     :job-hn-id job-hn-id

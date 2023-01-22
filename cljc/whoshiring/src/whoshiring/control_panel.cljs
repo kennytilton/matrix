@@ -164,7 +164,7 @@
            :onclick (fn [e]
                       (pref! :max-jobs-to-show
                         (if (= 2 (pref :max-jobs-to-show))
-                          3 2)))
+                          5 2)))
            :content "Debug"}))
 
 (defn job-expansion-control []
@@ -174,7 +174,7 @@
                       (mswap! (evt-mx e) :expanded not))
            :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
-    {:expanded (cI true
+    {:expanded (cI false  ;; todo should this be driven by the job?
                  :obs (fn [_ me newv oldv]
                         (when-not (= oldv unbound)
                           (let [jl (fmu :job-list)]

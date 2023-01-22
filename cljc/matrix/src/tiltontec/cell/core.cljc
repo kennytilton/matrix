@@ -21,8 +21,7 @@
                       *call-stack* *defer-changes* *custom-propagator*
                       c-rule c-me c-value-state c-callers caller-ensure
                       c-synapses unfin-biz-build *causation*
-                      c-synaptic? caller-drop
-                      c-pulse  c-ephemeral? c-slot c-slot-name
+                      c-synaptic? c-pulse  c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be* *within-integrity*
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])

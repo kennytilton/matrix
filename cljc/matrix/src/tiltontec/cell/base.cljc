@@ -164,7 +164,10 @@ rule to get once behavior or just when fm-traversing to find someone"
   (ia-type? c ::c-formula))
 
 (defn c-ref? [x]
-  (ia-type? x ::cell))
+  (and (any-ref? x)
+    (ia-type? x ::cell)
+    (map? @x)
+    x))
 
 (def-rmap-slots c-
   me slot state input? rule pulse pulse-last-changed pulse-observed
@@ -224,15 +227,20 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn caller-ensure [used new-caller]
   (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller)))
 
-(defn caller-drop [used caller]
-  (#?(:clj alter :cljs swap!)
-    used assoc :callers (disj (c-callers used) caller)))
+(defn unlink-dependency [used caller]
+  (rmap-setf [:useds caller] (disj (c-useds caller) used))
+  (rmap-setf [:callers used] (disj (c-callers used) caller)))
+
+(defn dpc [cell & bits]
+  (when (:debug? @cell)
+    (apply prn bits)))
 
 (defn unlink-from-callers [c]
   (assert (c-ref? c) (str :ulk-from-caller-entry c))
   (doseq [caller (c-callers c)]
     (assert (c-ref? caller) (str :ulk-from-caller-caller caller c))
-    (caller-drop c caller))
+    (dpc c :dropping-caller caller)
+    (unlink-dependency c caller))
   (rmap-setf [:callers c] nil :unlink-from-callers))
 
 ;; debug aids --------------
@@ -293,10 +301,8 @@ rule to get once behavior or just when fm-traversing to find someone"
            (c-md-name c)
            (:pulse @c)
            (c-value-state c)
-           [(count (:useds @c))
-            (count (:callers @c))]]))
+           [:useds (count (:useds @c))
+            :callers (count (:callers @c))]]))
 
-(defn dpc [cell & bits]
-  (when (c-debug? cell :dpc)
-    (apply prn bits)))
+
 

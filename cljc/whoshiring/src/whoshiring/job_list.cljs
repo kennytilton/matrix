@@ -81,7 +81,7 @@
                                      (not (pref :excluded)))
                               "none" "block")})}
     {:name     :job-listing
-     :expanded (cI true)
+     :expanded (cI false) ;; HHACK
      :job      job}
     (job-header job)
     (job-details job)))
@@ -160,8 +160,11 @@
                           (mget me :selected-jobs)))
      :kid-factory   job-list-item
      :kid-key       #(mget % :job)
-     :kid-values    (cF (take (or (pref :max-jobs-to-show) 999999)
-                          (mget me :sorted-jobs)))}
+     :kid-values    (cF (let [kvs (doall
+                                    (take (or (pref :max-jobs-to-show) 999999)
+                                      (mget me :sorted-jobs)))]
+                          (prn :joblist-showing (count kvs))
+                          kvs))}
     (md/kid-values-kids me _cache)))
 
 

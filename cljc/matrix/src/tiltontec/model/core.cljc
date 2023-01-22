@@ -19,8 +19,7 @@
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure *causation*
-                      c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
@@ -412,6 +411,9 @@
                             [(k-key k) k])))
         k-factory (md-get me :kid-factory)]
     (assert (and k-factory))
+
+    (prn :kvk-loading (count (md-get me :kid-values))
+      (map :hn-id (md-get me :kid-values)))
 
     (doall
       (map-indexed

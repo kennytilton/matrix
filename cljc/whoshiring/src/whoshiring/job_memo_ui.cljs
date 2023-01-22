@@ -48,6 +48,13 @@
      :editing (cFn-dbg (pos? (count (job-memo job :notes))))}
     "Notes"))
 
+
+;; some note-editor has two properties that are users of :editing, but it has been quiesced
+;; when  quiesced, it showed zero useds, tho it uses the job-memo info
+
+
+
+
 (defn exclude-job [job]
   (span {:content "&#x20E0;"
          :style   (cF (str "margin:4px 4px 8px 0;font-size:1em;"

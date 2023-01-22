@@ -20,10 +20,10 @@
                       c-unbound? c-input? ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
-                      *call-stack* *defer-changes* dpc
+                      *call-stack* *defer-changes* dpc minfo cinfo
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-synaptic? caller-drop c-md-name
+                      c-synaptic? unlink-dependency c-md-name
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
@@ -221,12 +221,10 @@
             *defer-changes* true]
     (unlink-from-used c :pre-rule-clear)
     (assert (c-rule c) (#?(:clj format :cljs str) "No rule in %s type %s" (:slot c) (type @c)))
-
     (let [raw-value ((c-rule c) c)
           prop-code? (and (c-synaptic? c)
                        (vector? raw-value)
                        (contains? (meta raw-value) :propagate))]
-
       (if prop-code?
         [(first raw-value) (:propagate (meta raw-value))]
         [raw-value nil]))))
@@ -341,11 +339,11 @@
 ;; --- unlinking ----------------------------------------------
 (defn unlink-from-used [c why]
   "Tell dependencies they need not notify us when they change, then clear our record of them."
-  (do ;; wtrx [0 999 :unlink-from-used why :user c]
+  (do ;; wtrx [0 999 :ulk-from-used why :user c]
 
     (doseq [used (c-useds c)]
       (do
-        (assert (map? @used) (str "unlink-from-used-used-not-map" @used :user c))
+        (assert (map? @used) (str "ulk-from-used-used-not-map" @used :user @c))
         (rmap-setf [:callers used] (disj (c-callers used) c) :unlink-from-used)))
     (rmap-setf [:useds c] #{})))
 
@@ -365,7 +363,6 @@
   saving a lot of work at runtime. A caller/user will not bother
   establishing a link, and when we get to models cget will 
   find a non-cell in a slot and Just Use It."
-
   [c prior-value]
   (when (and (c-formula? c)
           (or (empty? (c-useds c))
@@ -377,54 +374,41 @@
           (c-valid? c)                                      ;; /// when would this not be the case? and who cares?
           (not (c-synaptic? c))                             ;; no slot to cache invariant result, so they have to stay around)
           (not (c-input? c)))                               ;; yes, dependent cells can be inputp
-    ;; (println :optimizing-away!!!! (c-slot c))
     (when (= :freeze (c-optimize c))
-      ;; we could just blindly call unlink-from-unused since normally
-      ;; we are here because there are no useds, but the precision may pay off some day
-      (let [useds (c-useds c)]
-        (unlink-from-used c :freeze)
-        (doseq [ud useds]
-          (assert (not (some #{c} (c-callers ud)))))
-        (assert (zero? (count (c-useds c))))))
+      (unlink-from-used c :freeze))
 
-    (rmap-setf [::cty/state c] :optimized-away)             ;; leaving this for now, but we toss
-    ; the cell below. hhack
+    (rmap-setf [::cty/state c] :optimized-away)
     (c-observe c prior-value :opti-away)
 
     (when-let [me (c-model c)]
-      ;; (when (= :login (:name @me))   (println :opti-away-nails-cz!!!!!!!!!! (c-slot c)))
       (rmap-meta-setf [:cz me] (assoc (:cz (meta me)) (c-slot c) nil))
       (md-cell-flush c))
 
     ;; let callers know they need not check us for currency again
     (doseq [caller (seq (c-callers c))]
-      (rmap-setf [:useds caller] (disj (c-useds caller) c))
-
-      (caller-drop c caller)
-      ;;; (trc "nested opti" c caller)
-      ;;(optimize-away?! caller) ;; rare but it happens when rule says (or .cache ...)
+      (unlink-dependency c caller)
       (ensure-value-is-current caller :opti-used c))        ;; this will get round to optimizing
     ; them if necessary, and if not they still need to have one last notification if this was
     ; a rare mid-life optimization
-    (#?(:clj ref-set :cljs reset!) c (c-value c))
-    ))
+    (#?(:clj ref-set :cljs reset!) c (c-value c))))
 
 ;; --- c-quiesce -----------
 
 (defn c-quiesce [c]
+  (assert (c-ref? c))
   (unlink-from-callers c)
   (unlink-from-used c :quiesce)
-  (#?(:clj ref-set :cljs reset!) c [:dead-c @c]))
+  (#?(:clj ref-set :cljs reset!) c :dead-c #_ [:dead-c @c]))
 
 ;; --- not-to-be --
 
 (defn not-to-be-self [me]
-  (do ;; wtrx [0 1000 :not2be-self (cty/minfo me)]
-    (doseq [c (vals (:cz (meta me)))]
-      (when c                                               ;; not if optimized away
-        (c-quiesce c)))
-    (#?(:clj ref-set :cljs reset!) me nil)
-    (rmap-meta-setf [::cty/state me] :dead)))
+  (doseq [c (vals (:cz (meta me)))]
+    (when c
+      ;; not if optimized away
+      (c-quiesce c)))
+  (#?(:clj ref-set :cljs reset!) me nil)
+  (rmap-meta-setf [::cty/state me] :dead))
 
 (defmulti not-to-be (fn [me]
                       (assert (md-ref? me))
