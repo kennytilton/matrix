@@ -149,14 +149,15 @@
                  {:margin-left  "18px"
                   :margin-right "6px"})}
     (span "Show: ")
-    (input {:value    (cF (pref :max-jobs-to-show))
-            :style    "font-size:1em;max-width:48px;margin-left:6px;margin-right:6px"
-            :onchange (fn [e]
-                        (when-let [lim (try
-                                         (js/parseInt (utl/target-val e) 10)
-                                         (catch :default e nil))]
-                          (when-not (js/Number.isNaN lim)
-                            (pref! :max-jobs-to-show lim))))})))
+    (input {:value     (cF (pref :max-jobs-to-show))
+            :inputmode "numeric"
+            :style     "font-size:1em;max-width:48px;margin-left:6px;margin-right:6px"
+            :onchange  (fn [e]
+                         (when-let [lim (try
+                                          (js/parseInt (utl/target-val e) 10)
+                                          (catch :default e nil))]
+                           (when-not (js/Number.isNaN lim)
+                             (pref! :max-jobs-to-show lim))))})))
 
 (defn debug-tool []
   (button {:style   {:font-size "1em"
