@@ -21,7 +21,7 @@
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
                       *call-stack* *defer-changes* dpc minfo cinfo
-                      c-rule c-me c-value-state c-callers dependency-record
+                      c-rule c-me c-value-state c-callers dependency-record unlink-from-used
                       unlink-from-callers *causation*
                       c-synaptic? dependency-drop c-md-name
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
@@ -179,8 +179,6 @@
         ;;(trx :calc-n-set->assume raw-value)
         (c-value-assume c raw-value propagation-code)))))
 
-(declare unlink-from-used)
-
 (defn calculate-and-link
   "The name is accurate: we do no more than invoke the
   rule of a formula and return its value*, but along the
@@ -329,15 +327,7 @@
               (propagate c prior-value callers))))))))
 
 ;; --- unlinking ----------------------------------------------
-(defn unlink-from-used [c why]
-  "Tell dependencies they need not notify us when they change, then clear our record of them."
-  (do ;; wtrx [0 999 :ulk-from-used why :user c]
 
-    (doseq [used (c-useds c)]
-      (do
-        (assert (map? @used) (str "ulk-from-used-used-not-map" @used :user @c))
-        (rmap-setf [:callers used] (disj (c-callers used) c) :unlink-from-used)))
-    (rmap-setf [:useds c] #{})))
 
 (defn md-cell-flush [c]
   (assert (c-ref? c))

@@ -174,7 +174,7 @@
                       (mswap! (evt-mx e) :expanded not))
            :content (cF (if (mget me :expanded)
                           "Collapse all" "Expand all"))}
-    {:expanded (cI false  ;; todo should this be driven by the job?
+    {:expanded (cI true  ;; todo should this be driven by the job?
                  :obs (fn [_ me newv oldv]
                         (when-not (= oldv unbound)
                           (let [jl (fmu :job-list)]
@@ -199,7 +199,7 @@
       (job-count)
       (excluded-toggle)
       (result-limit)
-      (debug-tool)
+      ;;(debug-tool)
       (job-expansion-control))))
 
 ;;; --- the control panel -------------------------------------

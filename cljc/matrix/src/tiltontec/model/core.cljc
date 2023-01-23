@@ -412,7 +412,7 @@
         k-factory (md-get me :kid-factory)]
     (assert (and k-factory))
 
-    (prn :kvk-loading (count (md-get me :kid-values))
+    #_ (prn :kvk-loading (count (md-get me :kid-values))
       (map :hn-id (md-get me :kid-values)))
 
     (doall

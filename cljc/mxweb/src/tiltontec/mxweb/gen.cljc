@@ -24,23 +24,19 @@
 
 (defn dom-tag [dom]
   (cond
-    (nil? dom) (do (println :outthetop!!!)
+    (nil? dom) (do ;; (println :outthetop!!!)
                    nil)
-
     ;; where we specify string content to eg button we get an
     ;; automatic span for the string that has no ID. Hopefully where
     ;; dom-tiltontec.mxweb is requested they will be OK with us tracking the nearest ascendant.
     (= "" (.-id dom)) (do (println :no-id-try-pa (.-parentNode dom))
                           (dom-tag (.-parentNode dom)))
-    :default (do
-               (println :dom-tiltontec.mxweb-really-sees-id (.-id dom)(type (.-id dom)))
-               (let [tag (get @tag-by-id (.-id dom))]
-                 (assert tag (str "dom-tiltontec.mxweb did not find js for id " (.-id dom)
-                                  " of dom " dom))
-                 tag))))
+    :default (let [tag (get @tag-by-id (.-id dom))]
+               (assert tag (str "dom-tiltontec.mxweb did not find js for id " (.-id dom)
+                             " of dom " dom))
+               tag)))
 
 (defn attr-val$ [val]
-  ;(prn :attr-val$-sees val (keyword? val))
   (cond
     (string? val) val
     (keyword? val) (name val)

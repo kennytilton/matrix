@@ -75,8 +75,7 @@
 (defn pref [key] (mget prefs key))
 (defn pref! [key value] (mset! prefs key value))
 (defn pref-swap! [key & swap-args]
-  ;; hhack (apply md/mswap! prefs key swap-args)
-  )
+  (apply md/mswap! prefs key swap-args))
 (defn pref-toggle! [key]
   (pref-swap! key not))
 

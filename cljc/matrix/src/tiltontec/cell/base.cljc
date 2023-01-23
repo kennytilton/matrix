@@ -9,10 +9,9 @@
               :refer-macros [deftest is]])
 
     #?(:cljs [tiltontec.util.core
-              :refer [cl-find set-ify any-ref? err ia-ref
+              :refer [mut-set! cl-find set-ify any-ref? err ia-ref
                       make-fifo-queue fifo-empty? fifo-peek fifo-pop
-                      fifo-data fifo-add rmap-setf
-                      wtrx-test]
+                      fifo-data fifo-add rmap-setf wtrx-test]
               :as ut]
        :clj  [tiltontec.util.core :refer :all :as ut])))
 
@@ -174,6 +173,10 @@ rule to get once behavior or just when fm-traversing to find someone"
   useds users callers optimize ephemeral? code
   lazy synapses synaptic?)
 
+(defn dpc [cell & bits]
+  (when (:debug? @cell)
+    (apply prn bits)))
+
 (defn c-code$ [c]
   (with-out-str (binding [*print-level* false]
                   (pprint (:code @c)))))
@@ -226,22 +229,23 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn dependency-record [used]
   (when-not (c-optimized-away? used)
-    (assert *depender*)
-    (rmap-setf [:useds *depender*]
+    (mut-set! *depender* :useds
       (conj (c-useds *depender*) used))
-    (rmap-setf [:callers used] (conj (c-callers used) *depender*))))
+    (mut-set! used :callers
+      (conj (c-callers used) *depender*))))
 
 (defn dependency-drop [used caller]
-  (rmap-setf [:useds caller] (disj (c-useds caller) used))
-  (rmap-setf [:callers used] (disj (c-callers used) caller)))
+  (mut-set! caller :useds (disj (c-useds caller) used))
+  (mut-set! used :callers (disj (c-callers used) caller)))
 
-(defn dpc [cell & bits]
-  (when (:debug? @cell)
-    (apply prn bits)))
+(defn unlink-from-callers [used]
+  (doseq [caller (c-callers used)]
+    (dependency-drop used caller)))
 
-(defn unlink-from-callers [c]
-  (doseq [caller (c-callers c)]
-    (dependency-drop c caller)))
+(defn unlink-from-used [caller why]
+  "Tell dependencies they need not notify us when they change, then clear our record of them."
+  (doseq [used (c-useds caller)]
+    (dependency-drop used caller)))
 
 ;; debug aids --------------
 

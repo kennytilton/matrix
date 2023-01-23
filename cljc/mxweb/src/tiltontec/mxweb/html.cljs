@@ -162,7 +162,7 @@
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    (println :obstagkids!!!!! (tagfo me)
+    #_ (println :obstagkids!!!!! (tagfo me)
       :counts-new-old (count newv) (count oldv)
         :same-kids (= oldv newv)
         :same-kid-set (= (set newv) (set oldv)))
@@ -170,8 +170,8 @@
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
             gained (clojure.set/difference (set newv) (set oldv))]
-        (prn :kids-lost (count lost))
-        (prn :kids-gained (count gained))
+        ;(prn :kids-lost (count lost))
+        ;(prn :kids-gained (count gained))
         (cond
           (and (= (set newv) (set oldv))
             (not (= oldv newv)))
@@ -188,12 +188,10 @@
           (empty? gained)
           ;; just lose the lost
           (do
-            (prn :no-kids-gained-lost-count (count lost))
             (doseq [oldk lost]
-              ; (prn :rem-child (mget oldk :id) (tag-dom oldk) )
               (.removeChild pdom (tag-dom oldk))
               (when-not (string? oldk)
-                (println :obs-tag-kids-dropping (tagfo oldk))
+                ;; (println :obs-tag-kids-dropping (tagfo oldk))
                 (try
                   (not-to-be oldk)
                   (catch js/Error e
@@ -202,26 +200,15 @@
                 )))
 
           :default (let [frag (.createDocumentFragment js/document)]
-                     (prn :gained!!!!!!!! (count gained)(count lost))
-                     ;; GC lost from matrix;
-                     ;; move retained kids from pdom into fragment,
-                     ;; add all new kids to fragment, and do so preserving
-                     ;; order dictated by newk:
-
                      (doseq [oldk lost]
                        (when-not (string? oldk)
                          ;; no need to remove dom, all children replaced below.
-                         (prn :tossing-oldk)
                          (not-to-be oldk)))
-
                      (doseq [newk newv]
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
                            (.removeChild pdom (tag-dom newk))
-                           (do                              ; (println :obs-tag-kids-building-new-dom (tagfo newk))
-                             (tag-dom-create newk)))))
-
-                     ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
+                           (tag-dom-create newk))))
                      (dom/removeChildren pdom)
                      (dom/appendChild pdom frag)))))))
 
