@@ -298,7 +298,7 @@
             ;; todo cleanup
             :stroke (do (prn :ignore-stroke newv))
             (do
-              (pln :obs-by-type-setAttr-onknown (name slot) me newv)
+              ;; (pln :obs-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
 
         (+inline-css+ slot)
