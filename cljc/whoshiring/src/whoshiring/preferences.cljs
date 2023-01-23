@@ -29,6 +29,7 @@
                                 search-history
                                 job-sort
                                 max-jobs-to-show
+                                expand-all
                                 show-excluded-jobs] :as prefs}]
   (md/make ::preferences
     :app-help? (cI false)                                   ;; ignore last setting
@@ -46,6 +47,7 @@
     :job-sort (cI job-sort)
     :search-history (cI search-history)
     :max-jobs-to-show (cI max-jobs-to-show)
+    :expand-all (cI (if expand-all true false))
     :show-excluded-jobs (cI show-excluded-jobs)))
 
 (def prefs (do
@@ -69,6 +71,7 @@
                  :search-history (cI nil)
                  :max-jobs-to-show (cI 42)
                  :job-sort (cI nil)
+                 :expand-all (cI false)
                  :show-excluded-jobs (cI false)))))
 
 (defn pref [key] (mget prefs key))
