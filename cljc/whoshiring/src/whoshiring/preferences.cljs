@@ -52,8 +52,7 @@
              ;; (ls/io-delete (preferences-key))
              (if-let [prefs (ls/io-read-json
                               (ls/io-read (preferences-key)))]
-               (do (prn :existing-prefs-found!!!!!!!!!! prefs)
-                   (load-preferences prefs))
+               (load-preferences prefs)
                (md/make ::preferences
                  :app-help? (cI false)
                  :rgx-help? (cI false)

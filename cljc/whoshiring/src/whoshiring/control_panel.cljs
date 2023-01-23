@@ -197,10 +197,10 @@
     (div {:style (merge utl/hz-flex-wrap-centered
                    {:flex-wrap "wrap"})}
       (job-count)
-      (excluded-toggle)
-      (result-limit)
-      ;;(debug-tool)
-      (job-expansion-control))))
+      (excluded-toggle))
+    (result-limit)
+    ;;(debug-tool)
+    (job-expansion-control)))
 
 ;;; --- the control panel -------------------------------------
 
