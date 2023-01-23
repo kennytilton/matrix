@@ -31,9 +31,9 @@
         "PRE" (pre (map node-to-hiccup
                      (array-seq (.-childNodes n))))
         "CODE" (code (map node-to-hiccup
-                     (array-seq (.-childNodes n))))
+                       (array-seq (.-childNodes n))))
         "I" (i (map node-to-hiccup
-                     (array-seq (.-childNodes n))))
+                 (array-seq (.-childNodes n))))
         (p (str "Unexpected tag = " (.-tagName n) :n (.-textContent n))))
     3 (span (.-textContent n))
     (p (str "Unexpected n type = " (.-nodeType n)))))
@@ -63,8 +63,8 @@
                     :background "#fff"
                     :display    (if (deets? me) "block" "none")})}
     (ua/user-annotations job)
-    (div {:style         {:margin   "6px"
-                          :overflow "auto"}
+    (div {:style      {:margin   "6px"
+                       :overflow "auto"}
           :ondblclick #(jump-to-hn (:hn-id job))}
       (when (deets? me)
         (map node-to-hiccup
@@ -74,15 +74,16 @@
 (defn job-list-item [job-no job]
   (li {:class "jobli"
        :style (cF {:cursor  "pointer"
+                   :padding "12px"
                    :display (if (and (memo/job-memo job :excluded)
-                                     (not (pref :show-excluded-jobs))
-                                     ; if they have asked to see excluded items, show regardless
-                                  ;; todo how is :excluded diff from :show-excluded-jobs?
-                                     (not (pref :excluded)))
+                                  ;; :excluded is a filter, meaning "show only excluded jobs"
+                                  ;; :show-excluded-jobs means "show a job even if excluded"
+                                  (not (pref :show-excluded-jobs))
+                                  (not (pref :excluded)))
                               "none" "block")})}
-    {:name     :job-listing
+    {:name          :job-listing
      :expanded-job? (cFn (pref :expand-all))
-     :job      job}
+     :job           job}
     (job-header job)
     (job-details job)))
 
