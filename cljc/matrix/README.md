@@ -8,11 +8,11 @@ The killer app for Matrix (MX) is the front-end, but it has been applied success
 If your app is similar, you may just want standalone Matrix processing.
 
 ### Including Matrix
-In leiningen projects, add `[tiltontec/matrix "4.1.8-SNAPSHOT"]` to your dependencies.
+In leiningen projects, add `[com.tiltontec/matrix "4.2.0"]` to your dependencies.
 
-For deps.edn projects, tiltontec/matrix `{:mvn/version "4.1.8-SNAPSHOT"}`.
+For deps.edn projects, `com.tiltontec/matrix {:mvn/version "4.2.0"}`.
 
-For other options, see the [latest entry on Clojars](https://clojars.org/tiltontec/matrix/versions/4.1.8-SNAPSHOT).
+For other options, see the [latest entry on Clojars](https://clojars.org/com.tiltontec/matrix/versions/4.2.0).
 
 ### Testing
 For the CLJ version, regression tests can be run by `lein test` if you have cloned the repo.
