@@ -20,13 +20,9 @@ clojure -M -m figwheel.main --build example --repl
 
 Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_.
 
-### How it works
-
-Matrix-powered `models` (CLJS typed maps) are arranged in a tree isomorphic to a Web page DOM tree. Each Matrix node/model will transparently become a DOM node, long-lived across many renderings, coming and going only as the display responds to user interaction. Again, _not_ VDOM.
-
-DOM maintenance happens only when necessary; if an application state change requires only that some text turn red, the only DOM work will be to change the span's style `color` attribute. Internally, the "red" decision will be made by the formula (function) for the span object style property. mxWeb includes an observer for such properties that applies them to the DOM node corresponding to the Matrix span map.
-
 ### Working Examples
+
+The [AskHN Who's Hiring Browser](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) is the CLJS port of the JS version of mxWeb, which you can find [live here](https://kennytilton.github.io/whoishiring/)
 
 [rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "to-do", now rX prescription, on the [FDA Drug database](https://open.fda.gov/apis/) looking adverse events with that drug. 
 
