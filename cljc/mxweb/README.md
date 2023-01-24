@@ -20,9 +20,12 @@ clojure -M -m figwheel.main --build example --repl
 
 Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_.
 
-### Working Examples
+### Working Example
 
 The [AskHN Who's Hiring Browser](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) is the CLJS port of the JS version of mxWeb, which you can find [live here](https://kennytilton.github.io/whoishiring/)
+
+### Other Working Examples
+The classic, [TodoMVC](https://github.com/kennytilton/mxtodomvc) with some tutorial doc.
 
 [rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "to-do", now rX prescription, on the [FDA Drug database](https://open.fda.gov/apis/) looking adverse events with that drug. 
 
