@@ -13,7 +13,7 @@
     [tiltontec.cell.base :refer :all]
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
-              :refer [cells-init *dp-log* +pulse+ unbound cpr]])
+              :refer [cells-init *dp-log* unbound cpr]])
     [tiltontec.cell.core :refer :all]
 
     #?(:clj

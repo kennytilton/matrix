@@ -1,4 +1,4 @@
-(defproject com.tiltontec/mxweb "1.0.0"
+(defproject com.tiltontec/mxweb "1.0.1-SNAPSHOT"
   :description "A Web un-Framework for the Matrix (dataflow library)"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -13,7 +13,7 @@
                  [cheshire "5.10.0"]
                  [com.taoensso/tufte "2.4.5"]
                  [com.tiltontec/matrix "4.2.0"]
-                 [com.tiltontec/mxxhr "1.0.0"]]
+                 [com.tiltontec/mxxhr "1.0.1-SNAPSHOT"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-npm "0.6.2"]]
   :npm {:dependencies [[source-map-support "0.5.19"]]}
