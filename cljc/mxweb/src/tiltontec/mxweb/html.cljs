@@ -311,8 +311,7 @@
       (if-let [svg (:dom-x (meta me))]
         (.setAttributeNS svg nil (name slot)
           (attr-val$ newv))
-        (do
-          (prn :no-svg-but (keys (meta me)) me)))
+        (do #_ (prn :no-svg-but (keys (meta me)) me)))
       :else (do #_ (prn :ignoring-svg-prop-change slot)))))
 
 ;;; --- local storage ------------------------

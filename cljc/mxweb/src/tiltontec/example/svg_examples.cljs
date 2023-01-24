@@ -71,32 +71,8 @@
       (path {:d    ["M20,230" "Q40,205" "50,230" "T90,230"]
              :fill :none :stroke :blue :stroke-width 5}))))
 
-;;; --- event handler  -----------------------------------
-(defn cljfn->js
-  [^js/Object resolved]
-  (let [_n (.-name (.-sym resolved))
-        _ns (.-ns (.-sym resolved))]
-    (str/replace
-      (str _ns "." _n "()")
-      #"-" "_")))
-
-(defn ^:export svgClick [e]
-  (js/console.log "SA")
-  (js/console.log e))
-
-(defn clickr []
-  (svg {:viewBox "0 0 10 10"
-        :x       200
-        :width   100
-        :onclick "tiltontec.example.svg_examples.svgClick();" ;;(cljfn->js (resolve 'svgClick))
-        }
-    (circle {:cx 5 :cy 5 :r 4})))
-
 (defn domx [me]
   (:dom-x (meta me)))
-
-(defn svgx [me]
-  (:svg-x (meta me)))
 
 (defn use-blue []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
@@ -109,7 +85,7 @@
     (svg {:viewBox "0 0 40 10"}
       {:include-other? (cI true)}
       (circle {:id           "myCircle" :cx 5 :cy 5
-               :r (cI 4)
+               :r            (cI 4)
                :stroke-width (cI 1)
                :fill         (cI :black)
                :onclick      (cF (fn [evt]
@@ -151,24 +127,38 @@
                  :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}
           {:name :used-circle})))))
 
-(defn main []
-  (println "[main]: loading")
-  (let [root (gdom/getElement "app")                        ;; "app" must be ID of DIV defined in index.html
-        app-matrix
-        (md/make :mx-dom
-          (cFonce (md/with-par me
-                    (div
-                      (wall-clock)
-                      (div {:style {:background-color "cyan"}}
-                        (span "Hi, Mom!")
-                        #_(three-circles)
-                        #_(radial-gradient)
-                        ;(basic-shapes)
-                        (use-blue)
-                        )))))
-        app-dom (tag-dom-create
-                  (mget app-matrix :mx-dom))]
-    (set! (.-innerHTML root) nil)
-    (gdom/appendChild root app-dom)))
+(defn matrix-build! []
+  (reset! matrix
+    (md/make
+      :mx-dom (cFonce (md/with-par me
+                        (div
+                          (wall-clock)
+                          (div {:style {:background-color "cyan"}}
+                            (span "Hi, Mom!")
+                            #_(three-circles)
+                            #_(radial-gradient)
+                            ;(basic-shapes)
+                            (use-blue)
+                            )))))))
 
-(main)
+#_(defn main []
+    (println "[main]: loading")
+    (let [root (gdom/getElement "app")                      ;; "app" must be ID of DIV defined in index.html
+          app-matrix
+          (md/make :mx-dom
+            (cFonce (md/with-par me
+                      (div
+                        (wall-clock)
+                        (div {:style {:background-color "cyan"}}
+                          (span "Hi, Mom!")
+                          #_(three-circles)
+                          #_(radial-gradient)
+                          ;(basic-shapes)
+                          (use-blue)
+                          )))))
+          app-dom (tag-dom-create
+                    (mget app-matrix :mx-dom))]
+      (set! (.-innerHTML root) nil)
+      (gdom/appendChild root app-dom)))
+
+;(main)

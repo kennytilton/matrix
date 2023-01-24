@@ -1,8 +1,8 @@
 (ns ^:figwheel-hooks rxtrak.core
   (:require
     [goog.dom :as dom]
-    [tiltontec.model.core :refer [mget]]
-    [tiltontec.mxweb.html :refer [tag-dom-create *mxweb-trace*]]
+    [com.tiltontec.model.core :refer [mget]]
+    [com.tiltontec.mxweb.html :refer [tag-dom-create *mxweb-trace*]]
     [rxtrak.build :as rxtrak]
     [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
     [cljs-time.coerce :refer [from-long to-string] :as tmc]))

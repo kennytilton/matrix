@@ -29,7 +29,7 @@
     "Time color: "
     (input {:name     :timecolor
             :tag/type "text"
-            :value    (cI "#000")
+            :value    (cI "#0FF")
             :onchange #(mset! (evt-mx %)
                          :value (target-value %))})))
 
@@ -40,8 +40,7 @@
                         [(div {}
                            (h1 {} "Hello, world. 'Tis now....")
                            (clock)
-                           (color-input)
-                           )])))))
+                           (color-input))])))))
 
 (defn main []
   (println "[main]: loading")

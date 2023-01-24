@@ -13,7 +13,7 @@ mxWeb is a library, but can also be run as a Web app to try examples.
 To run the current example, just:
 ```bash
 cd matrix/cljc/mxweb
-clojure -M -m figwheel.main --build svg-examples --repl
+clojure -M -m figwheel.main --build example --repl
 ```
 
 ### Overview
