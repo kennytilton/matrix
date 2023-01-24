@@ -1,10 +1,10 @@
 # mxWeb
 
-The [Matrix](https://github.com/kennytilton/matrix/tree/master/cljs/matrix) dataflow library applied to the Web. 
+The [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) dataflow library applied to the Web. 
 
 An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) is under construction. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
 
-Yes, MatrixRN is under construction.
+MatrixRN is under construction, but more energy is going into [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md).
 
 ### Just Run It
 
