@@ -13,8 +13,7 @@
               :refer-macros [pcell un-stopped]
               :refer [*pulse* c-pulse c-optimized-away? *one-pulse?* *dp-log* *unfinished-business*
                       +client-q-handler+ c-stopped
-                      *within-integrity* *defer-changes*
-                      *depender* caller-ensure]]
+                      *within-integrity* *defer-changes* *depender*]]
        :clj  [tiltontec.cell.base :refer :all])))
 
 ;; --- the pulse ------------------------------

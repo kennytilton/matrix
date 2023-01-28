@@ -47,6 +47,21 @@
   (instance? #?(:cljs cljs.core.Atom
                 :clj  clojure.lang.Ref) x))
 
+(defn mut-set!
+  ([mut slot new-value] (mut-set! mut slot new-value nil))
+  ([mut slot new-value tag]
+   (assert (any-ref? mut)
+     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+       "new-value:" new-value
+       "failed assertion any-ref? on ref:" mut))
+   (when-not (map? @mut)
+     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+       "new-value:" (or new-value :NIL)
+       "failed assertion map? on ref:" @mut)
+     (assert false))
+   (#?(:clj alter :cljs swap!) mut assoc slot new-value)
+   new-value))
+
 (defn rmap-setf
   ([[slot ref] new-value]
    (rmap-setf [slot ref] new-value nil))

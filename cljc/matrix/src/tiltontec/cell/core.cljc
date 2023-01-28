@@ -19,10 +19,9 @@
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* *custom-propagator*
-                      c-rule c-me c-value-state c-callers caller-ensure
+                      c-rule c-me c-value-state c-callers
                       c-synapses unfin-biz-build *causation*
-                      c-synaptic? caller-drop
-                      c-pulse  c-ephemeral? c-slot c-slot-name
+                      c-synaptic? c-pulse  c-ephemeral? c-slot c-slot-name
                       *depender* *not-to-be* *within-integrity*
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
@@ -39,8 +38,7 @@
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
-    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume
-                                     record-dependency ensure-value-is-current]]))
+    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume ensure-value-is-current]]))
 
 ;;#?(:cljs (set! *print-level* 3))
 

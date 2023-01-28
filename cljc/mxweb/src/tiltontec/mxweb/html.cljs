@@ -162,13 +162,16 @@
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    #_(println :obstagkids!!!!! (tagfo me)
+    #_ (println :obstagkids!!!!! (tagfo me)
+      :counts-new-old (count newv) (count oldv)
         :same-kids (= oldv newv)
         :same-kid-set (= (set newv) (set oldv)))
     (do                                                     ;; p ::observe-kids
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
             gained (clojure.set/difference (set newv) (set oldv))]
+        ;(prn :kids-lost (count lost))
+        ;(prn :kids-gained (count gained))
         (cond
           (and (= (set newv) (set oldv))
             (not (= oldv newv)))
@@ -184,31 +187,28 @@
 
           (empty? gained)
           ;; just lose the lost
-          (doseq [oldk lost]
-            (.removeChild pdom (tag-dom oldk))
-            (when-not (string? oldk)
-              ; (println :obs-tag-kids-dropping (tagfo oldk))
-              (not-to-be oldk)))
+          (do
+            (doseq [oldk lost]
+              (.removeChild pdom (tag-dom oldk))
+              (when-not (string? oldk)
+                ;; (println :obs-tag-kids-dropping (tagfo oldk))
+                (try
+                  (not-to-be oldk)
+                  (catch js/Error e
+                    (println "An not-to-be-error occurred:" e)
+                    false))
+                )))
 
           :default (let [frag (.createDocumentFragment js/document)]
-                     ;; GC lost from matrix;
-                     ;; move retained kids from pdom into fragment,
-                     ;; add all new kids to fragment, and do so preserving
-                     ;; order dictated by newk:
-
                      (doseq [oldk lost]
                        (when-not (string? oldk)
                          ;; no need to remove dom, all children replaced below.
                          (not-to-be oldk)))
-
                      (doseq [newk newv]
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
                            (.removeChild pdom (tag-dom newk))
-                           (do                              ; (println :obs-tag-kids-building-new-dom (tagfo newk))
-                             (tag-dom-create newk)))))
-
-                     ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
+                           (tag-dom-create newk))))
                      (dom/removeChildren pdom)
                      (dom/appendChild pdom frag)))))))
 
@@ -298,7 +298,7 @@
             ;; todo cleanup
             :stroke (do (prn :ignore-stroke newv))
             (do
-              (pln :obs-by-type-setAttr-onknown (name slot) me newv)
+              ;; (pln :obs-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
 
         (+inline-css+ slot)
@@ -311,8 +311,7 @@
       (if-let [svg (:dom-x (meta me))]
         (.setAttributeNS svg nil (name slot)
           (attr-val$ newv))
-        (do
-          (prn :no-svg-but (keys (meta me)) me)))
+        (do #_ (prn :no-svg-but (keys (meta me)) me)))
       :else (do #_ (prn :ignoring-svg-prop-change slot)))))
 
 ;;; --- local storage ------------------------

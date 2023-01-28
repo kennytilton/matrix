@@ -29,6 +29,7 @@
                                 search-history
                                 job-sort
                                 max-jobs-to-show
+                                expand-all
                                 show-excluded-jobs] :as prefs}]
   (md/make ::preferences
     :app-help? (cI false)                                   ;; ignore last setting
@@ -46,14 +47,14 @@
     :job-sort (cI job-sort)
     :search-history (cI search-history)
     :max-jobs-to-show (cI max-jobs-to-show)
+    :expand-all (cI (if expand-all true false))
     :show-excluded-jobs (cI show-excluded-jobs)))
 
 (def prefs (do
              ;; (ls/io-delete (preferences-key))
              (if-let [prefs (ls/io-read-json
                               (ls/io-read (preferences-key)))]
-               (do (prn :existing-prefs-found!!!!!!!!!! prefs)
-                   (load-preferences prefs))
+               (load-preferences prefs)
                (md/make ::preferences
                  :app-help? (cI false)
                  :rgx-help? (cI false)
@@ -70,13 +71,13 @@
                  :search-history (cI nil)
                  :max-jobs-to-show (cI 42)
                  :job-sort (cI nil)
+                 :expand-all (cI false)
                  :show-excluded-jobs (cI false)))))
 
 (defn pref [key] (mget prefs key))
 (defn pref! [key value] (mset! prefs key value))
 (defn pref-swap! [key & swap-args]
-  ;; hhack (apply md/mswap! prefs key swap-args)
-  )
+  (apply md/mswap! prefs key swap-args))
 (defn pref-toggle! [key]
   (pref-swap! key not))
 

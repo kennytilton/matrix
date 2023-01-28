@@ -1,6 +1,5 @@
 (ns whoshiring.job-memo
   (:require [tiltontec.model.core :as md]
-            [tiltontec.cell.base :refer [unbound c-unbound?]]
             [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
@@ -65,7 +64,7 @@
 (defmethod observe-by-type [::job-memo] [slot job-memo new-val old-val c]
   ;; localStorage does not update columns, so regardless of which
   ;; slot changed we upsert the entire instance. The exception is on
-  ;; the initial "observe" as signofoed when the old value is unbound. We save
+  ;; the initial "observe" as signified by the old value being "unbound". We save
   ;; a little local storage by not storing a memo until some annotation is made.
   (job-memo-upsert job-memo))
 

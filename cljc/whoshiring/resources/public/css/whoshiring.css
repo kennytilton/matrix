@@ -27,10 +27,13 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-
     background-color: #ff6600;
     min-height: 100px;
 
+}
+.donate {
+    background-color: #ff6600;
+    padding: 6px;
 }
 header .about {
     color: #fcfcfc;
@@ -67,28 +70,14 @@ header .who {
 }
 
 .searchMonth {
-    font-size: 1.3em;
-    min-width: 144px;
+    font-size: 1.5em;
+    min-width: 128px;
     border-radius: 6px;
     border-width: 1px;
     border-color: transparent;
     border-bottom-style: none;
     background: linear-gradient(#ffe7d6, #ffb59d);
     margin: 6px 12px 4px 0;
-}
-
-.listingControlBar {
-    display: flex;
-    flex-wrap:       wrap;
-    align-items:     center;
-    margin:          12px 0 0 0px;
-    font-size:       1em;
-    padding:         4px;
-    border-style:    groove;
-    border-color:    khaki;
-    border-width:    2px;
-    background:      PAPAYAWHIP;
-    justify-content: space-between;
 }
 
 .sortOption {
@@ -107,10 +96,6 @@ header .who {
     margin-top: 6px;
 }
 
-.listingToggle {
-    margin-right: 9px;
-}
-
 .osBody {
     padding: 6px;
 }
@@ -121,10 +106,22 @@ header .who {
 
 .help {
     margin: 0px;
-    padding-bottom: 6px;
-    background-color: PAPAYAWHIP;
+    padding: 0 24px 6px 0;
+    background-color: #ff6600;
     color: black;
     list-style: none;
+}
+
+.helpli {
+    padding: 6px 18px 9px 6px;
+    margin: 0;
+}
+
+.helpli:nth-child(odd) {
+    background: #ffefd5;
+}
+.helpli:nth-child(even) {
+    background: #e7cda7;
 }
 
 .userAnnotations {
@@ -180,9 +177,7 @@ header .who {
     appearance:none;
     cursor:pointer;
 }
-.jobli {
-    padding:12px;
-}
+
 .jobli:nth-child(odd) {
     background: #f8f8f8;
 }

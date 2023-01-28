@@ -1,6 +1,5 @@
 (ns whoshiring.job-list
   (:require
-    [tiltontec.cell.base :as cb]
     [tiltontec.cell.core
      :refer-macros [cF cF+ c-reset-next! cFonce cFn]
      :refer [cI c-reset! make-cell]]
@@ -32,21 +31,21 @@
         "PRE" (pre (map node-to-hiccup
                      (array-seq (.-childNodes n))))
         "CODE" (code (map node-to-hiccup
-                     (array-seq (.-childNodes n))))
+                       (array-seq (.-childNodes n))))
         "I" (i (map node-to-hiccup
-                     (array-seq (.-childNodes n))))
+                 (array-seq (.-childNodes n))))
         (p (str "Unexpected tag = " (.-tagName n) :n (.-textContent n))))
     3 (span (.-textContent n))
     (p (str "Unexpected n type = " (.-nodeType n)))))
 
 (defn deets? [me]
-  (mget (fmu :job-listing) :expanded))
+  (mget (fmu :job-listing) :expanded-job?))
 
 (defn job-header [job]
   (div {:style   {:cursor  "pointer"
                   :display "flex"}
         :onclick #(mswap! (md/mxu-find-name (evt-mx %) :job-listing)
-                    :expanded not)}
+                    :expanded-job? not)}
     (span {:style (cF (str "color:black;max-height:16px;margin-right:9px; display:"
                         (if (or (deets? me)
                               (zero? (memo/job-memo job :stars)))
@@ -64,8 +63,8 @@
                     :background "#fff"
                     :display    (if (deets? me) "block" "none")})}
     (ua/user-annotations job)
-    (div {:style         {:margin   "6px"
-                          :overflow "auto"}
+    (div {:style      {:margin   "6px"
+                       :overflow "auto"}
           :ondblclick #(jump-to-hn (:hn-id job))}
       (when (deets? me)
         (map node-to-hiccup
@@ -75,14 +74,16 @@
 (defn job-list-item [job-no job]
   (li {:class "jobli"
        :style (cF {:cursor  "pointer"
+                   :padding "12px"
                    :display (if (and (memo/job-memo job :excluded)
-                                     (not (pref :show-excluded-jobs))
-                                     ; if they have asked to see excluded items, show regardless
-                                     (not (pref :excluded)))
+                                  ;; :excluded is a filter, meaning "show only excluded jobs"
+                                  ;; :show-excluded-jobs means "show a job even if excluded"
+                                  (not (pref :show-excluded-jobs))
+                                  (not (pref :excluded)))
                               "none" "block")})}
-    {:name     :job-listing
-     :expanded (cI true)
-     :job      job}
+    {:name          :job-listing
+     :expanded-job? (cFn (pref :expand-all))
+     :job           job}
     (job-header job)
     (job-details job)))
 
@@ -160,8 +161,9 @@
                           (mget me :selected-jobs)))
      :kid-factory   job-list-item
      :kid-key       #(mget % :job)
-     :kid-values    (cF (take (or (pref :max-jobs-to-show) 999999)
-                          (mget me :sorted-jobs)))}
+     :kid-values    (cF (doall
+                          (take (or (pref :max-jobs-to-show) 999999)
+                            (mget me :sorted-jobs))))}
     (md/kid-values-kids me _cache)))
 
 

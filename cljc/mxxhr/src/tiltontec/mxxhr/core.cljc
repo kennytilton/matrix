@@ -13,11 +13,11 @@
     #?(:cljs [tiltontec.cell.base
               :refer-macros [pcell un-stopped without-c-dependency cpr]
 
-              :refer [+pulse+ c-pulse c-optimized-away?
+              :refer [c-pulse c-optimized-away?
                       mdead? md-ref? ia-type
                       +client-q-handler+ c-stopped unbound when-bound
                       *within-integrity* *defer-changes*
-                      *depender* caller-ensure]]
+                      *depender*]]
        :clj  [tiltontec.cell.base :refer :all])
 
 
@@ -228,7 +228,6 @@
      :clj  (when (.isActive xhr)
              (.abort xhr))))
 
-;; (* 7 17 103 10163)
 (defmethod not-to-be [:tiltontec.mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
   ;; (println :not-to-be-xhr!!!!!!! me)

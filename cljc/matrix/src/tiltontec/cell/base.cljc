@@ -9,10 +9,9 @@
               :refer-macros [deftest is]])
 
     #?(:cljs [tiltontec.util.core
-              :refer [cl-find set-ify any-ref? err ia-ref
+              :refer [mut-set! cl-find set-ify any-ref? err ia-ref
                       make-fifo-queue fifo-empty? fifo-peek fifo-pop
-                      fifo-data fifo-add rmap-setf
-                      wtrx-test]
+                      fifo-data fifo-add rmap-setf wtrx-test]
               :as ut]
        :clj  [tiltontec.util.core :refer :all :as ut])))
 
@@ -164,12 +163,19 @@ rule to get once behavior or just when fm-traversing to find someone"
   (ia-type? c ::c-formula))
 
 (defn c-ref? [x]
-  (ia-type? x ::cell))
+  (and (any-ref? x)
+    (ia-type? x ::cell)
+    (map? @x)
+    x))
 
 (def-rmap-slots c-
   me slot state input? rule pulse pulse-last-changed pulse-observed
   useds users callers optimize ephemeral? code
   lazy synapses synaptic?)
+
+(defn dpc [cell & bits]
+  (when (:debug? @cell)
+    (apply prn bits)))
 
 (defn c-code$ [c]
   (with-out-str (binding [*print-level* false]
@@ -221,19 +227,25 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;; --- dependency maintenance --------------------------------
 
-(defn caller-ensure [used new-caller]
-  (#?(:clj alter :cljs swap!) used assoc :callers (conj (c-callers used) new-caller)))
+(defn dependency-record [used]
+  (when-not (c-optimized-away? used)
+    (mut-set! *depender* :useds
+      (conj (c-useds *depender*) used))
+    (mut-set! used :callers
+      (conj (c-callers used) *depender*))))
 
-(defn caller-drop [used caller]
-  (#?(:clj alter :cljs swap!)
-    used assoc :callers (disj (c-callers used) caller)))
+(defn dependency-drop [used caller]
+  (mut-set! caller :useds (disj (c-useds caller) used))
+  (mut-set! used :callers (disj (c-callers used) caller)))
 
-(defn unlink-from-callers [c]
-  (assert (c-ref? c) (str :ulk-from-caller-entry c))
-  (doseq [caller (c-callers c)]
-    (assert (c-ref? caller) (str :ulk-from-caller-caller caller c))
-    (caller-drop c caller))
-  (rmap-setf [:callers c] nil :unlink-from-callers))
+(defn unlink-from-callers [used]
+  (doseq [caller (c-callers used)]
+    (dependency-drop used caller)))
+
+(defn unlink-from-used [caller why]
+  "Tell dependencies they need not notify us when they change, then clear our record of them."
+  (doseq [used (c-useds caller)]
+    (dependency-drop used caller)))
 
 ;; debug aids --------------
 
@@ -281,7 +293,7 @@ rule to get once behavior or just when fm-traversing to find someone"
     (not (any-ref? me)) :NOT-ANY-REF
     (not (md-ref? me)) :NOT-MD
     :else [(or (:name @me) :anon)
-              (meta me)]))
+           (meta me)]))
 
 (defn cinfo [c]
   (cond
@@ -293,10 +305,8 @@ rule to get once behavior or just when fm-traversing to find someone"
            (c-md-name c)
            (:pulse @c)
            (c-value-state c)
-           [(count (:useds @c))
-            (count (:callers @c))]]))
+           [:useds (count (:useds @c))
+            :callers (count (:callers @c))]]))
 
-(defn dpc [cell & bits]
-  (when (c-debug? cell :dpc)
-    (apply prn bits)))
+
 

@@ -1,7 +1,8 @@
-{:deps    {com.bhauman/figwheel-main       {:mvn/version "0.2.18"}
+{:deps    {org.slf4j/slf4j-nop             {:mvn/version "1.7.30"}
+           com.bhauman/figwheel-main       {:mvn/version "0.2.18"}
            com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
            com.taoensso/tufte              {:mvn/version "2.4.5"}
            com.andrewmcveigh/cljs-time     {:mvn/version "0.5.2"}
-           tiltontec/matrix                {:mvn/version "4.2.0-SNAPSHOT" #_"0.1.7-SNAPSHOT"}}
+           com.tiltontec/matrix            {:mvn/version "4.2.0"}}
  :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
  :paths   ["src" "target" "resources"]}

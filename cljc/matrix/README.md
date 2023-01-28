@@ -3,16 +3,16 @@
 Matrix, through the miracle of CLJC cross-compilation, can be used from Clojure or ClojureScript.
 
 ## Just Matrix (CLJ)
-The killer app for Matrix (MX) is the front-end, but it has been applied successfully to non-GUI chores as well. See [RoboCells](https://sourceforge.net/projects/robocells/) for an example. The RocoCup Simulation server fed a UDP stream of complete, player-specific world perception states to player clients every 100ms, which they had to parse and react to.
+The killer app for Matrix (MX) is the front-end, but it has been applied successfully to non-GUI chores as well. See [RoboCells](https://sourceforge.net/projects/robocells/) for an example. The [RocoCup Simulation](https://www.robocup.org/leagues/23) server fed a UDP stream of complete, player-specific world perception states to player clients every 100ms, which they had to parse and react to.
 
 If your app is similar, you may just want standalone Matrix processing.
 
 ### Including Matrix
-In leiningen projects, add `[tiltontec/matrix "4.1.8-SNAPSHOT"]` to your dependencies.
+In leiningen projects, add `[com.tiltontec/matrix "4.2.0"]` to your dependencies.
 
-For deps.edn projects, tiltontec/matrix `{:mvn/version "4.1.8-SNAPSHOT"}`.
+For deps.edn projects, `com.tiltontec/matrix {:mvn/version "4.2.0"}`.
 
-For other options, see the [latest entry on Clojars](https://clojars.org/tiltontec/matrix/versions/4.1.8-SNAPSHOT).
+For other options, see the [latest entry on Clojars](https://clojars.org/com.tiltontec/matrix/versions/4.2.0).
 
 ### Testing
 For the CLJ version, regression tests can be run by `lein test` if you have cloned the repo.
@@ -74,11 +74,11 @@ Above we see the CSS `class` tracking the completed property of the lexically cl
 
 Why the "input" characterization? It cannot be rules all the way down. These cells are the inputs into the dataflow from outside imperative code. The diagram below is of a *directed acyclic graph* that can help imagine the flow that arises when input cells change and their new values are then consumed by dependent formulaic cells when their recomputation is triggered. In the diagram below, cells 7, 5, and 3 would be the input cells.
 
-![DAG graphic](https://github.com/kennytilton/matrix/blob/master/cljs/matrix/resources/Directed_acyclic_graph.png) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png) 
 
 The dataflow engine propagates each new input value by recursively recomputing dependent formulaic cells in a [glitch](https://en.wikipedia.org/wiki/Reactive_programming#Glitches)-free cascade. We get useful behavior out of this cascading calculation via "on change" callbacks. We name these callbacks "observers" (not to be confused with [RxJS](http://reactivex.io/rxjs/) or [MobX](https://github.com/mobxjs/mobx/blob/master/README.md) *observables*). Much simplified:
 ````cljs
-(defmethod observe-by-type [:tiltontec.webmx.html/tag] [slot me new-value prior-value _]
+(defmethod observe-by-type [:tiltontec.web-mx.html/tag] [slot me new-value prior-value _]
   (case slot
         :hidden (set! (.-hidden dom) new-value)
         :class (classlist/set dom new-value)

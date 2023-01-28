@@ -103,7 +103,6 @@
                            (:title (pref :job-sort))))
            :onclick  (fn [e]
                        (let [me (evt-mx e)]
-                         (prn :sortbar-click! (mget me :selected))
                          (if (mget me :selected)
                            (pref-swap! :job-sort
                              update :order #(* -1 %))
@@ -159,29 +158,19 @@
                            (when-not (js/Number.isNaN lim)
                              (pref! :max-jobs-to-show lim))))})))
 
-(defn debug-tool []
-  (button {:style   {:font-size "1em"
-                     :min-width "96px"}
-           :onclick (fn [e]
-                      (pref! :max-jobs-to-show
-                        (if (= 2 (pref :max-jobs-to-show))
-                          3 2)))
-           :content "Debug"}))
-
 (defn job-expansion-control []
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
-           :onclick (fn [e]
-                      (mswap! (evt-mx e) :expanded not))
-           :content (cF (if (mget me :expanded)
-                          "Collapse all" "Expand all"))}
-    {:expanded (cI true
-                 :obs (fn [_ me newv oldv]
-                        (when-not (= oldv unbound)
-                          (let [jl (fmu :job-list)]
+           :onclick (cF (fn [e]
+                          ;;(mswap! (evt-mx e) :expanded not)
+                          (pref-toggle! :expand-all)
+                          (let [jl (fmu :job-list)
+                                newv (pref :expand-all)]
                             (with-cc :expansion
                               (doseq [jli (mget jl :kids)]
-                                (mset! jli :expanded newv)))))))}))
+                                (mset! jli :expanded-job? newv))))))
+           :content (cF (if (pref :expand-all)              ;; (mget me :expanded)
+                          "Collapse all" "Expand all"))}))
 
 (defn job-listing-control-bar []
   (div {
@@ -198,10 +187,10 @@
     (div {:style (merge utl/hz-flex-wrap-centered
                    {:flex-wrap "wrap"})}
       (job-count)
-      (excluded-toggle)
-      (result-limit)
-      (debug-tool)
-      (job-expansion-control))))
+      (excluded-toggle))
+    (result-limit)
+    ;;(debug-tool)
+    (job-expansion-control)))
 
 ;;; --- the control panel -------------------------------------
 
@@ -226,3 +215,14 @@
       regex/make-regex-options)
     (sort-control-bar)
     (job-listing-control-bar)))
+
+;;; --- as needed --------------------------------------
+
+(defn debug-tool []
+  (button {:style   {:font-size "1em"
+                     :min-width "96px"}
+           :onclick (fn [e]
+                      (pref! :max-jobs-to-show
+                        (if (= 2 (pref :max-jobs-to-show))
+                          5 2)))
+           :content "Debug"}))

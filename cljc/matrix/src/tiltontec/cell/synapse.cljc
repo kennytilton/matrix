@@ -8,7 +8,7 @@
     [tiltontec.cell.base :refer :all]
        :cljs [tiltontec.cell.base
               ;;:refer-macros [without-c-dependency]
-              :refer [*depender* c-synapses c-slot c-useds]])
+              :refer [*depender* c-synapses c-slot c-useds dependency-record]])
 
     #?(:clj
     [tiltontec.cell.integrity :refer :all]
@@ -17,7 +17,7 @@
               :refer []])
 
     [tiltontec.cell.evaluate :refer [not-to-be c-get c-value-assume
-                                     record-dependency ensure-value-is-current]]
+                                      ensure-value-is-current]]
 
     #?(:clj
     [tiltontec.cell.observer :refer [fn-obs]]
@@ -56,7 +56,7 @@
                         ;;(println :built-synapse!!!!!!!!!!!!!!!! ~synapse-id @new-syn#)
                         (rmap-setf [:synapses *depender*]
                                    (conj (c-synapses *depender*) new-syn#))
-                        (record-dependency new-syn#)        ;; needed?!!!!
+                        (dependency-record new-syn#)        ;; needed?!!!!
                         ;; (println :made-syn!!!!!!!!!!!! @new-syn#)
                         new-syn#))
 
@@ -65,7 +65,7 @@
                   (ensure-value-is-current synapse# :synapse *depender*))]
      ;;(println :synapse-returns ~synapse-id :useds (doall (map c-slot (c-useds synapse#))))
      ;; (cpr :syn-ret-value!!!!!! (map #(:uri (deref %)) value#))
-     (record-dependency synapse#)
+     (dependency-record synapse#)
      value#))
 
 (defn call-with-synapse [synapse-id cell-factory]
@@ -75,12 +75,12 @@
                       (println :building-synapse ~synapse-id)
                       (rmap-setf [:synapses *depender*]
                                  (conj (c-synapses *depender*) new-syn))
-                      (record-dependency new-syn)           ;; needed?!!!!
+                      (dependency-record new-syn)           ;; needed?!!!!
                       new-syn))
 
         value (tiltontec.cell.integrity/with-integrity ()
                 (ensure-value-is-current synapse :synapse *depender*))]
-    (record-dependency synapse)
+    (dependency-record synapse)
 
     value))
 

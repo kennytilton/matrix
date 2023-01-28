@@ -4,20 +4,20 @@
             [bide.core :as r]
             [taoensso.tufte :as tufte :refer-macros (defnp profiled profile)]
 
-            [tiltontec.util.core :refer [pln xor now]]
-            [tiltontec.cell.base :refer [unbound ia-type *within-integrity* *defer-changes*]]
-            [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
-            [tiltontec.cell.evaluate :refer [not-to-be]]
-            [tiltontec.cell.observer :refer-macros [fn-obs]]
-            [tiltontec.cell.synapse
+            [com.tiltontec.util.core :refer [pln xor now]]
+            [com.tiltontec.cell.base :refer [unbound ia-type *within-integrity* *defer-changes*]]
+            [com.tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
+            [com.tiltontec.cell.evaluate :refer [not-to-be]]
+            [com.tiltontec.cell.observer :refer-macros [fn-obs]]
+            [com.tiltontec.cell.synapse
              :refer-macros [with-synapse]
              :refer []]
 
 
-            [tiltontec.model.core :refer [matrix mx-par mget mset! mswap!
+            [com.tiltontec.model.core :refer [matrix mx-par mget mset! mswap!
                                           fget mxi-find mxu-find-type
                                           kid-values-kids] :as md]
-            [tiltontec.mxweb.html
+            [com.tiltontec.mxweb.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
                      mxu-find-tag mxu-find-class
@@ -25,18 +25,18 @@
                      dom-has-class dom-ancestor-by-tag]
              :as tag]
 
-            [tiltontec.mxxhr.core
+            [com.tiltontec.mxxhr.core
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
 
-            [tiltontec.mxweb.gen-macro
+            [com.tiltontec.mxweb.gen-macro
              :refer-macros [section header h1 input footer p a span label ul li div button br]]
 
-            [tiltontec.mxweb.gen
+            [com.tiltontec.mxweb.gen
              :refer [dom-tag evt-mx]]
 
-            [tiltontec.mxweb.style :refer [make-css-inline]]
+            [com.tiltontec.mxweb.style :refer [make-css-inline]]
 
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]

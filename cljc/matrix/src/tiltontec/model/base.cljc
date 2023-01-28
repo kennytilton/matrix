@@ -15,9 +15,8 @@
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-assert
                       *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers caller-ensure *causation* c-md-name
-                      c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-rule c-me c-value-state c-callers *causation* c-md-name
+                      c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
                       *depender* *not-to-be*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
