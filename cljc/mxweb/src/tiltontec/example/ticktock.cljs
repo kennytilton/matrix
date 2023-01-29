@@ -13,16 +13,25 @@
 ;;; -------------------------------------------------------
 
 (defn clock []
-  (div {:class   "example-clock"
-        :style   (cF (str "color:" (mget (mxu-find-name me :timecolor) :value)))
+  (div {:class   "example-clock"                            ;; conventional CSS
+        :style   (cF (str "color:"
+                       ;; next we see:
+                       ;; - "point" reactivity, efficient and self-documenting
+                       ;; - "omniscience" -- navigate to any property of any other widget, here searching by name
+                       ;; - transparency: mget is the standard property reader, usable anywhere, but silently
+                       ;;   establishing dependency when used inside a formula.
+                       (mget (mxu-find-name me :timecolor) :value)))
         :content (cF (if (mget me :tick)
-                       (-> (js/Date.)
-                         .toTimeString
-                         (str/split " ")
-                         first)
+                       (-> (js/Date.) .toTimeString (str/split " ") first)
                        "*checks watch*"))}
-    {:tick    (cI false :ephemeral? true)
-     :ticker  (cF (js/setInterval #(mset! me :tick true) 1000))}))
+    ;; so far it is just HTML. The MDN reference is our reference.
+    {:tick   (cI false
+               ;; sophisticated state management extension "ephemeral" properties for modelling events
+               :ephemeral? true)
+     :ticker (cF ;; async state change handled gracefully by the state engine
+               (js/setInterval
+                 ;; "omnipotence" -- navigate freely to any input property of any widget and mutate at will
+                   #(mset! me :tick true) 1000))}))
 
 (defn color-input []
   (div {:class "color-input"}
@@ -44,7 +53,7 @@
 
 (defn main []
   (println "[main]: loading")
-  (let [root (gdom/getElement "app") ;; must be defined in index.html
+  (let [root (gdom/getElement "app")                        ;; must be defined in index.html
         app-matrix (matrix-build!)
         app-dom (tag-dom-create
                   (mget app-matrix :mx-dom))]

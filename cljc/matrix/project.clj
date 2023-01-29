@@ -1,4 +1,4 @@
-(defproject com.tiltontec/matrix "4.2.0"
+(defproject com.tiltontec/matrix "4.2.1-SNAPSHOT"
   :description "Matrix dataflow library for CLJ/CLJS"
   :scm {:name "git"
         :url "https://github.com/kennytilton/matrix"}

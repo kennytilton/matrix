@@ -44,7 +44,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def ^:dynamic *defer-changes* false)
 (def +client-q-handler+ (atom nil))
 
-
+(comment
+  (first ":test")
+  (subs ":test" 1))
 (defonce unbound (gensym "unbound-cell-value"))
 (defn when-bound [x]
   (when (not= x unbound) x))

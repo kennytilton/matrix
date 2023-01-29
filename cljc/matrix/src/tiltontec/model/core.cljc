@@ -47,7 +47,7 @@
 (defn md-name [me]
   (:name @me))
 
-(defn md-get [me slot]
+(defn mget [me slot]
   ;; (trx :md-get slot me)
   (assert me (str "md-get passed nil for me accessing slot: " slot))
   (assert (any-ref? me) (str "md-get passed non-model for me accessing slot: " slot ": " me))
@@ -63,8 +63,17 @@
         (c-get c)
         (slot @me)))))
 
-(defn mget [me slot] (md-get me slot))
+(defmacro def-mget [reader-prefix & slots]
+  `(do
+     ~@(map (fn [slot#]
+              `(defn ~(symbol (str (or reader-prefix "") (name slot#)))
+                 [~'ref]
+                 (tiltontec.model.core/mget ~'ref ~(keyword (name slot#))))) slots)))
 
+(defn md-get "deperecated. Use mget."
+  [me slot] (mget me slot))
+
+#_
 (defn md-getx [tag me slot]
   (md-get me slot)
   #_(wtrx [0 100 (str "md-getx " tag slot (ia-type me))]
@@ -80,17 +89,13 @@
 
 ;;; --- accessors ----
 
-(defn md-reset! [me slot new-value]
+(defn mset! [me slot new-value]
   ;; (println :md-reset slot )
   (assert me)
   (if-let [c (md-cell me slot)]
-    (do                                                     ;; (println :gotc!)
-      ;;(prn :got-c c)
+    (do
       (c-reset! c new-value))
     (do
-      ;(println :reset-meta slot (meta me))
-      ;(println :reset-meta-flushed slot (:cells-flushed (meta me)))
-      ;(println :cz (:cz (meta me)))
       (if (contains? @me slot)
         (do
           (err str
@@ -107,9 +112,18 @@
           "...> FYI: known slots are" (keys @me))
         ))))
 
-(defn mset! [me slot new-value]
-  ;;(prn :mset!-entry slot new-value)
-  (md-reset! me slot new-value))
+(defn mreset!
+  "alternate syntax conforming with clojure terminology"
+  [me slot new-value]
+  (mset! me slot new-value))
+
+(defn md-reset! "deprecated. use mset!"
+  [me slot new-value]
+  (mset! me slot new-value))
+
+(defn md-set! "deprecated. use mset!"
+  [me slot new-value]
+  (mset! me slot new-value))
 
 (defn mswap! [me slot swap-fn & swap-fn-args]
   (mset! me slot (apply swap-fn (mget me slot) swap-fn-args)))
