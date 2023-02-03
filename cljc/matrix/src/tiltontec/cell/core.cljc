@@ -16,7 +16,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? unbound
+                      c-unbound? c-input? unbound c-md-name
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* *custom-propagator*
@@ -381,8 +381,6 @@ execution as soon as the current change is manifested."
 (def ^:dynamic *dag-prn-len*
   "How many edges to follow from users/callers."
   5)
-
-
 
 (def +dag-visited+
   "Which DAG nodes have been dumped so far."
