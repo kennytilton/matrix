@@ -204,11 +204,11 @@
   (not-to-be-self me))
 
 (defn mx-par [me]
+  ;; deprecate
   (:par @me))
 
-(comment
-  (let [scheme [90 :c 50 :a 80 :b]]
-    (apply sorted-map scheme)))
+(defn md-par [me]
+  (:par @me))
 
 (defn fget=
   "Return true if 'poss' is the matrix reference we 'seek'

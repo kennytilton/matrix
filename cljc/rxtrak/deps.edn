@@ -8,9 +8,9 @@
         cljs-http/cljs-http {:mvn/version "0.1.46"}
         cheshire/cheshire {:mvn/version "5.8.1"}
         com.taoensso/tufte {:mvn/version "2.4.5"}
-        tiltontec/matrix {:mvn/version "4.1.8-SNAPSHOT"}
-        tiltontec/mxxhr {:mvn/version "0.1.7-SNAPSHOT"}
-        tiltontec/mxweb {:mvn/version "0.2.3-SNAPSHOT"}
+        com.tiltontec/matrix {:mvn/version "4.2.1-SNAPSHOT"}
+        com.tiltontec/mxxhr {:mvn/version "1.0.1-SNAPSHOT"}
+        com.tiltontec/web-mx {:mvn/version "1.0.0-SNAPSHOT"}
         }
  :paths ["src" "resources" "target"]
  :aliases {:build {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}

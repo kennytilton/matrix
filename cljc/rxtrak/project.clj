@@ -13,9 +13,9 @@
                  [cljs-http "0.1.46"]
                  [cheshire "5.8.1"]
                  [com.taoensso/tufte "2.4.5"]
-                 [com.tiltontec/matrix "4.2.0"]
-                 [com.tiltontec/mxxhr "1.0.0"]
-                 [com.tiltontec/mxweb "1.0.0"]]
+                 [com.tiltontec/matrix "4.2.1-SNAPSHOT"]
+                 [com.tiltontec/mxxhr "1.0.1-SNAPSHOT"]
+                 [com.tiltontec/web-mx "1.0.0-SNAPSHOT"]]
 
   :resource-paths ["resources" "target"]
 

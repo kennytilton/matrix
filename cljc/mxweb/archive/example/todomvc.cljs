@@ -66,8 +66,6 @@
       (bulk-todo "ccc-" 400))
 
   (reset! matrix (md/make ::todoApp
-
-
                    ;; load all to-dos into an observable list....
                    :todos (cF1 (mxweb.example.todo/todo-list))
 
