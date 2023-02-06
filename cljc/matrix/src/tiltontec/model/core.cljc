@@ -81,10 +81,10 @@
         (c-get c)
         (slot @me))))
 
-(def ^:dynamic *par* nil)
+(def ^:dynamic *parent* nil)
 
 (defmacro with-par [meform & body]
-  `(binding [tiltontec.model.core/*par* ~meform]
+  `(binding [tiltontec.model.core/*parent* ~meform]
      ~@body))
 
 ;;; --- accessors ----
@@ -145,7 +145,7 @@
       ;;(println :md-making (nth arg-list 1))
       (let [iargs (apply hash-map arg-list)
             me (#?(:clj ref :cljs atom)
-                 (merge {:par *par*}
+                 (merge {:parent *parent*}
                    (->> arg-list
                      (partition 2)
                      (filter (fn [[slot v]]
@@ -158,7 +158,7 @@
                  :meta {:state :nascent
                         :type  (get iargs :type ::cty/model)})]
         (assert (meta me))
-        #_(when-not (:par @me)
+        #_(when-not (:parent @me)
             (println :no-par!!!! me))
         (rmap-meta-setf
           [:cz me]
@@ -205,10 +205,13 @@
 
 (defn mx-par [me]
   ;; deprecate
-  (:par @me))
+  (:parent @me))
 
 (defn md-par [me]
-  (:par @me))
+  (:parent @me))
+
+(defmacro mpar []
+  `(:parent @~'me))
 
 (defn fget=
   "Return true if 'poss' is the matrix reference we 'seek'
@@ -245,7 +248,7 @@
 
    if :me? is true, and (fget= what where) return 'where'
 
-   if (:par @where) returns a parent, recurse up the family tree
+   if (:parent @where) returns a parent, recurse up the family tree
 
    return an error when (:must? options) is true and we nothing is found"
   [what where & options]
@@ -257,7 +260,7 @@
               (fget= what where)
               where)
 
-          (when-let [par (:par @where)]
+          (when-let [par (:parent @where)]
             (fasc what par
               :me? true))
 
@@ -321,7 +324,7 @@
                 (trx nil :inside-no-kids (:name @where))))
 
             (and (:up? options)
-              (when-let [par (:par @where)]
+              (when-let [par (:parent @where)]
                 (fget what par
                   :up? true
                   :me? true
@@ -400,10 +403,10 @@
        (throw (str "fmov> " id-name " lacks " slot-name " property"))))))
 
 (defmacro the-kids
-  "Macro to flatten kids in 'tree' and relate them to 'me' via the *par* dynamic binding"
+  "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"
   [& tree]
-  `(binding [*par* ~'me]
-     (assert *par*)
+  `(binding [*parent* ~'me]
+     (assert *parent*)
      (doall (remove nil? (flatten (list ~@tree))))))
 
 (defmacro cFkids
@@ -433,6 +436,6 @@
       (map-indexed
         (fn [idx kid-value]
           (or (and x-kids (get x-kids kid-value))
-            (binding [*par* me]
+            (binding [*parent* me]
               (k-factory me kid-value))))
         (md-get me :kid-values)))))

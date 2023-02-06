@@ -70,7 +70,7 @@ call parameters: slot, me, new, old, and c."
    (assert (integer? @*pulse*))
    (rmap-setf [:pulse-observed c] @*pulse*)
    (observe (c-slot c)(c-model c)(c-value c) prior-value c)
-   (when-let [cell-observer (:obs @c)]
+   (when-let [cell-observer (or (:obs @c)(:watch @c))]
      (cell-observer (c-slot c)(c-model c)(c-value c) prior-value c))))
 
 

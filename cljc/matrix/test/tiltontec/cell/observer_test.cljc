@@ -42,7 +42,7 @@
   (with-mx
     (let [bingo (atom false)
           c (cF+ [:slot :bingo
-                  :obs (fn-obs
+                  :watch (fn-obs
                          (reset! bingo true))]
               (+ 40 2))]
       (is (ia-type? c ::cty/cell))
@@ -62,7 +62,7 @@
 (deftest test-input
   (with-mx
     (let [c (cI 42 :slot :bingo2
-            :obs (fn-obs (reset! bingo2 true)))]
+            :watch (fn-obs (reset! bingo2 true)))]
     (is (ia-type? c ::cty/cell))
     (is (= (c-value-state c) :valid))
     (is (= #{} (c-callers c)))
@@ -77,11 +77,11 @@
   (with-mx
     (let [bobs (atom nil)
         b (cI 2 :slot :bb
-            :obs (fn-obs
+            :watch (fn-obs
                    (trx nil slot me new old)
                    (reset! bobs new)))
         cobs (atom nil)
-        c (cF+ [:obs (fn-obs [slot me new old c]
+        c (cF+ [:watch (fn-obs [slot me new old c]
                        (trx slot me new old)
                        (reset! cobs new))]
             (* 10 (c-get b)))]

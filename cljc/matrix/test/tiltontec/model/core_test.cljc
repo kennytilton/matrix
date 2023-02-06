@@ -56,7 +56,7 @@
                       (when (md-get me :kon)
                         (vector
                           (md/make
-                            :par me
+                            :parent me
                             :name :konzo
                             :kzo (cI 3))))))]
       (is (nil? (:kids @u)))
@@ -72,18 +72,18 @@
               :name :uni
               :kids (cF (vector
                           (md/make
-                            :par me
+                            :parent me
                             :name :aa)
                           (md/make
-                            :par me
+                            :parent me
                             :name :bb
                             :kids (cF (vector
                                         (md/make
-                                          :par me
+                                          :parent me
                                           :name :bba)
 
                                         (md/make
-                                          :par me
+                                          :parent me
                                           :name :bbb)))))))]
       ;; (is (fget :bba u :inside? true :must? true))
       ;; (is (thrown-with-msg?
@@ -107,17 +107,17 @@
                           (remove nil?
                             (vector
                               (md/make
-                                :par me
+                                :parent me
                                 :name :aa
                                 :aa42 (cF (* 2 (mdv! :bb :bb21)))
                                 :aa3 (cI 3))
                               (when (md-get me :kon)
                                 (md/make
-                                  :par me
+                                  :parent me
                                   :name :konzo
                                   :kzo (cI 3)))
                               (md/make
-                                :par me
+                                :parent me
                                 :name :bb
                                 :bb21 (cF (* 7 (mdv! :aa :aa3)))))))))]
       (is (= 63 (md-get u :u63)))

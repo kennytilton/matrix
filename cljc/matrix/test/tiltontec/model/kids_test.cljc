@@ -52,7 +52,7 @@
                             (md/make
                               :name :yep
                               :value (cF (do
-                                           (let [par (:par @me)]
+                                           (let [par (:parent @me)]
                                              (let [ee (md-get par :ee)]
                                                (* 14 ee))))))))))]
       (is (ia-type? f ::md/family))

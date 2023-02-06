@@ -45,6 +45,52 @@
 
 ; todo: stand-alone cells with observers should be observed when they are made
 
+
+(def +valid-input-options+
+  #{:obs :watch :slot :ephemeral? :unchanged-if
+    :value :input? :debug :finalizer})
+(def +valid-formula-options+
+  #{:obs :watch :slot :input? :lazy :optimize :ephemeral? :unchanged-if
+    :model :synaptic? :synapse-id
+    :code :value :rule :async? :and-then? :debug :finalizer})
+
+(defn c-options-canonicalize [options allowed]
+  (loop [[k v & more] options
+         res nil
+         observer? false]
+    (cond
+      (nil? k) (reverse res)
+      :else (do
+              (assert (some #{k} allowed) (str "Cell option invalid: " k ". Only allowed are: " allowed))
+              (when (and observer? (some #{k} [:obs :watch]))
+                (err "make-c-formula> options include multiple :watch or :obs. Supply just one."))
+
+              (recur more (conj res (case k
+                                      :watch :obs
+                                      k) v) (or observer? (some #{k} [:obs :watch])))))))
+
+(defn make-cell [& kvs]
+  (let [options (apply hash-map (c-options-canonicalize kvs
+                                  +valid-input-options+))]
+    (prn :make-cell kvs)
+    (prn :make-cell-options options)
+
+    (#?(:clj ref :cljs atom)
+      (merge {:value              unbound
+                  ::cty/state              :nascent
+                  :pulse              nil
+                  :pulse-last-changed nil
+                  :pulse-observed     nil
+                  :callers            #{}
+                  :synapses           #{}                   ;; these stay around between evaluations
+                  ;; todo: if a rule branches away from a synapse
+                  ;;       it needs to be GCed so it starts fresh
+                  :lazy               false                 ;; not a predicate (can hold, inter alia, :until-asked)
+                  :ephemeral?         false
+                  :input?             true}
+            options)
+      :meta {:type :tiltontec.cell.base/cell})))
+#_
 (defn make-cell [& kvs]
   (let [options (apply hash-map kvs)]
     (#?(:clj ref :cljs atom) (merge {:value              unbound
@@ -59,12 +105,12 @@
                                      :lazy               false ;; not a predicate (can hold, inter alia, :until-asked)
                                      :ephemeral?         false
                                      :input?             true}
-
                                options)
       :meta {:type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
-  (let [options (apply hash-map kvs)
+  (let [options (apply hash-map (c-options-canonicalize kvs
+                                  +valid-formula-options+))
         rule (:rule options)]
     (assert rule)
     (assert (fn? rule))
