@@ -7,7 +7,7 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [tiltontec.util.core :refer [pln xor now *plnk-keys*
                                  counts countit counts-reset]]
-    [tiltontec.cell.evaluate :refer [c-get <cget c-awaken not-to-be]]
+    [tiltontec.cell.evaluate :refer [c-get <cget c-awaken finalize]]
 
     #?(:clj
     [tiltontec.cell.base :refer :all]
@@ -677,7 +677,7 @@
 ;                                  ;; this synapse generator, displacing the old
 ;                                  (pln :syn-rule-makes+sends-new-xhr!!!!!!! @sends (type _cache))
 ;                                  (when-not (= _cache unbound)
-;                                    (not-to-be _cache))
+;                                    (finalize _cache))
 ;                                  (swap! sends inc)
 ;                                  (let [s (c-get site)]
 ;                                    (send-xhr s)))]

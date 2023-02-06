@@ -21,7 +21,7 @@
        :clj  [tiltontec.cell.base :refer :all])
 
 
-    [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
+    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
 
     #?(:cljs [tiltontec.cell.synapse
               :refer-macros [with-synapse]
@@ -228,15 +228,15 @@
      :clj  (when (.isActive xhr)
              (.abort xhr))))
 
-(defmethod not-to-be [:tiltontec.mxxhr.core/xhr] [me]
+(defmethod finalize [:tiltontec.mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
-  ;; (println :not-to-be-xhr!!!!!!! me)
+  ;; (println :finalize-xhr!!!!!!! me)
 
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      (not-to-be k)))
+      (finalize k)))
 
-  (not-to-be-self me))
+  (finalize-self me))
 
 (defn send-xhr
   ([uri]
