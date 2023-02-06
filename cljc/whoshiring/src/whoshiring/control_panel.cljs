@@ -9,9 +9,9 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [matrix mset! mget mswap!] :as md]
-            [tiltontec.mxweb.gen
+            [tiltontec.web-mx.gen
              :refer [evt-mx dom-tag]]
-            [tiltontec.mxweb.gen-macro
+            [tiltontec.web-mx.gen-macro
              :refer-macros [section header i h1 input footer p a span label ul li div button]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]

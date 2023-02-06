@@ -72,9 +72,6 @@
 (defn make-cell [& kvs]
   (let [options (apply hash-map (c-options-canonicalize kvs
                                   +valid-input-options+))]
-    (prn :make-cell kvs)
-    (prn :make-cell-options options)
-
     (#?(:clj ref :cljs atom)
       (merge {:value              unbound
                   ::cty/state              :nascent

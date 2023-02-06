@@ -9,9 +9,9 @@
     [tiltontec.model.core
      :refer-macros [with-par cFkids mdv! fmu]
      :refer [matrix mget mswap! mset!] :as md]
-    [tiltontec.mxweb.gen
+    [tiltontec.web-mx.gen
      :refer [make-tag dom-tag evt-mx target-value]]
-    [tiltontec.mxweb.gen-macro
+    [tiltontec.web-mx.gen-macro
      :refer-macros [img section header h1 input footer p a span label ul li div button br]]
     [whoshiring.preferences :as up]))
 

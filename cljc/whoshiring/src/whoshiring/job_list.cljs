@@ -5,10 +5,10 @@
      :refer [cI c-reset! make-cell]]
     [tiltontec.model.core
      :refer-macros [with-par mdv! mx-par fmu]
-     :refer [matrix mset! mget mswap! fget *par*] :as md]
-    [tiltontec.mxweb.gen
+     :refer [matrix mset! mget mswap! fget ] :as md]
+    [tiltontec.web-mx.gen
      :refer [evt-mx]]
-    [tiltontec.mxweb.gen-macro
+    [tiltontec.web-mx.gen-macro
      :refer-macros [img section header h1 input footer p a
                     pre code span i label ul li div button br]]
     [whoshiring.control-panel :as ctl]

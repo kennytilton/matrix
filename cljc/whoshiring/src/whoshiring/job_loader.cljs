@@ -9,14 +9,14 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mx-par fmu]
              :refer [fmo matrix mset! mget mswap!] :as md]
-            [tiltontec.mxweb.base :refer [tag? kw$ tag-dom]]
-            [tiltontec.mxweb.html
+            [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
+            [tiltontec.web-mx.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create tagfo
                      dom-has-class dom-ancestor-by-tag]
-             :as mxweb]
-            [tiltontec.mxweb.gen :refer [evt-mx]]
-            [tiltontec.mxweb.gen-macro :refer-macros [select] :as g]
+             :as web-mx]
+            [tiltontec.web-mx.gen :refer [evt-mx]]
+            [tiltontec.web-mx.gen-macro :refer-macros [select] :as g]
             [whoshiring.job-parse :as jp]
             [whoshiring.job-memo :as memo]))
 
