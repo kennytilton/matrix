@@ -23,7 +23,7 @@
                       c-rule c-me c-value-state c-callers
                       c-synapses unfin-biz-build *causation*
                       c-synaptic? c-pulse  c-ephemeral? c-slot c-slot-name
-                      *depender* *not-to-be* *within-integrity*
+                      *depender* *finalize* *within-integrity*
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
@@ -360,7 +360,7 @@ execution as soon as the current change is manifested."
             *call-stack* nil
             *depender* nil
             *defer-changes* false
-            *not-to-be* false
+            *finalize* false
             *custom-propagator* nil
             *c-prop-depth* 0
             *one-pulse?* false

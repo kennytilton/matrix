@@ -20,7 +20,7 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation*
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *not-to-be*
+                      *depender* *finalize*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
@@ -29,14 +29,14 @@
     [tiltontec.cell.observer
      :refer [observe]]
 
-    [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
+    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken not-to-be]]
+    [tiltontec.cell.evaluate :refer [c-get c-awaken finalize]]
     [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
     ))
 
@@ -187,21 +187,21 @@
       (when-not (empty? lostks)
         (doseq [k lostks]
           ;;(prn :obs-k-not2be!! k)
-          (not-to-be k))))))
+          (finalize k))))))
 
 (defmethod observe [:kids ::family]
   [_ me newk oldk c]
   ;;(prn :observe-kids-family-method)
   (fm-kids-observe me newk oldk c))
 
-(defmethod not-to-be [::family]
+(defmethod finalize [::family]
   [me]
-  ;;(prn :family-not-to-be! me)
+  ;;(prn :family-finalize! me)
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      ;;(prn :fm-not-to-be-kid!)
-      (not-to-be k)))
-  (not-to-be-self me))
+      ;;(prn :fm-finalize-kid!)
+      (finalize k)))
+  (finalize-self me))
 
 (defn mx-par [me]
   ;; deprecate

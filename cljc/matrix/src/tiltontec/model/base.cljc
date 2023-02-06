@@ -17,7 +17,7 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation* c-md-name
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *not-to-be*
+                      *depender* *finalize*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]

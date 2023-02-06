@@ -25,7 +25,7 @@
                       unlink-from-callers *causation*
                       c-synaptic? dependency-drop c-md-name
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
-                      *depender* *not-to-be*
+                      *depender* *finalize*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
@@ -65,8 +65,8 @@
 
   (cond
     ; --------------------------------------------------
-    *not-to-be*
-    ; we got kicked off during not-to-be processing
+    *finalize*
+    ; we got kicked off during finalize processing
     ; just return what we have if valid, else nil
     (cond
       (c-unbound? c)
@@ -382,9 +382,9 @@
   (unlink-from-used c :quiesce)
   (#?(:clj ref-set :cljs reset!) c :dead-c #_ [:dead-c @c]))
 
-;; --- not-to-be --
+;; --- finalize --
 
-(defn not-to-be-self [me]
+(defn finalize-self [me]
   (doseq [c (vals (:cz (meta me)))]
     (when c
       ;; not if optimized away
@@ -392,12 +392,12 @@
   (#?(:clj ref-set :cljs reset!) me nil)
   (rmap-meta-setf [::cty/state me] :dead))
 
-(defmulti not-to-be (fn [me]
+(defmulti finalize (fn [me]
                       (assert (md-ref? me))
                       [(ia-type me)]))
 
-(defmethod not-to-be :default [me]
-  (not-to-be-self me))
+(defmethod finalize :default [me]
+  (finalize-self me))
 
 ;----------------- change detection ---------------------------------
 
@@ -456,7 +456,7 @@
                 (md-slot-owning? (type (c-model c)) (c-slot c)))
           (when-let [ownees (difference (set-ify prior-value) (set-ify (c-value c)))]
             (doseq [ownee ownees]
-              (not-to-be ownee))))
+              (finalize ownee))))
 
         (propagate-to-callers c callers)
         ;;(trx :obs-chkpulse!!!!!!!! @*pulse* (c-pulse-observed c))
