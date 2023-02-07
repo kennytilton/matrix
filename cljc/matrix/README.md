@@ -14,11 +14,11 @@ For deps.edn projects, `com.tiltontec/matrix {:mvn/version "4.3.1-SNAPSHOT"`.
 ### Testing
 For the CLJ version, regression tests can be run by `lein test`.
 
-## Learning Matrix (CLJS) by TodoMVC Example
+### Learning Matrix (CLJS) by TodoMVC Example
 
-Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [mxWeb](https://github.com/kennytilton/matrix/tree/master/cljc/mxweb), a glitch-free, efficient Web framework.
+Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [Web/MX](https://github.com/kennytilton/web-mx/blob/main/README.md)), an efficient, declarative Web framework.
 
-We explain mxWeb in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
+We explain Web/MX in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
 
 > What happens if a sophisticated, generic reactive library supports every aspect of a web app, including the model, logical view, DOM manipulation, and object persistence?
 
@@ -26,7 +26,7 @@ Matrix itself -- the generic dataflow engine -- is a ClojureScript port of the C
 
 Let us begin by seeing the beast in action.
 
-## Try the TodoMVC Demo
+### Try the TodoMVC Demo
 
 Here is a [live tryout](https://kennytilton.github.io/MatrixCLJS/).
 
