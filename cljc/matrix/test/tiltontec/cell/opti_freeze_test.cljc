@@ -200,3 +200,28 @@
       (is (c-optimized-away? b))
       (is (not (seq (c-callers a)))))))
 
+(deftest t-freeze-propagates
+  ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
+  (with-mx
+    (let [a (cI nil :slot :aa)
+          b (cF+ [:slot :bb]
+              (when (c-get a)
+                (cf-freeze 42)))
+          c (cF+ [:slot :cc]
+              (prn :cc-runs!!)
+              (let [b (c-get b)]
+                (prn :cc-sees-b b)
+                (if b
+                  [:bam b]
+                  (do (prn :no-bb)
+                      nil))))]
+      (is (= nil (c-get a)))
+      (is (= nil (c-get b)))
+      (is (= nil (c-get c)))
+      (prn :post-init-pulse (pulse-now))
+      (c-reset! a true)
+      (prn :post-reset-pulse (pulse-now))
+      (is (= 42 (c-get b)))
+      (prn :cnow (c-get c))
+      (is (= [:bam 42] (c-get c))))))
+

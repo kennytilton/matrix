@@ -50,15 +50,16 @@
 (defn mut-set!
   ([mut slot new-value] (mut-set! mut slot new-value nil))
   ([mut slot new-value tag]
-   (assert (any-ref? mut)
+   (when-not (any-ref? mut)
      (pln "model.util.core/rmap-setf> slot:" slot :tag tag
        "new-value:" new-value
-       "failed assertion any-ref? on ref:" mut))
+       "failed assertion any-ref? on ref:" mut)
+     (assert false "see console"))
    (when-not (map? @mut)
      (pln "model.util.core/rmap-setf> slot:" slot :tag tag
        "new-value:" (or new-value :NIL)
        "failed assertion map? on ref:" @mut)
-     (assert false))
+     (assert false "see console"))
    (#?(:clj alter :cljs swap!) mut assoc slot new-value)
    new-value))
 

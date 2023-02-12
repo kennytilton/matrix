@@ -100,16 +100,20 @@
     (or (not (c-valid? c))
       (loop [[used & urest] (seq (c-useds c))]
         (when used
+          (prn :evc-checjs-used (cinfo used))
           (ensure-value-is-current used :nested c)
           ;; now see if it actually changed; maybe it just got made current because no
           ;; dependency was out of date. If so, that alone does not mean we need to re-run.
+          (prn :comparing-changes (c-pulse used)(c-pulse-last-changed used) (c-pulse c))
           (or (when-let [last-changed (c-pulse-last-changed used)]
                 (> last-changed (c-pulse c)))
             (recur urest)))))
     (do                                                     ;; we seem to need update, but...
+      (prn :updating???? (c-current? c))
       (when-not (c-current? c)
         ;; Q: how can it be current after above checks indicating not current?
         ;; A: if dependent changed during above loop over used and its observer read/updated me
+        (prn :updating!!!! (cinfo c))
         (calculate-and-set c :evic ensurer))
       (c-value c))
 
@@ -302,6 +306,10 @@
             (md-slot-value-store (c-model c) (c-slot c) new-value))
 
           (c-pulse-update c :slotv-assume)
+          (when (and (not (c-optimized-away? c))
+                  (c-value-changed? c new-value prior-value))
+            (prn :setting-last-changed @c)
+            (rmap-setf [:pulse-last-changed c] @*pulse*))
           #_(println :maybe-propping (c-slot c) new-value
               :priorstate prior-state
               :propcode propagation-code
@@ -318,8 +326,6 @@
                   (when-not (= propagation-code false)
                     (c-value-changed? c new-value prior-value)))
             ;; --- something happened ---
-            (when-not (c-optimized-away? c)
-              (rmap-setf [:pulse-last-changed c] @*pulse*))
             ;; --- data flow propagation -----------
             (when-not (or (= propagation-code :no-propagate)
                         (c-optimized-away? c))
@@ -368,10 +374,10 @@
 
     ;; let callers know they need not check us for currency again
     (doseq [caller (seq (c-callers c))]
-      (dependency-drop c caller)
-      (ensure-value-is-current caller :opti-used c))        ;; this will get round to optimizing
-    ; them if necessary, and if not they still need to have one last notification if this was
-    ; a rare mid-life optimization
+      (ensure-value-is-current caller :opti-used c)
+      (when-not (c-optimized-away? caller)
+        (dependency-drop c caller)))
+    ;; (prn :ACTUALLY-OPTI-AWAY! (cinfo c))
     (#?(:clj ref-set :cljs reset!) c (c-value c))))
 
 ;; --- c-quiesce -----------
@@ -432,7 +438,7 @@
   ;; /do/ support other values besides nil as the "resting" value 
 
   [c prior-value callers]
-  ;; (trx :propagate (:slot @c))
+  (prn :propagate (cinfo c))
   (cond
     *one-pulse?* (when *custom-propagator*
                    (*custom-propagator* c prior-value))

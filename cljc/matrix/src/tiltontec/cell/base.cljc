@@ -302,13 +302,14 @@ rule to get once behavior or just when fm-traversing to find someone"
     (nil? c) :NIL-C
     (not (any-ref? c)) :NOT-ANY-REF-C
     (not (c-ref? c)) :NOT-C-REF
-    :else [(ia-type c)
+    :else [
            (c-slot-name c)
            (c-md-name c)
-           (:pulse @c)
+           [:pulse (:pulse @c)]
            (c-value-state c)
            [:useds (count (:useds @c))
-            :callers (count (:callers @c))]]))
+            :callers (count (:callers @c))]
+           (ia-type c)]))
 
 
 

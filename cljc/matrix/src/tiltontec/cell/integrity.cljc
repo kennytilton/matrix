@@ -23,6 +23,7 @@
 (defn data-pulse-next
   ([] (data-pulse-next :anon))
   ([pulse-info]
+   (prn :dp-next!!!! pulse-info :now @*pulse*)
    (when-not *one-pulse?*
      (when *dp-log*
        (trx "dp-next> " (inc @*pulse*) pulse-info))
@@ -33,9 +34,11 @@
     (= (c-pulse c) @*pulse*)))
 
 (defn c-pulse-update [c key]
+  (prn :pulse-upd??? @*pulse* key (cinfo c))
   (when-not (c-optimized-away? c)
     (assert (or (nil? (c-pulse c))
               (>= @*pulse* (c-pulse c))))
+    (prn :pulse-upd!!! @*pulse* key (cinfo c))
     (#?(:clj alter :cljs swap!) c assoc :pulse @*pulse*)))
 
 ;; --- ufb utils ----------------------------
