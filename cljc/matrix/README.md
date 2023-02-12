@@ -1,27 +1,24 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix / CLJC
-Matrix, through the miracle of CLJC cross-compilation, can be used from Clojure or ClojureScript.
+The `Matrix` library delivers fine-grained, gltch-free, transparent reactivity from declarative forms.
 
-## Just Matrix (CLJ)
-The killer app for Matrix (MX) is the front-end, but it has been applied successfully to non-GUI chores as well. See [RoboCells](https://sourceforge.net/projects/robocells/) for an example. The [RocoCup Simulation](https://www.robocup.org/leagues/23) server fed a UDP stream of complete, player-specific world perception states to player clients every 100ms, which they had to parse and react to.
+> The matrix can provide structural support, regulate cell behavior, and play a role in cellular signaling and communication. --ChatGPT
 
-If your app is similar, you may just want standalone Matrix processing.
+The killer app for reactivity is the front-end, but Matrix offers generic reactivity. It has been applied successfully to non-GUI work as well, such [RoboCells](https://sourceforge.net/projects/robocells/). The [RocoCup Simulation](https://www.robocup.org/leagues/23) server fed a UDP stream of complete, player-specific world perception states to player clients every 100ms, which they had to parse and react to. If your app is similar, you may just want standalone Matrix processing.
 
-### Including Matrix
-In leiningen projects, add `[com.tiltontec/matrix "4.2.0"]` to your dependencies.
+### Including Matrix in a project
+In leiningen projects, add `[com.tiltontec/matrix "4.3.1-SNAPSHOT"]` to your dependencies.
 
-For deps.edn projects, `com.tiltontec/matrix {:mvn/version "4.2.0"}`.
-
-For other options, see the [latest entry on Clojars](https://clojars.org/com.tiltontec/matrix/versions/4.2.0).
+For deps.edn projects, `com.tiltontec/matrix {:mvn/version "4.3.1-SNAPSHOT"`.
 
 ### Testing
-For the CLJ version, regression tests can be run by `lein test` if you have cloned the repo.
+For the CLJ version, regression tests can be run by `lein test`.
 
-## Learning Matrix (CLJS) by TodoMVC Example
+### Learning Matrix (CLJS) by TodoMVC Example
 
-Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [mxWeb](https://github.com/kennytilton/matrix/tree/master/cljc/mxweb), a glitch-free, efficient Web framework.
+Welcome to the ClojureScript version of Matrix, a fine-grained dataflow (aka reactive) library we exemplify below with a description of how it supports [Web/MX](https://github.com/kennytilton/web-mx/blob/main/README.md)), an efficient, declarative Web framework.
 
-We explain mxWeb in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
+We explain Web/MX in turn with a proof-of-concept implementation of the [TodoMVC Classic](https://github.com/tastejs/todomvc/blob/master/app-spec.md), the concept being...
 
 > What happens if a sophisticated, generic reactive library supports every aspect of a web app, including the model, logical view, DOM manipulation, and object persistence?
 
@@ -29,7 +26,7 @@ Matrix itself -- the generic dataflow engine -- is a ClojureScript port of the C
 
 Let us begin by seeing the beast in action.
 
-## Try the TodoMVC Demo
+### Try the TodoMVC Demo
 
 Here is a [live tryout](https://kennytilton.github.io/MatrixCLJS/).
 
