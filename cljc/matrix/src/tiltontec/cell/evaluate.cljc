@@ -303,6 +303,7 @@
 
           (c-pulse-update c :slotv-assume)
           (when (and (not (c-optimized-away? c))
+                  (not= propagation-code false)
                   (c-value-changed? c new-value prior-value))
             ;;(prn :setting-last-changed @c)
             (rmap-setf [:pulse-last-changed c] @*pulse*))

@@ -189,7 +189,6 @@
         (c-reset! x 6)
         (is (= :on (c-get alarm)))))))
 
-#_ ;; todo fix test
 (deftest synaptic-grouping
   (with-mx
     (let [x (cI nil)
@@ -201,11 +200,10 @@
                                      (= (count buffer-val) 3)
                                      (do
                                        (reset! buffer [])
-                                       (println :syn-propping!!!!! buffer-val)
                                        ^{:propagate true} [buffer-val])
 
                                      :default ^{:propagate false} [buffer-val]))))]
-                  (println :new-g g)
+
                   (is (= 3 (count g)))
 
                   g))]
