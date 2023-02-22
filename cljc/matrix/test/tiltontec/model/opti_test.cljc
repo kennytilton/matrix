@@ -42,7 +42,7 @@
     #?(:clj  [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [md-get md-name fget fm! make md-reset! md-getx]
+              :refer [md-get md-name fm-navig fm! make md-reset! md-getx]
               :as md])
     ))
 

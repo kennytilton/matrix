@@ -4,7 +4,8 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
 
     #?(:clj [clojure.core.async :refer [go chan go-loop <! <!! >!! >!
-                                        timeout alt!!]])
+                                        timeout alt!!]]
+       :cljs [cljs.core.async :refer [<!]])
 
     [tiltontec.util.core
      :refer [pln err xor now *plnk-keys* any-ref?
@@ -71,7 +72,7 @@
 
     [clojure.walk :refer [keywordize-keys]]
 
-    #?(:cljs [cljs.core.async :refer [<!]])
+
     ))
 
 (declare assert-xhr)
@@ -139,7 +140,6 @@
        :cljs (go
                (let [chan (do
                             (client/get uri {:with-credentials? false}))]
-
                  (let [response (<! chan)]
                    (if (:success response)
                      (do

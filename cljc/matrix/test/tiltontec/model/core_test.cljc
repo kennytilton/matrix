@@ -42,7 +42,7 @@
     #?(:clj  [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [md-get md-name fget fm! make md-reset! md-getx]
+              :refer [md-get md-name fm-navig fm! make md-reset! md-getx]
               :as md])
     ))
 
@@ -64,7 +64,7 @@
             kon (md-cell u :kon)]
         (c-reset! kon true)
         (is (= 1 (count (:kids @u))))
-        (is (md/fget :konzo u :inside? true))))))
+        (is (md/fm-navig :konzo u :inside? true))))))
 
 (deftest fm-2
   (with-mx
@@ -85,17 +85,17 @@
                                         (md/make
                                           :parent me
                                           :name :bbb)))))))]
-      ;; (is (fget :bba u :inside? true :must? true))
+      ;; (is (fm-navig :bba u :inside? true :must? true))
       ;; (is (thrown-with-msg?
-      ;;      Exception #"fget-must-failed"
-      ;;      (fget :bbax u :inside? true :must? true)))
-      ;; (is (nil? (fget :bbax u :inside? true :must? false)))
-      (let [bba (fget :bba u :inside? true :must? true)]
+      ;;      Exception #"fm-navig-must-failed"
+      ;;      (fm-navig :bbax u :inside? true :must? true)))
+      ;; (is (nil? (fm-navig :bbax u :inside? true :must? false)))
+      (let [bba (fm-navig :bba u :inside? true :must? true)]
         (is bba)
-        (is (md/fget :uni bba :inside? true :up? true))
-        (is (fget :aa bba :inside? false :up? true))
-        (is (fget :bb bba :inside? true :up? true))
-        (is (fget :bbb bba :inside? false :up? true))))))
+        (is (md/fm-navig :uni bba :inside? true :up? true))
+        (is (fm-navig :aa bba :inside? false :up? true))
+        (is (fm-navig :bb bba :inside? true :up? true))
+        (is (fm-navig :bbb bba :inside? false :up? true))))))
 
 (deftest fm-3
   (with-mx
@@ -123,12 +123,12 @@
       (is (= 63 (md-get u :u63)))
       (is (= 42 (mdv! :aa :aa42 u)))
       (is (= 21 (mdv! :bb :bb21 u)))
-      (is (nil? (fget :konzo u :must? false)))
+      (is (nil? (fm-navig :konzo u :must? false)))
       (c-reset! (md-cell u :kon) true)
       (is (:kon @u))
       (is (md-cell u :kon))
       (is (= 3 (count (:kids @u))))
-      (is (fget :konzo u :inside? true))
+      (is (fm-navig :konzo u :inside? true))
       )))
 
 (deftest fm-3x                                              ;; using the-kids macro
@@ -152,12 +152,12 @@
       (is (= 63 (md-get u :u63)))
       (is (= 42 (mdv! :aa :aa42 u)))
       (is (= 21 (mdv! :bb :bb21 u)))
-      (is (nil? (fget :konzo u :must? false)))
+      (is (nil? (fm-navig :konzo u :must? false)))
       (c-reset! (md-cell u :kon) true)
       (is (:kon @u))
       (is (md-cell u :kon))
       (is (= 3 (count (:kids @u))))
-      (is (fget :konzo u :inside? true)))))
+      (is (fm-navig :konzo u :inside? true)))))
 
 (deftest fm-picker
   (with-mx
@@ -171,7 +171,7 @@
                                         (md/make
                                           :name :bbx))))
                           (md/make :name :dd
-                            :kzo (cF (let [p (fget :picker me)]
+                            :kzo (cF (let [p (fm-navig :picker me)]
                                        (println :bingo p)
                                        (md-get p :value)))))))]
       (is (= 42 (mdv! :picker :value u)))
@@ -293,6 +293,20 @@
         (md-reset! rez :action :return)
         (is (= :home (mdv! :resident :location uni)))
         (md-reset! viz :action :knock-knock)))))
+
+(deftest clock-with-cc
+  (with-mx
+    (let [clk (md/make
+                :name :clock
+                :ticking? (cI false)
+                :tick (cI 0 :watch (fn [_ me new _ _]
+                                     (when (> new 2)
+                                       (with-cc :set-ticking
+                                         (prn :bam-ticking)
+                                         (mset! me :ticking? true))))))]
+      (is (= false (mget clk :ticking?)))
+      (mset! clk :tick 5)
+      (is (= true (mget clk :ticking?))))))
 
 #?(:cljs (do
            (cljs.test/run-tests)

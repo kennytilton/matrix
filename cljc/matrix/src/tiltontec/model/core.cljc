@@ -210,10 +210,17 @@
 (defn md-par [me]
   (:parent @me))
 
-(defmacro mpar []
-  `(:parent @~'me))
+(defmacro mpar [& [me]]
+  (let [me (or me 'me)]
+    `(:parent @~me)))
 
-(defn fget=
+(defmacro mdv!
+  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
+  [what slot & [me]]
+  (let [me (or me 'me)]
+    `(md-get (tiltontec.model.core/fm! ~what ~me) ~slot)))
+
+(defn fm-navig=
   "Return true if 'poss' is the matrix reference we 'seek'
 
    There are 4 branches to this.
@@ -226,27 +233,27 @@
   [seek poss]
   (assert (or (any-ref? poss) (string? poss))
     (str "poss not ref " (string? poss)))
-  ;; (println :fget= (fn? seek) (keyword? seek))
+  ;; (println :fm-navig= (fn? seek) (keyword? seek))
   (cond
     (not (any-ref? poss))                                   ;; string child of html label?
-    (do (println :fget=bailnotref poss)
+    (do (println :fm-navig=bailnotref poss)
         false)
 
     (fn? seek) (do                                          ;; (println :trying-fn)
                  (seek poss))
     (keyword? seek) (do
-                      ;; (trx :fget=sees seek (:name @poss) (ia-type poss))
+                      ;; (trx :fm-navig=sees seek (:name @poss) (ia-type poss))
                       (or (= seek (:name @poss))
                         (isa? (ia-type poss) seek)))
-    :else (do (trx :fget=-else-pplain=! seek)
+    :else (do (trx :fm-navig=-else-pplain=! seek)
               (= seek poss))))
 
 (defn fasc
   "Search matrix ascendents for 'what', starting at 'where'
 
-   See fget= for options about 'what' can be
+   See fm-navig= for options about 'what' can be
 
-   if :me? is true, and (fget= what where) return 'where'
+   if :me? is true, and (fm-navig= what where) return 'where'
 
    if (:parent @where) returns a parent, recurse up the family tree
 
@@ -257,7 +264,7 @@
                     (apply hash-map options))]
       (binding [*depender* (if (:wocd? options) nil *depender*)]
         (or (and (:me? options)
-              (fget= what where)
+              (fm-navig= what where)
               where)
 
           (when-let [par (:parent @where)]
@@ -285,29 +292,29 @@
           :default
           (recur (rest sibs)))))))
 
-(defn fget
+(defn fm-navig
   "Search matrix ascendents and descendents for 'what', starting at 'where'
 
-   if :me? is true, and (fget= what where) return 'where' (:me? is false by default)
+   if :me? is true, and (fm-navig= what where) return 'where' (:me? is false by default)
 
    if :inside? is true, try kids recursively (after removing any listed in :skip option)
 
-   if :up? is true, invoke fget on ancestor (skipping 'where')"
+   if :up? is true, invoke fm-navig on ancestor (skipping 'where')"
   {:style/indent 1}
   [what where & options]
-  ;;(println :fget-entry (if (any-ref? where) [(:tag @where)(:class @where)] where) (any-ref? where))
+  ;;(println :fm-navig-entry (if (any-ref? where) [(:tag @where)(:class @where)] where) (any-ref? where))
   (when (and where what (any-ref? where))
     ;(println :w)
     (let [options (merge {:me? false, :inside? false, :up? true, :wocd? true ;; without-c-dependency
                           } (apply hash-map options))]
-      ;;(println :fget-opts options)
+      ;;(println :fm-navig-opts options)
       ;(println :T)
       (binding [*depender* (if (:wocd? options) nil *depender*)]
 
         (when (any-ref? where)
           ;(println :f)
           (or (and (:me? options)
-                (fget= what where)
+                (fm-navig= what where)
                 where)
 
             (and (:inside? options)
@@ -316,7 +323,7 @@
                   (trx nil :inside-kids!!! (:name @where))
                   (if-let [netkids (remove #{(:skip options)} kids)]
                     (do
-                      (some #(fget what %
+                      (some #(fm-navig what %
                                :me? true
                                :inside? true
                                :up? false) netkids))
@@ -325,19 +332,19 @@
 
             (and (:up? options)
               (when-let [par (:parent @where)]
-                (fget what par
+                (fm-navig what par
                   :up? true
                   :me? true
                   :skip where
                   :inside? true)))
 
             (when (:must? options)
-              (err :fget-must-failed what where options))))))))
+              (err :fm-navig-must-failed what where options))))))))
 
 (defn fm!
   "Search matrix ascendents and descendents from node 'where', for 'what', throwing an error when not found"
   [what where]
-  (fget what where :me? false :inside? true :must? true :up? true))
+  (fm-navig what where :me? false :inside? true :must? true :up? true))
 
 (defmacro mdv!
   "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
@@ -348,20 +355,20 @@
 (defn mxu-find-name
   "Search matrix ascendents from node 'where' looking for element with given name"
   [where name]
-  (fget #(= name (md-get % :name))
+  (fm-navig #(= name (md-get % :name))
     where :me? false :up? true :inside? false))
 
 (defmacro fmu [name & [me]]
   "Search matrix ascendents from node 'me' (defaulting to 'me in current scope) looking for element with given name"
   (let [me-ref (or me 'me)]
     `(let [name# ~name]
-       (fget #(= name# (md-get % :name))
+       (fm-navig #(= name# (md-get % :name))
          ~me-ref :me? false :up? true :inside? false))))
 
 (defn mxu-find-id
   "Search matrix ascendents from node 'where' looking for element with given id"
   [where id]
-  (fget #(= id (md-get % :id))
+  (fm-navig #(= id (md-get % :id))
     where :me? false :up? true :inside? false))
 
 (defn mxu-find-type
@@ -374,14 +381,14 @@
 (defn fmi-w-class
   "Search matrix descendents from 'where' for first with given :class"
   [where class]
-  (fget #(when (any-ref? %)
+  (fm-navig #(when (any-ref? %)
            (= class (md-get % :class)))
     where :inside? true :up? false))
 
 (defn mxi-find
   "Search matrix descendents from node 'where' for node with property and value"
   [where property value]
-  (fget #(when (any-ref? %)
+  (fm-navig #(when (any-ref? %)
            (= value (md-get % property)))
     where :inside? true :up? false))
 
