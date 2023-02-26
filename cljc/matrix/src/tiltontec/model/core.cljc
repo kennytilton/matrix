@@ -346,12 +346,6 @@
   [what where]
   (fm-navig what where :me? false :inside? true :must? true :up? true))
 
-(defmacro mdv!
-  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
-  [what slot & [me]]
-  (let [me (or me 'me)]
-    `(md-get (tiltontec.model.core/fm! ~what ~me) ~slot)))
-
 (defn mxu-find-name
   "Search matrix ascendents from node 'where' looking for element with given name"
   [where name]
