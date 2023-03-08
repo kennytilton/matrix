@@ -7,9 +7,8 @@
               :refer-macros [trx prog1 *trx?* def-rmap-slots]]
        :clj  [tiltontec.util.base
               :refer :all])
-    [tiltontec.util.core
-     :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+
+    #_ #?(:clj  [tiltontec.cell.base :refer :all :as cty]
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
@@ -21,9 +20,6 @@
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
                       *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
-
-    [tiltontec.cell.observer
-     :refer [observe]]
 
     [tiltontec.cell.evaluate :as eval]
 
@@ -46,6 +42,9 @@
 (defn mset! [me slot new-value]
   (md/mset! me slot new-value))
 
+(defn mswap! [me slot swap-fn & swap-fn-args]
+  (apply md/mswap! me slot swap-fn swap-fn-args))
+
 (defn mget [me slot]
   (md/mget me slot ))
 
@@ -62,3 +61,18 @@
 
 (defn md-quiesce [me]
   (eval/md-quiesce me))
+
+;;; --- navigation ---------------------------------
+
+(defn fm-navig [what where & options]
+  (apply md/fm-navig what where options))
+
+(defn fasc [what where & options]
+  (apply md/fasc what where options))
+
+(defmacro fmu [name & [me]]
+  "Search matrix ascendents from node 'me' (defaulting to 'me in current scope) looking for element with given name"
+  (let [me-ref (or me 'me)]
+    `(let [name# ~name]
+       (fm-navig #(= name# (mget % :name))
+         ~me-ref :me? false :up? true :inside? false))))

@@ -41,11 +41,11 @@
     [tiltontec.model.base :refer [md-cz md-cell]]
     [tiltontec.matrix.api :refer [mget mset!] :as mx]
     #?(:clj  [tiltontec.model.core
-              :refer [cFkids the-kids mdv!  md-get md-name
+              :refer [cFkids the-kids mdv!   md-name
                       fm-navig fm! make md-reset! ] :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [ md-get md-name fm-navig fm! make md-reset! ]
+              :refer [  md-name fm-navig fm! make md-reset! ]
               :as md])
     ))
 
@@ -56,7 +56,7 @@
     (let [u (md/make
               :kon (cI false :slot :kon)
               :kids (cF                                     ;;(trx :kids-run! *depender*)
-                      (when (md-get me :kon)
+                      (when (mget me :kon)
                         (vector
                           (md/make
                             :parent me
@@ -114,7 +114,7 @@
                                 :name :aa
                                 :aa42 (cF (* 2 (mdv! :bb :bb21)))
                                 :aa3 (cI 3))
-                              (when (md-get me :kon)
+                              (when (mget me :kon)
                                 (md/make
                                   :parent me
                                   :name :konzo
@@ -123,7 +123,7 @@
                                 :parent me
                                 :name :bb
                                 :bb21 (cF (* 7 (mdv! :aa :aa3)))))))))]
-      (is (= 63 (md-get u :u63)))
+      (is (= 63 (mget u :u63)))
       (is (= 42 (mdv! :aa :aa42 u)))
       (is (= 21 (mdv! :bb :bb21 u)))
       (is (nil? (fm-navig :konzo u :must? false)))
@@ -145,14 +145,14 @@
                             :name :aa
                             :aa42 (cF (* 2 (mdv! :bb :bb21)))
                             :aa3 (cI 3))
-                          (when (md-get me :kon)
+                          (when (mget me :kon)
                             (md/make
                               :name :konzo
                               :kzo (cI 3)))
                           (md/make
                             :name :bb
                             :bb21 (cF (* 7 (mdv! :aa :aa3)))))))]
-      (is (= 63 (md-get u :u63)))
+      (is (= 63 (mget u :u63)))
       (is (= 42 (mdv! :aa :aa42 u)))
       (is (= 21 (mdv! :bb :bb21 u)))
       (is (nil? (fm-navig :konzo u :must? false)))
@@ -176,7 +176,7 @@
                           (md/make :name :dd
                             :kzo (cF (let [p (fm-navig :picker me)]
                                        (println :bingo p)
-                                       (md-get p :value)))))))]
+                                       (mget p :value)))))))]
       (is (= 42 (mdv! :picker :value u)))
       (is (= 42 (mdv! :dd :kzo u))))))
 
@@ -187,9 +187,9 @@
     (let [me (md/make
                :type ::typetest
                :x2 (cI 2)
-               :age (cF (* (md-get me :x2)
+               :age (cF (* (mget me :x2)
                           21)))]
-      (is (= 42 (md-get me :age)))
+      (is (= 42 (mget me :age)))
       (is (ia-type? me ::typetest)))))
 
 (deftest mm-md-quiescer
@@ -199,13 +199,13 @@
                :type ::typetest
                :name :meself
                :x2 (cI 2)
-               :age (cF (* (md-get me :x2)
+               :age (cF (* (mget me :x2)
                           21))
                :on-quiesce (fn [md] (prn :fz-test md)
                             (reset! mme @md)))]
       (prn :meta (meta me))
       (prn :mekeys (keys @me))
-      (is (= 42 (md-get me :age)))
+      (is (= 42 (mget me :age)))
       (is (ia-type? me ::typetest))
       (is (nil? @mme))
       (#?(:clj dosync :cljs do)
@@ -216,9 +216,9 @@
   (with-mx
     (let [me (md/make
                :x2 2
-               :age (cF (* 21 (md-get me :x2))))]
-      (is (= 2 (md-get me :x2)))
-      (is (= 42 (md-get me :age)))
+               :age (cF (* 21 (mget me :x2))))]
+      (is (= 2 (mget me :x2)))
+      (is (= 42 (mget me :age)))
       (is (nil? (md-cell me :age))))))
 
 (deftest mm-install-alive
@@ -229,14 +229,14 @@
                   :name "Bob"
                   :action (cI nil
                             :ephemeral? true)
-                  :bogus (cF (if-let [be (md-get me :bogus-e)]
+                  :bogus (cF (if-let [be (mget me :bogus-e)]
                                (do
                                  (trx :bingo-e!!!!!!!! be @bct)
                                  (swap! bct inc)
                                  (* 2 be))
                                (trx :bogus-no-e (:bogus-e @me))))
                   :bogus-e (cI 21 :ephemeral? true)
-                  :loc (cF (case (md-get me :action)
+                  :loc (cF (case (mget me :action)
                              :leave :away
                              :return :home
                              :missing))))]
@@ -279,14 +279,14 @@
                               :name :resident
                               :action (cI nil :ephemeral? true)
                               :location (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
-                                          (case (md-get me :action)
+                                          (case (mget me :action)
                                             :leave :away
                                             :return :home
                                             :missing))
                               :response (cF+ [:obs (fn-obs (when new
                                                              (trx :r-response new)))
                                               :ephemeral? true]
-                                          (when (= :home (md-get me :location))
+                                          (when (= :home (mget me :location))
                                             (when-let [act (mdv! :visitor :action)]
                                               (case act
                                                 :knock-knock "hello, world")))))
@@ -299,7 +299,7 @@
                                                      (case new
                                                        :call-police (trx :auto-dialing-911)
                                                        nil))]
-                                          (when (= :on (md-get me :on-off))
+                                          (when (= :on (mget me :on-off))
                                             (when-let [action (mdv! :visitor :action)]
                                               (case action
                                                 :smashing-window :call-police
