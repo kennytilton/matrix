@@ -20,7 +20,7 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation*
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
@@ -29,14 +29,14 @@
     [tiltontec.cell.observer
      :refer [observe]]
 
-    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
+    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken finalize]]
+    [tiltontec.cell.evaluate :refer [c-get c-awaken md-quiesce]]
     [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
     ))
 
@@ -52,16 +52,29 @@
   (assert me (str "md-get passed nil for me accessing slot: " slot))
   (assert (any-ref? me) (str "md-get passed non-model for me accessing slot: " slot ": " me))
   (if (not (contains? @me slot))
-    (do #_ (prn :md-get>nosuchslot slot @me)
+    (do #_(prn :md-get>nosuchslot slot @me)
       ;;(when-not (some #{slot} [:kids :class]) ;; todo do we need an md-get-maybe in the api?
-     #_ (err str
-        "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\".\n"
-        "...> FYI: known slots are" (keys @me)))
-    (do ;; when (any-ref? me)
+      (err str
+        "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\"."
+        "\n...> FYI: known slots are" (keys @me)
+        "\n...> FYI: use mget? if prop might not exist."))
+    (do                                                     ;; when (any-ref? me)
       ;;(prn :MD_GETany-ref!! slot)
       (if-let [c (md-cell me slot)]
         (c-get c)
         (slot @me)))))
+
+(defn mget? [me slot]
+  ;; (trx :md-get slot me)
+  (assert me (str "md-get passed nil for me accessing slot: " slot))
+  (assert (any-ref? me) (str "md-get passed non-model for me accessing slot: " slot ": " me))
+  (when (contains? @me slot)
+    (mget me slot)))
+
+(comment
+  (let [m (make ::test
+            :answer 42)]
+    (mget m :answerx)))
 
 (defmacro def-mget [reader-prefix & slots]
   `(do
@@ -73,13 +86,12 @@
 (defn md-get "deperecated. Use mget."
   [me slot] (mget me slot))
 
-#_
-(defn md-getx [tag me slot]
-  (md-get me slot)
-  #_(wtrx [0 100 (str "md-getx " tag slot (ia-type me))]
-      (if-let [c (md-cell me slot)]
-        (c-get c)
-        (slot @me))))
+#_(defn md-getx [tag me slot]
+    (md-get me slot)
+    #_(wtrx [0 100 (str "md-getx " tag slot (ia-type me))]
+        (if-let [c (md-cell me slot)]
+          (c-get c)
+          (slot @me))))
 
 (def ^:dynamic *parent* nil)
 
@@ -144,20 +156,24 @@
     (#?(:clj dosync :cljs do)
       ;;(println :md-making (nth arg-list 1))
       (let [iargs (apply hash-map arg-list)
+            meta-keys #{:type :on-quiesce}
             me (#?(:clj ref :cljs atom)
                  (merge {:parent *parent*}
                    (->> arg-list
                      (partition 2)
                      (filter (fn [[slot v]]
-                               (not (= :type slot))))
+                               (not (some #{slot} meta-keys))))
                      (map (fn [[k v]]
+                            (prn :final! k)
                             (vector k (if (c-ref? v)
                                         unbound
                                         v))))
                      (into {})))
-                 :meta {:state :nascent
-                        :type  (get iargs :type ::cty/model)})]
+                 :meta {:state     :nascent
+                        :type      (get iargs :type ::cty/model)
+                        :on-quiesce (get iargs :on-quiesce)})]
         (assert (meta me))
+        (prn :make-keys (keys @me))
         #_(when-not (:parent @me)
             (println :no-par!!!! me))
         (rmap-meta-setf
@@ -165,20 +181,24 @@
           (->> arg-list
             (partition 2)
             (filter (fn [[slot v]]
-                      (md-install-cell me slot v)))
+                      (when-not (some #{slot} meta-keys)
+                        (md-install-cell me slot v))))
             (map vec)
             (into {})))
+
+        (prn :make-keys-post-cz (keys @me))
 
         (with-integrity (:awaken me)
           (md-awaken me)
           #_(println :md-awaken-complete))
+        (prn :make-keys-exit (keys @me))
         me))))
 
 ;;; --- family ------------------------------------
 
 (def mm-obj #?(:clj Object :cljs js/Object))
 
-(defn md-kids [me] (md-get me :kids))
+(defn md-kids [me] (md-get me :kids))                       ;; todo lose this
 
 (defn fm-kids-observe [me newk oldk c]
   (when-not (= oldk unbound)
@@ -187,25 +207,21 @@
       (when-not (empty? lostks)
         (doseq [k lostks]
           ;;(prn :obs-k-not2be!! k)
-          (finalize k))))))
+          (md-quiesce k))))))
 
 (defmethod observe [:kids ::family]
   [_ me newk oldk c]
   ;;(prn :observe-kids-family-method)
   (fm-kids-observe me newk oldk c))
 
-(defmethod finalize [::family]
+(defmethod md-quiesce [::family]
   [me]
-  ;;(prn :family-finalize! me)
+  ;;(prn :family-md-quiesce! me)
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      ;;(prn :fm-finalize-kid!)
-      (finalize k)))
-  (finalize-self me))
-
-(defn mx-par [me]
-  ;; deprecate
-  (:parent @me))
+      ;;(prn :fm-md-quiesce-kid!)
+      (md-quiesce k)))
+  (md-quiesce-self me))
 
 (defn md-par [me]
   (:parent @me))
@@ -276,7 +292,7 @@
 
 (defn nextsib [mx]
   (without-c-dependency
-    (loop [sibs (md-kids (mx-par mx))]
+    (loop [sibs (md-kids (md-par mx))]
       (when sibs
         (if (= mx (first sibs))
           (second sibs)
@@ -284,7 +300,7 @@
 
 (defn prevsib [mx]
   (without-c-dependency
-    (loop [sibs (md-kids (mx-par mx))]
+    (loop [sibs (md-kids (md-par mx))]
       (when sibs
         (cond
           (= mx (first sibs)) nil
@@ -318,7 +334,7 @@
                 where)
 
             (and (:inside? options)
-              (if-let [kids (md-get where :kids)]
+              (if-let [kids (mget? where :kids)]
                 (do
                   (trx nil :inside-kids!!! (:name @where))
                   (if-let [netkids (remove #{(:skip options)} kids)]
@@ -376,14 +392,14 @@
   "Search matrix descendents from 'where' for first with given :class"
   [where class]
   (fm-navig #(when (any-ref? %)
-           (= class (md-get % :class)))
+               (= class (md-get % :class)))
     where :inside? true :up? false))
 
 (defn mxi-find
   "Search matrix descendents from node 'where' for node with property and value"
   [where property value]
   (fm-navig #(when (any-ref? %)
-           (= value (md-get % property)))
+               (= value (md-get % property)))
     where :inside? true :up? false))
 
 (defn fmo
@@ -430,8 +446,8 @@
         k-factory (md-get me :kid-factory)]
     (assert (and k-factory))
 
-    #_ (prn :kvk-loading (count (md-get me :kid-values))
-      (map :hn-id (md-get me :kid-values)))
+    #_(prn :kvk-loading (count (md-get me :kid-values))
+        (map :hn-id (md-get me :kid-values)))
 
     (doall
       (map-indexed

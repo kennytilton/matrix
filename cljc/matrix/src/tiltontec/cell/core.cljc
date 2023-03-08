@@ -23,7 +23,7 @@
                       c-rule c-me c-value-state c-callers
                       c-synapses unfin-biz-build *causation*
                       c-synaptic? c-pulse  c-ephemeral? c-slot c-slot-name
-                      *depender* *finalize* *within-integrity*
+                      *depender* *quiesce* *within-integrity*
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
@@ -48,11 +48,11 @@
 
 (def +valid-input-options+
   #{:obs :watch :slot :ephemeral? :unchanged-if
-    :value :input? :debug :finalizer})
+    :value :input? :debug :on-quiesce})
 (def +valid-formula-options+
   #{:obs :watch :slot :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
-    :code :value :rule :async? :and-then? :debug :finalizer})
+    :code :value :rule :async? :and-then? :debug :on-quiesce})
 
 (defn c-options-canonicalize [options allowed]
   (loop [[k v & more] options
@@ -403,7 +403,7 @@ execution as soon as the current change is manifested."
             *call-stack* nil
             *depender* nil
             *defer-changes* false
-            *finalize* false
+            *quiesce* false
             *custom-propagator* nil
             *c-prop-depth* 0
             *one-pulse?* false
@@ -415,7 +415,6 @@ execution as soon as the current change is manifested."
      (fn [] ~@body)))
 
 ;;; --- dag dump utility ----------------------------------------
-
 
 (def ^:dynamic *dag-depth*
   "How far we are in edges from the starting node."

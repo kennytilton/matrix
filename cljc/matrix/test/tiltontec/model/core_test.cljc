@@ -22,7 +22,7 @@
                       unlink-from-callers *causation*
                       c-slot-name c-synaptic? caller-drop
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity with-cc]]
@@ -39,10 +39,13 @@
 
     [tiltontec.cell.evaluate :refer [c-get c-awaken]]
     [tiltontec.model.base :refer [md-cz md-cell]]
-    #?(:clj  [tiltontec.model.core :refer :all :as md]
+    [tiltontec.matrix.api :refer [mget mset!] :as mx]
+    #?(:clj  [tiltontec.model.core
+              :refer [cFkids the-kids mdv!  md-get md-name
+                      fm-navig fm! make md-reset! ] :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [md-get md-name fm-navig fm! make md-reset! md-getx]
+              :refer [ md-get md-name fm-navig fm! make md-reset! ]
               :as md])
     ))
 
@@ -188,6 +191,26 @@
                           21)))]
       (is (= 42 (md-get me :age)))
       (is (ia-type? me ::typetest)))))
+
+(deftest mm-md-quiescer
+  (with-mx
+    (let [mme (atom nil)
+          me (md/make
+               :type ::typetest
+               :name :meself
+               :x2 (cI 2)
+               :age (cF (* (md-get me :x2)
+                          21))
+               :on-quiesce (fn [md] (prn :fz-test md)
+                            (reset! mme @md)))]
+      (prn :meta (meta me))
+      (prn :mekeys (keys @me))
+      (is (= 42 (md-get me :age)))
+      (is (ia-type? me ::typetest))
+      (is (nil? @mme))
+      (#?(:clj dosync :cljs do)
+        (mx/md-quiesce me))
+      (is (not (nil? @mme))))))
 
 (deftest mm-opti-1
   (with-mx

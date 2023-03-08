@@ -17,7 +17,7 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation* c-md-name
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
@@ -77,9 +77,11 @@
    (2) call observers of all slots"
   [me]
   (assert me "md-awaken passed nil")
+  (prn :awaken-entry-sees (keys @me))
   (md-awaken-before me)
   (c-assert (= :nascent (md-state me)))
   (rmap-meta-setf [:state me] :awakening)
+  (prn :awaken-sees (keys @me))
   (doseq [slot (keys @me)]
     ;; next is tricky: if slot is in :cz but nil, it has been
     ;; optimized-away and observed then in the rare case

@@ -117,7 +117,7 @@
 (declare call-with-integrity)
 
 (defmacro with-integrity [[opcode info] & body]
-  `(call-with-integrity
+  `(tiltontec.cell.integrity/call-with-integrity
      ~opcode
      ~info
      (fn [~'opcode ~'defer-info]

@@ -56,7 +56,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defonce uncurrent (gensym "uncurrent-formulaic-value"))
 
-(def ^:dynamic *finalize* false)
+(def ^:dynamic *quiesce* false)
 
 ;;; --- unfinished business post state change ------------------------
 

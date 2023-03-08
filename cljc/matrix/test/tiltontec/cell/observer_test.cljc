@@ -19,7 +19,7 @@
                       unlink-from-callers *causation*
                       c-slot-name c-synapticF caller-drop
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
@@ -72,6 +72,20 @@
     (is (= :bingo2 (c-slot c) (c-slot-name c)))
     (is (= (c-get c) 42))
     (is (= false @bingo2)))))
+
+(deftest test-input-obs
+  (with-mx
+    (let [c (cI 42 :slot :bingo2
+              :obs (fn-obs (reset! bingo2 true)))]
+      (is (ia-type? c ::cty/cell))
+      (is (= (c-value-state c) :valid))
+      (is (= #{} (c-callers c)))
+      (is (c-input? c))
+      (is (c-valid? c))
+      (is (nil? (c-model c)))
+      (is (= :bingo2 (c-slot c) (c-slot-name c)))
+      (is (= (c-get c) 42))
+      (is (= false @bingo2)))))
 
 (deftest t-custom-obs
   (with-mx

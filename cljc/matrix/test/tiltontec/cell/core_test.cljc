@@ -20,7 +20,7 @@
                       unlink-from-callers *causation*
                       c-slot-name c-synaptic? caller-drop
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
@@ -182,6 +182,27 @@
 
         (is (= 2 (c-get a)))
         (is (= 21 (c-get b)))))))
+
+(deftest test-c-md-quiesce
+  (with-mx
+    (let [cc (atom nil)
+          c (cI 42 :slot :cool
+              :on-quiesce (fn [c]
+                          (reset! cc @c)))]
+      (is (nil? @cc))
+      (is (c-ref? c))
+      (is (= (c-value c) 42))
+      (is (= (c-value-state c) :valid))
+      (is (= #{} (c-callers c)))
+      (is (c-input? c))
+      (is (nil? (c-model c)))
+      (is (= :cool (c-slot c) (c-slot-name c)))
+      (#?(:clj dosync :cljs do)
+        (tiltontec.cell.evaluate/c-quiesce c))
+      (is (not (nil? @cc)))
+
+      (let [c @cc]
+        (is (= :cool (:slot c)))))))
 
 #?(:cljs (do
            (cljs.test/run-tests)

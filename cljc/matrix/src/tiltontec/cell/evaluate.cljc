@@ -25,7 +25,7 @@
                       unlink-from-callers *causation*
                       c-synaptic? dependency-drop c-md-name
                       c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
-                      *depender* *finalize*
+                      *depender* *quiesce*
                       *c-prop-depth* md-slot-owning? c-lazy] :as cty])
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
@@ -65,8 +65,8 @@
 
   (cond
     ; --------------------------------------------------
-    *finalize*
-    ; we got kicked off during finalize processing
+    *quiesce*
+    ; we got kicked off during md-quiesce processing
     ; just return what we have if valid, else nil
     (cond
       (c-unbound? c)
@@ -381,13 +381,17 @@
 
 (defn c-quiesce [c]
   (assert (c-ref? c))
+  (when-let [onq (:on-quiesce @c)]
+    (onq c))
   (unlink-from-callers c)
   (unlink-from-used c :quiesce)
   (#?(:clj ref-set :cljs reset!) c :dead-c #_ [:dead-c @c]))
 
-;; --- finalize --
+;; --- md-quiesce --
 
-(defn finalize-self [me]
+(defn md-quiesce-self [me]
+  (when-let [onq (:on-quiesce (meta me))]
+    (onq me))
   (doseq [c (vals (:cz (meta me)))]
     (when c
       ;; not if optimized away
@@ -395,12 +399,12 @@
   (#?(:clj ref-set :cljs reset!) me nil)
   (rmap-meta-setf [::cty/state me] :dead))
 
-(defmulti finalize (fn [me]
+(defmulti md-quiesce (fn [me]
                       (assert (md-ref? me))
                       [(ia-type me)]))
 
-(defmethod finalize :default [me]
-  (finalize-self me))
+(defmethod md-quiesce :default [me]
+  (md-quiesce-self me))
 
 ;----------------- change detection ---------------------------------
 
@@ -459,7 +463,7 @@
                 (md-slot-owning? (type (c-model c)) (c-slot c)))
           (when-let [ownees (difference (set-ify prior-value) (set-ify (c-value c)))]
             (doseq [ownee ownees]
-              (finalize ownee))))
+              (md-quiesce ownee))))
 
         (propagate-to-callers c callers)
         ;;(trx :obs-chkpulse!!!!!!!! @*pulse* (c-pulse-observed c))
