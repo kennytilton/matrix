@@ -137,7 +137,6 @@
   (rmap-setf [slot me] new-value))
 
 (defn make [& arg-list]
-  ;; (prn :make-entry (count arg-list) (first arg-list))
   (cond
     (odd? (count arg-list)) (apply make :type arg-list)
     :else
@@ -152,7 +151,6 @@
                      (filter (fn [[slot v]]
                                (not (some #{slot} meta-keys))))
                      (map (fn [[k v]]
-                            (prn :final! k)
                             (vector k (if (c-ref? v)
                                         unbound
                                         v))))
@@ -161,9 +159,7 @@
                         :type      (get iargs :type ::cty/model)
                         :on-quiesce (get iargs :on-quiesce)})]
         (assert (meta me))
-        (prn :make-keys (keys @me))
-        #_(when-not (:parent @me)
-            (println :no-par!!!! me))
+
         (rmap-meta-setf
           [:cz me]
           (->> arg-list
@@ -174,12 +170,9 @@
             (map vec)
             (into {})))
 
-        (prn :make-keys-post-cz (keys @me))
-
         (with-integrity (:awaken me)
-          (md-awaken me)
-          #_(println :md-awaken-complete))
-        (prn :make-keys-exit (keys @me))
+          (md-awaken me))
+
         me))))
 
 ;;; --- family ------------------------------------

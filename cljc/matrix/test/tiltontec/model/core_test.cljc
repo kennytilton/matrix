@@ -203,8 +203,6 @@
                           21))
                :on-quiesce (fn [md] (prn :fz-test md)
                             (reset! mme @md)))]
-      (prn :meta (meta me))
-      (prn :mekeys (keys @me))
       (is (= 42 (mget me :age)))
       (is (ia-type? me ::typetest))
       (is (nil? @mme))

@@ -77,11 +77,9 @@
    (2) call observers of all slots"
   [me]
   (assert me "md-awaken passed nil")
-  (prn :awaken-entry-sees (keys @me))
   (md-awaken-before me)
   (c-assert (= :nascent (md-state me)))
   (rmap-meta-setf [:state me] :awakening)
-  (prn :awaken-sees (keys @me))
   (doseq [slot (keys @me)]
     ;; next is tricky: if slot is in :cz but nil, it has been
     ;; optimized-away and observed then in the rare case
