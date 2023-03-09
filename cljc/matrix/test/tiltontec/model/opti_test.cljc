@@ -33,16 +33,18 @@
               :refer-macros [defobserver fn-obs]])
 
     #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+              :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [cI c-reset! make-cell make-c-formula]]
-       :clj  [tiltontec.cell.core :refer :all])
+       :clj  [tiltontec.cell.core
+              :refer [cI c-reset! make-cell make-c-formula]])
 
     [tiltontec.cell.evaluate :refer [c-get c-awaken]]
     [tiltontec.model.base :refer [md-cz md-cell]]
+    [tiltontec.matrix.api :refer [cF cf-freeze with-mx]]
     #?(:clj  [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [mget md-name fm-navig fm! make md-reset! mgetx]
+              :refer [mget md-name fm-navig fm! make md-reset!]
               :as md])
     ))
 

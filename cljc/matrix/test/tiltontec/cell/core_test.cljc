@@ -33,14 +33,13 @@
     [tiltontec.cell.evaluate :refer [c-get c-awaken]]
 
     #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+              :refer-macros [cF cF+ cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
     ))
 
 #?(:cljs (set! *print-level* 3))
-
 
 (deftest test-input
   (with-mx
