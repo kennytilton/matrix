@@ -151,22 +151,12 @@ rule to get once behavior or just when fm-traversing to find someone"
 (derive ::cell ::object)
 (derive ::c-formula ::cell)
 
-(defn ia-type [it]
-  #?(:clj  (type it)
-     :cljs (cond
-             (instance? cljs.core.Atom it)
-             (:type (meta it))
-             :default (type it))))
-
-(defn ia-type? [it typ]
-  (isa? (ia-type it) typ))
-
 (defn c-formula? [c]
-  (ia-type? c ::c-formula))
+  (mx-type? c ::c-formula))
 
 (defn c-ref? [x]
   (and (any-ref? x)
-    (ia-type? x ::cell)
+    (mx-type? x ::cell)
     (map? @x)
     x))
 
@@ -260,24 +250,20 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn md-ref? [x]
   ;;(trx :md-ref?-sees x)
   (and (any-ref? x)))
-;; hhack (ia-type? x ::model)
+;; hhack (mx-type? x ::model)
 
 
 ;; --- mdead? ---
 
-(defmulti mdead? (fn [me]
-                   (assert (or (nil? me)
-                             (md-ref? me)))
-                   [(type (when me @me))]))
-
-(defmethod mdead? :default [me]
+(defn mdead? [me]
   (if-let [m (meta me)]
     (= :dead (::state m))
     false))
 
 ;;---
 
-#?(:cljs (set! *print-level* 3))                            ;; cells are recursive data for now
+#?(:clj (set! *print-level* 3)
+   :cljs (set! *print-level* 3))                            ;; cells are recursive data for now
 
 (defn md-slot-owning? [class-name slot-name]
   ;; hhack
@@ -309,7 +295,7 @@ rule to get once behavior or just when fm-traversing to find someone"
            (c-value-state c)
            [:useds (count (:useds @c))
             :callers (count (:callers @c))]
-           (ia-type c)]))
+           (mx-type c)]))
 
 
 

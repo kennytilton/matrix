@@ -7,7 +7,7 @@
              :refer [cI]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.model.core
-             :refer-macros [with-par mdv! mx-par fmu]
+             :refer-macros [with-par mdv! mpar fmu]
              :refer [fmo matrix mset! mget mswap!] :as md]
             [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
             [tiltontec.web-mx.html

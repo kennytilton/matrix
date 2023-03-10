@@ -14,7 +14,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type?
+                      c-unbound? c-input? mx-type?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
@@ -174,9 +174,8 @@
                                         (md/make
                                           :name :bbx))))
                           (md/make :name :dd
-                            :kzo (cF (let [p (fm-navig :picker me)]
-                                       (println :bingo p)
-                                       (mget p :value)))))))]
+                              :kzo (cF (let [p (fm-navig :picker me)]
+                                         (mget p :value)))))))]
       (is (= 42 (mdv! :picker :value u)))
       (is (= 42 (mdv! :dd :kzo u))))))
 
@@ -185,18 +184,18 @@
 (deftest mm-typed
   (with-mx
     (let [me (md/make
-               :type ::typetest
+               :mx-type ::typetest
                :x2 (cI 2)
                :age (cF (* (mget me :x2)
                           21)))]
       (is (= 42 (mget me :age)))
-      (is (ia-type? me ::typetest)))))
+      (is (mx-type? me ::typetest)))))
 
 (deftest mm-md-quiescer
   (with-mx
     (let [mme (atom nil)
           me (md/make
-               :type ::typetest
+               :mx-type ::typetest
                :name :meself
                :x2 (cI 2)
                :age (cF (* (mget me :x2)
@@ -204,7 +203,7 @@
                :on-quiesce (fn [md] (prn :fz-test md)
                             (reset! mme @md)))]
       (is (= 42 (mget me :age)))
-      (is (ia-type? me ::typetest))
+      (is (mx-type? me ::typetest))
       (is (nil? @mme))
       (#?(:clj dosync :cljs do)
         (mx/md-quiesce me))
@@ -335,7 +334,7 @@
 
 ;; NOTA BENE! tests below are not appropriate for lein test. leave commented out when not being developed. Use ad hoc.
 #_(deftest ad-hoc-errmsg-need-CI
-    (let [thing (make                                       ;; :type ::adhoc
+    (let [thing (make                                       ;; :mx-type ::adhoc
                   :title "THING"
                   ;; :slot :state
                   ;; :flush-my-cell (cF 42) ;; testing that cells without dependencies get optimized away for efficiency
@@ -355,7 +354,7 @@
 ;; not appropriate for lein test
 
 #_(deftest ad-hoc-errmsg-need-cFn
-    (let [thing (make                                       ;; :type ::adhoc
+    (let [thing (make                                       ;; :mx-type ::adhoc
                   :title "THING"
                   :state (cI :init-state)
                   :derived-prop (cF+n [:obs (fn [slot me new old cell]
@@ -371,7 +370,7 @@
 
 ;; not suitable for `lein test`
 #_(deftest ad-hoc-errmsg-cF-dependency-cycle
-    (let [thing (make                                       ;; :type ::adhoc
+    (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :title "cycle test"
                   :val-0 (cF+ [:obs (fn [slot me new old cell]
@@ -388,7 +387,7 @@
       (is true)))
 
 #_(deftest ad-hoc-errmsg-undeferred-change
-    (let [thing (make                                       ;; :type ::adhoc
+    (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :title "undeferred change test"
                   :change-count (cI 0)
@@ -402,7 +401,7 @@
       (is true)))
 
 #_(deftest ad-hoc-errmsg-mget-no-such-slot
-    (let [thing (make                                       ;; :type ::adhoc
+    (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :value (cI 42))]
       (prn :should-NOT-get-this-far (mget thing :valu-mistype))

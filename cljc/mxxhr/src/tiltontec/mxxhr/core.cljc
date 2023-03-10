@@ -22,7 +22,7 @@
        :clj  [tiltontec.cell.base :refer :all])
 
 
-    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
+    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
 
     #?(:cljs [tiltontec.cell.synapse
               :refer-macros [with-synapse]
@@ -58,8 +58,7 @@
 
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [mget fasc fm! make md-reset! mswap! backdoor-reset!
-             mx-par]
+     :refer [mget fasc fm! make md-reset! mswap! backdoor-reset!]
      :as md]
 
     #?(:clj
@@ -228,15 +227,15 @@
      :clj  (when (.isActive xhr)
              (.abort xhr))))
 
-(defmethod finalize [:tiltontec.mxxhr.core/xhr] [me]
+(defmethod md-quiesce [:tiltontec.mxxhr.core/xhr] [me]
   ;; todo: worry about leaks
-  ;; (println :finalize-xhr!!!!!!! me)
+  ;; (println :md-quiesce-xhr!!!!!!! me)
 
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      (finalize k)))
+      (md-quiesce k)))
 
-  (finalize-self me))
+  (md-quiesce-self me))
 
 (defn send-xhr
   ([uri]

@@ -12,7 +12,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type?
+                      c-unbound? c-input? mx-type?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
@@ -46,7 +46,10 @@
     (let [c (make-cell
               :slot :mol
               :value 42)]
-      (is (ia-type? c ::cty/cell))
+      (prn :cell @c)
+      (prn :meta (meta c))
+      (prn :mx-type (mx-type c) :type (type c))
+      (is (mx-type? c ::cty/cell))
       (is (= (c-value c) 42))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
@@ -57,7 +60,7 @@
 (deftest test-c-in
   (with-mx
     (let [c (cI 42)]
-      (is (ia-type? c ::cty/cell))
+      (is (mx-type? c ::cty/cell))
       (is (= (c-value c) 42))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
@@ -80,7 +83,7 @@
 (deftest test-c-formula
   (with-mx
     (let [c (cF (+ 40 2))]
-      (is (ia-type? c ::cty/c-formula))
+      (is (mx-type? c ::cty/c-formula))
       (is (fn? (c-rule c)))
       (is (= (c-value c) unbound))
       (is (= (c-value-state c) :unbound))

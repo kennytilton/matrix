@@ -8,7 +8,7 @@
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
-              :refer [type-cljc]
+              :refer [mx-type]
               :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
        :clj  [tiltontec.util.base :refer :all])
 
@@ -86,7 +86,7 @@
                   :ephemeral?         false
                   :input?             true}
             options)
-      :meta {:type :tiltontec.cell.base/cell})))
+      :meta {:mx-type :tiltontec.cell.base/cell})))
 #_
 (defn make-cell [& kvs]
   (let [options (apply hash-map kvs)]
@@ -103,7 +103,7 @@
                                      :ephemeral?         false
                                      :input?             true}
                                options)
-      :meta {:type :tiltontec.cell.base/cell})))
+      :meta {:mx-type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
   (let [options (apply hash-map (c-options-canonicalize kvs
@@ -126,7 +126,7 @@
                                      :input?             false} ;; not redundant: can start with rule, continue as input
 
                                options)
-      :meta {:type :tiltontec.cell.base/c-formula})))
+      :meta {:mx-type :tiltontec.cell.base/c-formula})))
 
 ;;___________________ constructors _______________________________
 ;; I seem to have created a zillion of these, but I normally
@@ -321,7 +321,7 @@ in the CL version of Cells SETF itself is the change API dunction."
         "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
         "..> FYI: intended new value is [" new-value "].\n"
         "..> FYI: the non-input cell is " @c "\n"
-        "..> FYI: instance is of type " (type-cljc me) ".\n"
+        "..> FYI: instance is of type " (mx-type me) ".\n"
         "..> FYI: full instance is " @me "\n"
         "..> FYI: instance meta is " (meta me) "\n."))
 
@@ -333,7 +333,7 @@ in the CL version of Cells SETF itself is the change API dunction."
         "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
         "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
         "...> FYI: intended new value is [" new-value "]; current value is [" (get @me slot :no-such-slot) "].\n"
-        "...> FYI: instance is of type " (type-cljc me) ".\n"
+        "...> FYI: instance is of type " (mx-type me) ".\n"
         "...> FYI: full instance is " @me "\n"
         "...> FYI: instance meta is " (meta me) "\n.")
       #_(err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"

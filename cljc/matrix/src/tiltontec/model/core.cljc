@@ -4,7 +4,7 @@
   (:require
     [clojure.set :refer [difference]]
     #?(:cljs [tiltontec.util.base
-              :refer [type-cljc]
+              :refer [mx-type]
               :refer-macros [trx prog1 *trx?* def-rmap-slots]]
        :clj  [tiltontec.util.base
               :refer :all])
@@ -14,7 +14,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type? ia-type
+                      c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
@@ -48,17 +48,15 @@
   (:name @me))
 
 (defn mget [me slot]
-  ;; (trx :mget slot me)
   (assert me (str "mget passed nil for me accessing slot: " slot))
   (assert (any-ref? me) (str "mget passed non-model for me accessing slot: " slot ": " me))
   (if (not (contains? @me slot))
-    (do #_(prn :mget>nosuchslot slot @me)
+    (do ;(prn :mget>nosuchslot!!! slot :me @me)
       (err str
         "MXAPI_ILLEGAL_GET_NO_SUCH_SLOT> mget was attempted on non-existent slot \"" slot "\"."
         "\n...> FYI: known slots are" (keys @me)
         "\n...> FYI: use mget? if prop might not exist."))
     (do                                                     ;; when (any-ref? me)
-      ;;(prn :MD_GETany-ref!! slot)
       (if-let [c (md-cell me slot)]
         (c-get c)
         (slot @me)))))
@@ -103,7 +101,7 @@
             "...> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
             "...> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
             "...> FYI: intended new value is [" new-value "]; initial value was [" (get @me slot :no-such-slot) "].\n"
-            "...> FYI: instance is of type " (type-cljc me) ".\n"
+            "...> FYI: instance is of type " (mx-type me) ".\n"
             "...> FYI: full instance is " @me "\n"
             "...> FYI: instance meta is " (meta me) "\n.")
           )
@@ -138,12 +136,12 @@
 
 (defn make [& arg-list]
   (cond
-    (odd? (count arg-list)) (apply make :type arg-list)
+    (odd? (count arg-list)) (apply make :mx-type arg-list)
     :else
     (#?(:clj dosync :cljs do)
       ;;(println :md-making (nth arg-list 1))
       (let [iargs (apply hash-map arg-list)
-            meta-keys #{:type :on-quiesce}
+            meta-keys #{:mx-type :on-quiesce}
             me (#?(:clj ref :cljs atom)
                  (merge {:parent *parent*}
                    (->> arg-list
@@ -156,7 +154,7 @@
                                         v))))
                      (into {})))
                  :meta {:state     :nascent
-                        :type      (get iargs :type ::cty/model)
+                        :mx-type      (get iargs :mx-type ::cty/model)
                         :on-quiesce (get iargs :on-quiesce)})]
         (assert (meta me))
 
@@ -239,9 +237,9 @@
     (fn? seek) (do                                          ;; (println :trying-fn)
                  (seek poss))
     (keyword? seek) (do
-                      ;; (trx :fm-navig=sees seek (:name @poss) (ia-type poss))
+                      ;; (trx :fm-navig=sees seek (:name @poss) (mx-type poss))
                       (or (= seek (:name @poss))
-                        (isa? (ia-type poss) seek)))
+                        (isa? (mx-type poss) seek)))
     :else (do (trx :fm-navig=-else-pplain=! seek)
               (= seek poss))))
 
@@ -367,7 +365,7 @@
   [me type]
   (assert me)
   (fasc (fn [visited]
-          (= type (ia-type visited))) me))
+          (= type (mx-type visited))) me))
 
 (defn fmi-w-class
   "Search matrix descendents from 'where' for first with given :class"

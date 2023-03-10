@@ -7,7 +7,7 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [tiltontec.util.core :refer [pln xor now *plnk-keys*
                                  counts countit counts-reset]]
-    [tiltontec.cell.evaluate :refer [c-get <cget c-awaken finalize]]
+    [tiltontec.cell.evaluate :refer [c-get <cget c-awaken md-quiesce]]
 
     #?(:clj
     [tiltontec.cell.base :refer :all]
@@ -20,8 +20,7 @@
     [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [mget fasc fm! make md-reset! backdoor-reset!
-                      mx-par]
+              :refer [mget fasc fm! make md-reset! backdoor-reset!]
               :as md])
 
     [tiltontec.mxxhr.core
@@ -677,7 +676,7 @@
 ;                                  ;; this synapse generator, displacing the old
 ;                                  (pln :syn-rule-makes+sends-new-xhr!!!!!!! @sends (type _cache))
 ;                                  (when-not (= _cache unbound)
-;                                    (finalize _cache))
+;                                    (md-quiesce _cache))
 ;                                  (swap! sends inc)
 ;                                  (let [s (c-get site)]
 ;                                    (send-xhr s)))]

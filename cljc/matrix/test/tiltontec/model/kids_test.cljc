@@ -12,7 +12,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type?
+                      c-unbound? c-input? mx-type?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* unbound
@@ -55,7 +55,7 @@
                                            (let [par (:parent @me)]
                                              (let [ee (mget par :ee)]
                                                (* 14 ee))))))))))]
-      (is (ia-type? f ::md/family))
+      (is (mx-type? f ::md/family))
       (is (empty? (mget f :kids)))
 
       (do

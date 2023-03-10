@@ -4,6 +4,7 @@
        :cljs [cljs.test
               :refer-macros [deftest is are]])
     #?(:cljs [tiltontec.util.base
+              :refer [mx-type]
               :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
        :clj  [tiltontec.util.base :refer :all])
     [tiltontec.util.core :refer [type-of err rmap-setf rmap-meta-setf]]
@@ -11,7 +12,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type? ia-type
+                      c-unbound? c-input?  ia-type
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-assert
                       *call-stack* *defer-changes* unbound
@@ -66,11 +67,10 @@
             (rmap-setf [slot me] c)
             false)))
 
-(defmulti md-awaken-before ia-type)
+(defmulti md-awaken-before mx-type)
 
 (defmethod md-awaken-before :default [me]
-  #_(println :awaken-before-default!!!!!!!!!!!!
-      (ia-type me) (meta me)))
+  #_ (prn :awaken-before-default!!!!! ))
 
 (defn md-awaken
   "(1) do initial evaluation of all ruled slots

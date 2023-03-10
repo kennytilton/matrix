@@ -5,7 +5,7 @@
              :refer [cI c-reset! make-cell]]
             [tiltontec.cell.observer :refer [observe-by-type]]
             [tiltontec.model.core
-             :refer-macros [with-par mdv! mx-par]
+             :refer-macros [with-par mdv! mpar]
              :refer [matrix mset! mget mswap!] :as md]
             [clojure.string :as str]
             [whoshiring.local-storage :as ls]))

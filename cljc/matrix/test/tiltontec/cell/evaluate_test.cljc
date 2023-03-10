@@ -13,7 +13,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type?
+                      c-unbound? c-input? mx-type?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes*
@@ -45,7 +45,7 @@
 (deftest test-input
   (with-mx
     (let [c (cI 42 :slot :bingo)]
-      (is (ia-type? c ::cty/cell))
+      (is (mx-type? c ::cty/cell))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
       (is (c-input? c))
@@ -58,8 +58,8 @@
   (with-mx
     (let [c (cF (+ 40 2))]
       (is (isa? ::cty/c-formula ::cty/cell))
-      (is (ia-type? c ::cty/cell))
-      (is (ia-type? c ::cty/c-formula))
+      (is (mx-type? c ::cty/cell))
+      (is (mx-type? c ::cty/c-formula))
       (is (= (c-value-state c) :unbound))
       (is (= #{} (c-callers c)))
       (is (= #{} (c-useds c)))

@@ -6,6 +6,7 @@
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
     #?(:cljs [tiltontec.util.base
+              :refer [mx-type]
               :refer-macros [wtrx trx prog1]]
        :clj  [tiltontec.util.base
               :refer :all])
@@ -17,7 +18,7 @@
               :refer [c-optimized-away? c-pulse-unobserved? c-formula? c-value c-optimize
                       *one-pulse?* *dp-log* *unfinished-business*
                       *custom-propagator*
-                      c-unbound? c-input? ia-type
+                      c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed c-code$
                       *call-stack* *defer-changes* dpc minfo cinfo
@@ -127,13 +128,13 @@
 
   [c]
   #_(when (= (c-slot c) :ae-response)
-      (println :cget-entry (c-slot c) (ia-type (c-model c))
+      (println :cget-entry (c-slot c) (mx-type (c-model c))
         (if *depender* (c-slot *depender*) :nodepender)))
   (cond
     (c-ref? c) (prog1
                  (with-integrity ()
                    (let [prior-value (c-value c)]
-                     ;;(println :cget-to-evic (c-slot c) (ia-type (c-model c)))
+                     ;;(println :cget-to-evic (c-slot c) (mx-type (c-model c)))
                      (when *depender*
                        (str "asker="
                          (c-slot *depender*)
@@ -222,17 +223,17 @@
 ;;; --- awakening ------------------------------------
 
 (defmulti c-awaken (fn [c]
-                     #?(:clj  (type c)
-                        :cljs (:type (meta c)))))
+                     (mx-type c)))
 
 (defmethod c-awaken :default [c]
+  (prn :c-awaken-def!!!)
   (cond
     (coll? c) (doseq [ce c]
                 (c-awaken ce))
     :else
-    (println :c-awaken-fall-thru (if (any-ref? c)
-                                   [:ref-of (type c) @c]
-                                   [:unref c (type c)]))))
+    (prn :c-awaken-fall-thru (if (any-ref? c)
+                                   [:ref-of (mx-type c) (meta c)]
+                                   [:unref c (mx-type c) (meta c)]))))
 
 (defmethod c-awaken ::cty/cell [c]
   (assert (c-input? c))
@@ -401,9 +402,10 @@
 
 (defmulti md-quiesce (fn [me]
                       (assert (md-ref? me))
-                      [(ia-type me)]))
+                      [(mx-type me)]))
 
 (defmethod md-quiesce :default [me]
+  (prn :quiesce!!!-def)
   (md-quiesce-self me))
 
 ;----------------- change detection ---------------------------------
@@ -415,7 +417,7 @@
   with it a different test."
 
   (fn [me slot]
-    [(when me (type @me)) slot]))
+    [(mx-type me) slot]))
 
 (defmethod unchanged-test :default [self slotname]
   =)

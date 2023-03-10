@@ -1,7 +1,7 @@
 (ns whoshiring.job-parse
   (:require [clojure.string :as str]
             [clojure.set :as set]
-            [tiltontec.model.core :refer [mget] :as md]
+            [tiltontec.model.core :refer [mget mpar] :as md]
             [whoshiring.job-memo :as memo]))
 
 ;;; key regexs used to decide job attributes for search filters
@@ -116,5 +116,5 @@
        (assoc @spec
          :memo (let [mo-id (mget loader :month-hn-id)
                      job-id (:hn-id @spec)]
-                 (or (get (mget (md/mx-par loader) :memos) (memo/job-memo-key mo-id job-id))
+                 (or (get (mget (mpar loader) :memos) (memo/job-memo-key mo-id job-id))
                    (memo/make-job-memo mo-id job-id))))))))

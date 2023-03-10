@@ -1,9 +1,9 @@
 (ns tiltontec.model.macros
   (:require 
-   [tiltontec.cell.base :refer [ia-type]]))
+   [tiltontec.util.base :refer [mx-type]]))
 
 (defmacro pme [& mas]
   `(when true ;;  (= :login (:name (deref ~'me)))
-     (println (ia-type ~'me)
+     (println (mx-type ~'me)
      	(:tag (deref ~'me))
        (:name (deref ~'me)) ~@mas)))

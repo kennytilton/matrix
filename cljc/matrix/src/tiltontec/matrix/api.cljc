@@ -1,31 +1,12 @@
 (ns tiltontec.matrix.api
+  #?(:cljs
+     (:require-macros [tiltontec.matrix.api]))
   (:require
-    [clojure.set :refer [difference]]
-
-    #?(:cljs
-       (:require-macros [tiltontec.matrix.api]))
-
     #?(:cljs [tiltontec.util.base
-              :refer [type-cljc]
+              :refer [mx-type]
               :refer-macros [trx prog1 *trx?* def-rmap-slots]]
        :clj  [tiltontec.util.base
               :refer :all])
-
-    [tiltontec.util.core
-     :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
-
-    #_ #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? ia-type? ia-type
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
-                      *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers *causation*
-                      c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
-                      *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
 
     [tiltontec.cell.evaluate :as eval]
 
@@ -92,8 +73,6 @@
 
 ;;; -------------------------------------------
 
-
-
 (defn make [& arg-list]
   (apply tiltontec.model.core/make arg-list))
 
@@ -136,5 +115,5 @@
   "Search matrix ascendents from node 'me' (defaulting to 'me in current scope) looking for element with given name"
   (let [me-ref (or me 'me)]
     `(let [name# ~name]
-       (tiltontec.model.core/fm-navig #(= name# (mget % :name))
+       (tiltontec.model.core/fm-navig #(= name# (tiltontec.model.core/mget? % :name))
          ~me-ref :me? false :up? true :inside? false))))

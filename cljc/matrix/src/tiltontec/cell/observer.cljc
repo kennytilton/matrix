@@ -1,7 +1,7 @@
 (ns tiltontec.cell.observer
   (:require
    #?(:cljs [tiltontec.util.base
-             :refer [type-cljc]
+             :refer [mx-type]
              :refer-macros [trx]]
       :clj  [tiltontec.util.base
              :refer :all])
@@ -24,14 +24,14 @@
              :refer-macros [pme]])))
 
 (defmulti observe-by-type (fn [slot-name me new-val old-val c]
-                    [(type-cljc me)]))
+                    [(mx-type me)]))
 
 (defmethod observe-by-type :default [slot me new-val old-val c]
   #_ (when (not= old-val unbound)
-    (println :obs-by-typefallthru slot (type-cljc me) new-val)))    
+    (println :obs-by-typefallthru slot (mx-type me) new-val)))
 
 (defmulti observe (fn [slot-name me new-val old-val c]
-                    [slot-name (type-cljc me)]))
+                    [slot-name (mx-type me)]))
 
 (def +observe-default-handler+ (atom nil))
 

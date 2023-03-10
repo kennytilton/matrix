@@ -7,7 +7,7 @@
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
             [tiltontec.model.core
-             :refer-macros [with-par mdv! mx-par fmu]
+             :refer-macros [with-par mdv! mpar fmu]
              :refer [matrix mset! mget mswap!] :as md]
             [tiltontec.web-mx.gen
              :refer [evt-mx dom-tag]]
