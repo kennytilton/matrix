@@ -2,7 +2,7 @@
   (:require
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:cljs [tiltontec.util.base :as utm
-              :refer [mx-type?]
+              :refer [mx-type mx-type?]
               :refer-macros [prog1 b-when def-rmap-slots]]
        :clj  [tiltontec.util.base :as utm
               :refer :all])
