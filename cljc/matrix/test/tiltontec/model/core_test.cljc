@@ -6,6 +6,7 @@
        :cljs [cljs.test
               :refer-macros [deftest is are]])
     #?(:cljs [tiltontec.util.base
+              :refer [mx-type?]
               :refer-macros [trx prog1 *trx?*]]
        :clj  [tiltontec.util.base
               :refer :all])

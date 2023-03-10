@@ -5,7 +5,7 @@
               :refer-macros [deftest is are]])
     #?(:cljs [tiltontec.util.base
               :refer-macros [trx prog1]
-              :refer [*trx?*]]
+              :refer [mx-type? *trx?*]]
        :clj  [tiltontec.util.base
               :refer :all])
     [tiltontec.util.core :refer [type-of err]]
