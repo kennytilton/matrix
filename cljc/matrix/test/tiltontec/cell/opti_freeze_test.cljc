@@ -19,10 +19,10 @@
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-slot-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-prop-name c-synaptic? caller-drop
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
@@ -63,18 +63,18 @@
   ; optimized away.
   ;
   (with-mx
-    (let [a (cI 1 :slot :aa)
-          b (cF+ [:slot :bb]
+    (let [a (cI 1 :prop :aa)
+          b (cF+ [:prop :bb]
               42)                                           ;; should optimize away
-          c (cF+ [:slot :cc]
+          c (cF+ [:prop :cc]
               (inc (c-get b)))                              ;; should recursively optimize away, since b should
-          d (cF+ [:slot :dd]
+          d (cF+ [:prop :dd]
               (if (< (c-get a) 3)
                 (+ (c-get a) (c-get b) (c-get c))
                 17))
           ect (atom 0)
           e (let [frozen (atom nil)]
-              (cF+ [:slot :ee]
+              (cF+ [:prop :ee]
                 (swap! ect inc)
                 (prn :efrz @ect @frozen)
                 (if @frozen
@@ -130,17 +130,17 @@
   ; any cell, as well as the case where, once evaluated, on a subsequent evaluation a
   ; cell has no dependencies.
   (with-mx
-    (let [a (cI 1 :slot :aa)
-          b (cF+ [:slot :bb]
+    (let [a (cI 1 :prop :aa)
+          b (cF+ [:prop :bb]
               42)                                           ;; should optimize away
-          c (cF+ [:slot :cc]
+          c (cF+ [:prop :cc]
               (inc (c-get b)))                              ;; should recursively optimize away, since b should
-          d (cF+ [:slot :dd]
+          d (cF+ [:prop :dd]
               (if (< (c-get a) 3)
                 (+ (c-get a) (c-get b) (c-get c))
                 17))
           ect (atom 0)
-          e (cF+ [:slot :ee]
+          e (cF+ [:prop :ee]
               (swap! ect inc)
               (if (< (c-get a) 3)
                 (+ (c-get a) (c-get b) (c-get c))
@@ -187,8 +187,8 @@
 (deftest t-freeze-default
   ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
   (with-mx
-    (let [a (cI 1 :slot :aa)
-          b (cF+ [:slot :bb]
+    (let [a (cI 1 :prop :aa)
+          b (cF+ [:prop :bb]
               (if (= 2 (c-get a))
                 (cf-freeze)
                 42))]
@@ -203,11 +203,11 @@
 (deftest t-freeze-propagates
   ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
   (with-mx
-    (let [a (cI nil :slot :aa)
-          b (cF+ [:slot :bb]
+    (let [a (cI nil :prop :aa)
+          b (cF+ [:prop :bb]
               (when (c-get a)
                 (cf-freeze 42)))
-          c (cF+ [:slot :cc]
+          c (cF+ [:prop :cc]
               (prn :cc-runs!!)
               (let [b (c-get b)]
                 (prn :cc-sees-b b)

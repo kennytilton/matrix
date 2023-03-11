@@ -19,10 +19,10 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-slot-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-prop-name c-synaptic? caller-drop
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
@@ -45,7 +45,7 @@
 (deftest test-input
   (with-mx
     (let [c (make-cell
-              :slot :mol
+              :prop :mol
               :value 42)]
       (prn :cell @c)
       (prn :meta (meta c))
@@ -56,7 +56,7 @@
       (is (= #{} (c-callers c)))
       (is (c-input? c))
       (is (nil? (c-model c)))
-      (is (= :mol (c-slot c))))))
+      (is (= :mol (c-prop c))))))
 
 (deftest test-c-in
   (with-mx
@@ -72,14 +72,14 @@
 
 (deftest test-c-in+
   (with-mx
-    (let [c (cI 42 :slot :cool)]
+    (let [c (cI 42 :prop :cool)]
       (is (c-ref? c))
       (is (= (c-value c) 42))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
       (is (c-input? c))
       (is (nil? (c-model c)))
-      (is (= :cool (c-slot c) (c-slot-name c))))))
+      (is (= :cool (c-prop c) (c-prop-name c))))))
 
 (deftest test-c-formula
   (with-mx
@@ -96,7 +96,7 @@
 
 (deftest t-cF+
   (with-mx
-    (let [c (cF+ (:optimize false :slot :bingo)
+    (let [c (cF+ (:optimize false :prop :bingo)
               (trx nil :cool)
               (+ 40 2))]
       (is (c-ref? c))
@@ -108,19 +108,19 @@
       (is (not (c-input? c)))
       (is (nil? (c-model c)))
       (is (not (c-optimize c)))
-      (is (= :bingo (c-slot c) (c-slot-name c))))))
+      (is (= :bingo (c-prop c) (c-prop-name c))))))
 
 (deftest t-eph-1
   (with-mx
     (let [boct (atom 0)
           b (cI nil
-              :slot :b
+              :prop :b
               :obs (fn-obs
                      (swap! boct inc))
               :ephemeral? true)
           crun (atom 0)
           cobs (atom 0)
-          c (cF+ [:slot :c
+          c (cF+ [:prop :c
                   :obs (fn-obs (swap! cobs inc))]
               (swap! crun inc)
               (prog1
@@ -163,8 +163,8 @@
 
 (deftest t-cFn
   (with-mx
-    (let [a (cI 42 :slot :aa)
-          b (cFn [:slot :bb]
+    (let [a (cI 42 :prop :aa)
+          b (cFn [:prop :bb]
               (/ (c-get a) 2))
           c (cF (+ 1 (c-get b)))]
       (is (= 21 (c-get b)))
@@ -175,8 +175,8 @@
 
 (deftest t-cFonce
   (with-mx
-    (let [a (cI 42 :slot :aa)
-          b (cFonce [:slot :bb]
+    (let [a (cI 42 :prop :aa)
+          b (cFonce [:prop :bb]
               (/ (c-get a) 2))]
       (is (= 21 (c-get b)))
 
@@ -189,7 +189,7 @@
 (deftest test-c-md-quiesce
   (with-mx
     (let [cc (atom nil)
-          c (cI 42 :slot :cool
+          c (cI 42 :prop :cool
               :on-quiesce (fn [c]
                           (reset! cc @c)))]
       (is (nil? @cc))
@@ -199,13 +199,13 @@
       (is (= #{} (c-callers c)))
       (is (c-input? c))
       (is (nil? (c-model c)))
-      (is (= :cool (c-slot c) (c-slot-name c)))
+      (is (= :cool (c-prop c) (c-prop-name c)))
       (#?(:clj dosync :cljs do)
         (tiltontec.cell.evaluate/c-quiesce c))
       (is (not (nil? @cc)))
 
       (let [c @cc]
-        (is (= :cool (:slot c)))))))
+        (is (= :cool (:prop c)))))))
 
 #?(:cljs (do
            (cljs.test/run-tests)

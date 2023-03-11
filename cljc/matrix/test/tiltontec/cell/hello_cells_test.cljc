@@ -18,10 +18,10 @@
                      *call-stack* *defer-changes* unbound
                      c-rule c-me c-value-state c-callers caller-ensure
                      unlink-from-callers *causation*
-                     c-slot-name c-synaptic? caller-drop
-                     c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                     c-prop-name c-synaptic? caller-drop
+                     c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                      *depender* *quiesce*
-                     *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                     *c-prop-depth* md-prop-owning? c-lazy] :as cty])
    #?(:cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]]
       :clj [tiltontec.cell.integrity :refer [with-integrity]])
@@ -57,11 +57,11 @@
         v ;;"visitor"
         {:name "World"
          :action (cI nil
-                       :slot :v-action
+                       :prop :v-action
                        :obs ;; short for observer
-                       (fn [slot me new old c]
+                       (fn [prop me new old c]
                          (reset! obs-action new)
-                         (println :observing slot new old)))}]
+                         (println :observing prop new old)))}]
     (is (=  (c-get (:name v)) "World"))
     (c-reset! (:action v) "knocks")
     (is (=  (c-get (:action v)) "knocks"))
@@ -70,11 +70,11 @@
 (deftest hw-03
   (cells-init)
   (let [action (atom nil)
-        obs-action (fn [slot me new old c]
+        obs-action (fn [prop me new old c]
                      (reset! action new)
-                     (println :observing slot new old))
+                     (println :observing prop new old))
         v {:name "World"
-           :action (cI nil :slot :v-action
+           :action (cI nil :prop :v-action
                          :obs obs-action)}]
 
     (is (nil? (c-get (:action v))))
@@ -85,16 +85,16 @@
     (is (= (c-get (:action v)) "knock-knock"))))
 
 (defn gobs
-  [slot me new old c]
-  (println :gobs> slot new old))
+  [prop me new old c]
+  (println :gobs> prop new old))
 
 (deftest hw-04
   (cells-init)
   (let [r-action (cI nil
-                       :slot :r-action
+                       :prop :r-action
                        :obs gobs)
         r-loc (make-c-formula
-               :slot :r-loc
+               :prop :r-loc
                :obs gobs
                :rule (fn [c]
                        (case (c-get r-action)
@@ -111,10 +111,10 @@
 (deftest hw-5
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [slot me new old c]
-                     (println slot new old))
+  (let [obs-action (fn [prop me new old c]
+                     (println prop new old))
         v {:name "World"
-           :action (cI nil :slot :v-action
+           :action (cI nil :prop :v-action
                          :obs obs-action)}
         r-action (cI nil)
         r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
@@ -135,11 +135,11 @@
 (deftest hello-world
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [slot me new old c]
-                     (println slot new old))
+  (let [obs-action (fn [prop me new old c]
+                     (println prop new old))
         v {:name "World"
            :action (cI nil
-                         :slot :v-action
+                         :prop :v-action
                          :ephemeral? true
                          :obs obs-action)}
         r-action (cI nil)
@@ -163,11 +163,11 @@
 (deftest hello-world-2
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [slot me new old c]
+  (let [obs-action (fn [prop me new old c]
                      (when new (trx visitor-did new)))
         v {:name "World"
            :action (cI nil
-                         :slot :v-action
+                         :prop :v-action
                          :ephemeral? true
                          :obs obs-action)}
         r-action (cI nil)

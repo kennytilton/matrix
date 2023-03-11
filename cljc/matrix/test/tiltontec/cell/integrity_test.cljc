@@ -18,10 +18,10 @@
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-slot-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot
+                      c-prop-name c-synaptic? caller-drop
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
@@ -38,7 +38,7 @@
     ))
 
 (defn obsdbg []
-  ;;(fn-obs (trx :obsdbg slot new old (type-of c)))
+  ;;(fn-obs (trx :obsdbg prop new old (type-of c)))
   )
 
 (deftest obs-setf

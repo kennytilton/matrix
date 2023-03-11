@@ -21,10 +21,10 @@
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-slot-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-prop-name c-synaptic? caller-drop
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity with-cc]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity with-cc]])
@@ -55,7 +55,7 @@
 (deftest fm-0
   (with-mx
     (let [u (md/make
-              :kon (cI false :slot :kon)
+              :kon (cI false :prop :kon)
               :kids (cF                                     ;;(trx :kids-run! *depender*)
                       (when (mget me :kon)
                         (vector
@@ -245,7 +245,7 @@
       (is (= #{:action :loc :bogus :bogus-e} (set (keys (md-cz res)))))
       (is (every? #(= res (c-me %)) (vals (md-cz res))))
       (is (= #{:action :loc :bogus :bogus-e}
-            (set (map #(c-slot %)
+            (set (map #(c-prop %)
                    (vals (md-cz res))))))
       (is (= "Bob" (:name @res)))
       (is (= "Bob" (md-name res)))
@@ -271,7 +271,7 @@
                               :moniker "World"
                               :action (cI nil
                                         :ephemeral? true
-                                        :obs (fn [slot me new old c]
+                                        :obs (fn [prop me new old c]
                                                (when new (trx visitor-did new)))))
                             (md/make
                               :name :resident
@@ -337,10 +337,10 @@
 #_(deftest ad-hoc-errmsg-need-CI
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :title "THING"
-                  ;; :slot :state
+                  ;; :prop :state
                   ;; :flush-my-cell (cF 42) ;; testing that cells without dependencies get optimized away for efficiency
                   :state :init-state                        ;; the fix: (cI :init-state)
-                  :derived-prop (cF+ [:obs (fn [slot me new old cell]
+                  :derived-prop (cF+ [:obs (fn [prop me new old cell]
                                              (prn :new!!! new))]
                                   (let [value (mget me :state)]
                                     (cond
@@ -358,7 +358,7 @@
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :title "THING"
                   :state (cI :init-state)
-                  :derived-prop (cF+n [:obs (fn [slot me new old cell]
+                  :derived-prop (cF+n [:obs (fn [prop me new old cell]
                                               (prn :derived-prop-obs-new!!! new :old old :cell @cell))]
                                   (let [value (mget me :state)]
                                     (cond
@@ -374,14 +374,14 @@
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :title "cycle test"
-                  :val-0 (cF+ [:obs (fn [slot me new old cell]
+                  :val-0 (cF+ [:obs (fn [prop me new old cell]
                                       (prn :val-0-obs-new!!! new :old old :cell @cell))]
                            (str :val-0 " val-2> " (mget me :val-2)))
                   ;; (cI "0")
-                  :val-1 (cF+ [:obs (fn [slot me new old cell]
+                  :val-1 (cF+ [:obs (fn [prop me new old cell]
                                       (prn :val-1-obs-new!!! new :old old :cell @cell))]
                            (str :val-1 " val-0> " (mget me :val-0)))
-                  :val-2 (cF+ [:obs (fn [slot me new old cell]
+                  :val-2 (cF+ [:obs (fn [prop me new old cell]
                                       (prn :val-1-obs-new!!! new :old old :cell @cell))]
                            (str :val-2 " val-1> " (mget me :val-1))))]
       (prn :thing-should-not-get-this-far @thing)
@@ -392,7 +392,7 @@
                   :name :thingy
                   :title "undeferred change test"
                   :change-count (cI 0)
-                  :value (cI 42 :obs (fn [slot me new old cell]
+                  :value (cI 42 :obs (fn [prop me new old cell]
                                        (do                  ;; the fix: with-cc :test-err-msg
                                          (mswap! me :change-count inc)) ;; <= change by observer must be deferred
                                        )))]
@@ -401,7 +401,7 @@
       (prn :DEF-should-not-get-this-far (mget thing :value) (mget thing :change-count))
       (is true)))
 
-#_(deftest ad-hoc-errmsg-mget-no-such-slot
+#_(deftest ad-hoc-errmsg-mget-no-such-prop
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :value (cI 42))]

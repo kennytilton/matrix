@@ -8,7 +8,7 @@
     [tiltontec.cell.base :refer :all]
        :cljs [tiltontec.cell.base
               ;;:refer-macros [without-c-dependency]
-              :refer [*depender* c-synapses c-slot c-useds dependency-record]])
+              :refer [*depender* c-synapses c-prop c-useds dependency-record]])
 
     #?(:clj
     [tiltontec.cell.integrity :refer :all]
@@ -45,10 +45,10 @@
 
                       (let [new-syn#
                             (let [~@closure-bindings]
-                              ;; (println :making-syn!? (:slot @*depender*))
+                              ;; (println :making-syn!? (:prop @*depender*))
                               (make-c-formula
                                 :model (:model @*depender*)
-                                :slot ~synapse-id
+                                :prop ~synapse-id
                                 :synapse-id ~synapse-id
                                 :code '~body
                                 :synaptic? true
@@ -63,7 +63,7 @@
          value# (tiltontec.cell.integrity/with-integrity ()
                   ;; (println :with-syn-ensure-syn-value (nil? existing-syn#))
                   (ensure-value-is-current synapse# :synapse *depender*))]
-     ;;(println :synapse-returns ~synapse-id :useds (doall (map c-slot (c-useds synapse#))))
+     ;;(println :synapse-returns ~synapse-id :useds (doall (map c-prop (c-useds synapse#))))
      ;; (cpr :syn-ret-value!!!!!! (map #(:uri (deref %)) value#))
      (dependency-record synapse#)
      value#))
@@ -88,7 +88,7 @@
   `(call-with-synapse ~synapse-id #(let [~@closure-bindings]
                                     (make-c-formula
                                       :model (c-model *depender*)
-                                      :slot ~synapse-id
+                                      :prop ~synapse-id
                                       :synapse-id ~synapse-id
                                       :code '~body
                                       :synaptic? true

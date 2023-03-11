@@ -4,20 +4,19 @@
   (:require
     #?(:cljs [tiltontec.util.base
               :refer [mx-type]
-              :refer-macros [trx prog1 *trx?* def-rmap-slots]]
+              :refer-macros [trx prog1 *trx?* def-rmap-props]]
        :clj  [tiltontec.util.base
               :refer :all])
 
     [tiltontec.cell.evaluate :as eval]
+    [tiltontec.cell.base :as cb]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [c-reset! make-cell] :as c]
        :clj  [tiltontec.cell.core :as c])
 
-    [tiltontec.model.core :as md]
-
-    ))
+    [tiltontec.model.core :as md]))
 
 (def matrix
   "Optionally populated with the root of a tree of Models."
@@ -26,6 +25,12 @@
 (defmacro with-mx [&  body]
   `(tiltontec.cell.core/call-with-mx
      (fn [] ~@body)))
+
+;;;---------------------------------------------
+
+(defn c-value [c] (cb/c-value c))
+(defn c-model [c] (cb/c-model c))
+(defn c-prop-name [c] (cb/c-prop-name c))
 
 ;;;---------------------------------------------
 
@@ -43,9 +48,6 @@
      :code '~body
      :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn ~@body)))
-
-;(defmacro cF [& body]
-;  `(tiltontec.cell.core/cF ~@body))
 
 (defmacro cF+ [[& options] & body]
   `(tiltontec.cell.core/make-c-formula
@@ -80,14 +82,14 @@
   (let [me (or me 'me)]
     `(:parent @~me)))
 
-(defn mset! [me slot new-value]
-  (tiltontec.model.core/mset! me slot new-value))
+(defn mset! [me prop new-value]
+  (tiltontec.model.core/mset! me prop new-value))
 
-(defn mswap! [me slot swap-fn & swap-fn-args]
-  (apply tiltontec.model.core/mswap! me slot swap-fn swap-fn-args))
+(defn mswap! [me prop swap-fn & swap-fn-args]
+  (apply tiltontec.model.core/mswap! me prop swap-fn swap-fn-args))
 
-(defn mget [me slot]
-  (tiltontec.model.core/mget me slot ))
+(defn mget [me prop]
+  (tiltontec.model.core/mget me prop ))
 
 (defmacro with-integrity [[opcode info] & body]
   `(tiltontec.cell.integrity/call-with-integrity

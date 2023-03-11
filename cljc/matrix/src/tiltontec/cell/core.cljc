@@ -9,7 +9,7 @@
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
               :refer [mx-type]
-              :refer-macros [trx wtrx prog1 *trx?* def-rmap-slots def-rmap-meta-slots]]
+              :refer-macros [trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
        :clj  [tiltontec.util.base :refer :all])
 
     #?(:clj  [tiltontec.cell.base :refer :all :as cty]
@@ -22,10 +22,10 @@
                       *call-stack* *defer-changes* *custom-propagator*
                       c-rule c-me c-value-state c-callers
                       c-synapses unfin-biz-build *causation*
-                      c-synaptic? c-pulse  c-ephemeral? c-slot c-slot-name
+                      c-synaptic? c-pulse  c-ephemeral? c-prop c-prop-name
                       *depender* *quiesce* *within-integrity*
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
 
     #?(:clj
        [tiltontec.cell.observer :refer :all]
@@ -47,10 +47,10 @@
 
 
 (def +valid-input-options+
-  #{:obs :watch :slot :ephemeral? :unchanged-if
+  #{:obs :watch :prop :ephemeral? :unchanged-if
     :value :input? :debug :on-quiesce})
 (def +valid-formula-options+
-  #{:obs :watch :slot :input? :lazy :optimize :ephemeral? :unchanged-if
+  #{:obs :watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
     :code :value :rule :async? :and-then? :debug :on-quiesce})
 
@@ -137,7 +137,7 @@
   `(fn [~c]
      (let [~'me (c-model ~c)
            ~'_cell ~c
-           ~'_slot-name (c-slot ~c)
+           ~'_prop-name (c-prop ~c)
            ~'_cache (c-value ~c)]
        ~@body)))
 
@@ -145,15 +145,15 @@
   `(fn [~c]
      (let [~'me (c-model ~c)
            ~'_cell ~c
-           ~'_slot-name (c-slot ~c)
+           ~'_prop-name (c-prop ~c)
            ~'_cache (c-value ~c)]
        ~@body)))
 
 (defmacro c-fn [& body]
-  `(c-fn-var (~'slot-c#) ~@body))
+  `(c-fn-var (~'prop-c#) ~@body))
 
 (defmacro c-fn-ex [& body]
-  `(c-fn-var-ex (~'slot-c#) ~@body))
+  `(c-fn-var-ex (~'prop-c#) ~@body))
 
 (defmacro cF [& body]
   `(make-c-formula
@@ -316,7 +316,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (not (c-input? c))
     (let [me (c-model c)]
       (err str
-        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-slot-name c) "', which is not mediated by an input cell.\n"
+        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-prop-name c) "', which is not mediated by an input cell.\n"
         "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI', 'cFn', or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
         "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
         "..> FYI: intended new value is [" new-value "].\n"
@@ -326,18 +326,18 @@ in the CL version of Cells SETF itself is the change API dunction."
         "..> FYI: instance meta is " (meta me) "\n."))
 
     *defer-changes*
-    (let [slot (c-slot-name c)
+    (let [prop (c-prop-name c)
           me (c-model c)]
       (err
-        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" slot "' by an observer detected."
+        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" prop "' by an observer detected."
         "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
         "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
-        "...> FYI: intended new value is [" new-value "]; current value is [" (get @me slot :no-such-slot) "].\n"
+        "...> FYI: intended new value is [" new-value "]; current value is [" (get @me prop :no-such-prop) "].\n"
         "...> FYI: instance is of type " (mx-type me) ".\n"
         "...> FYI: full instance is " @me "\n"
         "...> FYI: instance meta is " (meta me) "\n.")
       #_(err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
-               (c-slot c))))
+               (c-prop c))))
     ;-----------------------------------
     (some #{(c-lazy c)} [:once-asked :always true])
     (c-value-assume c new-value nil)
@@ -345,7 +345,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     :else
     (do                                                     ;; tufte/p :wi-cvassume-sync
       (#?(:clj dosync :cljs do)
-        (with-integrity (:change (c-slot c))
+        (with-integrity (:change (c-prop c))
           ;;(prn :inside-wi!!!-cval-assuming new-value)
           (c-value-assume c new-value nil))))))
 
@@ -369,7 +369,7 @@ execution as soon as the current change is manifested."
      (not *within-integrity*)
      ;; todo new error to test and document
      (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
-              (c-slot ~f-c)))
+              (c-prop ~f-c)))
      ;---------------------------------------------
      :else
      (ufb-add :change
@@ -433,7 +433,7 @@ execution as soon as the current change is manifested."
     (apply println path os)))
 
 (def ^:dynamic *dag-node-only-printer*
-  (fn [tag c] (dag-prn tag :PM! (c-slot-name c) :of (c-md-name c))))
+  (fn [tag c] (dag-prn tag :PM! (c-prop-name c) :of (c-md-name c))))
 
 (declare dag-dump-1)
 
@@ -443,7 +443,7 @@ execution as soon as the current change is manifested."
     (when (seq ccs)
       (binding [*dag-depth* (inc *dag-depth*)]
         (doseq [cc ccs]
-          ;; (dag-prn :used-by (c-slot-name cc) :of (c-md-name cc))
+          ;; (dag-prn :used-by (c-prop-name cc) :of (c-md-name cc))
           (dag-dump-1 :used-by cc))))))
 (def ^:dynamic *dag-callers-printer* dag-dump-callers)
 
@@ -453,14 +453,14 @@ execution as soon as the current change is manifested."
     (when (seq ccs)
       (binding [*dag-depth* (inc *dag-depth*)]
         (doseq [cc ccs]
-          ;; (dag-prn :using (c-slot-name cc) :of (c-md-name cc))
+          ;; (dag-prn :using (c-prop-name cc) :of (c-md-name cc))
           (dag-dump-1 :using cc))))))
 (def ^:dynamic *dag-useds-printer* dag-dump-useds)
 
 (defn dag-dump-1 [tag c]
   (cond
     (contains? @+dag-visited+ c)
-    (dag-prn (str/upper-case (str tag ": "(c-slot-name c) "/" (c-md-name c))))
+    (dag-prn (str/upper-case (str tag ": "(c-prop-name c) "/" (c-md-name c))))
     :else (do
             (swap! +dag-visited+ conj c)
             (when-let [p *dag-node-only-printer*]

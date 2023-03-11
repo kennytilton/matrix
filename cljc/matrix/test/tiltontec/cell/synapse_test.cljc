@@ -21,9 +21,9 @@
                       c-rule c-me c-value-state c-callers caller-ensure
                       *causation*
                       c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop
                       *depender*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
 
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]

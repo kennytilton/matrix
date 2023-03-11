@@ -1,6 +1,5 @@
 (ns tiltontec.util.core
   (:require [clojure.string :as str]
-            #?(:cljs [cognitect.transit :as trx])
             #?(:cljs [tiltontec.util.base :as utm
                       :refer-macros [prog1 b-when wtrx]]
                :clj  [tiltontec.util.base :as utm
@@ -48,41 +47,41 @@
                 :clj  clojure.lang.Ref) x))
 
 (defn mut-set!
-  ([mut slot new-value] (mut-set! mut slot new-value nil))
-  ([mut slot new-value tag]
+  ([mut prop new-value] (mut-set! mut prop new-value nil))
+  ([mut prop new-value tag]
    (when-not (any-ref? mut)
-     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+     (pln "model.util.core/rmap-setf> prop:" prop :tag tag
        "new-value:" new-value
        "failed assertion any-ref? on ref:" mut)
      (assert false "see console"))
    (when-not (map? @mut)
-     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+     (pln "model.util.core/rmap-setf> prop:" prop :tag tag
        "new-value:" (or new-value :NIL)
        "failed assertion map? on ref:" @mut)
      (assert false "see console"))
-   (#?(:clj alter :cljs swap!) mut assoc slot new-value)
+   (#?(:clj alter :cljs swap!) mut assoc prop new-value)
    new-value))
 
 (defn rmap-setf
-  ([[slot ref] new-value]
-   (rmap-setf [slot ref] new-value nil))
-  ([[slot ref] new-value tag]
+  ([[prop ref] new-value]
+   (rmap-setf [prop ref] new-value nil))
+  ([[prop ref] new-value tag]
    (assert (any-ref? ref)
-     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+     (pln "model.util.core/rmap-setf> prop:" prop :tag tag
        "new-value:" new-value
        "failed assertion any-ref? on ref:" ref))
    (when-not (map? @ref)
-     (pln "model.util.core/rmap-setf> slot:" slot :tag tag
+     (pln "model.util.core/rmap-setf> prop:" prop :tag tag
        "new-value:" (or new-value :NIL)
        "failed assertion map? on ref:" @ref)
      (assert false))
-   (#?(:clj alter :cljs swap!) ref assoc slot new-value)
+   (#?(:clj alter :cljs swap!) ref assoc prop new-value)
    new-value))
 
-(defn rmap-meta-setf [[slot ref] new-value]
+(defn rmap-meta-setf [[prop ref] new-value]
   (assert (meta ref))
-  (alter-meta! ref assoc slot new-value)
-  ;;(prn :altermeta!! slot new-value)
+  (alter-meta! ref assoc prop new-value)
+  ;;(prn :altermeta!! prop new-value)
   new-value)
 ;; --- error handling -----------------
 
@@ -111,20 +110,20 @@
 
 ;; --- deftest support ---------------------
 ;; These next two are lame because they just
-;; look at slots (ignoring models). Use only
+;; look at props (ignoring models). Use only
 ;; in tests looking at one model or at least
-;; slot names do not duplicate.
+;; prop names do not duplicate.
 ;;
 
-(defn slot-users [me slot]
-  (set (map :slotq
+(defn prop-users [me prop]
+  (set (map :propq
          (map deref
-           (:callers @(slot @me) #{})))))
+           (:callers @(prop @me) #{})))))
 
-(defn slot-useds [me slot]
-  (set (map :slot
+(defn prop-useds [me prop]
+  (set (map :prop
          (map deref
-           (:useds @(slot @me) #{})))))
+           (:useds @(prop @me) #{})))))
 
 ;;; --- FIFO Queue -----------------------------
 
@@ -175,15 +174,6 @@
 (defn now []
   #?(:clj  (System/currentTimeMillis)
      :cljs (.getTime (js/Date.))))
-
-;;; --- json -----------------------------
-#?(:cljs
-   (defn map-to-json [map]
-     (trx/write (trx/writer :json) map)))
-
-#?(:cljs
-   (defn json-to-map [json]
-     (trx/read (trx/reader :json) json)))
 
 ;;; --- counting ----------------
 

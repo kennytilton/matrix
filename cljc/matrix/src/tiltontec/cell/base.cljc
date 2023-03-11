@@ -3,7 +3,7 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:cljs [tiltontec.util.base :as utm
               :refer [mx-type mx-type?]
-              :refer-macros [prog1 b-when def-rmap-slots]]
+              :refer-macros [prog1 b-when def-rmap-props]]
        :clj  [tiltontec.util.base :as utm
               :refer :all])
     #?(:cljs [cljs.test
@@ -86,7 +86,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def ^:dynamic +stop+ (atom false))                         ;; emergency brake
 
 (defmacro pcell [tag c]
-  `(println :pcell ~tag (c-slot ~c) (c-state ~c)))
+  `(println :pcell ~tag (c-prop ~c) (c-state ~c)))
 
 ;; --- procedure division ----------------------
 
@@ -128,7 +128,7 @@ rule to get once behavior or just when fm-traversing to find someone"
      ~@body))
 
 (defn ustack$ [tag]                                         ;; debug aid
-  (str tag "ustack> " (vec (map (fn [c] (:slot @c)) *call-stack*))))
+  (str tag "ustack> " (vec (map (fn [c] (:prop @c)) *call-stack*))))
 
 (defn c-assert
   ([assertion] (when-not assertion
@@ -161,8 +161,8 @@ rule to get once behavior or just when fm-traversing to find someone"
     (map? @x)
     x))
 
-(def-rmap-slots c-
-  me slot state input? rule pulse pulse-last-changed pulse-observed
+(def-rmap-props c-
+  me prop state input? rule pulse pulse-last-changed pulse-observed
   useds users callers optimize ephemeral? code
   lazy synapses synaptic?)
 
@@ -197,8 +197,8 @@ rule to get once behavior or just when fm-traversing to find someone"
       "anon")
     "no-md"))
 
-(defn c-slot-name [rc]
-  (:slot @rc))
+(defn c-prop-name [rc]
+  (:prop @rc))
 
 (defn c-value-state [rc]
   (let [v (c-value rc)]
@@ -242,9 +242,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;; debug aids --------------
 
-(defn c-slots [c k]
+(defn c-props [c k]
   (assert (c-ref? c))
-  (set (map c-slot (k @c))))
+  (set (map c-prop (k @c))))
 
 ;; --- defmodel rizing ---------------------
 
@@ -266,7 +266,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 #?(:clj (set! *print-level* 3)
    :cljs (set! *print-level* 3))                            ;; cells are recursive data for now
 
-(defn md-slot-owning? [class-name slot-name]
+(defn md-prop-owning? [class-name prop-name]
   ;; hhack
   false)
 
@@ -290,7 +290,7 @@ rule to get once behavior or just when fm-traversing to find someone"
     (not (any-ref? c)) :NOT-ANY-REF-C
     (not (c-ref? c)) :NOT-C-REF
     :else [
-           (c-slot-name c)
+           (c-prop-name c)
            (c-md-name c)
            [:pulse (:pulse @c)]
            (c-value-state c)

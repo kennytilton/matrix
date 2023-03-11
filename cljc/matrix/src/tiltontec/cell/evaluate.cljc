@@ -25,9 +25,9 @@
                       c-rule c-me c-value-state c-callers dependency-record unlink-from-used
                       unlink-from-callers *causation*
                       c-synaptic? dependency-drop c-md-name
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slot-name
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-prop-name
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.observer :refer [c-observe]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
@@ -39,7 +39,7 @@
 #?(:cljs (set! *print-level* 3))
 
 (defn ephemeral-reset [rc]
-  ;; (trx :eph-reset?????? (:slot @rc)(:ephemeral? @rc)) 
+  ;; (trx :eph-reset?????? (:prop @rc)(:ephemeral? @rc))
   (when (c-ephemeral? rc)                                   ;; allow call on any cell, catch here
     ;
     ; as of Cells3 we defer resetting ephemerals because everything
@@ -47,12 +47,12 @@
     ; within finish_business we are sure all callers have been recalculated
     ; and all observers completed (which happens with recalc).
     ;
-    ;;(trx :ephh-reset!!! (:slot @rc))
+    ;;(trx :ephh-reset!!! (:prop @rc))
     (with-integrity (:ephemeral-reset rc)
       (when-let [me (:me @rc)]
         ;; presumption next is that model cells live in
-        ;; their own internal slot of model FNYI
-        (#?(:clj alter :cljs swap!) me assoc (:slot @rc) nil))
+        ;; their own internal prop of model FNYI
+        (#?(:clj alter :cljs swap!) me assoc (:prop @rc) nil))
       (#?(:clj alter :cljs swap!) rc assoc :value nil))))
 
 (declare calculate-and-set)
@@ -72,9 +72,9 @@
     (cond
       (c-unbound? c)
       (do
-        (trx :unbound!!! c-slot)
-        (err "evic> unbound slot %s of model %s"
-          (c-slot c) (c-model c)))
+        (trx :unbound!!! c-prop)
+        (err "evic> unbound prop %s of model %s"
+          (c-prop c) (c-model c)))
 
       (c-valid? c)                                          ;; probably accomplishes nothing
       (c-value c))
@@ -117,7 +117,7 @@
     ;; we were behind the pulse but not affected by the changes that moved the pulse
     ;; record that we are current to avoid future checking:
     :else (do
-            ;;(trx :just-pulse!!!!! (c-slot c))
+            ;;(trx :just-pulse!!!!! (c-prop c))
             (c-pulse-update c :valid-uninfluenced)
             (c-value c))))
 
@@ -127,22 +127,22 @@
   notices if a standalone  cell has never been observed."
 
   [c]
-  #_(when (= (c-slot c) :ae-response)
-      (println :cget-entry (c-slot c) (mx-type (c-model c))
-        (if *depender* (c-slot *depender*) :nodepender)))
+  #_(when (= (c-prop c) :ae-response)
+      (println :cget-entry (c-prop c) (mx-type (c-model c))
+        (if *depender* (c-prop *depender*) :nodepender)))
   (cond
     (c-ref? c) (prog1
                  (with-integrity ()
                    (let [prior-value (c-value c)]
-                     ;;(println :cget-to-evic (c-slot c) (mx-type (c-model c)))
+                     ;;(println :cget-to-evic (c-prop c) (mx-type (c-model c)))
                      (when *depender*
                        (str "asker="
-                         (c-slot *depender*)
+                         (c-prop *depender*)
                          (c-md-name *depender*)))
                      (prog1
 
                        (let [ev (ensure-value-is-current c :c-read nil)]
-                         ;; (when (= (c-slot c) :ae-response) (println :evic ev))
+                         ;; (when (= (c-prop c) :ae-response) (println :evic ev))
                          ev)
                        ;; this is new here, intended to awaken standalone cells JIT
                        ;; /do/ might be better inside evic, or test here
@@ -167,9 +167,9 @@
 (defn calculate-and-set
   "Calculate, link, record, and propagate."
   [c dbgid dbgdata]
-  (do                                                       ;; (wtrx [0 20 :cnset-entry (c-slot c)]
+  (do                                                       ;; (wtrx [0 20 :cnset-entry (c-prop c)]
     (let [[raw-value propagation-code] (calculate-and-link c)]
-      ;;(trx :cn-set-sees!!!! (c-slot c) raw-value propagation-code)
+      ;;(trx :cn-set-sees!!!! (c-prop c) raw-value propagation-code)
       (when-not (c-optimized-away? c)
         (assert (map? @c) "calc-n-set")
 
@@ -193,17 +193,17 @@
   ;(prn :cnlink-entry c (count *call-stack*) (some #{c} *call-stack*))
   (when (some #{c} *call-stack*)
     (let [me (c-model c)
-          slot (c-slot-name c)]
+          prop (c-prop-name c)]
       (err str
-        "MXAPI_COMPUTE_CYCLE_DETECTED> cyclic dependency detected while computing slot '"
-        slot "' of model '" (c-md-name c) "'.\n"
-        "...> formula for " slot ":\n"
+        "MXAPI_COMPUTE_CYCLE_DETECTED> cyclic dependency detected while computing prop '"
+        prop "' of model '" (c-md-name c) "'.\n"
+        "...> formula for " prop ":\n"
         (c-code$ c)
         "\n...> full cell: \n"
         @c
         "\n\n...> callstack, latest first: \n"
         (str/join "\n" (mapv (fn [cd]
-                               (str "....> md-name:" (c-md-name cd) " slot: " (c-slot-name cd)
+                               (str "....> md-name:" (c-md-name cd) " prop: " (c-prop-name cd)
                                  "\n....>    code:" (c-code$ cd)))
                          *call-stack*)))))
 
@@ -211,7 +211,7 @@
             *depender* c
             *defer-changes* true]
     (unlink-from-used c :pre-rule-clear)
-    (assert (c-rule c) (#?(:clj format :cljs str) "No rule in %s type %s" (:slot c) (type @c)))
+    (assert (c-rule c) (#?(:clj format :cljs str) "No rule in %s type %s" (:prop c) (type @c)))
     (let [raw-value ((c-rule c) c)
           prop-code? (and (c-synaptic? c)
                        (vector? raw-value)
@@ -238,21 +238,21 @@
 (defmethod c-awaken ::cty/cell [c]
   (assert (c-input? c))
   ;
-  ; nothing to calculate, but every cellular slot should be output on birth
+  ; nothing to calculate, but every cellular prop should be output on birth
   ;
 
   (#?(:clj dosync :cljs do)
     ;;(prn :awk-c c @*pulse* (c-pulse-observed c)(c-value-state c))
     (when (c-pulse-unobserved? c)                           ;; safeguard against double-call
       (when-let [me (c-me c)]
-        (rmap-setf [(c-slot c) me] (c-value c)))
+        (rmap-setf [(c-prop c) me] (c-value c)))
       (c-observe c :cell-awaken)
       (ephemeral-reset c))))
 
 (defmethod c-awaken ::cty/c-formula [c]
   (#?(:clj dosync :cljs do)
     ;; hhack -- bundle this up into reusable with evic
-    ;;(trx :c-formula-awk (c-slot c)(c-current? c))
+    ;;(trx :c-formula-awk (c-prop c)(c-current? c))
     (binding [*depender* nil]
       (when-not (c-current? c)
         (calculate-and-set c :fn-c-awaken nil)))))
@@ -264,11 +264,11 @@
   propagate
   c-value-changed?)
 
-(defn md-slot-value-store [me slot value]
+(defn md-prop-value-store [me prop value]
   (assert me)
   (assert (any-ref? me))
-  ;(trx :mdsv-store slot (flz value))
-  (rmap-setf [slot me] value))
+  ;(trx :mdsv-store prop (flz value))
+  (rmap-setf [prop me] value))
 
 (defn c-value-assume
   "The Cell assumes a new value at awakening, on c-reset!, or
@@ -282,8 +282,8 @@
   [c new-value propagation-code]
 
   (assert (c-ref? c))
-  ;; (println :cva-entry (c-slot c) new-value)
-  (do                                                       ;; (wtrx (0 100 :cv-ass (:slot @c) new-value)
+  ;; (println :cva-entry (c-prop c) new-value)
+  (do                                                       ;; (wtrx (0 100 :cv-ass (:prop @c) new-value)
     (prog1 new-value                                        ;; sans doubt
       (without-c-dependency
         (let [prior-value (c-value c)
@@ -295,20 +295,20 @@
           ;;
           (rmap-setf [:value c] new-value)
           (rmap-setf [::cty/state c] :awake)
-          #_(trx :new-vlue-installed (c-slot c) new-value (:value c))
+          #_(trx :new-vlue-installed (c-prop c) new-value (:value c))
           ;;
           ;; --- model maintenance ---
           (when (and (c-model c)                            ; redundant with next check, but logic is impeccable
                   (not (c-synaptic? c)))                    ; synapses just manage cell state, no model property
-            (md-slot-value-store (c-model c) (c-slot c) new-value))
+            (md-prop-value-store (c-model c) (c-prop c) new-value))
 
-          (c-pulse-update c :slotv-assume)
+          (c-pulse-update c :propv-assume)
           (when (and (not (c-optimized-away? c))
                   (not= propagation-code false)
                   (c-value-changed? c new-value prior-value))
             ;;(prn :setting-last-changed @c)
             (rmap-setf [:pulse-last-changed c] @*pulse*))
-          #_(println :maybe-propping (c-slot c) new-value
+          #_(println :maybe-propping (c-prop c) new-value
               :priorstate prior-state
               :propcode propagation-code
               :changed? (c-value-changed? c new-value prior-value))
@@ -338,7 +338,7 @@
   (when-let [me (c-model c)]
     (rmap-meta-setf [:cells-flushed me]
       (conj (:cells-flushed (meta me))
-        [(c-slot c) (c-pulse-observed c)]))))
+        [(c-prop c) (c-pulse-observed c)]))))
 
 ;; --- optimize away ------------------------------------------
 ;; optimizing away cells who turn out not to depend on anyone 
@@ -348,7 +348,7 @@
   "Optimizes away cells who turn out not to depend on anyone, 
   saving a lot of work at runtime. A caller/user will not bother
   establishing a link, and when we get to models cget will 
-  find a non-cell in a slot and Just Use It."
+  find a non-cell in a prop and Just Use It."
   [c prior-value]
   (when (and (c-formula? c)
           (or (empty? (c-useds c))
@@ -358,7 +358,7 @@
           (c-optimize c)
           (not (c-optimized-away? c))                       ;; c-streams (FNYI) may come this way repeatedly even if optimized away
           (c-valid? c)                                      ;; /// when would this not be the case? and who cares?
-          (not (c-synaptic? c))                             ;; no slot to cache invariant result, so they have to stay around)
+          (not (c-synaptic? c))                             ;; no prop to cache invariant result, so they have to stay around)
           (not (c-input? c)))                               ;; yes, dependent cells can be inputp
     (when (= :freeze (c-optimize c))
       (unlink-from-used c :freeze))
@@ -367,7 +367,7 @@
     (c-observe c prior-value :opti-away)
 
     (when-let [me (c-model c)]
-      (rmap-meta-setf [:cz me] (assoc (:cz (meta me)) (c-slot c) nil))
+      (rmap-meta-setf [:cz me] (assoc (:cz (meta me)) (c-prop c) nil))
       (md-cell-flush c))
 
     ;; let callers know they need not check us for currency again
@@ -413,25 +413,25 @@
 (defmulti unchanged-test
   "Cells does not propagate when nothing changes. By default, the
   test is =, but cells can inject a different test, and when we get
-  to models it will be possible for a slot to have associated
+  to models it will be possible for a prop to have associated
   with it a different test."
 
-  (fn [me slot]
-    [(mx-type me) slot]))
+  (fn [me prop]
+    [(mx-type me) prop]))
 
-(defmethod unchanged-test :default [self slotname]
+(defmethod unchanged-test :default [self propname]
   =)
 
 (defn c-value-changed? [c new-value old-value]
   (not ((or (:unchanged-if @c)
-          (unchanged-test (c-model c) (c-slot c)))
+          (unchanged-test (c-model c) (c-prop c)))
         new-value old-value)))
 
 ;;--------------- change propagation  ----------------------------
 
 (declare propagate-to-callers
 
-  md-slot-cell-flushed)
+  md-prop-cell-flushed)
 
 (defn propagate
   "A cell:
@@ -455,14 +455,14 @@
         ;; --- manifest new value as needed ---
         ;;
         ;; 20061030 Trying not.to.be first because doomed instances may be interested in callers
-        ;; who will decide to propagate. If a family instance kids slot is changing, a doomed kid
+        ;; who will decide to propagate. If a family instance kids prop is changing, a doomed kid
         ;; will be out of the kids but not yet quiesced. If the propagation to this rule asks the kid
         ;; to look at its siblings (say a view instance being deleted from a stack who looks to the psib
-        ;; pb to decide its own pt), the doomed kid will still have a parent but not be in its kids slot
+        ;; pb to decide its own pt), the doomed kid will still have a parent but not be in its kids prop
         ;; when it goes looking for a sibling relative to its position.
         (when (and prior-value
                 (c-model c)
-                (md-slot-owning? (type (c-model c)) (c-slot c)))
+                (md-prop-owning? (type (c-model c)) (c-prop c)))
           (when-let [ownees (difference (set-ify prior-value) (set-ify (c-value c)))]
             (doseq [ownee ownees]
               (md-quiesce ownee))))
@@ -475,7 +475,7 @@
           (when (or (c-pulse-unobserved? c)
                   (some #{(c-lazy c)}
                     [:once-asked :always true]))            ;; messy: these can get setfed/propagated twice in one pulse+
-            ;;(println :observing!!!!!!!!!!! (c-slot c) (c-value c))
+            ;;(println :observing!!!!!!!!!!! (c-prop c) (c-value c))
             (c-observe c prior-value :propagate)))
 
         ;;
@@ -483,7 +483,7 @@
         ;; let the fn decide if C really is ephemeral. Note that it might be possible to leave
         ;; this out and use the pulse to identify obsolete ephemerals and clear them
         ;; when read. That would avoid ever making again bug I had in which I had the reset
-        ;; inside slot-value-observe,
+        ;; inside prop-value-observe,
         ;; thinking that that always followed propagation to callers. It would also make
         ;; debugging easier in that I could find the last ephemeral value in the inspector.
         ;; would this be bad for persistent CLOS, in which a DB would think there was still a link
@@ -521,9 +521,9 @@
                 ; even if I have been optimized away cuz they need to know."
                 ; Note this is why callers must be supplied, having been copied
                 ; before the optimization step.
-                (do #_(trx :not-propping @*pulse* (c-slot c)
+                (do #_(trx :not-propping @*pulse* (c-prop c)
                         ;; :val (c-value c)
-                        :to (c-slot caller) :caller         ;; @caller
+                        :to (c-prop caller) :caller         ;; @caller
                         (c-state caller) :current (c-current? caller)
                         :c-not-used? (not (some #{c} (c-useds caller)))
                         :c-not-opti (not (c-optimized-away? c))))

@@ -7,7 +7,7 @@
             #?(:cljs [tiltontec.util.base :as utm
                       :refer [*trxdepth*]
                       :refer-macros [wtrx trx prog1 b-when unless
-                                     def-rmap-slots]]
+                                     def-rmap-props]]
                :clj [tiltontec.util.base :as utm
                      :refer :all])
 
@@ -44,7 +44,7 @@
            (cset/difference (set-ify [1 2 42])
                        (set-ify (list 1 2))))))
 
-(def-rmap-slots jj- boom)
+(def-rmap-props jj- boom)
 
 (deftest test-rmap
     (let [x (ia-ref {:value 0 :boom 42})]

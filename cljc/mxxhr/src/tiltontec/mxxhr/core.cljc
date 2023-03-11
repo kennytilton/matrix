@@ -36,7 +36,7 @@
 
     #?(:cljs [tiltontec.util.base
               :refer [type-cljc]
-              :refer-macros [trx prog1 *trx?* def-rmap-slots]]
+              :refer-macros [trx prog1 *trx?* def-rmap-props]]
        :clj
              [tiltontec.util.base
               :refer :all])

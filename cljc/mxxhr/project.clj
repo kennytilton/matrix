@@ -1,4 +1,4 @@
-(defproject com.tiltontec/mxxhr "1.0.1-SNAPSHOT"
+(defproject com.tiltontec/mxxhr "2.0.0-SNAPSHOT"
   :description "XMLHttpRequest for the Matrix (dataflow library)"
   :url "https://github.com/kennytilton/tiltontec.mxxhr"
   :license {:name "Eclipse Public License"
@@ -12,7 +12,7 @@
                  [com.cognitect/transit-cljs "0.8.264"]
                  [se.haleby/stub-http "0.2.9"]
                  [com.taoensso/tufte "2.2.0"]
-                 [com.tiltontec/matrix "4.3.1-SNAPSHOT"]]
+                 [com.tiltontec/matrix "5.0.0-SNAPSHOT"]]
   :plugins [[lein-cljsbuild "1.1.8"]
             [lein-doo "0.1.11"]]
   :doo {:paths {:rhino "lein run -m org.mozilla.javascript.tools.shell.Main"}}

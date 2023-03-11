@@ -19,10 +19,10 @@
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
-                      c-slot-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-slot c-slots
+                      c-prop-name c-synaptic? caller-drop
+                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                       *depender* *quiesce*
-                      *c-prop-depth* md-slot-owning? c-lazy] :as cty])
+                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
@@ -44,14 +44,14 @@
 
 (deftest test-input
   (with-mx
-    (let [c (cI 42 :slot :bingo)]
+    (let [c (cI 42 :prop :bingo)]
       (is (mx-type? c ::cty/cell))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
       (is (c-input? c))
       (is (c-valid? c))
       (is (nil? (c-model c)))
-      (is (= :bingo (c-slot c) (c-slot-name c)))
+      (is (= :bingo (c-prop c) (c-prop-name c)))
       (is (= (c-get c) 42)))))
 
 (deftest t-formula
@@ -98,7 +98,7 @@
   (with-mx
     (reset! yowza 0)
     (is (= @yowza 0))
-    (let [b (cI 2 :slot :yowza
+    (let [b (cI 2 :prop :yowza
               :obs (fn-obs (reset! yowza new)))]
       (is (= 2 (c-get b)))
       (is (= 0 @yowza))
@@ -108,13 +108,13 @@
 
 (deftest t-formula-22
   (with-mx
-    (let [b (cI 2 :slot :bb)
+    (let [b (cI 2 :prop :bb)
           cct (atom 0)
           dct (atom 0)
-          c (cF+ [:slot :cc]
+          c (cF+ [:prop :cc]
               (swap! cct inc)
               (+ 40 (c-get b)))
-          d (cF+ [:slot :dd]
+          d (cF+ [:prop :dd]
               (swap! dct inc)
               (+ (c-get c)
                 (c-get b)))]
@@ -141,8 +141,8 @@
   ;; Christened the Pentagram of Death by Phillip J Eby, this
   ;; is the use case that challenges an engine not to calculate
   ;; and observe transiently* inconsistent values when two different
-  ;; dependency paths of one slot (here :ee) lead back to 
-  ;; the same slot (:aa).
+  ;; dependency paths of one prop (here :ee) lead back to
+  ;; the same prop (:aa).
   ;;
   ;; * "Transiently" because the state change propagation eventually**
   ;;   gets :ee to the value consistent with the new state.
@@ -154,7 +154,7 @@
   ;; a real dataflow failure that arose in my RoboCup simulation and 
   ;; prompted Cells 3 and the concept of data integrity.
   ;;
-  ;; For the telling story behind the useless slot names :aa, :bb et al
+  ;; For the telling story behind the useless prop names :aa, :bb et al
   ;; please see: http://smuglispweeny.blogspot.com/2008/07/aa-bb-cc-and-dd.html
   ;;
   (with-mx
@@ -174,27 +174,27 @@
           cr (fn [c]
                (c-get c))
 
-          podobs (fn [slot me new old c]
-                   (swap! obs assoc slot
-                     (inc (slot @obs 0))))
+          podobs (fn [prop me new old c]
+                   (swap! obs assoc prop
+                     (inc (prop @obs 0))))
 
-          aa (cI 1 :slot :aa :obs podobs)
-          a7 (cI 7 :slot :a7 :obs podobs)
-          a70 (cF+ [:slot :a70 :obs podobs]
+          aa (cI 1 :prop :aa :obs podobs)
+          a7 (cI 7 :prop :a7 :obs podobs)
+          a70 (cF+ [:prop :a70 :obs podobs]
                 (logrun :a70)
                 (* 10 (cr a7)))
-          bb (cF+ [:slot :bb :obs podobs]
+          bb (cF+ [:prop :bb :obs podobs]
                (logrun :bb)
                (cr aa))
-          cc (cF+ [:slot :cc :obs podobs]
+          cc (cF+ [:prop :cc :obs podobs]
                (logrun :cc)
                (* 10 (cr aa)))
-          dd (cF+ [:slot :dd :obs podobs]
+          dd (cF+ [:prop :dd :obs podobs]
                (logrun :dd)
                (if (even? (cr bb))
                  (* 10 (cr cc))
                  42))
-          ee (cF+ [:slot :ee :obs podobs]
+          ee (cF+ [:prop :ee :obs podobs]
                (logrun :ee)
                (+ (cr a70) (cr bb) (* 10000 (cr dd))))
           verify-p-current (fn []
@@ -216,19 +216,19 @@
       (is (= 420071 (cr ee)))
 
       (is (= nil (c-useds aa)))
-      (is (= #{:bb :cc} (c-slots aa :callers)))
+      (is (= #{:bb :cc} (c-props aa :callers)))
 
-      (is (= #{:aa} (c-slots bb :useds)))
-      (is (= #{:dd :ee} (c-slots bb :callers)))
+      (is (= #{:aa} (c-props bb :useds)))
+      (is (= #{:dd :ee} (c-props bb :callers)))
 
-      (is (= #{:aa} (c-slots cc :useds)))
-      (is (= #{} (c-slots cc :callers)))
+      (is (= #{:aa} (c-props cc :useds)))
+      (is (= #{} (c-props cc :callers)))
 
-      (is (= #{:bb} (c-slots dd :useds)))
-      (is (= #{:ee} (c-slots dd :callers)))
+      (is (= #{:bb} (c-props dd :useds)))
+      (is (= #{:ee} (c-props dd :callers)))
 
-      (is (= #{:a70 :bb :dd} (c-slots ee :useds)))
-      (is (= #{} (c-slots ee :callers)))
+      (is (= #{:a70 :bb :dd} (c-props ee :useds)))
+      (is (= #{} (c-props ee :callers)))
 
       ;; ;; now we come to data integrity: when change happens
       ;; ;; do all and only those cells affected recalculate
@@ -268,7 +268,7 @@
 
         ; check that this time dd branched to use cc as well as bb
         ;
-        (is (= #{:bb :cc} (c-slots dd :useds)))
+        (is (= #{:bb :cc} (c-props dd :useds)))
 
         (verify-p-current)
 
@@ -280,12 +280,12 @@
         ;
         ; ...and check dependency on :cc got pruned
         ;
-        (is (= #{:bb} (c-slots dd :useds)))))))
+        (is (= #{:bb} (c-props dd :useds)))))))
 
 (deftest t-cell-unchanged-test
   (with-mx
     (let [ob (atom 0)
-          b (cI 2 :slot :bb
+          b (cI 2 :prop :bb
               :obs (fn-obs
                      (swap! ob inc))
               :unchanged-if (fn [n p]
@@ -295,7 +295,7 @@
                                 (or (and (even? n) (even? p))
                                   (and (odd? n) (odd? p))))))
           cct (atom 0)
-          c (cF+ [:slot :cc]
+          c (cF+ [:prop :cc]
               (swap! cct inc)
               (+ 40 (c-get b)))]
       (is (= (c-get c) 42))

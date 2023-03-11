@@ -62,21 +62,21 @@
 
 ;; --- easy access to maps in refs ----
 
-(defmacro def-rmap-slots [reader-prefix & slots]
+(defmacro def-rmap-props [reader-prefix & props]
   `(do
-     ~@(map (fn [slot#]
+     ~@(map (fn [prop#]
               `(defn ~(symbol (str (or reader-prefix "")
-                                   slot#))
+                                   prop#))
                  [~'ref]
-                 (~(keyword slot#) @~'ref))) slots)))
+                 (~(keyword prop#) @~'ref))) props)))
 
-(defmacro def-rmap-meta-slots [reader-prefix & slots]
+(defmacro def-rmap-meta-props [reader-prefix & props]
   `(do
-     ~@(map (fn [slot#]
+     ~@(map (fn [prop#]
               `(defn ~(symbol (str (or reader-prefix "")
-                                   slot#))
+                                   prop#))
                  [~'ref]
-                 (~(keyword slot#) (meta ~'ref)))) slots)))
+                 (~(keyword prop#) (meta ~'ref)))) props)))
 
 (defn mx-type [it]
   (or (when-let [m (meta it)]

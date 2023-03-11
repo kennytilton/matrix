@@ -8,7 +8,7 @@
 (def n-events 1000)
 
 (defn link-e
-  [_slot _me new prior _c]
+  [_prop _me new prior _c]
   (with-cc :link-e
     (when (and (not= cty/unbound prior)
             (not (nil? prior)))
