@@ -15,7 +15,7 @@
               :refer-macros [pcell un-stopped without-c-dependency cpr]
 
               :refer [c-pulse c-optimized-away?
-                      mdead? md-ref? ia-type
+                      mdead? md-ref? mx-type
                       +client-q-handler+ c-stopped unbound when-bound
                       *within-integrity* *defer-changes*
                       *depender*]]
@@ -35,7 +35,7 @@
        :clj [tiltontec.cell.integrity :refer :all])
 
     #?(:cljs [tiltontec.util.base
-              :refer [type-cljc]
+              :refer [mx-type]
               :refer-macros [trx prog1 *trx?* def-rmap-props]]
        :clj
              [tiltontec.util.base
@@ -205,7 +205,7 @@
   ([uri attrs]
    (assert (string? uri) (str "param uri <" uri "> not a string"))
    (let [xhr (apply make
-               :type :tiltontec.mxxhr.core/xhr
+               :mx-type :tiltontec.mxxhr.core/xhr
                :id (swap! +xhr-sid+ inc)                    ;; debug aid
                :uri uri
                :response (cI nil)
@@ -286,7 +286,7 @@
 (declare xhr-to-map)
 
 (defmethod xhr-name-to-map :default [xhr]
-  (assoc (dissoc @xhr :par :type :kids :id :response :select :selection)
+  (assoc (dissoc @xhr :par :mx-type :kids :id :response :select :selection)
     :warning :xhr-name-to-map-fell-thru
     :kids (for [k (:kids @xhr)]
             (xhr-to-map k))))
@@ -298,11 +298,11 @@
 
     :tiltontec.model.core/family
     ;; (keys @xhr)
-    (assoc (dissoc @xhr :type :par :kids :cells-flushed)
+    (assoc (dissoc @xhr :mx-type :par :kids :cells-flushed)
       :kids (for [k (:kids @xhr)]
               (xhr-to-map k)))
 
-    (select-keys xhr [:type :name :uri])))
+    (select-keys xhr [:mx-type :name :uri])))
 
 
 ;;; --- utilities ----------------
@@ -333,7 +333,7 @@
   ([xhr max-seconds]
    (assert-xhr xhr :await)
    (cond
-     (not (= ::xhr (type-cljc xhr)))
+     (not (= ::xhr (mx-type xhr)))
      (do (println :xhr-await-passed-non-xhr))
 
      (xhr-response xhr)
@@ -393,8 +393,8 @@
        ;;(println :xhr? xhr)
        (err "assert-xhr> not any-ref?" (type tag) tag))
 
-     (not= (ia-type xhr) ::xhr)
-     (err "assert-xhr> xhr ref not type xhr" :actual-iatype (ia-type xhr) :clj-type (type xhr) tag)
+     (not= (mx-type xhr) ::xhr)
+     (err "assert-xhr> xhr ref not type xhr" :actual-iatype (mx-type xhr) :clj-type (type xhr) tag)
 
      :default xhr)))
 

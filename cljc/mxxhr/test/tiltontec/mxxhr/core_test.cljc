@@ -267,7 +267,7 @@
   ;; get just one
   (cells-init)
 
-  (let [xhrs (cF+ [:slot :synch!
+  (let [xhrs (cF+ [:prop :synch!
                    :obs (fn-obs (when new
                                   (println :fini!!! (map xhrfo new))
                                   (is (= 1 (count new)))
@@ -293,7 +293,7 @@
   ;; get just one
   (cells-init)
 
-  (let [xhrs (cF+ [:slot :synch!
+  (let [xhrs (cF+ [:prop :synch!
                    :obs (fn-obs (when new
                                   (println :fini!!! (map xhrfo new))
                                   (is (= 1 (count new)))
@@ -362,7 +362,7 @@
   ;; kick off one at a time waiting for the prior to complete before sending next.
   (cells-init)
 
-  (let [xhrs-cell (cF+ [:slot :synch!
+  (let [xhrs-cell (cF+ [:prop :synch!
                         :obs (fn-obs (when new
                                        (println (str :xhrseq-new!! (count new)))
                                        ;; (println :fini!!! (map xhrfo new))
@@ -667,8 +667,8 @@
 ;    ;; cannot save us from having to think about outstanding requests still in transit.
 ;
 ;    (cells-init)
-;    (let [site (cI "http://google.com" :slot :site)
-;          h (cF+ [:slot :htop
+;    (let [site (cI "http://google.com" :prop :site)
+;          h (cF+ [:prop :htop
 ;                  :obs (fn-obs (println :new-async-html!!!!! new :old old))]
 ;                 (pln :h-top!!!!!!!!!!!!!!!!!!!!!!! @sends)
 ;                 (when-let [xhr (with-synapse (:home-page [])
