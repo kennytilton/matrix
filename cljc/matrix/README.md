@@ -1,8 +1,23 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
-# Matrix / CLJC
-The `Matrix` library delivers fine-grained, gltch-free, transparent reactivity from declarative forms.
+# Matrix
+`Matrix` addresses this problem...
 
-> The matrix can provide structural support, regulate cell behavior, and play a role in cellular signaling and communication. --ChatGPT
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png?raw=true) 
+
+...with this solution: fine-grained, gltch-free, transparent reactivity, extracted from declarative forms.
+
+### Why "matrix"?
+The movies were fun, but no, not that. Nor math. Think "cell culture".
+
+> A matrix provides structural support, regulates cell behavior, and plays a role in cellular signaling and communication. --ChatGPT
+
+Not bad. We were motivated by this dictionary entry:
+
+> ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
+
+Any property can be expressed as a formula, but when the property is the _children_ of an object, the very population of our apps can reat dynamically to surrounding events. So "Matrix".
+
+### Applications
 
 The killer app for reactivity is the front-end, but Matrix has been applied successfully to non-GUI work as well, such as [RoboCells](https://sourceforge.net/projects/robocells/). The [RocoCup Simulation](https://www.robocup.org/leagues/23) server fed a UDP stream of complete, player-specific world perception states to player clients every 100ms, which they had to parse and react to. If your app is similar, you may just want standalone Matrix processing.
 
