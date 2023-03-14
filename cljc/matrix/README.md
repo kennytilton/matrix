@@ -11,7 +11,7 @@ The win? Fine-grained, gltch-free, transparent reactivity automatically extracte
 Too abstract? Here is how it looks/works [in a GUI](https://kennytilton.github.io/web-mx-quickstart/#/).
 
 ### Why "matrix"?
-The movies were fun, but no, not that. Forget maths. Think "cell culture".
+The movies were fun, but no, not that. And forget maths. Think "cell culture".
 
 > A matrix provides structural support, regulates cell behavior, and plays a role in cellular signaling and communication. --ChatGPT
 
