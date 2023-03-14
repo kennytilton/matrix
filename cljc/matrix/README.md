@@ -1,8 +1,14 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix
-`Matrix` solves this problem on its own: when (7) changes, how do we re-calculate (9) just once?
+The Matrix dataflow engine solves this problem on its own. Given only:
+```
+v11 <= (+ v7 v5)
+ v8 <= (+ v3 (when (> v11 42) v7); and
+ v9 <= (+ v11 v8)
+```
+...when (7) changes, how do we re-calculate (9) just once, in the general case?
 
-![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png?raw=true) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/death-pentagram.jpg?raw=true) 
 
 [By Johannes Rössel](https://commons.wikimedia.org/w/index.php?curid=5559952)
 
