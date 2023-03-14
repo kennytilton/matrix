@@ -32,11 +32,22 @@ Matrix is hosted on clojars.
 
 [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/matrix.svg?include_prereleases)](https://clojars.org/com.tiltontec/matrix)
 
-In leiningen projects, add `[com.tiltontec/matrix "m.m.p-SNAPSHOT"]` to your dependencies.
+In leiningen projects, add to your project.clj dependencies the following:
+```bash
+[com.tiltontec/matrix "m.m.p-SNAPSHOT"]
+```
 
-For deps.edn projects, `com.tiltontec/matrix {:mvn/version "m.m.p-SNAPSHOT"`.
+For deps.edn projects, add:
+```bash
+com.tiltontec/matrix {:mvn/version "m.m.p-SNAPSHOT"}
+```
 
-In your source, require `[tiltontec.model.core]`, `[titlontec.cell.core]`, and other NSes as needed. Work has begun on a new `[tiltontec.matrix.api]` to reduce the clutter.
+In your source, require:
+```bash
+[tiltontec.model.core]
+[titlontec.cell.core]
+```
+...and other `tiltontec` NSes as needed. Work has begun on a new `[tiltontec.matrix.api]` to reduce the clutter.
 
 ### Testing
 For the CLJ version, regression tests can be run by `lein test`. Other than MX-wrapped UI code, the tests are also the code examples.
