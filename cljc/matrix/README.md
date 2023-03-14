@@ -108,8 +108,8 @@ no cell involved | e.g. :answer 42	mset!/mswap! throw exceptions at run time.
 #### Cell Options
 | Code | Comment |
 | ---- | ------- |
-:input?	| Can imperative code mutate this property? Macro cI: (cI 42)
-:watch	| Alias :obs for observer. Expects an 'on-change' function: (fn [property me new prior cell])
+:input?	| Can imperative code mutate this property? Macro cI: `(cI 42)`
+:watch	| Alias :obs for observer. Expects an 'on-change' function: `(fn [property me new prior cell])`
 :ephemeral?	| Ephemeral properties, when they take on a new value, propagate as usual but then revert silently to nil, without propagating in any way.
 :lazy	| Several varieties of laziness: :always, :once-asked, :until-asked.
 :async? | WIP. An async operation will be resolved and the property will assume the result as a state change.
