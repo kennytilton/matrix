@@ -91,7 +91,7 @@ The core API of Matrix. More to come RSN.
 | Code | Comment |
 | ---- | ------- |
 (mget model property)	| The MX getter. Can be called from anywhere. When called in the scope of a Cell formula, establishes a reactive dependency on the gotten property.
-(mset! model property value)	| The MX setter. Alias mreset!. Call from any imperative code. When calling from a watch/observer, must be wrapped in (with-cc :tag setter)
+(mset! model property value)	| The MX setter. Alias mreset!. Call from any imperative code. When calling from a watch/observer, must be wrapped in `(with-cc :tag setter)`.
 (mswap! md prop fn & args)|	mx swap!
 (with-cc tag & body)	| Required wrapper for MX mutation in scope of a watch function.
 
@@ -100,7 +100,7 @@ The core API of Matrix. More to come RSN.
 | ---- | ------- |
 no cell involved | e.g. :answer 42	mset!/mswap! throw exceptions at run time.
 (cI value & option-values)	| Marks the associated property as an MX input. eg, `:answer (cI 42)`
-(cF & body)	| Provides a derived value for a property. Hidden parameter `me`. eg :answer (cF (* 6 9))
+(cF & body)	| Provides a derived value for a property. Hidden parameter `me`. eg `:answer (cF (* 6 9))`.
 (cF+ [& option-values] & body)	| A version of `cF` that takes cell options such as :watch.
 (cFn & body)	| Start as formula for initial value computation, then convert to input cell. Akin to "constructor initialization".
 (cFonce & body)	| Start as formula for initial computation, then behave as immutable property. Alias `cF1`.
