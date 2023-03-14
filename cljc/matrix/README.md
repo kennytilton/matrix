@@ -1,6 +1,6 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix
-`Matrix` solves this problem on its own: when (7) changes, how do we calculate (9) just once?
+`Matrix` solves this problem on its own: when (7) changes, how do we re-calculate (9) just once?
 
 ![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png?raw=true) 
 
