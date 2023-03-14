@@ -1,15 +1,17 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix
-`Matrix` solves this problem...
+`Matrix` solves this problem on its own: when (7) changes, how do we calculate (9) just once?
 
 ![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png?raw=true) 
 
 [By Johannes Rössel](https://commons.wikimedia.org/w/index.php?curid=5559952)
 
-...with this solution: fine-grained, gltch-free, transparent reactivity automatically extracted from declarative forms.
+The win? Fine-grained, gltch-free, transparent reactivity automatically extracted from declarative forms.
+
+Too abstract? Here is how it looks/works [in a GUI](https://kennytilton.github.io/web-mx-quickstart/#/).
 
 ### Why "matrix"?
-The movies were fun, but no, not that. Nor math. Think "cell culture".
+The movies were fun, but no, not that. Forget maths. Think "cell culture".
 
 > A matrix provides structural support, regulates cell behavior, and plays a role in cellular signaling and communication. --ChatGPT
 
