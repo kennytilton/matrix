@@ -16,7 +16,7 @@
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
               :refer [c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? unbound c-md-name
+                      c-unbound? c-input? c-async? unbound c-md-name
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
                       c-state *pulse* c-pulse-observed
                       *call-stack* *defer-changes* *custom-propagator*
@@ -52,7 +52,7 @@
 (def +valid-formula-options+
   #{:obs :watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
-    :code :value :rule :async? :and-then? :debug :on-quiesce})
+    :code :value :rule :async? :and-then :debug :on-quiesce})
 
 (defn c-options-canonicalize [options allowed]
   (loop [[k v & more] options
@@ -307,10 +307,11 @@
 
 ;; --- where change and animation begin -------
 
-(defn cset!> [c new-value]
+(defn cset! [c new-value]
   "The moral equivalent of a Common Lisp SETF, and indeed
 in the CL version of Cells SETF itself is the change API dunction."
   (assert c)
+  (assert (not (c-async? c)) (str "attempt to cset! cfuture " @c))
 
   (cond
     (not (c-input? c))
@@ -350,13 +351,10 @@ in the CL version of Cells SETF itself is the change API dunction."
           (c-value-assume c new-value nil))))))
 
 (defn c-reset! [c new-value]
-  (cset!> c new-value))
-
-(defn cswap!> [c swap-fn & swap-fn-args]
-  (cset!> c (apply swap-fn (<cget c) swap-fn-args)))
+  (cset! c new-value))
 
 (defn c-swap! [c swap-fn & swap-fn-args]
-  (cset!> c (apply swap-fn (<cget c) swap-fn-args)))
+  (cset! c (apply swap-fn (<cget c) swap-fn-args)))
 
 
 (defmacro c-reset-next! [f-c f-new-value]
@@ -368,7 +366,7 @@ execution as soon as the current change is manifested."
   `(cond
      (not *within-integrity*)
      ;; todo new error to test and document
-     (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next!> deferred change to %s not under WITH-INTEGRITY supervision."
+     (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next! deferred change to %s not under WITH-INTEGRITY supervision."
               (c-prop ~f-c)))
      ;---------------------------------------------
      :else
@@ -379,7 +377,7 @@ execution as soon as the current change is manifested."
                 new-value# ~f-new-value]
             (call-c-reset-next! c# new-value#)))])))
 
-(defmacro cset-next!>
+(defmacro cset-next!
   "Completely untested!!!!!!!!!!!!!!!"
   [f-c f-new-value]
   `(c-reset-next! ~f-c ~f-new-value))

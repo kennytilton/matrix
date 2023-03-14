@@ -7,11 +7,13 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.10.773"]
+                 [clj-http "3.10.3"]
+                 [cljs-http "0.1.46"]
+
                  ;[org.clojure/core.async "1.6.673"]
                  ;[org.clojure/data.int-map "1.0.0"]
                  ;[com.cognitect/transit-cljs "0.8.264"]
                  ;[com.taoensso/nippy "3.2.0"]
-                 ;[clj-http "3.10.3"]
                  ;[cheshire "5.10.0"]
                  ;[org.clojure/java.data "1.0.95"]
                  ;[org.clojure/tools.reader "1.3.6"]

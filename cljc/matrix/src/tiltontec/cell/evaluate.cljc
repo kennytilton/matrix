@@ -24,7 +24,7 @@
                       *call-stack* *defer-changes* dpc minfo cinfo
                       c-rule c-me c-value-state c-callers dependency-record unlink-from-used
                       unlink-from-callers *causation*
-                      c-synaptic? dependency-drop c-md-name
+                      c-synaptic? dependency-drop c-md-name c-async?
                       c-pulse c-pulse-last-changed c-ephemeral? c-prop c-prop-name
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
@@ -170,15 +170,46 @@
   (do                                                       ;; (wtrx [0 20 :cnset-entry (c-prop c)]
     (let [[raw-value propagation-code] (calculate-and-link c)]
       ;;(trx :cn-set-sees!!!! (c-prop c) raw-value propagation-code)
-      (when-not (c-optimized-away? c)
-        (assert (map? @c) "calc-n-set")
+      (cond
+        #_ #_ (c-async? c) (let [cfo (cinfo c true)]
+                       (assert (or (nil? raw-value)         ;; someday support other default future cell values, mebbe :pending
+                                 (dart/is? raw-value Future))
+                         (str "cnset-future got non future: " raw-value dbgid dbgdata))
 
-        ;; this check for optimized-away? arose because a rule using without-c-dependency
-        ;; can be re-entered unnoticed since that clears *call-stack*. If re-entered, a subsequent
-        ;; re-exit will be of an optimized away cell, which will have been assumed
-        ;; as part of the opti-away processing.
-        ;;(trx :calc-n-set->assume raw-value)
-        (c-value-assume c raw-value propagation-code)))))
+                       (if (dart/is? raw-value Future)
+                         (do
+                           ;; (dp :got-future :defchg cty/*defer-changes* :wii cty/*within-integrity*)
+                           (.then ^Future raw-value
+                             (fn [fu-val]
+                               ;(dp :then-callback-sees :defchg cty/*defer-changes* :wii cty/*within-integrity*)
+                               (assert (atom? c) (str "CNSET> in future then atom? false origc "
+                                                   cfo " cnow " c))
+                               (assert (map? @c) (str "CNSET> in future then map? false origc "
+                                                   cfo " derefc now " (or (deref c) "nada")))
+                               (assert (c-ref? c) (str "CNSET> in future then c-ref? false origc "
+                                                    cfo " derefnow "(deref c)))
+                               (with-mx-isolation
+                                 (with-integrity [:change :future-then]
+                                   ;; todo if a cfu is meant to run repeatedly as dependencies change,
+                                   ;;      do we need to clear :then? Or is opti-away not a problem
+                                   ;;      since it would have happened were there no users??
+                                   (assert (c-ref? c) (str "CNSET> in future then withininetg c-ref? false origc "
+                                                        cfo))
+                                   (rmap-setf [:then? c] true)
+                                   (c-value-assume c (if-let [and-then (:and-then @c)]
+                                                       (and-then c fu-val) fu-val) nil)))))
+                           ;; forcing nil pending future
+                           ;; TODO support :pending-future-placeholder-value and force that instead
+                           (c-value-assume c nil propagation-code))
+                         (c-value-assume c nil propagation-code)))
+        :else (when-not (c-optimized-away? c)
+                (assert (map? (deref c)) "calc-n-set")
+                ;; this check for optimized-away? arose because a rule using without-c-dependency
+                ;; can be re-entered unnoticed since that "clears" *call-stack*. If re-entered, a subsequent
+                ;; re-exit will be of an optimized away cell, which will have been value-assumed
+                ;; as part of the opti-away processing.
+                ;;(trx :calc-n-set->assume raw-value)
+                (c-value-assume c raw-value propagation-code))))))
 
 (defn calculate-and-link
   "The name is accurate: we do no more than invoke the

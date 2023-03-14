@@ -164,7 +164,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def-rmap-props c-
   me prop state input? rule pulse pulse-last-changed pulse-observed
   useds users callers optimize ephemeral? code
-  lazy synapses synaptic?)
+  lazy synapses synaptic? async?)
 
 (defn dpc [cell & bits]
   (when (:debug? @cell)
@@ -296,7 +296,8 @@ rule to get once behavior or just when fm-traversing to find someone"
            (c-value-state c)
            [:useds (count (:useds @c))
             :callers (count (:callers @c))]
-           (mx-type c)]))
+           (mx-type c)
+           (c-async? c)]))
 
 
 
