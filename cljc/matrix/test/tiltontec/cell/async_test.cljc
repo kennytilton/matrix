@@ -34,19 +34,3 @@
       (prn :xhr er)))
   )
 
-  (md/make
-    :ae-events? (cF+ [:async? true
-                      ; optional chance to filter async response before it
-                      ; gets set as the mx slot value
-                      :and-then (fn [c lookup]
-                                   (= 200 (.-statusCode ^dht/Response lookup)))]
-                  (dht/get (.https Uri "api.fda.gov" "drug/event.json"
-                             {"limit"  "1"
-                              "search" (str "patient.drug.openfda.brand_name:"
-                                         (mget me :title))})))
-
-    ;--
-    :title (cI title)
-    :completed (cI completed))
-
-  )

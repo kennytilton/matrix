@@ -3,28 +3,67 @@
      (:require-macros [tiltontec.matrix.api]))
   (:require
     #?(:cljs [tiltontec.util.base
-              :refer [mx-type]
-              :refer-macros [trx prog1 *trx?* def-rmap-props]]
+              :refer-macros [trx prog1 *trx?* def-rmap-props]
+              :as ubase]
        :clj  [tiltontec.util.base
-              :refer :all])
-
+              :as ubase])
+    [tiltontec.util.core :as ucore]
     [tiltontec.cell.evaluate :as eval]
     [tiltontec.cell.base :as cb]
-
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [c-reset! make-cell] :as c]
        :clj  [tiltontec.cell.core :as c])
-
+    [tiltontec.cell.observer :as cobs]
     [tiltontec.model.core :as md]))
+
+(defn any-ref? [it]
+  (ucore/any-ref? it))
+
+(defn rmap-meta-setf [it]
+  (ucore/rmap-meta-setf it))
+
+(defmacro the-kids
+  "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"
+  [& tree]
+  `(binding [tiltontec.model.core/*parent* ~'me]
+     (assert tiltontec.model.core/*parent*)
+     (doall (remove nil? (flatten (list ~@tree))))))
+
+(defmacro mdv!
+  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
+  [what slot & [me]]
+  (let [me (or me 'me)]
+    `(tiltontec.model.core/mget (tiltontec.model.core/fm! ~what ~me) ~slot)))
+
+(defmulti observe-by-type (fn [prop-name me new-val old-val c]
+                            [(ubase/mx-type me)]))
+
+(defmethod observe-by-type :default [prop me new-val old-val c]
+  (cobs/observe-by-type prop me new-val old-val c))
+
+(defn observe [slot-name me new-val old-val c]
+  (cobs/observe slot-name me new-val old-val c))
+
+(defn md-ref? [it]
+  (cb/md-ref? it))
+
+(def unbound cb/unbound)
 
 (def matrix
   "Optionally populated with the root of a tree of Models."
   tiltontec.model.core/matrix)
 
+(defn mx-type [it]
+  (ubase/mx-type it))
+
 (defmacro with-mx [&  body]
   `(tiltontec.cell.core/call-with-mx
      (fn [] ~@body)))
+
+(defmacro with-par [meform & body]
+  `(binding [tiltontec.model.core/*parent* ~meform]
+     ~@body))
 
 ;;;---------------------------------------------
 
@@ -83,10 +122,13 @@
     `(:parent @~me)))
 
 (defn mset! [me prop new-value]
-  (tiltontec.model.core/mset! me prop new-value))
+  (md/mset! me prop new-value))
 
 (defn mswap! [me prop swap-fn & swap-fn-args]
-  (apply tiltontec.model.core/mswap! me prop swap-fn swap-fn-args))
+  (apply md/mswap! me prop swap-fn swap-fn-args))
+
+(defn backdoor-reset! [me prop new-value]
+  (md/backdoor-reset! me prop new-value))
 
 (defn mget [me prop]
   (tiltontec.model.core/mget me prop ))
@@ -105,6 +147,9 @@
 (defn md-quiesce [me]
   (eval/md-quiesce me))
 
+(defn md-quiesce-self [me]
+  (eval/md-quiesce-self me))
+
 ;;; --- navigation ---------------------------------
 
 (defn fm-navig [what where & options]
@@ -119,3 +164,16 @@
     `(let [name# ~name]
        (tiltontec.model.core/fm-navig #(= name# (tiltontec.model.core/mget? % :name))
          ~me-ref :me? false :up? true :inside? false))))
+
+(defn fm!
+  "Search matrix ascendents and descendents from node 'where', for 'what', throwing an error when not found"
+  [what where]
+  (md/fm! what where))
+
+;;; --- debug --------------------------
+
+(defn minfo [me]
+  (cb/minfo me))
+
+(defn cinfo [c]
+  (cb/cinfo c))

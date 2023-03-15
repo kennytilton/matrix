@@ -33,7 +33,7 @@
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next!]
-              :refer [cI c-reset! cset!>]]
+              :refer [cI c-reset! cset!]]
        :clj  [tiltontec.cell.core :refer :all])
     ))
 
@@ -156,7 +156,7 @@
       (reset! obs {:a a :b b :c c})
       (is (= 0 (<cget d) (<cget e) (<cget a) (<cget c) (<cget b)))
 
-      (cset!> a 1)
+      (cset! a 1)
       (is (= 1 (<cget a)))
       (is (= 10 (<cget b)))
       (is (= 100 (<cget c)))
