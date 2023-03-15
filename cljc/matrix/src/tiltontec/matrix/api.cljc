@@ -20,8 +20,8 @@
 (defn any-ref? [it]
   (ucore/any-ref? it))
 
-(defn rmap-meta-setf [it]
-  (ucore/rmap-meta-setf it))
+(defn rmap-meta-setf [[prop me] new-value]
+  (ucore/rmap-meta-setf [prop me] new-value))
 
 (defmacro the-kids
   "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"
@@ -57,7 +57,7 @@
 (defn mx-type [it]
   (ubase/mx-type it))
 
-(defmacro with-mx [&  body]
+(defmacro with-mx [& body]
   `(tiltontec.cell.core/call-with-mx
      (fn [] ~@body)))
 
@@ -131,7 +131,10 @@
   (md/backdoor-reset! me prop new-value))
 
 (defn mget [me prop]
-  (tiltontec.model.core/mget me prop ))
+  (tiltontec.model.core/mget me prop))
+
+(defn mget? [me prop]
+  (tiltontec.model.core/mget? me prop))
 
 (defmacro with-integrity [[opcode info] & body]
   `(tiltontec.cell.integrity/call-with-integrity
@@ -144,7 +147,11 @@
   `(tiltontec.cell.integrity/with-integrity (:change ~id)
      ~@body))
 
-(defn md-quiesce [me]
+(defmulti md-quiesce (fn [me]
+                       (assert (md-ref? me))
+                       [(mx-type me)]))
+
+(defmethod md-quiesce :default [me]
   (eval/md-quiesce me))
 
 (defn md-quiesce-self [me]
