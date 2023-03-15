@@ -1,8 +1,14 @@
 ![Matrix cell culture](../../images/mx-banner-red.jpg)
 # Matrix
-`Matrix` solves this problem on its own: when (7) changes, how do we re-calculate (9) just once?
+The Matrix dataflow engine solves this problem on its own. Given only:
+```
+v11 <= (+ v7 v5)
+ v8 <= (+ v3 (when (> v11 42) v7); and
+ v9 <= (+ v11 v8)
+```
+...when (7) changes, how do we re-calculate (9) just once, in the general case?
 
-![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/Directed_acyclic_graph.png?raw=true) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/resources/death-pentagram.jpg?raw=true) 
 
 [By Johannes Rössel](https://commons.wikimedia.org/w/index.php?curid=5559952)
 
@@ -85,7 +91,7 @@ The core API of Matrix. More to come RSN.
 | Code | Comment |
 | ---- | ------- |
 (mget model property)	| The MX getter. Can be called from anywhere. When called in the scope of a Cell formula, establishes a reactive dependency on the gotten property.
-(mset! model property value)	| The MX setter. Alias mreset!. Call from any imperative code. When calling from a watch/observer, must be wrapped in (with-cc :tag setter)
+(mset! model property value)	| The MX setter. Alias mreset!. Call from any imperative code. When calling from a watch/observer, must be wrapped in `(with-cc :tag setter)`.
 (mswap! md prop fn & args)|	mx swap!
 (with-cc tag & body)	| Required wrapper for MX mutation in scope of a watch function.
 
@@ -94,7 +100,7 @@ The core API of Matrix. More to come RSN.
 | ---- | ------- |
 no cell involved | e.g. :answer 42	mset!/mswap! throw exceptions at run time.
 (cI value & option-values)	| Marks the associated property as an MX input. eg, `:answer (cI 42)`
-(cF & body)	| Provides a derived value for a property. Hidden parameter `me`. eg :answer (cF (* 6 9))
+(cF & body)	| Provides a derived value for a property. Hidden parameter `me`. eg `:answer (cF (* 6 9))`.
 (cF+ [& option-values] & body)	| A version of `cF` that takes cell options such as :watch.
 (cFn & body)	| Start as formula for initial value computation, then convert to input cell. Akin to "constructor initialization".
 (cFonce & body)	| Start as formula for initial computation, then behave as immutable property. Alias `cF1`.
@@ -102,8 +108,8 @@ no cell involved | e.g. :answer 42	mset!/mswap! throw exceptions at run time.
 #### Cell Options
 | Code | Comment |
 | ---- | ------- |
-:input?	| Can imperative code mutate this property? Macro cI: (cI 42)
-:watch	| Alias :obs for observer. Expects an 'on-change' function: (fn [property me new prior cell])
+:input?	| Can imperative code mutate this property? Macro cI: `(cI 42)`
+:watch	| Alias :obs for observer. Expects an 'on-change' function: `(fn [property me new prior cell])`
 :ephemeral?	| Ephemeral properties, when they take on a new value, propagate as usual but then revert silently to nil, without propagating in any way.
 :lazy	| Several varieties of laziness: :always, :once-asked, :until-asked.
 :async? | WIP. An async operation will be resolved and the property will assume the result as a state change.
