@@ -13,7 +13,7 @@
              :refer [c-optimized-away? c-formula? c-value c-optimize
                      c-unbound? c-input? cells-init
                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                     c-state *pulse* c-pulse-observed
+                     c-state *pulse* c-pulse-watched
                      *call-stack* *defer-changes* unbound
                      c-rule c-me c-value-state c-callers caller-ensure
                      unlink-from-callers *causation*
@@ -25,10 +25,10 @@
              :refer-macros [with-integrity]]
       :clj [tiltontec.cell.integrity :refer [with-integrity]])
    [tiltontec.cell.evaluate :refer [c-get]]
-   #?(:clj [tiltontec.cell.observer
-            :refer [defobserver fn-obs]]
-      :cljs [tiltontec.cell.observer
-             :refer-macros [defobserver fn-obs]])
+   #?(:clj [tiltontec.cell.watch
+            :refer [defwatch fn-watch]]
+      :cljs [tiltontec.cell.watch
+             :refer-macros [defwatch fn-watch]])
 
    #?(:cljs [tiltontec.cell.core
              :refer-macros [cF cF+ c_F cF_]
@@ -41,7 +41,7 @@
   (cells-init)
   (let [xo (atom 0)
         a (cI 0)
-        x (cF_ [:obs (fn-obs (swap! xo inc))]
+        x (cF_ [:watch (fn-watch (swap! xo inc))]
                (+ (c-get a) 40))]
     (is (= unbound (:value @x)))
     (is (= 0 @xo))
@@ -59,7 +59,7 @@
   (let [xo (atom 0)
         xr (atom 0)
         a (cI 0)
-        x (c_F [:obs (fn-obs (swap! xo inc))]
+        x (c_F [:watch (fn-watch (swap! xo inc))]
                (swap! xr inc)
                (+ (c-get a) 40))]
     (is (= unbound (:value @x)))
@@ -83,7 +83,7 @@
         xr (atom 0)
         a (cI 0 :prop :aaa)
         x (cF+ [:prop :xxx
-               :obs (fn-obs (swap! xo inc))
+               :watch (fn-watch (swap! xo inc))
                :optimize :when-value-t]
               (swap! xr inc)
               (trx nil :reading-a!!!)

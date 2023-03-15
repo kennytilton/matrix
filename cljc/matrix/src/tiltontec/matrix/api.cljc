@@ -10,11 +10,11 @@
     [tiltontec.util.core :as ucore]
     [tiltontec.cell.evaluate :as eval]
     [tiltontec.cell.base :as cb]
+    ;[tiltontec.cell.watch :as cw]
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [c-reset! make-cell] :as c]
        :clj  [tiltontec.cell.core :as c])
-    [tiltontec.cell.observer :as cobs]
     [tiltontec.model.core :as md]))
 
 (defn any-ref? [it]
@@ -36,14 +36,19 @@
   (let [me (or me 'me)]
     `(tiltontec.model.core/mget (tiltontec.model.core/fm! ~what ~me) ~slot)))
 
-(defmulti observe-by-type (fn [prop-name me new-val old-val c]
-                            [(ubase/mx-type me)]))
+;;; --- watch -----------------------------------------
 
-(defmethod observe-by-type :default [prop me new-val old-val c]
-  (cobs/observe-by-type prop me new-val old-val c))
-
-(defn observe [slot-name me new-val old-val c]
-  (cobs/observe slot-name me new-val old-val c))
+;(defmulti watch-by-type (fn [prop-name me new-val old-val c]
+;                            [(ubase/mx-type me)]))
+;
+;(defmethod watch-by-type :default [prop me new-val old-val c]
+;  (cw/watch-by-type prop me new-val old-val c))
+;
+;(defmulti watch (fn [prop-name me new-val old-val c]
+;                  [prop-name (ubase/mx-type me)]))
+;
+;(defmethod watch :default [slot-name me new-val old-val c]
+;  (cw/watch slot-name me new-val old-val c))
 
 (defn md-ref? [it]
   (cb/md-ref? it))

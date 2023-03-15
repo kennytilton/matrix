@@ -15,7 +15,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -26,10 +26,6 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    #?(:clj  [tiltontec.cell.observer
-              :refer [defobserver fn-obs]]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [defobserver fn-obs]])
 
     [tiltontec.cell.evaluate :refer [c-get c-awaken]]
 
@@ -37,6 +33,8 @@
               :refer-macros [cF cF+ cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
+
+    [tiltontec.cell.watch :refer [fn-watch]]
 
     ))
 
@@ -115,13 +113,13 @@
     (let [boct (atom 0)
           b (cI nil
               :prop :b
-              :obs (fn-obs
+              :watch (fn-watch
                      (swap! boct inc))
               :ephemeral? true)
           crun (atom 0)
-          cobs (atom 0)
+          cwatch (atom 0)
           c (cF+ [:prop :c
-                  :obs (fn-obs (swap! cobs inc))]
+                  :watch (fn-watch (swap! cwatch inc))]
               (swap! crun inc)
               (prog1
                 (str "Hi " (c-get b))
@@ -140,14 +138,14 @@
 
       (is (= "Hi " (c-get c)))
       (is (= 1 @boct))
-      (is (= 1 @crun @cobs))
+      (is (= 1 @crun @cwatch))
       (is (nil? (:value @b)))
 
       (do
         (c-reset! b "Mom")
         (is (= "Hi Mom" (c-get c)))
         (is (= 2 @boct))
-        (is (= 2 @crun @cobs))
+        (is (= 2 @crun @cwatch))
         (is (nil? (c-value b)))
         (is (nil? (:value @b))))
 
@@ -156,7 +154,7 @@
         (is (= "Hi Mom" (c-get c)))
         (is (= 3 @boct))                                    ;; b as eph reverts to nil, so "Mom" was new again
         (is (= 3 @crun))
-        (is (= 2 @cobs))
+        (is (= 2 @cwatch))
         (is (nil? (c-value b)))
         (is (nil? (:value @b)))))))
 

@@ -20,10 +20,6 @@
                                       ensure-value-is-current]]
 
     #?(:clj
-    [tiltontec.cell.observer :refer [fn-obs]]
-       :cljs [tiltontec.cell.observer :refer-macros [fn-obs]])
-
-    #?(:clj
     [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c_F cF_]

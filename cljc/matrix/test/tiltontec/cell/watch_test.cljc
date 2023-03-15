@@ -1,4 +1,4 @@
-(ns tiltontec.cell.observer-test
+(ns tiltontec.cell.watch-test
   (:require
     #?(:clj  [clojure.test :refer :all]
        :cljs [cljs.test
@@ -14,7 +14,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -26,10 +26,10 @@
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
     [tiltontec.cell.evaluate :refer [c-get]]
-    #?(:clj  [tiltontec.cell.observer
-              :refer [defobserver fn-obs]]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [defobserver fn-obs]])
+    #?(:clj  [tiltontec.cell.watch
+              :refer [defwatch fn-watch]]
+       :cljs [tiltontec.cell.watch
+              :refer-macros [defwatch fn-watch]])
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+]
@@ -43,7 +43,7 @@
   (with-mx
     (let [bingo (atom false)
           c (cF+ [:prop :bingo
-                  :watch (fn-obs
+                  :watch (fn-watch
                          (reset! bingo true))]
               (+ 40 2))]
       (is (mx-type? c ::cty/cell))
@@ -63,7 +63,7 @@
 (deftest test-input
   (with-mx
     (let [c (cI 42 :prop :bingo2
-            :watch (fn-obs (reset! bingo2 true)))]
+            :watch (fn-watch (reset! bingo2 true)))]
     (is (mx-type? c ::cty/cell))
     (is (= (c-value-state c) :valid))
     (is (= #{} (c-callers c)))
@@ -74,10 +74,10 @@
     (is (= (c-get c) 42))
     (is (= false @bingo2)))))
 
-(deftest test-input-obs
+(deftest test-input-watch
   (with-mx
     (let [c (cI 42 :prop :bingo2
-              :obs (fn-obs (reset! bingo2 true)))]
+              :watch (fn-watch (reset! bingo2 true)))]
       (is (mx-type? c ::cty/cell))
       (is (= (c-value-state c) :valid))
       (is (= #{} (c-callers c)))
@@ -88,27 +88,27 @@
       (is (= (c-get c) 42))
       (is (= false @bingo2)))))
 
-(deftest t-custom-obs
+(deftest t-custom-watch
   (with-mx
-    (let [bobs (atom nil)
+    (let [bwatch (atom nil)
         b (cI 2 :prop :bb
-            :watch (fn-obs
+            :watch (fn-watch
                    (trx nil prop me new old)
-                   (reset! bobs new)))
-        cobs (atom nil)
-        c (cF+ [:watch (fn-obs [prop me new old c]
+                   (reset! bwatch new)))
+        cwatch (atom nil)
+        c (cF+ [:watch (fn-watch [prop me new old c]
                        (trx prop me new old)
-                       (reset! cobs new))]
+                       (reset! cwatch new))]
             (* 10 (c-get b)))]
     (#?(:clj dosync :cljs do)
       (is (= (c-get b) 2))
-      (is (= @bobs nil))
+      (is (= @bwatch nil))
       (is (= (c-get c) 20))
-      (is (= @cobs 20))
+      (is (= @cwatch 20))
       (c-reset! b 3)
-      (is (= 3 @bobs))
+      (is (= 3 @bwatch))
       (is (= 30 (c-get c)))
-      (is (= 30 @cobs))))))
+      (is (= 30 @cwatch))))))
 
 #?(:cljs (cljs.test/run-tests))
 

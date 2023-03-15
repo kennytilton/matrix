@@ -45,10 +45,10 @@
 
     ; cool------------------------
 
-    #?(:clj  [tiltontec.cell.observer :refer [fn-obs observe observe-by-type]]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [fn-obs]
-              :refer [observe observe-by-type]])
+    #?(:clj  [tiltontec.cell.watch :refer [fn-watch watch watch-by-type]]
+       :cljs [tiltontec.cell.watch
+              :refer-macros [fn-watch]
+              :refer [watch watch-by-type]])
 
     #?(:clj
              [tiltontec.cell.core :refer :all]
@@ -256,7 +256,7 @@
                          :send?   true
                          :timeout 5000} attrs))))
 
-(defmethod observe [:kids :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
+(defmethod watch [:kids :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
   ;;
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
@@ -273,10 +273,10 @@
         :default                                            ;; try to cancel?
         (pln :ignoring-new-kid-xhrs!!!!!!! #_newv)))))
 
-(defmethod observe [:send? :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
-  ;;(println :observing-xhr!!!! newv (:uri @me))
+(defmethod watch [:send? :tiltontec.mxxhr.core/xhr] [_ me newv oldv _]
+  ;;(println :watcherving-xhr!!!! newv (:uri @me))
   (when newv
-    ;;;(println :send?-observer-sending-xhr!!!!!!!!!!!!!)
+    ;;;(println :send?-watch-sending-xhr!!!!!!!!!!!!!)
     (xhr-send me)))
 
 ;;; --- extraction to map --------
@@ -431,7 +431,7 @@
          :re-poll-test re-poll-test
          :xhr (cF (when (mget me :re-poll)
                     (send-xhr :get-running final-uri)))
-         :response (cF+ [:obs (fn-obs
+         :response (cF+ [:watch (fn-watch
                                 (when ((:re-poll-test @me) new)
                                   #?(:cljs (js/setTimeout
                                              #(with-cc

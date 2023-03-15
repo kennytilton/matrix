@@ -14,7 +14,7 @@
              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                      c-unbound? c-input?
                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                     c-state *pulse* c-pulse-observed
+                     c-state *pulse* c-pulse-watched
                      *call-stack* *defer-changes* unbound
                      c-rule c-me c-value-state c-callers caller-ensure
                      unlink-from-callers *causation*
@@ -25,10 +25,10 @@
    #?(:cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]]
       :clj [tiltontec.cell.integrity :refer [with-integrity]])
-   #?(:clj [tiltontec.cell.observer
-            :refer [defobserver fn-obs]]
-      :cljs [tiltontec.cell.observer
-             :refer-macros [defobserver fn-obs]])
+   #?(:clj [tiltontec.cell.watch
+            :refer [defwatch fn-watch]]
+      :cljs [tiltontec.cell.watch
+             :refer-macros [defwatch fn-watch]])
 
    #?(:cljs [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
@@ -53,29 +53,29 @@
 
 (deftest hw-02
   (cells-init)
-  (let [obs-action (atom nil)
+  (let [watch-action (atom nil)
         v ;;"visitor"
         {:name "World"
          :action (cI nil
                        :prop :v-action
-                       :obs ;; short for observer
+                       :watch ;; short for watch
                        (fn [prop me new old c]
-                         (reset! obs-action new)
-                         (println :observing prop new old)))}]
+                         (reset! watch-action new)
+                         (println :watcherving prop new old)))}]
     (is (=  (c-get (:name v)) "World"))
     (c-reset! (:action v) "knocks")
     (is (=  (c-get (:action v)) "knocks"))
-    (is (= "knocks" @obs-action))))
+    (is (= "knocks" @watch-action))))
 
 (deftest hw-03
   (cells-init)
   (let [action (atom nil)
-        obs-action (fn [prop me new old c]
+        watch-action (fn [prop me new old c]
                      (reset! action new)
-                     (println :observing prop new old))
+                     (println :watcherving prop new old))
         v {:name "World"
            :action (cI nil :prop :v-action
-                         :obs obs-action)}]
+                         :watch watch-action)}]
 
     (is (nil? (c-get (:action v))))
     (is (nil? @action))
@@ -84,18 +84,18 @@
     (is (= "knock-knock" @action))
     (is (= (c-get (:action v)) "knock-knock"))))
 
-(defn gobs
+(defn gwatch
   [prop me new old c]
-  (println :gobs> prop new old))
+  (println :gwatch> prop new old))
 
 (deftest hw-04
   (cells-init)
   (let [r-action (cI nil
                        :prop :r-action
-                       :obs gobs)
+                       :watch gwatch)
         r-loc (make-c-formula
                :prop :r-loc
-               :obs gobs
+               :watch gwatch
                :rule (fn [c]
                        (case (c-get r-action)
                          :leave :away
@@ -111,18 +111,18 @@
 (deftest hw-5
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [prop me new old c]
+  (let [watch-action (fn [prop me new old c]
                      (println prop new old))
         v {:name "World"
            :action (cI nil :prop :v-action
-                         :obs obs-action)}
+                         :watch watch-action)}
         r-action (cI nil)
-        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (cF+ [:obs (fn-obs (trx :r-resp new))]
+        r-response (cF+ [:watch (fn-watch (trx :r-resp new))]
                         (when (= :home (c-get r-loc))
                           (when-let [act (c-get (:action v))]
                             (case act
@@ -135,20 +135,20 @@
 (deftest hello-world
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [prop me new old c]
+  (let [watch-action (fn [prop me new old c]
                      (println prop new old))
         v {:name "World"
            :action (cI nil
                          :prop :v-action
                          :ephemeral? true
-                         :obs obs-action)}
+                         :watch watch-action)}
         r-action (cI nil)
-        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (cF+ [:obs (fn-obs (trx :r-response new))
+        r-response (cF+ [:watch (fn-watch (trx :r-response new))
                          :ephemeral? true]
                         (when (= :home (c-get r-loc))
                           (when-let [act (c-get (:action v))]
@@ -163,20 +163,20 @@
 (deftest hello-world-2
   (cells-init)
   (println :--go------------------)
-  (let [obs-action (fn [prop me new old c]
+  (let [watch-action (fn [prop me new old c]
                      (when new (trx visitor-did new)))
         v {:name "World"
            :action (cI nil
                          :prop :v-action
                          :ephemeral? true
-                         :obs obs-action)}
+                         :watch watch-action)}
         r-action (cI nil)
-        r-loc (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
+        r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
                    (case (c-get r-action)
                      :leave :away
                      :return :home
                      :missing))
-        r-response (cF+ [:obs (fn-obs (when new
+        r-response (cF+ [:watch (fn-watch (when new
                                         (trx :r-response new)))
                          :ephemeral? true
                          ]
@@ -184,10 +184,10 @@
                               (when-let [act (c-get (:action v))]
                                 (case act
                                   :knock-knock "hello, world"))))
-        alarm (cF+ [:obs (fn-obs
+        alarm (cF+ [:watch (fn-watch
                           (trx :telling-alarm-api new))]
                    (if (= :home (c-get r-loc)) :off :on))
-        alarm-do (cF+ [:obs (fn-obs
+        alarm-do (cF+ [:watch (fn-watch
                             (case new
                               :call-police (trx :auto-dialing-911)
                               nil))]

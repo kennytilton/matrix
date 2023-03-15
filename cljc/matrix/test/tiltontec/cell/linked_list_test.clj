@@ -20,7 +20,7 @@
 
 (defn model []
   (make :event-in (cI nil)
-    :event (cF+ [:obs link-e]
+    :event (cF+ [:watch link-e]
              (when-let [e-in (mget me :event-in)]
                (make ::event
                  :previous (cI nil)

@@ -16,7 +16,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation*
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
@@ -26,8 +26,8 @@
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
 
-    [tiltontec.cell.observer
-     :refer [observe]]
+    #?(:cljs [tiltontec.cell.watch :refer [watch]]
+       :clj  [tiltontec.cell.watch :refer [watch]])
 
     [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
 
@@ -179,19 +179,19 @@
 
 (defn md-kids [me] (mget me :kids))
 
-(defn fm-kids-observe [me newk oldk c]
+(defn fm-kids-watch [me newk oldk c]
   (when-not (= oldk unbound)
-    ;;(prn :fm-kids-observe)
+    ;;(prn :fm-kids-watch)
     (let [lostks (difference (set oldk) (set newk))]
       (when-not (empty? lostks)
         (doseq [k lostks]
-          ;;(prn :obs-k-not2be!! k)
+          ;;(prn :watch-k-not2be!! k)
           (md-quiesce k))))))
 
-(defmethod observe [:kids ::family]
-  [_ me newk oldk c]
-  ;;(prn :observe-kids-family-method)
-  (fm-kids-observe me newk oldk c))
+(defmethod watch [:kids ::family]
+  [prop me newk oldk c]
+  ;;(prn :watcherve-kids-family-method)
+  (fm-kids-watch me newk oldk c))
 
 (defmethod md-quiesce [::family]
   [me]

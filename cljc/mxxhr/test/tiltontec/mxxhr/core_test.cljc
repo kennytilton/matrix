@@ -35,8 +35,8 @@
               :refer []])
 
     #?(:clj
-    [tiltontec.cell.observer :refer [fn-obs]]
-       :cljs [tiltontec.cell.observer :refer-macros [fn-obs]])
+    [tiltontec.cell.watch :refer [fn-watch]]
+       :cljs [tiltontec.cell.watch :refer-macros [fn-watch]])
 
     [cheshire.core :refer :all]
 
@@ -268,7 +268,7 @@
   (cells-init)
 
   (let [xhrs (cF+ [:prop :synch!
-                   :obs (fn-obs (when new
+                   :watch (fn-watch (when new
                                   (println :fini!!! (map xhrfo new))
                                   (is (= 1 (count new)))
                                   (is (every? #(= :ok (xhr-status-key %)) new))))]
@@ -294,7 +294,7 @@
   (cells-init)
 
   (let [xhrs (cF+ [:prop :synch!
-                   :obs (fn-obs (when new
+                   :watch (fn-watch (when new
                                   (println :fini!!! (map xhrfo new))
                                   (is (= 1 (count new)))
                                   (is (every? #(= :ok (xhr-status-key %)) new))))]
@@ -363,7 +363,7 @@
   (cells-init)
 
   (let [xhrs-cell (cF+ [:prop :synch!
-                        :obs (fn-obs (when new
+                        :watch (fn-watch (when new
                                        (println (str :xhrseq-new!! (count new)))
                                        ;; (println :fini!!! (map xhrfo new))
                                        (is (= 3 (count new)))
@@ -456,7 +456,7 @@
                     (assert (= 1 (count done)) (str "done count NG:" (count done)))
                     (reset! open-xhrs (set/difference @open-xhrs done))
                     (first done)))))
-        h1 (cF+ [:obs (fn-obs
+        h1 (cF+ [:watch (fn-watch
                         (when new
                           (println :got-xhr!!!!!! new)
                           (swap! responses conj new)))]
@@ -669,7 +669,7 @@
 ;    (cells-init)
 ;    (let [site (cI "http://google.com" :prop :site)
 ;          h (cF+ [:prop :htop
-;                  :obs (fn-obs (println :new-async-html!!!!! new :old old))]
+;                  :watch (fn-watch (println :new-async-html!!!!! new :old old))]
 ;                 (pln :h-top!!!!!!!!!!!!!!!!!!!!!!! @sends)
 ;                 (when-let [xhr (with-synapse (:home-page [])
 ;                                  ;; the dependency on site will trigger a re-run of

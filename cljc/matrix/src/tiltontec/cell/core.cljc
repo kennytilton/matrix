@@ -18,7 +18,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? c-async? unbound c-md-name
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes* *custom-propagator*
                       c-rule c-me c-value-state c-callers
                       c-synapses unfin-biz-build *causation*
@@ -27,11 +27,7 @@
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
 
-    #?(:clj
-       [tiltontec.cell.observer :refer :all]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [fn-obs]
-              :refer []])
+
 
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:clj
@@ -43,31 +39,25 @@
 
 ;;#?(:cljs (set! *print-level* 3))
 
-; todo: stand-alone cells with observers should be observed when they are made
+; todo: stand-alone cells with watchs should be watched when they are made
 
 
 (def +valid-input-options+
-  #{:obs :watch :prop :ephemeral? :unchanged-if
+  #{:watch :prop :ephemeral? :unchanged-if
     :value :input? :debug :on-quiesce})
 (def +valid-formula-options+
-  #{:obs :watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
+  #{:watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
     :code :value :rule :async? :and-then :debug :on-quiesce})
 
 (defn c-options-canonicalize [options allowed]
   (loop [[k v & more] options
-         res nil
-         observer? false]
+         res nil]
     (cond
       (nil? k) (reverse res)
       :else (do
               (assert (some #{k} allowed) (str "Cell option invalid: " k ". Only allowed are: " allowed))
-              (when (and observer? (some #{k} [:obs :watch]))
-                (err "make-c-formula> options include multiple :watch or :obs. Supply just one."))
-
-              (recur more (conj res (case k
-                                      :watch :obs
-                                      k) v) (or observer? (some #{k} [:obs :watch])))))))
+              (recur more (conj res k v))))))
 
 (defn make-cell [& kvs]
   (let [options (apply hash-map (c-options-canonicalize kvs
@@ -77,7 +67,7 @@
                   ::cty/state              :nascent
                   :pulse              nil
                   :pulse-last-changed nil
-                  :pulse-observed     nil
+                  :pulse-watched     nil
                   :callers            #{}
                   :synapses           #{}                   ;; these stay around between evaluations
                   ;; todo: if a rule branches away from a synapse
@@ -94,7 +84,7 @@
                                      ::cty/state         :nascent
                                      :pulse              nil
                                      :pulse-last-changed nil
-                                     :pulse-observed     nil
+                                     :pulse-watched     nil
                                      :callers            #{}
                                      :synapses           #{} ;; these stay around between evaluations
                                      ;; todo: if a rule branches away from a synapse
@@ -117,7 +107,7 @@
                                      ::cty/state         :nascent ;; s/b :unbound?
                                      :pulse              nil
                                      :pulse-last-changed nil
-                                     :pulse-observed     nil
+                                     :pulse-watched     nil
                                      :callers            #{}
                                      :useds              #{}
                                      :lazy               false
@@ -330,7 +320,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (let [prop (c-prop-name c)
           me (c-model c)]
       (err
-        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" prop "' by an observer detected."
+        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" prop "' by an watch detected."
         "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
         "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
         "...> FYI: intended new value is [" new-value "]; current value is [" (get @me prop :no-such-prop) "].\n"
@@ -358,10 +348,10 @@ in the CL version of Cells SETF itself is the change API dunction."
 
 
 (defmacro c-reset-next! [f-c f-new-value]
-  "Observers should have side-effects only outside the
-cell-mediated model, but it can be useful to have an observer
+  "watchs should have side-effects only outside the
+cell-mediated model, but it can be useful to have an watch
 kick off further change to the model. To achieve this we
-allow an observer to explicitly queue a c-reset! for 
+allow an watch to explicitly queue a c-reset! for
 execution as soon as the current change is manifested."
   `(cond
      (not *within-integrity*)

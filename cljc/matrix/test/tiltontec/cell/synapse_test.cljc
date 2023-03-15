@@ -16,7 +16,7 @@
               :refer [c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input? cells-init
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       *causation*
@@ -33,8 +33,8 @@
     [tiltontec.cell.evaluate :refer [c-get]]
 
     #?(:clj
-       [tiltontec.cell.observer :refer [defobserver fn-obs]]
-       :cljs [tiltontec.cell.observer :refer-macros [defobserver fn-obs]])
+       [tiltontec.cell.watch :refer [defwatch fn-watch]]
+       :cljs [tiltontec.cell.watch :refer-macros [defwatch fn-watch]])
 
     #?(:clj
        [tiltontec.cell.synapse :refer :all]

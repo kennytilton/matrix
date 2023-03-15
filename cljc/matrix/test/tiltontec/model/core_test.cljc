@@ -17,7 +17,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -28,10 +28,10 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity with-cc]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity with-cc]])
-    #?(:clj  [tiltontec.cell.observer
-              :refer [defobserver fn-obs]]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [defobserver fn-obs]])
+    #?(:clj  [tiltontec.cell.watch
+              :refer [defwatch fn-watch]]
+       :cljs [tiltontec.cell.watch
+              :refer-macros [defwatch fn-watch]])
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
@@ -271,17 +271,17 @@
                               :moniker "World"
                               :action (cI nil
                                         :ephemeral? true
-                                        :obs (fn [prop me new old c]
+                                        :watch (fn [prop me new old c]
                                                (when new (trx visitor-did new)))))
                             (md/make
                               :name :resident
                               :action (cI nil :ephemeral? true)
-                              :location (cF+ [:obs (fn-obs (when new (trx :honey-im new)))]
+                              :location (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
                                           (case (mget me :action)
                                             :leave :away
                                             :return :home
                                             :missing))
-                              :response (cF+ [:obs (fn-obs (when new
+                              :response (cF+ [:watch (fn-watch (when new
                                                              (trx :r-response new)))
                                               :ephemeral? true]
                                           (when (= :home (mget me :location))
@@ -290,10 +290,10 @@
                                                 :knock-knock "hello, world")))))
                             (md/make
                               :name :alarm
-                              :on-off (cF+ [:obs (fn-obs
+                              :on-off (cF+ [:watch (fn-watch
                                                    (trx :telling-alarm-api new))]
                                         (if (= :home (mdv! :resident :location)) :off :on))
-                              :activity (cF+ [:obs (fn-obs
+                              :activity (cF+ [:watch (fn-watch
                                                      (case new
                                                        :call-police (trx :auto-dialing-911)
                                                        nil))]
@@ -340,7 +340,7 @@
                   ;; :prop :state
                   ;; :flush-my-cell (cF 42) ;; testing that cells without dependencies get optimized away for efficiency
                   :state :init-state                        ;; the fix: (cI :init-state)
-                  :derived-prop (cF+ [:obs (fn [prop me new old cell]
+                  :derived-prop (cF+ [:watch (fn [prop me new old cell]
                                              (prn :new!!! new))]
                                   (let [value (mget me :state)]
                                     (cond
@@ -358,8 +358,8 @@
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :title "THING"
                   :state (cI :init-state)
-                  :derived-prop (cF+n [:obs (fn [prop me new old cell]
-                                              (prn :derived-prop-obs-new!!! new :old old :cell @cell))]
+                  :derived-prop (cF+n [:watch (fn [prop me new old cell]
+                                              (prn :derived-prop-watch-new!!! new :old old :cell @cell))]
                                   (let [value (mget me :state)]
                                     (cond
                                       (str/includes? value "osc") "OSC MESSAGE"
@@ -374,15 +374,15 @@
     (let [thing (make                                       ;; :mx-type ::adhoc
                   :name :thingy
                   :title "cycle test"
-                  :val-0 (cF+ [:obs (fn [prop me new old cell]
-                                      (prn :val-0-obs-new!!! new :old old :cell @cell))]
+                  :val-0 (cF+ [:watch (fn [prop me new old cell]
+                                      (prn :val-0-watch-new!!! new :old old :cell @cell))]
                            (str :val-0 " val-2> " (mget me :val-2)))
                   ;; (cI "0")
-                  :val-1 (cF+ [:obs (fn [prop me new old cell]
-                                      (prn :val-1-obs-new!!! new :old old :cell @cell))]
+                  :val-1 (cF+ [:watch (fn [prop me new old cell]
+                                      (prn :val-1-watch-new!!! new :old old :cell @cell))]
                            (str :val-1 " val-0> " (mget me :val-0)))
-                  :val-2 (cF+ [:obs (fn [prop me new old cell]
-                                      (prn :val-1-obs-new!!! new :old old :cell @cell))]
+                  :val-2 (cF+ [:watch (fn [prop me new old cell]
+                                      (prn :val-1-watch-new!!! new :old old :cell @cell))]
                            (str :val-2 " val-1> " (mget me :val-1))))]
       (prn :thing-should-not-get-this-far @thing)
       (is true)))
@@ -392,9 +392,9 @@
                   :name :thingy
                   :title "undeferred change test"
                   :change-count (cI 0)
-                  :value (cI 42 :obs (fn [prop me new old cell]
+                  :value (cI 42 :watch (fn [prop me new old cell]
                                        (do                  ;; the fix: with-cc :test-err-msg
-                                         (mswap! me :change-count inc)) ;; <= change by observer must be deferred
+                                         (mswap! me :change-count inc)) ;; <= change by watch must be deferred
                                        )))]
       (prn :MAYBE-should-not-get-this-far (mget thing :value) (mget thing :change-count))
       (mswap! thing :value inc)

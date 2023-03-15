@@ -162,7 +162,7 @@ rule to get once behavior or just when fm-traversing to find someone"
     x))
 
 (def-rmap-props c-
-  me prop state input? rule pulse pulse-last-changed pulse-observed
+  me prop state input? rule pulse pulse-last-changed pulse-watched
   useds users callers optimize ephemeral? code
   lazy synapses synaptic? async?)
 
@@ -213,9 +213,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn c-valid? [rc]
   (= :valid (c-value-state rc)))
 
-(defn c-pulse-unobserved? [c]
-  (if-let [pulse-observed (c-pulse-observed c)]
-    (> @*pulse* pulse-observed)
+(defn c-pulse-unwatched? [c]
+  (if-let [pulse-watched (c-pulse-watched c)]
+    (> @*pulse* pulse-watched)
     true))
 
 ;; --- dependency maintenance --------------------------------

@@ -15,7 +15,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed
+                      c-state *pulse* c-pulse-watched
                       *call-stack* *defer-changes*
                       c-rule c-me c-value-state c-callers caller-ensure
                       unlink-from-callers *causation*
@@ -26,10 +26,10 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    #?(:clj  [tiltontec.cell.observer
-              :refer [defobserver fn-obs]]
-       :cljs [tiltontec.cell.observer
-              :refer-macros [defobserver fn-obs]])
+    #?(:clj  [tiltontec.cell.watch
+              :refer [defwatch fn-watch]]
+       :cljs [tiltontec.cell.watch
+              :refer-macros [defwatch fn-watch]])
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-swap! c-reset-next!]
@@ -99,7 +99,7 @@
     (reset! yowza 0)
     (is (= @yowza 0))
     (let [b (cI 2 :prop :yowza
-              :obs (fn-obs (reset! yowza new)))]
+              :watch (fn-watch (reset! yowza new)))]
       (is (= 2 (c-get b)))
       (is (= 0 @yowza))
       (c-reset! b 42)
@@ -140,14 +140,14 @@
   ;;
   ;; Christened the Pentagram of Death by Phillip J Eby, this
   ;; is the use case that challenges an engine not to calculate
-  ;; and observe transiently* inconsistent values when two different
+  ;; and watcherve transiently* inconsistent values when two different
   ;; dependency paths of one prop (here :ee) lead back to
   ;; the same prop (:aa).
   ;;
   ;; * "Transiently" because the state change propagation eventually**
   ;;   gets :ee to the value consistent with the new state.
   ;; ** which is not
-  ;;   good enough because observers may have already fired and produced
+  ;;   good enough because watchs may have already fired and produced
   ;;   side effects off the invalid state.
   ;;
   ;; The example is contrived but was contrived to replicate
@@ -159,11 +159,11 @@
   ;;
   (with-mx
     (let [run (atom {})
-          obs (atom {})
+          watch (atom {})
 
           rset (fn []
                  (swap! run empty)
-                 (swap! obs empty))
+                 (swap! watch empty))
 
           logit (fn [log key]
                   (swap! run assoc key
@@ -174,27 +174,27 @@
           cr (fn [c]
                (c-get c))
 
-          podobs (fn [prop me new old c]
-                   (swap! obs assoc prop
-                     (inc (prop @obs 0))))
+          podwatch (fn [prop me new old c]
+                   (swap! watch assoc prop
+                     (inc (prop @watch 0))))
 
-          aa (cI 1 :prop :aa :obs podobs)
-          a7 (cI 7 :prop :a7 :obs podobs)
-          a70 (cF+ [:prop :a70 :obs podobs]
+          aa (cI 1 :prop :aa :watch podwatch)
+          a7 (cI 7 :prop :a7 :watch podwatch)
+          a70 (cF+ [:prop :a70 :watch podwatch]
                 (logrun :a70)
                 (* 10 (cr a7)))
-          bb (cF+ [:prop :bb :obs podobs]
+          bb (cF+ [:prop :bb :watch podwatch]
                (logrun :bb)
                (cr aa))
-          cc (cF+ [:prop :cc :obs podobs]
+          cc (cF+ [:prop :cc :watch podwatch]
                (logrun :cc)
                (* 10 (cr aa)))
-          dd (cF+ [:prop :dd :obs podobs]
+          dd (cF+ [:prop :dd :watch podwatch]
                (logrun :dd)
                (if (even? (cr bb))
                  (* 10 (cr cc))
                  42))
-          ee (cF+ [:prop :ee :obs podobs]
+          ee (cF+ [:prop :ee :watch podwatch]
                (logrun :ee)
                (+ (cr a70) (cr bb) (* 10000 (cr dd))))
           verify-p-current (fn []
@@ -232,12 +232,12 @@
 
       ;; ;; now we come to data integrity: when change happens
       ;; ;; do all and only those cells affected recalculate
-      ;; ;; and reobserve and do so exactly once.
+      ;; ;; and rewatcherve and do so exactly once.
       ;; ;;
       (binding [*trx?* true]
         (rset)
-        (doseq [[k v] (seq @obs)]
-          (trx nil :obschk k v)
+        (doseq [[k v] (seq @watch)]
+          (trx nil :watchchk k v)
           (is (and (keyword? k)
                 (= 0 v))))
         (c-reset! aa (inc (cr aa)))
@@ -254,15 +254,15 @@
           (is (and (keyword? k)
                 (= 1 v))))
 
-        ; check which observers ran
+        ; check which watchs ran
         ;
         (= #{:aa :bb :cc :dd :ee}
-          (set (keys @obs)))
+          (set (keys @watch)))
         ;
-        ; check those observers ran exactly once
+        ; check those watchs ran exactly once
         ;
-        (doseq [[k v] (seq @obs)]
-          (trx nil :obschk k v)
+        (doseq [[k v] (seq @watch)]
+          (trx nil :watchchk k v)
           (is (and (keyword? k)
                 (= 1 v))))
 
@@ -286,7 +286,7 @@
   (with-mx
     (let [ob (atom 0)
           b (cI 2 :prop :bb
-              :obs (fn-obs
+              :watch (fn-watch
                      (swap! ob inc))
               :unchanged-if (fn [n p]
                               (trx nil :ucif-sees n p)

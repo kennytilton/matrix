@@ -14,7 +14,7 @@
               :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
                       c-unbound? c-input?
                       c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-observed c-assert
+                      c-state *pulse* c-pulse-watched c-assert
                       *call-stack* *defer-changes* unbound
                       c-rule c-me c-value-state c-callers *causation* c-md-name
                       c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
@@ -23,21 +23,17 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    #?(:clj  [tiltontec.cell.observer
-              :refer [observe]]
-       :cljs [tiltontec.cell.observer
-              :refer [observe]])
+    #?(:clj  [tiltontec.cell.watch
+              :refer [watch]]
+       :cljs [tiltontec.cell.watch
+              :refer [watch]])
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
-    #?(:clj  [tiltontec.model.macros :refer :all]
-       :cljs [tiltontec.model.macros
-              :refer-macros [pme]])
-    ))
+    [tiltontec.cell.evaluate :refer [c-get c-awaken]]))
 
 (def-rmap-props md-
   name)
@@ -74,7 +70,7 @@
 
 (defn md-awaken
   "(1) do initial evaluation of all ruled props
-   (2) call observers of all props"
+   (2) call watchs of all props"
   [me]
   (assert me "md-awaken passed nil")
   (md-awaken-before me)
@@ -82,18 +78,18 @@
   (rmap-meta-setf [:state me] :awakening)
   (doseq [prop (keys @me)]
     ;; next is tricky: if prop is in :cz but nil, it has been
-    ;; optimized-away and observed then in the rare case
+    ;; optimized-away and watched then in the rare case
     ;; it gets optimized away on other than the initial value.
     (when-let [c (prop (md-cz me) :not-found)]
       (cond
         (= c :not-found)
-        ;; these need at least an initial observe
+        ;; these need at least an initial watch
         (do #_(when (and (= prop :kids) (prop @me))
-                (pme :md-awaken-kids-nocz-nonnil-obs prop
+                (prn :md-awaken-kids-nocz-nonnil-obs prop
                   (keys (md-cz me))
                   (:kids (md-cz me) :hunh))
                 )
-          (observe prop me (prop @me) unbound nil))
+          (watch prop me (prop @me) unbound nil))
         :else (c-awaken c))))
   (rmap-meta-setf [:state me] :awake)
   me)
