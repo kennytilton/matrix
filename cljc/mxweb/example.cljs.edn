@@ -1,2 +1,0 @@
-^{:css-dirs ["resources/public/css"]}
-{:main tiltontec.example.core}

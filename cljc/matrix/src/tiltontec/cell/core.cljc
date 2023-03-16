@@ -27,8 +27,6 @@
                       *one-pulse?* *dp-log* *unfinished-business* pulse-initial
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
 
-
-
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:clj
        [tiltontec.cell.integrity :refer :all]
@@ -166,12 +164,12 @@
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF+n [[& options] & body]
-  `(make-c-formula
+  `(tiltontec.cell.core/make-c-formula
      ~@options
-     :code '(without-c-dependency ~@body)
+     :code '(tiltontec.cell.base/without-c-dependency ~@body)
      :input? true
-     :value unbound
-     :rule (c-fn (without-c-dependency ~@body))))
+     :value tiltontec.cell.base/unbound
+     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro c_Fn [& body]
   `(make-c-formula

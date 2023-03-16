@@ -30,6 +30,12 @@
      (assert tiltontec.model.core/*parent*)
      (doall (remove nil? (flatten (list ~@tree))))))
 
+(defmacro cFkids
+  "Syntax sugar for formulae that define :kids props"
+  [& tree]
+  `(cF (assert ~'me "no me for cFkids")
+     (the-kids ~@tree)))
+
 (defmacro mdv!
   "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
   [what slot & [me]]
@@ -103,6 +109,14 @@ call parameters: prop, me, new, old, and c."
      :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
+(defmacro cF+n [[& options] & body]
+  `(tiltontec.cell.core/make-c-formula
+     ~@options
+     :code '(tiltontec.cell.base/without-c-dependency ~@body)
+     :input? true
+     :value tiltontec.cell.base/unbound
+     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
+
 (defmacro cFonce [& body]
   `(tiltontec.cell.core/make-c-formula
      :code '(tiltontec.cell.base/without-c-dependency ~@body)
@@ -117,6 +131,14 @@ call parameters: prop, me, new, old, and c."
 
 (defn make [& arg-list]
   (apply tiltontec.model.core/make arg-list))
+
+(defn kid-values-kids
+  "A pattern commonly employed in matrix applications is to define a :kid-factory on some
+   'parent' cell, and use it to enrich the value extracted from the parent's kid cells.
+
+   This function maps across the :kids-values, invoking the factory as it goes"
+  [me existing-kids]
+  (md/kid-values-kids me existing-kids))
 
 (defmacro mpar [& [me]]
   (let [me (or me 'me)]
@@ -167,6 +189,13 @@ call parameters: prop, me, new, old, and c."
   "Search matrix ascendents and descendents from node 'where', for 'what', throwing an error when not found"
   [what where]
   (md/fm! what where))
+
+(defn mxu-find-type
+  "Search matrix ascendants from node 'me' for first with given tag"
+  [me type]
+  (assert me)
+  (fasc (fn [visited]
+          (= type (mx-type visited))) me))
 
 ;;; --- debug --------------------------
 

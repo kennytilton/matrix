@@ -4,8 +4,8 @@
             [tiltontec.cell.base :refer [unbound]]
             [tiltontec.cell.integrity :refer-macros [with-cc]]
             [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
-             :refer [cI c-reset! make-cell]]
+             :refer-macros [cF cF+  cFonce cFn]
+             :refer [cI  ]]
             [tiltontec.model.core
              :refer-macros [with-par mdv! mpar fmu]
              :refer [matrix mset! mget mswap!] :as md]
