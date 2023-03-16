@@ -24,7 +24,7 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.integrity :refer [with-integrity]]
-    [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.evaluate :refer [cget ]]
     [tiltontec.cell.poly :refer [c-awaken]]
 
     #?(:cljs [tiltontec.cell.core
@@ -120,7 +120,7 @@
                   :watch (fn-watch (swap! cwatch inc))]
               (swap! crun inc)
               (prog1
-                (str "Hi " (c-get b))
+                (str "Hi " (cget b))
                 (trx nil :cellread!! @b)))]
       (assert (c-rule c) "Early no rule")
       (is (= 0 @boct))
@@ -134,14 +134,14 @@
       (trx nil @b)
       (is (c-valid? b))
 
-      (is (= "Hi " (c-get c)))
+      (is (= "Hi " (cget c)))
       (is (= 1 @boct))
       (is (= 1 @crun @cwatch))
       (is (nil? (:value @b)))
 
       (do
         (c-reset! b "Mom")
-        (is (= "Hi Mom" (c-get c)))
+        (is (= "Hi Mom" (cget c)))
         (is (= 2 @boct))
         (is (= 2 @crun @cwatch))
         (is (nil? (c-value b)))
@@ -149,7 +149,7 @@
 
       (do
         (c-reset! b "Mom")
-        (is (= "Hi Mom" (c-get c)))
+        (is (= "Hi Mom" (cget c)))
         (is (= 3 @boct))                                    ;; b as eph reverts to nil, so "Mom" was new again
         (is (= 3 @crun))
         (is (= 2 @cwatch))
@@ -161,26 +161,26 @@
   (with-mx
     (let [a (cI 42 :prop :aa)
           b (cFn [:prop :bb]
-              (/ (c-get a) 2))
-          c (cF (+ 1 (c-get b)))]
-      (is (= 21 (c-get b)))
-      (is (= 22 (c-get c)))
+              (/ (cget a) 2))
+          c (cF (+ 1 (cget b)))]
+      (is (= 21 (cget b)))
+      (is (= 22 (cget c)))
       (c-reset! b 42)
-      (is (= 42 (c-get b)))
-      (is (= 43 (c-get c))))))
+      (is (= 42 (cget b)))
+      (is (= 43 (cget c))))))
 
 (deftest t-cFonce
   (with-mx
     (let [a (cI 42 :prop :aa)
           b (cFonce [:prop :bb]
-              (/ (c-get a) 2))]
-      (is (= 21 (c-get b)))
+              (/ (cget a) 2))]
+      (is (= 21 (cget b)))
 
       (comment
         (c-reset! a 2)
 
-        (is (= 2 (c-get a)))
-        (is (= 21 (c-get b)))))))
+        (is (= 2 (cget a)))
+        (is (= 21 (cget b)))))))
 
 (deftest test-c-md-quiesce
   (with-mx

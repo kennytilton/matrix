@@ -31,7 +31,7 @@
               :refer-macros [cF cF+ c-swap! c-reset-next!]
               :refer [cI c-reset!]]
        :clj  [tiltontec.cell.core :refer :all])
-    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.evaluate :refer [cget]]
     [tiltontec.matrix.api :refer [fn-watch]]
     ))
 
@@ -48,7 +48,7 @@
       (is (c-valid? c))
       (is (nil? (c-model c)))
       (is (= :bingo (c-prop c) (c-prop-name c)))
-      (is (= (c-get c) 42)))))
+      (is (= (cget c) 42)))))
 
 (deftest t-formula
   (with-mx
@@ -62,8 +62,8 @@
       (is (not (c-input? c)))
       (is (not (c-valid? c)))
       (is (nil? (c-model c)))
-      (trx nil :readddd (c-get c))
-      (is (= (c-get c) 42))
+      (trx nil :readddd (cget c))
+      (is (= (cget c) 42))
       )))
 
 (deftest t-formula-2
@@ -72,13 +72,13 @@
           cct (atom 0)
           dct (atom 0)
           c (cF (swap! cct inc)
-              (+ 40 (c-get b)))
+              (+ 40 (cget b)))
           d (cF (swap! dct inc)
-              (+ (c-get c)
-                (c-get b)))]
-      (is (= (c-get d) 44))
-      (is (= (c-get c) 42))
-      (is (= (c-get b) 2))
+              (+ (cget c)
+                (cget b)))]
+      (is (= (cget d) 44))
+      (is (= (cget c) 42))
+      (is (= (cget b) 2))
       (is (= 1 @dct))
       (is (= 1 @cct))
       (is (= 0 (count (c-useds b))))
@@ -96,10 +96,10 @@
     (is (= @yowza 0))
     (let [b (cI 2 :prop :yowza
               :watch (fn-watch (reset! yowza new)))]
-      (is (= 2 (c-get b)))
+      (is (= 2 (cget b)))
       (is (= 0 @yowza))
       (c-reset! b 42)
-      (is (= 42 (c-get b)))
+      (is (= 42 (cget b)))
       (is (= 42 @yowza)))))
 
 (deftest t-formula-22
@@ -109,22 +109,22 @@
           dct (atom 0)
           c (cF+ [:prop :cc]
               (swap! cct inc)
-              (+ 40 (c-get b)))
+              (+ 40 (cget b)))
           d (cF+ [:prop :dd]
               (swap! dct inc)
-              (+ (c-get c)
-                (c-get b)))]
+              (+ (cget c)
+                (cget b)))]
       (#?(:clj dosync :cljs do)
-        (is (= (c-get d) 44))
-        (is (= (c-get c) 42))
-        (is (= (c-get b) 2))
+        (is (= (cget d) 44))
+        (is (= (cget c) 42))
+        (is (= (cget b) 2))
         (is (= 1 @dct))
         (is (= 1 @cct)))
 
       (c-reset! b 3)
-      (is (= (c-get d) 46))
-      (is (= (c-get c) 43))
-      (is (= (c-get b) 3))
+      (is (= (cget d) 46))
+      (is (= (cget c) 43))
+      (is (= (cget b) 3))
       (is (= 2 @dct))
       (is (= 2 @cct)))))
 
@@ -168,7 +168,7 @@
           logrun #(logit run %)
 
           cr (fn [c]
-               (c-get c))
+               (cget c))
 
           podwatch (fn [prop me new old c]
                      (swap! watch assoc prop
@@ -293,21 +293,21 @@
           cct (atom 0)
           c (cF+ [:prop :cc]
               (swap! cct inc)
-              (+ 40 (c-get b)))]
-      (is (= (c-get c) 42))
-      (is (= (c-get b) 2))
+              (+ 40 (cget b)))]
+      (is (= (cget c) 42))
+      (is (= (cget b) 2))
       (is (= 0 @ob))
       (is (= 1 @cct))
 
       (c-reset! b 4)
-      (is (= (c-get c) 42))
-      (is (= (c-get b) 4))
+      (is (= (cget c) 42))
+      (is (= (cget b) 4))
       (is (= 0 @ob))
       (is (= 1 @cct))
 
       (c-reset! b 5)
-      (is (= (c-get c) 45))
-      (is (= (c-get b) 5))
+      (is (= (cget c) 45))
+      (is (= (cget b) 5))
       (is (= 1 @ob))
       (is (= 2 @cct)))))
 

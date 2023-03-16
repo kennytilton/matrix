@@ -25,7 +25,7 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.evaluate :refer [cget]]
     [tiltontec.matrix.api :refer [fn-watch]]
 
     #?(:cljs [tiltontec.cell.core
@@ -51,7 +51,7 @@
       (is (not (c-input? c)))
       (is (not (c-valid? c)))
       (is (nil? (c-model c)))
-      (is (= (c-get c) 42))
+      (is (= (cget c) 42))
       (is (= 42 @c))                                        ;; ie, optimized-away
       (is @bingo))))
 
@@ -68,7 +68,7 @@
     (is (c-valid? c))
     (is (nil? (c-model c)))
     (is (= :bingo2 (c-prop c) (c-prop-name c)))
-    (is (= (c-get c) 42))
+    (is (= (cget c) 42))
     (is (= false @bingo2)))))
 
 (deftest test-input-watch
@@ -82,7 +82,7 @@
       (is (c-valid? c))
       (is (nil? (c-model c)))
       (is (= :bingo2 (c-prop c) (c-prop-name c)))
-      (is (= (c-get c) 42))
+      (is (= (cget c) 42))
       (is (= false @bingo2)))))
 
 (deftest t-custom-watch
@@ -96,15 +96,15 @@
         c (cF+ [:watch (fn-watch [prop me new old c]
                        (trx prop me new old)
                        (reset! cwatch new))]
-            (* 10 (c-get b)))]
+            (* 10 (cget b)))]
     (#?(:clj dosync :cljs do)
-      (is (= (c-get b) 2))
+      (is (= (cget b) 2))
       (is (= @bwatch nil))
-      (is (= (c-get c) 20))
+      (is (= (cget c) 20))
       (is (= @cwatch 20))
       (c-reset! b 3)
       (is (= 3 @bwatch))
-      (is (= 30 (c-get c)))
+      (is (= 30 (cget c)))
       (is (= 30 @cwatch))))))
 
 #?(:cljs (cljs.test/run-tests))

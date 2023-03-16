@@ -120,7 +120,7 @@
             (c-pulse-update c :valid-uninfluenced)
             (c-value c))))
 
-(defn c-get
+(defn cget
   "The API for determing the value associated with a Cell.
   Ensures value is current, records any dependent, and
   notices if a standalone  cell has never been watched."
@@ -156,9 +156,6 @@
                    (dependency-record c)))
     (any-ref? c) @c
     :else c))
-
-(defn <cget [c]
-  (c-get c))
 
 (declare calculate-and-link
   c-value-assume)

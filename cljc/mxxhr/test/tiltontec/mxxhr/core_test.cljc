@@ -7,7 +7,8 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [tiltontec.util.core :refer [pln xor now *plnk-keys*
                                  counts countit counts-reset]]
-    [tiltontec.cell.evaluate :refer [c-get <cget c-awaken md-quiesce]]
+    [tiltontec.cell.evaluate :refer [c-get <cget]]
+    [tiltontec.cell.evaluate :refer [c-awaken md-quiesce]]
 
     #?(:clj
     [tiltontec.cell.base :refer :all]

@@ -35,7 +35,7 @@
               :refer [cI c-reset! make-cell make-c-formula]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.evaluate :refer [cget ]]
     [tiltontec.cell.poly :refer [md-quiesce ]]
     [tiltontec.model.base :refer [md-cz md-cell]]
     [tiltontec.matrix.api :refer [mget mset!] :as mx]

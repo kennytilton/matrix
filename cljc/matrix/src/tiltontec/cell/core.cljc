@@ -35,7 +35,7 @@
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
-    [tiltontec.cell.evaluate :refer [c-get <cget c-value-assume ensure-value-is-current]]))
+    [tiltontec.cell.evaluate :refer [ cget c-value-assume ensure-value-is-current]]))
 
 ;;#?(:cljs (set! *print-level* 3))
 
@@ -344,7 +344,7 @@ in the CL version of Cells SETF itself is the change API dunction."
   (cset! c new-value))
 
 (defn c-swap! [c swap-fn & swap-fn-args]
-  (cset! c (apply swap-fn (<cget c) swap-fn-args)))
+  (cset! c (apply swap-fn (cget c) swap-fn-args)))
 
 
 (defmacro c-reset-next! [f-c f-new-value]

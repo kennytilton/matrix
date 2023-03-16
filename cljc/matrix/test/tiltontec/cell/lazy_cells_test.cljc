@@ -24,7 +24,7 @@
    #?(:cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]]
       :clj [tiltontec.cell.integrity :refer [with-integrity]])
-   [tiltontec.cell.evaluate :refer [c-get]]
+   [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.matrix.api :refer [fn-watch]]
 
    #?(:cljs [tiltontec.cell.core
@@ -39,15 +39,15 @@
   (let [xo (atom 0)
         a (cI 0)
         x (cF_ [:watch (fn-watch (swap! xo inc))]
-               (+ (c-get a) 40))]
+               (+ (cget a) 40))]
     (is (= unbound (:value @x)))
     (is (= 0 @xo))
-    (is (= 40 (c-get x)))
+    (is (= 40 (cget x)))
     (is (= 1 @xo)) 
     (c-reset! a 100)
     (is (= 1 @xo))
     (is (= 40 (:value @x)))
-    (is (= 140 (c-get x)))
+    (is (= 140 (cget x)))
     (is (= 2 @xo)) 
     ))
 
@@ -58,18 +58,18 @@
         a (cI 0)
         x (c_F [:watch (fn-watch (swap! xo inc))]
                (swap! xr inc)
-               (+ (c-get a) 40))]
+               (+ (cget a) 40))]
     (is (= unbound (:value @x)))
     (is (= 0 @xo))
     (is (= 0 @xr))
-    (is (= 40 (c-get x)))
+    (is (= 40 (cget x)))
     (is (= 1 @xo))
     (is (= 1 @xr)) 
     (c-reset! a 100)
     (is (= 2 @xo))
     (is (= 2 @xr))
     (is (= 140 (:value @x)))
-    (is (= 140 (c-get x)))
+    (is (= 140 (cget x)))
     (is (= 2 @xo)) 
     (is (= 2 @xr)) 
     ))
@@ -84,19 +84,19 @@
                :optimize :when-value-t]
               (swap! xr inc)
               (trx nil :reading-a!!!)
-              (when-let [av (c-get a)]
+              (when-let [av (cget a)]
                 (when (> av 1)
                   (+ av 40))))]
-    (is (nil? (c-get x)))
+    (is (nil? (cget x)))
     (is (= #{a} (c-useds x)))
     (c-reset! a 1)
     (trx nil :reset-finished!!!!!!!!!!)
-    (is (nil? (c-get x)))
+    (is (nil? (cget x)))
     (is (= #{a} (c-useds x)))
     (trx nil :reset-2-beginning!!!!!!!!!!!!)
     (c-reset! a 2)
     (trx nil :reset-2-finished!!!!!!!!!!)
-    (is (= 42 (c-get x)))
+    (is (= 42 (cget x)))
     (is (empty? (c-useds x)))
     (trx nil :useds (c-useds x))
     (is (empty? (c-callers x)))

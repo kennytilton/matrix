@@ -32,7 +32,7 @@
              :refer [cI c-reset! make-cell make-c-formula]]
       :clj [tiltontec.cell.core :refer :all])
 
-   [tiltontec.cell.evaluate :refer [c-get ]]
+   [tiltontec.cell.evaluate :refer [cget ]]
    [tiltontec.cell.poly :refer [c-awaken]]
    ))
 
@@ -43,11 +43,11 @@
          :action (make-cell :value "knocks"
                             :input? true)}]
 
-    (println (c-get (:name v))
-             (c-get (:action v)))
+    (println (cget (:name v))
+             (cget (:action v)))
 
-    (is (=  (c-get (:name v)) "World"))
-    (is (=  (c-get (:action v)) "knocks"))))
+    (is (=  (cget (:name v)) "World"))
+    (is (=  (cget (:action v)) "knocks"))))
 
 (deftest hw-02
   (cells-init)
@@ -60,9 +60,9 @@
                        (fn [prop me new old c]
                          (reset! watch-action new)
                          (println :watcherving prop new old)))}]
-    (is (=  (c-get (:name v)) "World"))
+    (is (=  (cget (:name v)) "World"))
     (c-reset! (:action v) "knocks")
-    (is (=  (c-get (:action v)) "knocks"))
+    (is (=  (cget (:action v)) "knocks"))
     (is (= "knocks" @watch-action))))
 
 (deftest hw-03
@@ -75,12 +75,12 @@
            :action (cI nil :prop :v-action
                          :watch watch-action)}]
 
-    (is (nil? (c-get (:action v))))
+    (is (nil? (cget (:action v))))
     (is (nil? @action))
 
     (c-reset! (:action v) "knock-knock")
     (is (= "knock-knock" @action))
-    (is (= (c-get (:action v)) "knock-knock"))))
+    (is (= (cget (:action v)) "knock-knock"))))
 
 (defn gwatch
   [prop me new old c]
@@ -95,7 +95,7 @@
                :prop :r-loc
                :watch gwatch
                :rule (fn [c]
-                       (case (c-get r-action)
+                       (case (cget r-action)
                          :leave :away
                          :return :at-home
                          :missing)))]
@@ -104,7 +104,7 @@
     (println :---about-to-leave------------------)
     (c-reset! r-action :leave)
     (println :---left------------------)
-    (is (= :away (c-get r-loc)))))
+    (is (= :away (cget r-loc)))))
 
 (deftest hw-5
   (cells-init)
@@ -116,19 +116,19 @@
                          :watch watch-action)}
         r-action (cI nil)
         r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
-                   (case (c-get r-action)
+                   (case (cget r-action)
                      :leave :away
                      :return :home
                      :missing))
         r-response (cF+ [:watch (fn-watch (trx :r-resp new))]
-                        (when (= :home (c-get r-loc))
-                          (when-let [act (c-get (:action v))]
+                        (when (= :home (cget r-loc))
+                          (when-let [act (cget (:action v))]
                             (case act
                               :knock-knock "hello, world"))))]
-    (is (nil? (c-get r-response)))
+    (is (nil? (cget r-response)))
     (c-reset! (:action v) :knock-knock)
     (c-reset! r-action :return)
-    (is (= :home (c-get r-loc)))))
+    (is (= :home (cget r-loc)))))
 
 (deftest hello-world
   (cells-init)
@@ -142,20 +142,20 @@
                          :watch watch-action)}
         r-action (cI nil)
         r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
-                   (case (c-get r-action)
+                   (case (cget r-action)
                      :leave :away
                      :return :home
                      :missing))
         r-response (cF+ [:watch (fn-watch (trx :r-response new))
                          :ephemeral? true]
-                        (when (= :home (c-get r-loc))
-                          (when-let [act (c-get (:action v))]
+                        (when (= :home (cget r-loc))
+                          (when-let [act (cget (:action v))]
                             (case act
                               :knock-knock "hello, world"))))]
-    (is (nil? (c-get r-response)))
+    (is (nil? (cget r-response)))
     (c-reset! (:action v) :knock-knock)
     (c-reset! r-action :return)
-    (is (= :home (c-get r-loc)))
+    (is (= :home (cget r-loc)))
     (c-reset! (:action v) :knock-knock)))
 
 (deftest hello-world-2
@@ -170,7 +170,7 @@
                          :watch watch-action)}
         r-action (cI nil)
         r-loc (cF+ [:watch (fn-watch (when new (trx :honey-im new)))]
-                   (case (c-get r-action)
+                   (case (cget r-action)
                      :leave :away
                      :return :home
                      :missing))
@@ -178,19 +178,19 @@
                                         (trx :r-response new)))
                          :ephemeral? true
                          ]
-                        (when (= :home (c-get r-loc))
-                              (when-let [act (c-get (:action v))]
+                        (when (= :home (cget r-loc))
+                              (when-let [act (cget (:action v))]
                                 (case act
                                   :knock-knock "hello, world"))))
         alarm (cF+ [:watch (fn-watch
                           (trx :telling-alarm-api new))]
-                   (if (= :home (c-get r-loc)) :off :on))
+                   (if (= :home (cget r-loc)) :off :on))
         alarm-do (cF+ [:watch (fn-watch
                             (case new
                               :call-police (trx :auto-dialing-911)
                               nil))]
-                     (when (= :on (c-get alarm))
-                       (when-let [action (c-get (:action v))]
+                     (when (= :on (cget alarm))
+                       (when-let [action (cget (:action v))]
                          (case action
                            :smashing-window :call-police
                            nil))))]
@@ -199,7 +199,7 @@
     (c-reset! (:action v) :knock-knock)
     (c-reset! (:action v) :smashing-window)
     (c-reset! r-action :return)
-    (is (= :home (c-get r-loc))) 
+    (is (= :home (cget r-loc)))
     (c-reset! (:action v) :knock-knock)
     ))
 

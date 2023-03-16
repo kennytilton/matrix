@@ -13,7 +13,7 @@
               :refer-macros [with-integrity]
               :refer []])
 
-    [tiltontec.cell.evaluate :refer [ c-get c-value-assume
+    [tiltontec.cell.evaluate :refer [ cget c-value-assume
                                       ensure-value-is-current]]
 
     #?(:clj

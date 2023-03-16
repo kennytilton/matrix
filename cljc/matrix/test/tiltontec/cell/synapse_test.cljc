@@ -30,7 +30,7 @@
        :clj
        [tiltontec.cell.integrity :refer [with-integrity]])
 
-    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.evaluate :refer [cget]]
     [tiltontec.matrix.api :refer [fn-watch]]
 
     #?(:clj
@@ -52,17 +52,17 @@
     (let [max 10
           x (cI nil)
           y (let [prior (atom nil)]
-              (cF (when-let [x (c-get x)]
+              (cF (when-let [x (cget x)]
                     (if (even? x)
                       (reset! prior x)
                       @prior))))
           z-runs (atom 0)
           z (cF
-              (when-let [y (c-get y)]
+              (when-let [y (cget y)]
                 (swap! z-runs inc)
                 (assert (even? y)))
               y)]
-      (println :warm-up (c-get z))
+      (println :warm-up (cget z))
       (doseq [n (range max)]
         (c-reset! x n))
       (is (= @z-runs (count (filter even? (range max))))))))
@@ -76,7 +76,7 @@
           syn-runs (atom 0)
           z-runs (atom 0)
           z (cF (when-let [x (with-synapse (:even-x)
-                               (when-let [x (c-get x)]
+                               (when-let [x (cget x)]
                                  (swap! syn-runs inc)
                                  (if (even? x)
                                    ^{:propagate true} [x]
@@ -85,7 +85,7 @@
                   (swap! z-runs inc)
                   (assert (even? x))
                   x))]
-      (println :warm-up (c-get z))
+      (println :warm-up (cget z))
       (doseq [n (range max)]
         (c-reset! x n))
       (is (= @syn-runs (count (range max))))
@@ -101,7 +101,7 @@
                        (reset! alarm-runs 0))
           x (cI nil)
           alarm (cF (when-let [d (with-synapse (:delta-x [prior (atom nil)])
-                                   (when-let [x (c-get x)]
+                                   (when-let [x (cget x)]
                                      (swap! syn-runs inc)
                                      (let [delta (Math/abs (if @prior
                                                              (- x @prior)
@@ -113,17 +113,17 @@
                       (swap! alarm-runs inc)
                       (if (> d 5)
                         :on :off)))]
-      (println :warm-up (c-get alarm))
+      (println :warm-up (cget alarm))
       (is (= @syn-runs 0))
       (is (= @alarm-runs 0))
-      (is (nil? (c-get alarm)))
+      (is (nil? (cget alarm)))
 
       (do (c-reset! x 0)
           (reset-runs)
           (c-reset! x 1)
           (is (= @syn-runs 1))
           (is (= @alarm-runs 1))
-          (is (= :off (c-get alarm))))
+          (is (= :off (cget alarm))))
 
       (do (c-reset! x 0)
           (reset-runs)
@@ -132,7 +132,7 @@
           (c-reset! x -5)
           (is (= @syn-runs 3))
           (is (= @alarm-runs 3))
-          (is (= :on (c-get alarm)))))))
+          (is (= :on (cget alarm)))))))
 
 (deftest synaptic-sensitivity
   ; here we look at a twist on the delta synapse: this time we report the
@@ -147,7 +147,7 @@
           x (cI 0)
           alarm (cF (when-let [changed-x (with-synapse (:sensitivity-x [sensitivity 3
                                                                         reported (atom nil)])
-                                           (when-let [x (c-get x)]
+                                           (when-let [x (cget x)]
                                              (swap! syn-runs inc)
                                              (cond
                                                (or (nil? @reported)
@@ -163,17 +163,17 @@
                         :on :off)))]
 
       (do (reset-runs)
-          (println :warm-up (c-get alarm))
+          (println :warm-up (cget alarm))
           (is (= @syn-runs 1))
           (is (= @alarm-runs 1))
-          (is (= :off (c-get alarm))))
+          (is (= :off (cget alarm))))
 
       (do (c-reset! x 0)
           (reset-runs)
           (c-reset! x 1)
           (is (= @syn-runs 1))
           (is (= @alarm-runs 0))
-          (is (= :off (c-get alarm))))
+          (is (= :off (cget alarm))))
 
       (let [max 5]
         (c-reset! x -1)
@@ -182,15 +182,15 @@
           (c-reset! x n))
         (is (= @syn-runs max))
         (is (= @alarm-runs 1))
-        (is (= :off (c-get alarm)))
+        (is (= :off (cget alarm)))
         (c-reset! x 6)
-        (is (= :on (c-get alarm)))))))
+        (is (= :on (cget alarm)))))))
 
 (deftest synaptic-grouping
   (with-mx
     (let [x (cI nil)
           y (cF (when-let [g (with-synapse (:grouper [buffer (atom [])])
-                               (when-let [myx (c-get x)]
+                               (when-let [myx (cget x)]
                                  (swap! buffer conj myx)
                                  (let [buffer-val @buffer]
                                    (cond
@@ -204,8 +204,8 @@
                   (is (= 3 (count g)))
 
                   g))]
-      (println :warm-up (c-get y))
+      (println :warm-up (cget y))
       (doseq [n (range 10)]
         (c-reset! x n))
 
-      (is (= (c-get y) [6 7 8])))))
+      (is (= (cget y) [6 7 8])))))

@@ -33,7 +33,7 @@
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.evaluate :refer [cget ]]
     [tiltontec.cell.poly :refer [md-quiesce ]]
     [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
     ))
@@ -56,7 +56,7 @@
         "\n...> FYI: use mget? if prop might not exist."))
     (do                                                     ;; when (any-ref? me)
       (if-let [c (md-cell me prop)]
-        (c-get c)
+        (cget c)
         (prop @me)))))
 
 (defn mget? [me prop]

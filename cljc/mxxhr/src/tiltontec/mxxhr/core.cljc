@@ -43,12 +43,8 @@
 
     #?(:cljs [cljs-http.core :refer [abort!]])
 
-    ; cool------------------------
-
-    #?(:clj  [tiltontec.cell.watch :refer [fn-watch watch watch-by-type]]
-       :cljs [tiltontec.cell.watch
-              :refer-macros [fn-watch]
-              :refer [watch watch-by-type]])
+    [tiltontec.matrix.api :refer [fn-watch]]
+    [tiltontec.matrix.poly :refer [watch watch-by-type]]
 
     #?(:clj
              [tiltontec.cell.core :refer :all]
