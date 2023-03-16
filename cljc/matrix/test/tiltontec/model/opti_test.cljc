@@ -35,7 +35,7 @@
        :clj  [tiltontec.cell.core
               :refer [cI c-reset! make-cell make-c-formula]])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
+    [tiltontec.cell.evaluate :refer [c-get ]]
     [tiltontec.model.base :refer [md-cz md-cell]]
     [tiltontec.matrix.api :refer [cF cf-freeze with-mx]]
     #?(:clj  [tiltontec.model.core :refer :all :as md]

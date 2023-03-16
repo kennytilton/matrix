@@ -24,8 +24,8 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.integrity :refer [with-integrity]]
-
-    [tiltontec.cell.evaluate :refer [c-get c-awaken]]
+    [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.poly :refer [c-awaken]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ cFonce cFn]

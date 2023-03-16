@@ -35,7 +35,7 @@
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken md-quiesce]]
+    [tiltontec.cell.evaluate :refer [c-get md-quiesce]]
     [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
     ))
 

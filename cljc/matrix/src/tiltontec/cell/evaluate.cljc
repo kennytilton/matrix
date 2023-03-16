@@ -29,6 +29,7 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.watch :refer [c-watch]]
+    [tiltontec.cell.poly :refer [c-awaken]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer [c-current? c-pulse-update]]
@@ -253,9 +254,6 @@
 
 ;;; --- awakening ------------------------------------
 
-(defmulti c-awaken (fn [c]
-                     (mx-type c)))
-
 (defmethod c-awaken :default [c]
   (prn :c-awaken-def!!!)
   (cond
@@ -268,10 +266,7 @@
 
 (defmethod c-awaken ::cty/cell [c]
   (assert (c-input? c))
-  ;
   ; nothing to calculate, but every cellular prop should be output on birth
-  ;
-
   (#?(:clj dosync :cljs do)
     ;;(prn :awk-c c @*pulse* (c-pulse-watched c)(c-value-state c))
     (when (c-pulse-unwatched? c)                           ;; safeguard against double-call

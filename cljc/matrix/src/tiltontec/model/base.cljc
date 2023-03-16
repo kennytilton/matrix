@@ -30,7 +30,8 @@
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get c-awaken]]))
+    [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.cell.poly :refer [c-awaken]]))
 
 (def-rmap-props md-
   name)

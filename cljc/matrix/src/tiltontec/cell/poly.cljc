@@ -3,6 +3,7 @@
     [tiltontec.util.base
      :refer [mx-type]]))
 
+(defmulti c-awaken mx-type)
 
 ;;; --- watch --------------------------
 
