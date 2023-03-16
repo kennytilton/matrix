@@ -23,7 +23,7 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    [tiltontec.cell.poly :refer [watch]]
+    [tiltontec.cell.poly :refer [watch md-awaken-before]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
@@ -60,11 +60,6 @@
     :else (do
             (rmap-setf [prop me] c)
             false)))
-
-(defmulti md-awaken-before mx-type)
-
-(defmethod md-awaken-before :default [me]
-  #_ (prn :awaken-before-default!!!!! ))
 
 (defn md-awaken
   "(1) do initial evaluation of all ruled props

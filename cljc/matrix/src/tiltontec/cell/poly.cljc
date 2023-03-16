@@ -6,7 +6,8 @@
 ;;; --- life cycle -------------------
 
 (defmulti c-awaken mx-type)
-
+(defmulti md-awaken-before mx-type)
+(defmethod md-awaken-before :default [me])
 (defmulti md-quiesce mx-type)
 
 ;;; --- change -----------------
