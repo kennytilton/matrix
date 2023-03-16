@@ -7,8 +7,8 @@
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [tiltontec.util.core :refer [pln xor now *plnk-keys*
                                  counts countit counts-reset]]
-    [tiltontec.cell.evaluate :refer [c-get <cget]]
-    [tiltontec.cell.evaluate :refer [c-awaken md-quiesce]]
+    [tiltontec.cell.evaluate :refer [cget]]
+    [tiltontec.cell.poly :refer [c-awaken md-quiesce md-quiesce-self]]
 
     #?(:clj
     [tiltontec.cell.base :refer :all]
@@ -35,10 +35,6 @@
               :refer-macros [with-synapse]
               :refer []])
 
-    #?(:clj
-    [tiltontec.cell.watch :refer [fn-watch]]
-       :cljs [tiltontec.cell.watch :refer-macros [fn-watch]])
-
     [cheshire.core :refer :all]
 
     #?(:clj
@@ -47,7 +43,8 @@
 
     #?(:clj
     [clj-http.client :as client]
-       :cljs [cljs-http.client :as client])))
+       :cljs [cljs-http.client :as client])
+    [tiltontec.matrix.api :refer [fn-watch]]))
 
 #_(httpu/url-encode "https://api.fda.gov/drug/enforcement.json?search=recalling_firm:Teva Woman%27s Health&limit=1")
 
@@ -288,7 +285,7 @@
         (println :statkey (xhr-status (first r)))
         (is (= 1 (count r)))
         (is (every? #(= 200 (xhr-status %)) r)))
-      (println :topfini (map xhrfo (c-get xhrs))))))
+      (println :topfini (map xhrfo (cget xhrs))))))
 
 (deftest xhr-whoshiring-html
   ;; get just one
@@ -461,7 +458,7 @@
                         (when new
                           (println :got-xhr!!!!!! new)
                           (swap! responses conj new)))]
-                (when-let [xhr (c-get h)]
+                (when-let [xhr (cget h)]
                   (xhrfo xhr)))]
     (dotimes [_ 3]
       (cf-await h1))
@@ -537,7 +534,7 @@
                     (println :coool-out!!!! out)
                     out))))]
     (cf-await h)
-    (println :f1-f3!!!!!!!!!!! (<cget h))))
+    (println :f1-f3!!!!!!!!!!! (cget h))))
 
 (deftest reactx-tree-2
   (let [top (make
@@ -624,7 +621,7 @@
   ([c max-seconds]
    (println :cf-waiting!!!!!! max-seconds)
    (loop [x 0]
-     (let [r (c-get c)]
+     (let [r (cget c)]
        (cond
          r r
          (< x 10) (do
@@ -679,13 +676,13 @@
 ;                                  (when-not (= _cache unbound)
 ;                                    (md-quiesce _cache))
 ;                                  (swap! sends inc)
-;                                  (let [s (c-get site)]
+;                                  (let [s (cget site)]
 ;                                    (send-xhr s)))]
 ;
 ;                   (when-let [r (xhr-response xhr)]
 ;                     (pln :the-html-rule-returns!!!!!! r)
-;                     (str (c-get site) " = <h1>" (subs (:body r) 0 40) "</h1>"))))]
-;      (cpr :kickoff (c-get h))
+;                     (str (cget site) " = <h1>" (subs (:body r) 0 40) "</h1>"))))]
+;      (cpr :kickoff (cget h))
 ;
 ;      (cpr :changing-site!!!!!!!!!!!!!!!!!!)
 ;      (c-reset! site "http://yahoo.com")))

@@ -46,7 +46,7 @@
               :value       ""}
         {:name             rgx-id
          :regex-raw        (cI nil
-                             :obs (fn [_ _ newv _]
+                             :watch (fn [_ _ newv _]
                                     (when-let [raw (not-empty newv)]
                                       (with-cc :extend-history
                                         (let [history (pref :search-history)]

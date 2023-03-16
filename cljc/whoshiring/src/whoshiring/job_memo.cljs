@@ -3,7 +3,7 @@
             [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
              :refer [cI c-reset! make-cell]]
-            [tiltontec.cell.observer :refer [observe-by-type]]
+            [tiltontec.cell.poly :refer [watch-by-type]]
             [tiltontec.model.core
              :refer-macros [with-par mdv! mpar]
              :refer [matrix mset! mget mswap!] :as md]
@@ -61,7 +61,7 @@
 (defn job-memo-swap! [job memo-slot fn & args]
   (apply mswap! (:memo job) memo-slot fn args))
 
-(defmethod observe-by-type [::job-memo] [slot job-memo new-val old-val c]
+(defmethod watch-by-type [::job-memo] [slot job-memo new-val old-val c]
   ;; localStorage does not update columns, so regardless of which
   ;; slot changed we upsert the entire instance. The exception is on
   ;; the initial "observe" as signified by the old value being "unbound". We save

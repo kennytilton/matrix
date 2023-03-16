@@ -224,7 +224,7 @@
 (defn job-listing-loader []
   (g/div {:style "visibility:collapsed;"}
     {:name  :job-loader
-     :fini  (cF+ [:obs (fn [_ me fini?]
+     :fini  (cF+ [:watch (fn [_ me fini?]
                          (when fini?
                            (with-cc :hide-prgbar
                              (mset! (fmu :progress-bar)

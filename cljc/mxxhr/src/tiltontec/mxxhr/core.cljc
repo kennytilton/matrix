@@ -21,9 +21,6 @@
                       *depender*]]
        :clj  [tiltontec.cell.base :refer :all])
 
-
-    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
-
     #?(:cljs [tiltontec.cell.synapse
               :refer-macros [with-synapse]
               :refer []]
@@ -44,7 +41,8 @@
     #?(:cljs [cljs-http.core :refer [abort!]])
 
     [tiltontec.matrix.api :refer [fn-watch]]
-    [tiltontec.matrix.poly :refer [watch watch-by-type]]
+
+    [tiltontec.cell.poly :refer [watch watch-by-type c-awaken md-quiesce md-quiesce-self]]
 
     #?(:clj
              [tiltontec.cell.core :refer :all]

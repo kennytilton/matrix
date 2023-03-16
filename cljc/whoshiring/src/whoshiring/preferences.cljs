@@ -3,7 +3,7 @@
     [tiltontec.cell.core
      :refer-macros [cF cF+ c-reset-next! cFonce cFn]
      :refer [cI c-reset! make-cell]]
-    [tiltontec.cell.observer :as obs]
+    [tiltontec.cell.poly :refer [watch-by-type]]
     [tiltontec.model.core
      :refer [make mget mset! #_ mswap!]
      :as md]
@@ -17,7 +17,7 @@
                                  :when (not (some #{k} [:par :type]))]
                              [k (mget prefs k)]))))
 
-(defmethod obs/observe-by-type [::preferences] [slot prefs newv oldv c]
+(defmethod watch-by-type [::preferences] [slot prefs newv oldv c]
   (ls/io-upsert (preferences-key)
     (.stringify js/JSON
       (preferences-to-json prefs))))
