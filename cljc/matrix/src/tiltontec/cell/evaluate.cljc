@@ -29,7 +29,7 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.watch :refer [c-watch]]
-    [tiltontec.cell.poly :refer [c-awaken md-quiesce]]
+    [tiltontec.cell.poly :refer [c-awaken md-quiesce unchanged-test]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer [c-current? c-pulse-update]]
@@ -429,17 +429,6 @@
 
 ;----------------- change detection ---------------------------------
 
-(defmulti unchanged-test
-  "Cells does not propagate when nothing changes. By default, the
-  test is =, but cells can inject a different test, and when we get
-  to models it will be possible for a prop to have associated
-  with it a different test."
-
-  (fn [me prop]
-    [(mx-type me) prop]))
-
-(defmethod unchanged-test :default [self propname]
-  =)
 
 (defn c-value-changed? [c new-value old-value]
   (not ((or (:unchanged-if @c)

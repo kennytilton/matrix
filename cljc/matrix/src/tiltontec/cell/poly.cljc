@@ -9,6 +9,21 @@
 
 (defmulti md-quiesce mx-type)
 
+;;; --- change -----------------
+
+
+(defmulti unchanged-test
+  "Cells does not propagate when nothing changes. By default, the
+  test is =, but cells can inject a different test, and when we get
+  to models it will be possible for a prop to have associated
+  with it a different test."
+
+  (fn [me prop]
+    [(mx-type me) prop]))
+
+(defmethod unchanged-test :default [self propname]
+  =)
+
 ;;; --- watch --------------------------
 
 (defmulti watch-by-type (fn [prop-name me new-val old-val c]
