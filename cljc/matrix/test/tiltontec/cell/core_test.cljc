@@ -23,9 +23,7 @@
                       c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj  [tiltontec.cell.integrity :refer [with-integrity]])
+    [tiltontec.cell.integrity :refer [with-integrity]]
 
     [tiltontec.cell.evaluate :refer [c-get c-awaken]]
 
@@ -34,7 +32,7 @@
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.watch :refer [fn-watch]]
+    [tiltontec.matrix.api :refer [fn-watch]]
 
     ))
 

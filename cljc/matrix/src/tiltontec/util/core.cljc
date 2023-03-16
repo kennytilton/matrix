@@ -85,7 +85,7 @@
   new-value)
 ;; --- error handling -----------------
 
-
+;; todo lose this altogether
 (defmulti err (fn [a1 & args] (fn? a1)))
 
 (defmethod err true [fn & mas]

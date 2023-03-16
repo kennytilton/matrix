@@ -26,17 +26,13 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    #?(:clj  [tiltontec.cell.watch
-              :refer [defwatch fn-watch]]
-       :cljs [tiltontec.cell.watch
-              :refer-macros [defwatch fn-watch]])
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-swap! c-reset-next!]
               :refer [cI c-reset!]]
        :clj  [tiltontec.cell.core :refer :all])
-
     [tiltontec.cell.evaluate :refer [c-get]]
+    [tiltontec.matrix.api :refer [fn-watch]]
     ))
 
 
@@ -175,8 +171,8 @@
                (c-get c))
 
           podwatch (fn [prop me new old c]
-                   (swap! watch assoc prop
-                     (inc (prop @watch 0))))
+                     (swap! watch assoc prop
+                       (inc (prop @watch 0))))
 
           aa (cI 1 :prop :aa :watch podwatch)
           a7 (cI 7 :prop :a7 :watch podwatch)
@@ -287,7 +283,7 @@
     (let [ob (atom 0)
           b (cI 2 :prop :bb
               :watch (fn-watch
-                     (swap! ob inc))
+                       (swap! ob inc))
               :unchanged-if (fn [n p]
                               (trx nil :ucif-sees n p)
                               (and (number? n)

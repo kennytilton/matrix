@@ -27,10 +27,7 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity with-cc]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity with-cc]])
-    #?(:clj  [tiltontec.cell.watch
-              :refer [defwatch fn-watch]]
-       :cljs [tiltontec.cell.watch
-              :refer-macros [defwatch fn-watch]])
+    [tiltontec.matrix.api :refer [fn-watch]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]

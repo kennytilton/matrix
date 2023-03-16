@@ -31,10 +31,7 @@
        [tiltontec.cell.integrity :refer [with-integrity]])
 
     [tiltontec.cell.evaluate :refer [c-get]]
-
-    #?(:clj
-       [tiltontec.cell.watch :refer [defwatch fn-watch]]
-       :cljs [tiltontec.cell.watch :refer-macros [defwatch fn-watch]])
+    [tiltontec.matrix.api :refer [fn-watch]]
 
     #?(:clj
        [tiltontec.cell.synapse :refer :all]

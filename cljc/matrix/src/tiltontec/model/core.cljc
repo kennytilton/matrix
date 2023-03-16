@@ -26,8 +26,7 @@
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
 
-    #?(:cljs [tiltontec.cell.watch :refer [watch]]
-       :clj  [tiltontec.cell.watch :refer [watch]])
+    [tiltontec.cell.poly :refer [watch]]
 
     [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
 

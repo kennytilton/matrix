@@ -38,17 +38,13 @@
 
 ;;; --- watch -----------------------------------------
 
-;(defmulti watch-by-type (fn [prop-name me new-val old-val c]
-;                            [(ubase/mx-type me)]))
-;
-;(defmethod watch-by-type :default [prop me new-val old-val c]
-;  (cw/watch-by-type prop me new-val old-val c))
-;
-;(defmulti watch (fn [prop-name me new-val old-val c]
-;                  [prop-name (ubase/mx-type me)]))
-;
-;(defmethod watch :default [slot-name me new-val old-val c]
-;  (cw/watch slot-name me new-val old-val c))
+(defmacro fn-watch
+  "Shortcut definer for cell-specific watchs.
+body can be multiple sexprs with access to
+call parameters: prop, me, new, old, and c."
+  [& body]
+  `(fn [~'prop ~'me ~'new ~'old ~'c]
+     ~@body))
 
 (defn md-ref? [it]
   (cb/md-ref? it))
