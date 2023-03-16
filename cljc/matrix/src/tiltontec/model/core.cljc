@@ -26,16 +26,17 @@
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
 
-    [tiltontec.cell.poly :refer [watch]]
+    [tiltontec.cell.poly :refer [watch md-quiesce]]
 
-    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
+    [tiltontec.cell.evaluate :refer [ md-quiesce-self]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
               :refer [cI c-reset! make-cell]]
        :clj  [tiltontec.cell.core :refer :all])
 
-    [tiltontec.cell.evaluate :refer [c-get md-quiesce]]
+    [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.poly :refer [md-quiesce ]]
     [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
     ))
 

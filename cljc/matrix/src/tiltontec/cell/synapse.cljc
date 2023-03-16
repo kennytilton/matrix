@@ -1,29 +1,28 @@
 (ns tiltontec.cell.synapse
   (:require
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
-
     [tiltontec.util.core :refer [pln rmap-setf]]
-
     #?(:clj
     [tiltontec.cell.base :refer :all]
        :cljs [tiltontec.cell.base
               ;;:refer-macros [without-c-dependency]
               :refer [*depender* c-synapses c-prop c-useds dependency-record]])
-
     #?(:clj
     [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
 
-    [tiltontec.cell.evaluate :refer [md-quiesce c-get c-value-assume
+    [tiltontec.cell.evaluate :refer [ c-get c-value-assume
                                       ensure-value-is-current]]
 
     #?(:clj
     [tiltontec.cell.core :refer :all]
        :cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c_F cF_]
-              :refer [cI c-reset! make-c-formula]])))
+              :refer [cI c-reset! make-c-formula]])
+
+    [tiltontec.cell.poly :refer [md-quiesce]]))
 
 (defn- really? []
   true)

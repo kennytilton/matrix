@@ -148,16 +148,6 @@ call parameters: prop, me, new, old, and c."
   `(tiltontec.cell.integrity/with-integrity (:change ~id)
      ~@body))
 
-(defmulti md-quiesce (fn [me]
-                       (assert (md-ref? me))
-                       [(mx-type me)]))
-
-(defmethod md-quiesce :default [me]
-  (eval/md-quiesce me))
-
-(defn md-quiesce-self [me]
-  (eval/md-quiesce-self me))
-
 ;;; --- navigation ---------------------------------
 
 (defn fm-navig [what where & options]

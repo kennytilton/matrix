@@ -36,6 +36,7 @@
        :clj  [tiltontec.cell.core :refer :all])
 
     [tiltontec.cell.evaluate :refer [c-get ]]
+    [tiltontec.cell.poly :refer [md-quiesce ]]
     [tiltontec.model.base :refer [md-cz md-cell]]
     [tiltontec.matrix.api :refer [mget mset!] :as mx]
     #?(:clj  [tiltontec.model.core
@@ -204,7 +205,7 @@
       (is (mx-type? me ::typetest))
       (is (nil? @mme))
       (#?(:clj dosync :cljs do)
-        (mx/md-quiesce me))
+        (md-quiesce me))
       (is (not (nil? @mme))))))
 
 (deftest mm-opti-1

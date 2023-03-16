@@ -29,13 +29,11 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.watch :refer [c-watch]]
-    [tiltontec.cell.poly :refer [c-awaken]]
+    [tiltontec.cell.poly :refer [c-awaken md-quiesce]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer [c-current? c-pulse-update]]
        :clj  [tiltontec.cell.integrity :refer :all])))
-
-
 
 #?(:cljs (set! *print-level* 3))
 
@@ -426,12 +424,7 @@
   (#?(:clj ref-set :cljs reset!) me nil)
   (rmap-meta-setf [::cty/state me] :dead))
 
-(defmulti md-quiesce (fn [me]
-                      (assert (md-ref? me))
-                      [(mx-type me)]))
-
 (defmethod md-quiesce :default [me]
-  (prn :quiesce!!!-def)
   (md-quiesce-self me))
 
 ;----------------- change detection ---------------------------------

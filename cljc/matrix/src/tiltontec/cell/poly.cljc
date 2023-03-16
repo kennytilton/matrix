@@ -3,7 +3,11 @@
     [tiltontec.util.base
      :refer [mx-type]]))
 
+;;; --- life cycle -------------------
+
 (defmulti c-awaken mx-type)
+
+(defmulti md-quiesce mx-type)
 
 ;;; --- watch --------------------------
 
