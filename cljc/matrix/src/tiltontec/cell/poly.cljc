@@ -9,6 +9,7 @@
 (defmulti md-awaken-before mx-type)
 (defmethod md-awaken-before :default [me])
 (defmulti md-quiesce mx-type)
+(defmulti md-quiesce-self mx-type)
 
 ;;; --- change -----------------
 

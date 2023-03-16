@@ -29,7 +29,7 @@
                       *depender* *quiesce*
                       *c-prop-depth* md-prop-owning? c-lazy] :as cty])
     [tiltontec.cell.watch :refer [c-watch]]
-    [tiltontec.cell.poly :refer [c-awaken md-quiesce unchanged-test]]
+    [tiltontec.cell.poly :refer [c-awaken md-quiesce md-quiesce-self unchanged-test]]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer [c-current? c-pulse-update]]
@@ -414,7 +414,7 @@
 
 ;; --- md-quiesce --
 
-(defn md-quiesce-self [me]
+(defmethod md-quiesce-self :default [me]
   (when-let [onq (:on-quiesce (meta me))]
     (onq me))
   (doseq [c (vals (:cz (meta me)))]
