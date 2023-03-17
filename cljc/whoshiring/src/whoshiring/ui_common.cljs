@@ -9,10 +9,9 @@
     [tiltontec.model.core
      :refer-macros [with-par cFkids mdv! fmu]
      :refer [matrix mget mswap! mset!] :as md]
-    [tiltontec.web-mx.gen
-     :refer [make-tag dom-tag evt-mx target-value]]
-    [tiltontec.web-mx.gen-macro
-     :refer-macros [img section header h1 input footer p a span label ul li div button br]]
+    [tiltontec.web-mx.api
+     :refer [evt-md target-value
+             img section header h1 input footer p a span label ul li div button br]]
     [whoshiring.preferences :as up]))
 
 ;;; --- clj++ --------------------------------------
@@ -69,7 +68,7 @@
                           :font-family "Arial"
                           :font-size   "1em"} style)
          :title   title
-         :onclick #(mswap! (evt-mx %) :on-off not)}
+         :onclick #(mswap! (evt-md %) :on-off not)}
     {:name   db-key
      :on-off (cI init-open?)}
     (unesc (if (mget me :on-off) on-char off-char))))

@@ -5,12 +5,11 @@
      :refer [cI c-reset! make-cell]]
     [tiltontec.model.core
      :refer-macros [with-par mdv! mpar fmu]
-     :refer [matrix mset! mget mswap!  ] :as md]
-    [tiltontec.web-mx.gen
-     :refer [evt-mx]]
-    [tiltontec.web-mx.gen-macro
-     :refer-macros [img section header h1 input footer p a
-                    pre code span i label ul li div button br]]
+     :refer [matrix mset! mget mswap!] :as md]
+    [tiltontec.web-mx.api
+     :refer [evt-md a br button code div h1 header i img input
+             label li p pre section span ul]
+     :as wx]
     [whoshiring.control-panel :as ctl]
     [whoshiring.job-memo-ui :as ua]
     [cljs.pprint :as pp]
@@ -44,7 +43,7 @@
 (defn job-header [job]
   (div {:style   {:cursor  "pointer"
                   :display "flex"}
-        :onclick #(mswap! (md/mxu-find-name (evt-mx %) :job-listing)
+        :onclick #(mswap! (md/mxu-find-name (evt-md %) :job-listing)
                     :expanded-job? not)}
     (span {:style (cF (str "color:black;max-height:16px;margin-right:9px; display:"
                         (if (or (deets? me)

@@ -8,9 +8,9 @@
      :refer-macros [with-par mdv!]
      :refer [matrix mswap! mget] :as md]
     [tiltontec.web-mx.base :refer [*web-mx-trace*]]
-    [tiltontec.web-mx.gen :refer [ evt-mx]]
-    [tiltontec.web-mx.gen-macro :refer-macros [section header h1 input footer p a span label ul li div button br]]
-    [tiltontec.web-mx.html :refer [tag-dom-create ]]
+    [tiltontec.web-mx.api
+     :refer [evt-md tag-dom-create
+             section header h1 input footer p a span label ul li div button br]]
     [whoshiring.preferences :as up]
     [whoshiring.ui-common :as utl]
     [whoshiring.job-loader :refer [pick-a-month job-listing-loader]]

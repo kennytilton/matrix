@@ -8,9 +8,10 @@
             [tiltontec.model.core
              :refer-macros [with-par fmu]
              :refer [matrix mset! mget mswap!]]
-            [tiltontec.web-mx.gen
-             :refer [evt-mx]]
-            [tiltontec.web-mx.gen-macro :refer-macros [section datalist option header i h1 input footer p a span label ul li div button]]
+
+            [tiltontec.web-mx.api
+             :refer [evt-md section datalist option header i h1
+                     input footer p a span label ul li div button]]
             [whoshiring.ui-common :as utl]
             [clojure.string :as str]
             [whoshiring.preferences :refer [pref pref! pref-toggle!]]))
@@ -40,7 +41,7 @@
              :content lbl})
       (input {:placeholder (pp/cl-format nil "Regex for ~a search" desc)
               :list        datalist-id
-              :onchange    #(mset! (evt-mx %) :regex-raw (not-empty (str/trim (utl/target-val %))))
+              :onchange    #(mset! (evt-md %) :regex-raw (not-empty (str/trim (utl/target-val %))))
               :onfocus     #(let [dom (.-target %)]
                               (.setSelectionRange dom 0 (count (.-value dom))))
               :value       ""}

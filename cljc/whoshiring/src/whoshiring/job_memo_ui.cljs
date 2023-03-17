@@ -6,9 +6,8 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mpar fmu]
              :refer [matrix mset! mget mswap!] :as md]
-            [tiltontec.web-mx.gen
-             :refer [evt-mx]]
-            [tiltontec.web-mx.gen-macro :refer-macros [textarea img section header h1 input footer p a span label ul li div button br]]
+            [tiltontec.web-mx.api
+             :refer [evt-md textarea img section header h1 input footer p a span label ul li div button br]]
             [whoshiring.job-memo :refer [job-memo job-memo-set! job-memo-swap!]]))
 
 ;;; --- stars ------------------------------------------
@@ -43,7 +42,7 @@
   (span {:style   (cF (str "margin-left:18px; cursor:pointer;color:"
                         (if (job-memo job :notes) "cyan" "#000")))
          :title   "Show/hide editor for your own notes"
-         :onclick #(mswap! (evt-mx %) :editing not)}
+         :onclick #(mswap! (evt-md %) :editing not)}
     {:name    :note-toggle
      :editing (cFn-dbg (pos? (count (job-memo job :notes))))}
     "Notes"))

@@ -9,10 +9,10 @@
             [tiltontec.model.core
              :refer-macros [with-par mdv! mpar fmu]
              :refer [matrix mset! mget mswap!] :as md]
-            [tiltontec.web-mx.gen
-             :refer [evt-mx dom-tag]]
-            [tiltontec.web-mx.gen-macro
-             :refer-macros [section header i h1 input footer p a span label ul li div button]]
+            [tiltontec.web-mx.gen :refer [make-tag dom-tag +tag-sid+ tag-by-id]]
+            [tiltontec.web-mx.api
+             :refer [evt-md  section header i h1 input
+                            footer p a span label ul li div button]]
             [whoshiring.regex-search :as regex]
             [whoshiring.ui-common :as utl]
             [whoshiring.job-memo :refer [job-memo] :as memo]
@@ -102,7 +102,7 @@
            :selected (cF (= (:title jsort)
                            (:title (pref :job-sort))))
            :onclick  (fn [e]
-                       (let [me (evt-mx e)]
+                       (let [me (evt-md e)]
                          (if (mget me :selected)
                            (pref-swap! :job-sort
                              update :order #(* -1 %))
@@ -162,7 +162,7 @@
   (button {:style   {:font-size "1em"
                      :min-width "96px"}
            :onclick (cF (fn [e]
-                          ;;(mswap! (evt-mx e) :expanded not)
+                          ;;(mswap! (evt-md e) :expanded not)
                           (pref-toggle! :expand-all)
                           (let [jl (fmu :job-list)
                                 newv (pref :expand-all)]

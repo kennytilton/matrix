@@ -12,11 +12,11 @@
             [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
             [tiltontec.web-mx.html
              :refer [io-read io-upsert io-clear-storage
-                     tag-dom-create tagfo
+                      tagfo
                      dom-has-class dom-ancestor-by-tag]
              :as web-mx]
-            [tiltontec.web-mx.gen :refer [evt-mx]]
-            [tiltontec.web-mx.gen-macro :refer-macros [select] :as g]
+
+            [tiltontec.web-mx.api :refer [evt-md select tag-dom-create] :as g]
             [whoshiring.job-parse :as jp]
             [whoshiring.job-memo :as memo]))
 
@@ -39,7 +39,7 @@
 (defn month-selector []
   (g/select {:name     :search-mo
              :class    "searchMonth"
-             :onchange #(let [me (evt-mx %)
+             :onchange #(let [me (evt-md %)
                               pgr (fmu :progress-bar)]
                           (mset! pgr :value 0)
                           (mset! pgr :maxN 0)
@@ -159,7 +159,7 @@
   (g/iframe {:src    (cF (pp/cl-format nil "scrapes/~a/~a.html"
                            hn-id pg-no))
              :style  "display:none"
-             :onload #(jobs-collect (evt-mx %) pg-no)}
+             :onload #(jobs-collect (evt-md %) pg-no)}
     {:month-hn-id hn-id
      :jobs        (cI nil)
      :fini        (cI false)
@@ -216,7 +216,7 @@
   (g/iframe {:src    (cF (pp/cl-format nil "dist/extras/~a.html"
                            job-name))
              :style  "display:none"
-             :onload #(extra-job-parse (evt-mx %) job-name)}
+             :onload #(extra-job-parse (evt-md %) job-name)}
     {:name (str job-name "loader")
      :jobs        (cI nil)
      :fini        (cI false)}))
