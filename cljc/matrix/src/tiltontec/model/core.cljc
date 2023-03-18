@@ -243,17 +243,15 @@
 
 (defn fasc
   "Search matrix ascendents for 'what', starting at 'where'
-
    See fm-navig= for options about 'what' can be
-
    if :me? is true, and (fm-navig= what where) return 'where'
-
    if (:parent @where) returns a parent, recurse up the family tree
-
    return an error when (:must? options) is true and we nothing is found"
   [what where & options]
   (when (and where what)
-    (let [options (merge {:me? false :wocd? true}
+    (let [options (merge {:me? false
+                          :wocd? true
+                          :must? true}
                     (apply hash-map options))]
       (binding [*depender* (if (:wocd? options) nil *depender*)]
         (or (and (:me? options)
