@@ -184,7 +184,8 @@ call parameters: prop, me, new, old, and c."
 (defn fm-navig [what where & options]
   (apply md/fm-navig what where options))
 
-(defn fasc [what where & options]
+(defn fasc "Search up from `where`, excluding where and following only parent links for `what`."
+  [what where & options]
   (apply md/fasc what where options))
 
 (defmacro fmu [name & [me]]

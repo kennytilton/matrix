@@ -3,28 +3,21 @@
              [tiltontec.model.core :refer [cFkids with-par]]))
   (:require
     [clojure.set :refer [difference]]
-    #?(:cljs [tiltontec.util.base
-              :refer [mx-type]
-              :refer-macros [trx prog1 *trx?* def-rmap-props]]
-       :clj  [tiltontec.util.base
-              :refer :all])
+    [tiltontec.util.base
+     :refer [mx-type trx prog1 *trx?* def-rmap-props]]
     [tiltontec.util.core
      :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers *causation*
-                      c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj  [tiltontec.cell.integrity :refer [with-integrity]])
+    [tiltontec.cell.base
+     :refer [without-c-dependency minfo cells-init c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input?
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state *pulse* c-pulse-watched
+             *call-stack* *defer-changes* unbound
+             c-rule c-me c-value-state c-callers *causation*
+             c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
+             *depender* *quiesce*
+             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
+    [tiltontec.cell.integrity :refer [with-integrity]]
 
     [tiltontec.cell.poly :refer [watch md-quiesce md-quiesce-self]]
 
@@ -241,6 +234,16 @@
     :else (do (trx :fm-navig=-else-pplain=! seek)
               (= seek poss))))
 
+(defn fasc-higher [what where options]
+  (assert where (str "fasc-higher> 'where' arg is nil seeking " what :options options))
+  (assert what (str "fasc-higher> 'what' arg is nil searching from " (minfo where) :options options))
+  (or (and (:me? options)
+           (fm-navig= what where)
+           where)
+      (when-let [par (:parent @where)]
+        (fasc-higher what par
+                     (assoc options :me? true)))))
+
 (defn fasc
   "Search matrix ascendents for 'what', starting at 'where'
    See fm-navig= for options about 'what' can be
@@ -248,22 +251,27 @@
    if (:parent @where) returns a parent, recurse up the family tree
    return an error when (:must? options) is true and we nothing is found"
   [what where & options]
-  (when (and where what)
-    (let [options (merge {:me?   false
-                          :wocd? true
-                          :must? true}
-                         (apply hash-map options))]
-      (binding [*depender* (if (:wocd? options) nil *depender*)]
-        (or (and (:me? options)
-                 (fm-navig= what where)
-                 where)
-
-            (when-let [par (:parent @where)]
-              (fasc what par
-                    :me? true))
-
-            (when (:must? options)
-              (err :fasc-must-failed what where options)))))))
+  (assert where (str "fasc> 'where' arg is nil seeking " what :options options))
+  (assert what (str "fasc> 'what' arg is nil searching from " (minfo where) :options options))
+  (let [options (merge {:me?   false
+                        :wocd? true
+                        :must? true}
+                       (apply hash-map options))]
+    (binding [*depender* (if (:wocd? options) nil *depender*)]
+      (or (fasc-higher what where options)
+          (when (:must? options)
+            (prn :fasc-failed-higher!!! what where)
+            (prn :fasc-failed-from (minfo where) :options options)
+            (when (and (not (:me? options))
+                       (fm-navig= what where))
+              (prn :fasc-failed-with-me?-option-false-but-me-matches-what!!!!!!!!))
+            (prn :fasc-failed-asc-if-any-follow)
+            (loop [md (if (:me? options) where (:parent @where))]
+              (when md
+                (prn :fasc-fail-saw (minfo md))
+                (recur (:parent @md))))
+            (prn :fasc-failed-asc-end)
+            (err :fasc-must-failed what where options))))))
 
 (defn nextsib [mx]
   (without-c-dependency

@@ -85,11 +85,6 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def +c-debug+ (atom false))
 (def ^:dynamic +stop+ (atom false))                         ;; emergency brake
 
-(defmacro pcell [tag c]
-  `(println :pcell ~tag (c-prop ~c) (c-state ~c)))
-
-;; --- procedure division ----------------------
-
 (defn cells-reset
   ([] (cells-reset {}))
   ([options]

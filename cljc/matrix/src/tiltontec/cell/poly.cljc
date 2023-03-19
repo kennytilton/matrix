@@ -13,7 +13,6 @@
 
 ;;; --- change -----------------
 
-
 (defmulti unchanged-test
   "Cells does not propagate when nothing changes. By default, the
   test is =, but cells can inject a different test, and when we get

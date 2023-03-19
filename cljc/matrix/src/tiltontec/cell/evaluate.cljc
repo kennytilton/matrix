@@ -12,22 +12,21 @@
               :refer :all])
     [tiltontec.util.core
      :refer [any-ref? rmap-setf err rmap-meta-setf set-ify]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency pcell]
-              :refer [c-optimized-away? c-pulse-unwatched? c-formula? c-value c-optimize
-                      *one-pulse?* *dp-log* *unfinished-business*
-                      *custom-propagator*
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched c-code$
-                      *call-stack* *defer-changes* dpc minfo cinfo
-                      c-rule c-me c-value-state c-callers dependency-record unlink-from-used
-                      unlink-from-callers *causation*
-                      c-synaptic? dependency-drop c-md-name c-async?
-                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-prop-name
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
+    [tiltontec.cell.base
+     :refer-macros [without-c-dependency ]
+     :refer [c-optimized-away? c-pulse-unwatched? c-formula? c-value c-optimize
+             *one-pulse?* *dp-log* *unfinished-business*
+             *custom-propagator* without-c-dependency
+             c-unbound? c-input?
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state *pulse* c-pulse-watched c-code$
+             *call-stack* *defer-changes* dpc minfo cinfo
+             c-rule c-me c-value-state c-callers dependency-record unlink-from-used
+             unlink-from-callers *causation*
+             c-synaptic? dependency-drop c-md-name c-async?
+             c-pulse c-pulse-last-changed c-ephemeral? c-prop c-prop-name
+             *depender* *quiesce*
+             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
     [tiltontec.cell.watch :refer [c-watch]]
     [tiltontec.cell.poly :refer [c-awaken md-quiesce md-quiesce-self unchanged-test]]
     #?(:cljs [tiltontec.cell.integrity
