@@ -256,11 +256,11 @@
      :rule (c-fn ~@body)
      ~@keys))
 
-(defmacro cf-freeze [& [value]]
-  (let [value-ref (or value '_cache)]
+(defmacro cf-freeze [& [value-form]]
+  (let [value-source (or value-form '_cache)]
     `(do
        (rmap-setf [:optimize ~'_cell] :freeze)
-       ~value-ref)))
+       ~value-source)))
 
 (defmacro with-c-associating [& body]
   `(let [curr# (if (= ~'_cache tiltontec.cell.base/unbound) {} ~'_cache)]

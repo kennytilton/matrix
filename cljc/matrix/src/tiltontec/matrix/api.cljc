@@ -8,9 +8,7 @@
        :clj  [tiltontec.util.base
               :as ubase])
     [tiltontec.util.core :as ucore]
-    [tiltontec.cell.evaluate :as eval]
     [tiltontec.cell.base :as cb]
-    ;[tiltontec.cell.watch :as cw]
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [c-reset! make-cell] :as c]
@@ -23,6 +21,44 @@
 (defn rmap-meta-setf [[prop me] new-value]
   (ucore/rmap-meta-setf [prop me] new-value))
 
+(def unbound cb/unbound)
+
+;;; --- the matrix --------------------------------------------
+
+(def matrix
+  "Optionally populated with the root of a tree of Models."
+  tiltontec.model.core/matrix)
+
+(defmacro with-mx [& body]
+  `(tiltontec.cell.core/call-with-mx
+     (fn [] ~@body)))
+
+;;;
+
+(defn mx-type [it]
+  (ubase/mx-type it))
+
+(defn md-ref? [it]
+  (cb/md-ref? it))
+
+;;;--- cells ------------------------------------------
+
+;;;;;; --- cell accessors ------------------------------------------
+
+(defn c-value [c] (cb/c-value c))
+(defn c-model [c] (cb/c-model c))
+(defn c-prop-name [c] (cb/c-prop-name c))
+
+;;; --- cell formula utilities ----------------------------------
+
+(defmacro cf-freeze
+  "Stop listening to dependents.
+  Return the specified optional value, or the current latest value."
+  [& [value-form]]
+  `(tiltontec.cell.core/cf-freeze ~value-form))
+
+;;; --- parent/kids ---------------------------------------------
+
 (defmacro the-kids
   "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"
   [& tree]
@@ -34,13 +70,19 @@
   "Syntax sugar for formulae that define :kids props"
   [& tree]
   `(cF (assert ~'me "no me for cFkids")
-     (the-kids ~@tree)))
+       (the-kids ~@tree)))
 
-(defmacro mdv!
-  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
-  [what slot & [me]]
-  (let [me (or me 'me)]
-    `(tiltontec.model.core/mget (tiltontec.model.core/fm! ~what ~me) ~slot)))
+(defmacro with-par [meform & body]
+  `(binding [tiltontec.model.core/*parent* ~meform]
+     ~@body))
+
+(defn kid-values-kids
+  "A pattern commonly employed in matrix applications is to define a :kid-factory on some
+   'parent' cell, and use it to enrich the value extracted from the parent's kid cells.
+
+   This function maps across the :kids-values, invoking the factory as it goes"
+  [me existing-kids]
+  (md/kid-values-kids me existing-kids))
 
 ;;; --- watch -----------------------------------------
 
@@ -52,36 +94,7 @@ call parameters: prop, me, new, old, and c."
   `(fn [~'prop ~'me ~'new ~'old ~'c]
      ~@body))
 
-(defn md-ref? [it]
-  (cb/md-ref? it))
-
-(def unbound cb/unbound)
-
-(def matrix
-  "Optionally populated with the root of a tree of Models."
-  tiltontec.model.core/matrix)
-
-(defn mx-type [it]
-  (ubase/mx-type it))
-
-(defmacro with-mx [& body]
-  `(tiltontec.cell.core/call-with-mx
-     (fn [] ~@body)))
-
-(defmacro with-par [meform & body]
-  `(binding [tiltontec.model.core/*parent* ~meform]
-     ~@body))
-
-;;;---------------------------------------------
-
-(defn c-value [c] (cb/c-value c))
-(defn c-model [c] (cb/c-model c))
-(defn c-prop-name [c] (cb/c-prop-name c))
-
-;;;---------------------------------------------
-
-(defmacro cf-freeze [& body]
-  `(tiltontec.cell.core/cf-freeze ~@body))
+;;; --- cell factories -----------------------------------------
 
 (defn cI [value & option-kvs]
   (apply tiltontec.cell.core/make-cell
@@ -127,22 +140,12 @@ call parameters: prop, me, new, old, and c."
 (defmacro cF1 [& body]
   `(tiltontec.cell.core/cFonce ~@body))
 
-;;; -------------------------------------------
+;;; --- model factory ----------------------------------------
 
 (defn make [& arg-list]
   (apply tiltontec.model.core/make arg-list))
 
-(defn kid-values-kids
-  "A pattern commonly employed in matrix applications is to define a :kid-factory on some
-   'parent' cell, and use it to enrich the value extracted from the parent's kid cells.
-
-   This function maps across the :kids-values, invoking the factory as it goes"
-  [me existing-kids]
-  (md/kid-values-kids me existing-kids))
-
-(defmacro mpar [& [me]]
-  (let [me (or me 'me)]
-    `(:parent @~me)))
+;;; --- mutation -----------------------------------
 
 (defn mset! [me prop new-value]
   (md/mset! me prop new-value))
@@ -159,6 +162,8 @@ call parameters: prop, me, new, old, and c."
 (defn mget? [me prop]
   (tiltontec.model.core/mget? me prop))
 
+;;; --- integrity ---------------------------------
+
 (defmacro with-integrity [[opcode info] & body]
   `(tiltontec.cell.integrity/call-with-integrity
      ~opcode
@@ -171,6 +176,10 @@ call parameters: prop, me, new, old, and c."
      ~@body))
 
 ;;; --- navigation ---------------------------------
+
+(defmacro mpar [& [me]]
+  (let [me (or me 'me)]
+    `(:parent @~me)))
 
 (defn fm-navig [what where & options]
   (apply md/fm-navig what where options))
@@ -196,6 +205,12 @@ call parameters: prop, me, new, old, and c."
   (assert me)
   (fasc (fn [visited]
           (= type (mx-type visited))) me))
+
+(defmacro mdv!
+  "Search matrix ascendents from node 'me' looking for `what`, and extract `slot`"
+  [what slot & [me]]
+  (let [me (or me 'me)]
+    `(tiltontec.model.core/mget (tiltontec.model.core/fm! ~what ~me) ~slot)))
 
 ;;; --- debug --------------------------
 
