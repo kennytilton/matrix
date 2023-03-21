@@ -7,25 +7,21 @@
 
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
-    #?(:cljs [tiltontec.util.base
-              :refer [mx-type]
-              :refer-macros [trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
-       :clj  [tiltontec.util.base :refer :all])
+    [tiltontec.util.base
+     :refer [mx-type mx-sid-next trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
 
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? c-async? unbound c-md-name
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes* *custom-propagator*
-                      c-rule c-me c-value-state c-callers
-                      c-synapses unfin-biz-build *causation*
-                      c-synaptic? c-pulse  c-ephemeral? c-prop c-prop-name
-                      *depender* *quiesce* *within-integrity*
-                      *one-pulse?* *dp-log* *unfinished-business* pulse-initial
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
+    [tiltontec.cell.base
+     :refer [c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? c-async? unbound c-md-name
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state *pulse* c-pulse-watched without-c-dependency
+             *call-stack* *defer-changes* *custom-propagator*
+             c-rule c-me c-value-state c-callers
+             c-synapses unfin-biz-build *causation*
+             c-synaptic? c-pulse c-ephemeral? c-prop c-prop-name
+             *depender* *quiesce* *within-integrity*
+             *one-pulse?* *dp-log* *unfinished-business* pulse-initial
+             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
 
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:clj
@@ -33,16 +29,16 @@
        :cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]
               :refer []])
-    [tiltontec.cell.evaluate :refer [ cget c-value-assume ensure-value-is-current]]))
+    [tiltontec.cell.evaluate :refer [cget c-value-assume ensure-value-is-current]]))
 
 ;;#?(:cljs (set! *print-level* 3))
 
 ; todo: stand-alone cells with watchs should be watched when they are made
 
-
 (def +valid-input-options+
   #{:watch :prop :ephemeral? :unchanged-if
     :value :input? :debug :on-quiesce})
+
 (def +valid-formula-options+
   #{:watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
@@ -61,36 +57,20 @@
   (let [options (apply hash-map (c-options-canonicalize kvs
                                   +valid-input-options+))]
     (#?(:clj ref :cljs atom)
-      (merge {:value              unbound
-                  ::cty/state              :nascent
-                  :pulse              nil
-                  :pulse-last-changed nil
-                  :pulse-watched     nil
-                  :callers            #{}
-                  :synapses           #{}                   ;; these stay around between evaluations
-                  ;; todo: if a rule branches away from a synapse
-                  ;;       it needs to be GCed so it starts fresh
-                  :lazy               false                 ;; not a predicate (can hold, inter alia, :until-asked)
-                  :ephemeral?         false
-                  :input?             true}
-            options)
-      :meta {:mx-type :tiltontec.cell.base/cell})))
-#_
-(defn make-cell [& kvs]
-  (let [options (apply hash-map kvs)]
-    (#?(:clj ref :cljs atom) (merge {:value              unbound
-                                     ::cty/state         :nascent
-                                     :pulse              nil
-                                     :pulse-last-changed nil
-                                     :pulse-watched     nil
-                                     :callers            #{}
-                                     :synapses           #{} ;; these stay around between evaluations
-                                     ;; todo: if a rule branches away from a synapse
-                                     ;;       it needs to be GCed so it starts fresh
-                                     :lazy               false ;; not a predicate (can hold, inter alia, :until-asked)
-                                     :ephemeral?         false
-                                     :input?             true}
-                               options)
+      (merge {:mx-sid                (mx-sid-next)
+              :value              unbound
+              ::cty/state         :nascent
+              :pulse              nil
+              :pulse-last-changed nil
+              :pulse-watched      nil
+              :callers            #{}
+              :synapses           #{}                       ;; these stay around between evaluations
+              ;; todo: if a rule branches away from a synapse
+              ;;       it needs to be GCed so it starts fresh
+              :lazy               false                     ;; not a predicate (can hold, inter alia, :until-asked)
+              :ephemeral?         false
+              :input?             true}
+        options)
       :meta {:mx-type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
@@ -100,12 +80,12 @@
     (assert rule)
     (assert (fn? rule))
 
-
     (#?(:clj ref :cljs atom) (merge {:value              unbound
+                                     :mx-sid     (mx-sid-next)
                                      ::cty/state         :nascent ;; s/b :unbound?
                                      :pulse              nil
                                      :pulse-last-changed nil
-                                     :pulse-watched     nil
+                                     :pulse-watched      nil
                                      :callers            #{}
                                      :useds              #{}
                                      :lazy               false
@@ -396,7 +376,7 @@ execution as soon as the current change is manifested."
             *dp-log* false]
     (fn)))
 
-(defmacro with-mx [&  body]
+(defmacro with-mx [& body]
   `(call-with-mx
      (fn [] ~@body)))
 
@@ -446,7 +426,7 @@ execution as soon as the current change is manifested."
 (defn dag-dump-1 [tag c]
   (cond
     (contains? @+dag-visited+ c)
-    (dag-prn (str/upper-case (str tag ": "(c-prop-name c) "/" (c-md-name c))))
+    (dag-prn (str/upper-case (str tag ": " (c-prop-name c) "/" (c-md-name c))))
     :else (do
             (swap! +dag-visited+ conj c)
             (when-let [p *dag-node-only-printer*]

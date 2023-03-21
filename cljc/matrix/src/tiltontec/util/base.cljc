@@ -15,6 +15,11 @@
 (def ^:dynamic *trxdepth* 0)
 (def last-trc (atom 0)) ;; s/b universal time
 
+(def +mx-sid+ (atom 0))
+
+(defn mx-sid-next []
+  (swap! +mx-sid+ inc))
+
 (defn call-trc$ [s bits]
   (str s ": " #?(:cljs (str bits)
                  :clj (str/join ", " bits))))

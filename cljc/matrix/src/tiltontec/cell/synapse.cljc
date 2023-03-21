@@ -34,7 +34,6 @@
         (c-synapses *depender*)))
 
 (defmacro with-synapse [[synapse-id [& closure-bindings]] & body]
-
   `(let [existing-syn# (existing-syn ~synapse-id)
          synapse# (or existing-syn#
 

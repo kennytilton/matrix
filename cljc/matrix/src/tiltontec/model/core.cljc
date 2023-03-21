@@ -4,9 +4,10 @@
   (:require
     [clojure.set :refer [difference]]
     [tiltontec.util.base
-     :refer [mx-type trx prog1 *trx?* def-rmap-props]]
+     :refer [mx-sid-next mx-type trx prog1 *trx?* def-rmap-props]]
     [tiltontec.util.core
      :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
+    [tiltontec.cell.diagnostic :refer [mxtrc]]
     [tiltontec.cell.base
      :refer [without-c-dependency minfo cells-init c-optimized-away? c-formula? c-value c-optimize
              c-unbound? c-input?
@@ -144,7 +145,8 @@
                                                 unbound
                                                 v))))
                              (into {})))
-                 :meta {:state      :nascent
+                 :meta {::cty/state      :nascent
+                        :mx-sid        (mx-sid-next)
                         :mx-type    (get iargs :mx-type ::cty/model)
                         :on-quiesce (get iargs :on-quiesce)})]
         (assert (meta me))
@@ -175,6 +177,7 @@
     ;;(prn :fm-kids-watch)
     (let [lostks (difference (set oldk) (set newk))]
       (when-not (empty? lostks)
+        (mxtrc :quiesce :fm-kids-watch (minfo me) :lostks (count lostks))
         (doseq [k lostks]
           ;;(prn :watch-k-not2be!! k)
           (md-quiesce k))))))
@@ -186,10 +189,10 @@
 
 (defmethod md-quiesce [::family]
   [me]
-  ;;(prn :family-md-quiesce! me)
+  (mxtrc :quiesce :family-md-quies-entry! (minfo me))
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      ;;(prn :fm-md-quiesce-kid!)
+      (mxtrc :quiesce :family-md-quiKID! (minfo me))
       (md-quiesce k)))
   (md-quiesce-self me))
 
@@ -236,7 +239,10 @@
 
 (defn fasc-higher [what where options]
   (assert where (str "fasc-higher> 'where' arg is nil seeking " what :options options))
+  (assert (not (mdead? where))
+          (str "fasc-higher> reaches dead 'where' " (minfo where) :seeking what))
   (assert what (str "fasc-higher> 'what' arg is nil searching from " (minfo where) :options options))
+  (mxtrc :navig :fasc-higher :what what :where (minfo where))
   (or (and (:me? options)
            (fm-navig= what where)
            where)
@@ -252,26 +258,32 @@
    return an error when (:must? options) is true and we nothing is found"
   [what where & options]
   (assert where (str "fasc> 'where' arg is nil seeking " what :options options))
+  (assert (not (mdead? where))
+          (str "fasc> pass dead 'where' " (minfo where) :seeking what))
   (assert what (str "fasc> 'what' arg is nil searching from " (minfo where) :options options))
-  (let [options (merge {:me?   false
+  (mxtrc :navig :fasc-entry :what what :where (minfo where))
+  (try
+    (let [options (merge {:me?   false
                         :wocd? true
                         :must? true}
                        (apply hash-map options))]
     (binding [*depender* (if (:wocd? options) nil *depender*)]
       (or (fasc-higher what where options)
           (when (:must? options)
-            (prn :fasc-failed-higher!!! what where)
-            (prn :fasc-failed-from (minfo where) :options options)
+            (prn :fasc-failed what :from  (minfo where) :options options)
             (when (and (not (:me? options))
                        (fm-navig= what where))
               (prn :fasc-failed-with-me?-option-false-but-me-matches-what!!!!!!!!))
-            (prn :fasc-failed-asc-if-any-follow)
             (loop [md (if (:me? options) where (:parent @where))]
               (when md
                 (prn :fasc-fail-saw (minfo md))
                 (recur (:parent @md))))
             (prn :fasc-failed-asc-end)
-            (err :fasc-must-failed what where options))))))
+            ;;(err :fasc-must-failed what where options)
+            nil))))
+    (catch #?(:clj Exception :cljs js/Error) e
+      (prn :fasc-sees-err-returns-nil e)
+      nil)))
 
 (defn nextsib [mx]
   (without-c-dependency

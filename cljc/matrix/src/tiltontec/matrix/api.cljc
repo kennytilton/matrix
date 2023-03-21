@@ -8,11 +8,13 @@
        :clj  [tiltontec.util.base
               :as ubase])
     [tiltontec.util.core :as ucore]
+    ;[tiltontec.cell.diagnostic :refer ]
     [tiltontec.cell.base :as cb]
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF+ c-reset-next! cFonce cFn]
               :refer [c-reset! make-cell] :as c]
        :clj  [tiltontec.cell.core :as c])
+    [tiltontec.cell.diagnostic :as diag]
     [tiltontec.model.core :as md]))
 
 (defn any-ref? [it]
@@ -37,6 +39,9 @@
 
 (defn mx-type [it]
   (ubase/mx-type it))
+
+(defn md-state [it]
+  (cb/md-state it))
 
 (defn md-ref? [it]
   (cb/md-ref? it))
@@ -214,6 +219,28 @@ call parameters: prop, me, new, old, and c."
     `(tiltontec.model.core/mget (tiltontec.model.core/fm! ~what ~me) ~slot)))
 
 ;;; --- debug --------------------------
+
+(defmacro with-mx-trace [target & body]
+  `(binding [cb/*mx-trace* ~target]
+     ~@body))
+
+(defn mxtrc [& bits]
+  (apply diag/mxtrc bits))
+
+(defmacro with-minfo [minfo-body & body]
+  `(binding [cb/*mx-minfo* (fn [~'me]
+                             ~minfo-body)]
+     ~@body))
+
+(defmacro as-ignored [expr]
+  (list 'do (symbol "#_") expr))
+
+(comment
+  (prn 1 (as-ignored [:x 1]) 2))
+
+(defmacro with-minfo-std [& body]
+  `(binding [cb/*mx-minfo* nil]
+     ~@body))
 
 (defn minfo [me]
   (cb/minfo me))

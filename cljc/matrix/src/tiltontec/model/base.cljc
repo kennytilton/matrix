@@ -8,18 +8,16 @@
               :refer-macros [trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
        :clj  [tiltontec.util.base :refer :all])
     [tiltontec.util.core :refer [type-of err rmap-setf rmap-meta-setf]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched c-assert
-                      *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers *causation* c-md-name
-                      c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
+    [tiltontec.cell.base
+     :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
+             c-unbound? c-input? without-c-dependency
+             c-model mdead? c-valid? c-useds c-ref? md-ref?
+             c-state md-state *pulse* c-pulse-watched
+             *call-stack* *defer-changes* unbound
+             c-rule c-me c-value-state c-callers *causation* c-md-name
+             c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
+             *depender* *quiesce*
+             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity]])
@@ -37,7 +35,8 @@
   name)
 
 (def-rmap-meta-props md-
-  state cz)
+   ;; we let cell.base define md-state
+   cz)
 
 (defn md-cell [me prop]
   (prop (:cz (meta me))))
@@ -67,8 +66,9 @@
   [me]
   (assert me "md-awaken passed nil")
   (md-awaken-before me)
-  (c-assert (= :nascent (md-state me)))
-  (rmap-meta-setf [:state me] :awakening)
+  (assert (= :nascent (md-state me))
+          (str "md-awaken> state not nascent post-awaken-before: " (or (md-state me) :NIL) " meta: "(meta me)))
+  (rmap-meta-setf [::cty/state me] :awakening)
   (doseq [prop (keys @me)]
     ;; next is tricky: if prop is in :cz but nil, it has been
     ;; optimized-away and watched then in the rare case
@@ -84,7 +84,7 @@
                 )
           (watch prop me (prop @me) unbound nil))
         :else (c-awaken c))))
-  (rmap-meta-setf [:state me] :awake)
+  (rmap-meta-setf [::cty/state me] :awake)
   me)
 
 
