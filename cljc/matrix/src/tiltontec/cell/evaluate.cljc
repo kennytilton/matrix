@@ -53,7 +53,7 @@
         (#?(:clj alter :cljs swap!) me assoc (:prop @rc) nil))
       (#?(:clj alter :cljs swap!) rc assoc :value nil))))
 
-(declare calculate-and-set)
+(declare calculate-and-set cget-value-as-is)
 
 (defn ensure-value-is-current
   "The key to data integrity: recursively check the known dependency
@@ -111,8 +111,10 @@
                        ;; A: if dependent changed during above loop over used and its watch read/updated me
                        (cdbg c :evic-sees-uncurrent)
                        (calculate-and-set c :evic ensurer))]
-        (when dbg? (prn :evic-uncurrent-returns (c-value c) :not-calc calc-val :ci (cinfo c)))
-        (c-value c)))
+        (when dbg?
+          (prn :evic-uncurrent-returns (c-value c) :not-calc calc-val :ci (cinfo c))
+          (prn :evic-uncurrent-cee!!! @c (cget-value-as-is c)))
+        (cget-value-as-is c)))
 
     ;; we were behind the pulse but not affected by the changes that moved the pulse
     ;; record that we are current to avoid future checking:
