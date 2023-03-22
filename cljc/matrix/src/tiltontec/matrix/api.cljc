@@ -36,6 +36,8 @@
      (fn [] ~@body)))
 
 ;;;
+(defn md-name [me]
+  (:name @me))
 
 (defn mx-type [it]
   (ubase/mx-type it))

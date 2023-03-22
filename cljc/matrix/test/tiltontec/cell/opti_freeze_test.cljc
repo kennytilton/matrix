@@ -201,8 +201,9 @@
   ; confirm (cf-freeze) behaves same as (cf-freeze _cache)
   (with-mx
     (let [a (cI nil :prop :aa)
-          b (cF+ [:prop :bb]
+          b (cF+ [:prop :bb :debug true]
               (when (cget a)
+                (prn :freezing-b 42)
                 (cf-freeze 42)))
           c (cF+ [:prop :cc]
               (prn :cc-runs!!)
@@ -218,6 +219,7 @@
       (prn :post-init-pulse (pulse-now))
       (c-reset! a true)
       (prn :post-reset-pulse (pulse-now))
+      (prn :chk-b @b (cget b))
       (is (= 42 (cget b)))
       (prn :cnow (cget c))
       (is (= [:bam 42] (cget c))))))

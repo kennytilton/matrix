@@ -10,7 +10,7 @@
     [tiltontec.cell.diagnostic :refer [mxtrc]]
     [tiltontec.cell.base
      :refer [without-c-dependency minfo cells-init c-optimized-away? c-formula? c-value c-optimize
-             c-unbound? c-input?
+             c-unbound? c-input? cinfo
              c-model mdead? c-valid? c-useds c-ref? md-ref?
              c-state *pulse* c-pulse-watched
              *call-stack* *defer-changes* unbound
@@ -48,7 +48,11 @@
            "MXAPI_ILLEGAL_GET_NO_SUCH_prop> mget was attempted on non-existent prop \"" prop "\"."
            "\n...> FYI: known props are" (keys @me)
            "\n...> FYI: use mget? if prop might not exist."))
-    (do                                                     ;; when (any-ref? me)
+    (let [dbg? (and (= :style prop)
+                 (= :badspan (md-name me)))]
+      (when dbg?
+        (prn :mget-sees-c? (cinfo (md-cell me prop)))
+        (prn :me-prop (prop @me)))
       (if-let [c (md-cell me prop)]
         (cget c)
         (prop @me)))))

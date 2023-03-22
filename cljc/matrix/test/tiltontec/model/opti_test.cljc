@@ -45,6 +45,19 @@
               :as md])
     ))
 
+(deftest opti-map-value
+  (with-mx
+    (let [me (md/make
+               :style (cF {:color :red}))]
+      (is (= (mget me :style)
+            {:color :red}))
+      (is (= (mget me :style)
+            {:color :red}))
+      (prn :flushed (:cells-flushed (meta me)))
+      (prn :cz (:cz (meta me)))
+      (prn :style (:style @me))
+      )))
+
 (deftest md-freeze-default
   (with-mx
     (let [fm (md/make

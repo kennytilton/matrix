@@ -141,17 +141,15 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn c-ref? [x]
   (and (any-ref? x)
-       (mx-type? x ::cell)
-       (map? @x)
-       x))
+    (mx-type? x ::cell)))
 
 (def-rmap-props c-
-                me prop state input? rule pulse pulse-last-changed pulse-watched
-                useds users callers optimize ephemeral? code
-                lazy synapses synaptic? async?)
+  me prop state input? rule pulse pulse-last-changed pulse-watched
+  useds users callers optimize ephemeral? code
+  lazy synapses synaptic? async?)
 
 (defn dpc [cell & bits]
-  (when (:debug? @cell)
+  (when (:debug @cell)
     (apply prn bits)))
 
 (defn c-code$ [c]
@@ -162,17 +160,23 @@ rule to get once behavior or just when fm-traversing to find someone"
   (assert (any-ref? c))
   (cond
     (and (c-ref? c)
-         (map? @c)) (:value @c)
+      (map? @c)) (:value @c)
     :else @c))
 
 (declare cdbg)
 
 (defn c-optimized-away? [c]
-  (cond
-    (c-ref? c) (or (not (map? @c))
+  (when-not (c-ref? c)
+    (prn :caway-notc c (meta c)))
+  (assert (c-ref? c) "c-awy?-got-not-c")
+  (or (not (map? @c))
+    (not (contains? @c ::state))
+    (= :optimized-away (::state @c)))
+  #_(cond
+      (c-ref? c) (or (not (map? @c))
                    (not (contains? @c ::state))
                    (= :optimized-away (::state @c)))
-    :else true))
+      :else true))
 
 (defn c-model [rc]
   (:me @rc))
@@ -180,7 +184,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn c-md-name [c]
   (if-let [md (c-model c)]
     (or (:name @md)
-        "anon")
+      "anon")
     "no-md"))
 
 (defn c-prop-name [rc]
@@ -209,9 +213,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn dependency-record [used]
   (when-not (c-optimized-away? used)
     (mut-set! *depender* :useds
-              (conj (c-useds *depender*) used))
+      (conj (c-useds *depender*) used))
     (mut-set! used :callers
-              (conj (c-callers used) *depender*))))
+      (conj (c-callers used) *depender*))))
 
 (defn dependency-drop [used caller]
   (mut-set! caller :useds (disj (c-useds caller) used))
@@ -257,11 +261,13 @@ rule to get once behavior or just when fm-traversing to find someone"
   ;; hhack
   false)
 
-(defn c-debug? [c tag]
-  (when-let [dbg (:debug @c)]
-    (or (true? dbg)
-        (= dbg tag)
-        (and (coll? dbg) (some #{tag} dbg)))))
+(defn c-debug?
+  ([c] (c-debug? c :annon))
+  ([c tag]
+   (when-let [dbg (:debug @c)]
+     (or (true? dbg)
+       (= dbg tag)
+       (and (coll? dbg) (some #{tag} dbg))))))
 
 (defn minfo [me]
   (cond
@@ -285,17 +291,21 @@ rule to get once behavior or just when fm-traversing to find someone"
            (c-md-name c)
            (:mx-sid @c)
            [:pulse (:pulse @c)]
-           (c-value-state c)
+           [:val-state (c-value c) (c-value-state c)]
            [:useds (count (:useds @c))
             :callers (count (:callers @c))]
            (mx-type c)
            (c-async? c)]))
 
 (defn cdbg [c tag & bits]
-  (assert (c-ref? c) (str "cdbg> passed non c-ref? " tag @c))
-  (assert (keyword? tag) (str "cdbg> second parame s/b keyword tag, got: " tag))
-  (when (:debug @c)
-    (apply prn :cdbg> tag :cinfo (cinfo c) bits)))
+  (when c
+    (assert (or (= c true)
+              (c-ref? c)) (str "cdbg> passed non c-ref? " tag (if (any-ref? c)
+                                                                @c c)))
+    (assert (keyword? tag) (str "cdbg> second parame s/b keyword tag, got: " tag))
+    (when (or (= c true) (:debug @c))
+      (prn)
+      (apply prn :cdbg> tag :cinfo (cinfo c) bits))))
 
 
 

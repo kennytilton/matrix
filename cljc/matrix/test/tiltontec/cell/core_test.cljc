@@ -172,8 +172,10 @@
 (deftest t-cFonce
   (with-mx
     (let [a (cI 42 :prop :aa)
-          b (cFonce [:prop :bb]
+          b (cFonce [:prop :bb :debug true]
               (/ (cget a) 2))]
+      (prn :get-b (cget b))
+      (prn :cfonce-sees-b @b (meta b))
       (is (= 21 (cget b)))
 
       (comment

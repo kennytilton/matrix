@@ -16,7 +16,7 @@
      :refer [c-optimized-away? c-pulse-unwatched? c-formula? c-value c-optimize
              *one-pulse?* *dp-log* *unfinished-business*
              *custom-propagator* without-c-dependency
-             c-unbound? c-input? cinfo cdbg
+             c-unbound? c-input? cinfo cdbg c-debug?
              c-model mdead? c-valid? c-useds c-ref? md-ref?
              c-state *pulse* c-pulse-watched c-code$
              *call-stack* *defer-changes* dpc minfo cinfo
@@ -105,56 +105,71 @@
           (or (when-let [last-changed (c-pulse-last-changed used)]
                 (> last-changed (c-pulse c)))
             (recur urest)))))
-    (do                                                     ;; we seem to need update, but...
-      (when-not (c-current? c)
-        ;; Q: how can it be current after above checks indicating not current?
-        ;; A: if dependent changed during above loop over used and its watch read/updated me
-        (calculate-and-set c :evic ensurer))
-      (c-value c))
+    (let [dbg? (c-debug? c)]
+      (let [calc-val (when-not (c-current? c)
+                       ;; Q: how can it be current after above checks indicating not current?
+                       ;; A: if dependent changed during above loop over used and its watch read/updated me
+                       (cdbg c :evic-sees-uncurrent)
+                       (calculate-and-set c :evic ensurer))]
+        (when dbg? (prn :evic-uncurrent-returns (c-value c) :not-calc calc-val :ci (cinfo c)))
+        (c-value c)))
 
     ;; we were behind the pulse but not affected by the changes that moved the pulse
     ;; record that we are current to avoid future checking:
     :else (do
-            ;;(trx :just-pulse!!!!! (c-prop c))
+            (cdbg c :just-pulse-valid-uninfluenced)
             (c-pulse-update c :valid-uninfluenced)
             (c-value c))))
+
+(defn cget-value-as-is [c]
+  (cond
+    (c-ref? c) (if (and (map? @c)
+                     (contains? @c ::cty/state))
+                 (:value @c)
+                 @c)
+    :else c))
 
 (defn cget
   "The API for determing the value associated with a Cell.
   Ensures value is current, records any dependent, and
   notices if a standalone  cell has never been watched."
-
   [c]
-  #_(when (= (c-prop c) :ae-response)
-      (println :cget-entry (c-prop c) (mx-type (c-model c))
-        (if *depender* (c-prop *depender*) :nodepender)))
   (cond
-    (c-ref? c) (prog1
-                 (with-integrity ()
-                   (let [prior-value (c-value c)]
-                     ;;(println :cget-to-evic (c-prop c) (mx-type (c-model c)))
-                     (when *depender*
-                       (str "asker="
-                         (c-prop *depender*)
-                         (c-md-name *depender*)))
-                     (prog1
+    (not (c-ref? c)) c
 
-                       (let [ev (ensure-value-is-current c :c-read nil)]
-                         ;; (when (= (c-prop c) :ae-response) (println :evic ev))
-                         ev)
-                       ;; this is new here, intended to awaken standalone cells JIT
-                       ;; /do/ might be better inside evic, or test here
-                       ;; to see if c-model is nil? (trying latter...)
-                       (when (and (nil? (c-model c))
-                               (= (c-state c) :nascent)
-                               (c-pulse-unwatched? c))
-                         (rmap-setf [::cty/state c] :awake)
-                         (c-watch c prior-value :cget)
-                         (ephemeral-reset c)))))
-                 (when *depender*
-                   (dependency-record c)))
-    (any-ref? c) @c
-    :else c))
+    (c-optimized-away? c)
+    ;; opti-way goes in stages. "as is" digs past that to get value
+    ;; without ensuring currency.
+    (cget-value-as-is c)
+
+    :else (let [dbg? (c-debug? c :cget)
+                _ (when dbg? (prn :cget-sees-integ cty/*within-integrity*))
+                ci (cinfo c)
+                pg1 (prog1
+                      (with-integrity ()
+                        (assert (c-ref? c) "c lost c-refness")
+                        (let [prior-value (c-value c)]
+                          (cdbg c :cget-core (mx-type (c-model c)))
+                          (prog1
+                            (let [ev (ensure-value-is-current c :c-read nil)]
+                              (if (c-ref? c)
+                                (cdbg c :cget-post-evic-val ev)
+                                (when dbg? (prn :evic-flushed-returns ev :ci-was ci)))
+                              (when dbg? (prn :cget-ev!!!!!!!!!!! ev :ci-was ci))
+                              ev)
+                            ;; this is new here, intended to awaken standalone cells JIT
+                            ;; /do/ might be better inside evic, or test here
+                            ;; to see if c-model is nil? (trying latter...)
+                            (when (and (nil? (c-model c))
+                                    (= (c-state c) :nascent)
+                                    (c-pulse-unwatched? c))
+                              (rmap-setf [::cty/state c] :awake)
+                              (c-watch c prior-value :cget)
+                              (ephemeral-reset c)))))
+                      (when *depender*
+                        (dependency-record c)))]
+            (when dbg? (prn :cget-returns!!!!!! pg1 :ci-was ci))
+            pg1)))
 
 (declare calculate-and-link
   c-value-assume)
@@ -313,7 +328,8 @@
   (assert (c-ref? c))
   (cdbg c :cva-entry new-value propagation-code)
 
-  (do                                                       ;; (wtrx (0 100 :cv-ass (:prop @c) new-value)
+  (let [dbg? (c-debug? c)
+        ci (cinfo c)]
     (prog1 new-value                                        ;; sans doubt
       (without-c-dependency
         (let [prior-value (c-value c)
@@ -338,16 +354,21 @@
                   (c-value-changed? c new-value prior-value))
             ;;(prn :setting-last-changed @c)
             (rmap-setf [:pulse-last-changed c] @*pulse*))
-          #_(println :maybe-propping (c-prop c) new-value
-              :priorstate prior-state
-              :propcode propagation-code
-              :changed? (c-value-changed? c new-value prior-value))
 
           ; we optimize here because even if unchanged we may not have c-useds,
           ; now that, with the :freeze option, we are doing "late" optimize-away
           (when-let [optimize (and (c-formula? c)
                                 (c-optimize c))]
-            (optimize-away?! c prior-value))
+            (optimize-away?! c prior-value)
+            (when dbg?
+              (prn :post-opti-c!!!!!!!!!-at-ceee @c :cref (c-ref? c) :meta (meta c) :metamxty (:mx-type (meta c))
+                :typec (type c) :mxty (mx-type c) :ci ci)
+              (prn :post-opti-c!!!!!!!!! ci)))
+
+          #_(defn mx-type [it]
+              (or (when-let [m (meta it)]
+                    (:mx-type m))
+                (type it)))
 
           (when (or (not (some #{prior-state} [:valid :uncurrent]))
                   (= propagation-code true)                 ;; forcing
@@ -355,10 +376,13 @@
                     (c-value-changed? c new-value prior-value)))
             ;; --- something happened ---
             ;; --- data flow propagation -----------
+            (cdbg dbg? :sth-happened propagation-code (c-optimized-away? c))
             (when-not (or (= propagation-code :no-propagate)
                         (c-optimized-away? c))
               (assert (map? @c))
-              (propagate c prior-value callers))))))))
+              (cdbg dbg? :cva-calls-propagate (count callers) prior-value)
+              (propagate c prior-value callers)))))))
+  new-value)
 
 ;; --- unlinking ----------------------------------------------
 
@@ -366,9 +390,10 @@
 (defn md-cell-flush [c]
   (assert (c-ref? c))
   (when-let [me (c-model c)]
+    (cdbg c :opti :md-cell-flush (cinfo c) :mi (minfo me))
     (rmap-meta-setf [:cells-flushed me]
       (conj (:cells-flushed (meta me))
-        [(c-prop c) (c-pulse-watched c)]))))
+        [(c-prop c) :val (c-value c) :pulse (c-pulse-watched c)]))))
 
 ;; --- optimize away ------------------------------------------
 ;; optimizing away cells who turn out not to depend on anyone 
@@ -380,34 +405,38 @@
   establishing a link, and when we get to models cget will 
   find a non-cell in a prop and Just Use It."
   [c prior-value]
-  (when (and (c-formula? c)
-          (or (empty? (c-useds c))
-            (= :freeze (c-optimize c))
-            (and (= :when-value-t (c-optimize c))
-              (not (nil? (c-value c)))))
-          (c-optimize c)
-          (not (c-optimized-away? c))                       ;; c-streams (FNYI) may come this way repeatedly even if optimized away
-          (c-valid? c)                                      ;; /// when would this not be the case? and who cares?
-          (not (c-synaptic? c))                             ;; no prop to cache invariant result, so they have to stay around)
-          (not (c-input? c)))                               ;; yes, dependent cells can be inputp
-    (cdbg c :optimizing-away!!)
-    (when (= :freeze (c-optimize c))
-      (unlink-from-used c :freeze))
+  (let [dbg? (c-debug? c)]
+    (when (and (c-formula? c)
+            (or (empty? (c-useds c))
+              (= :freeze (c-optimize c))
+              (and (= :when-value-t (c-optimize c))
+                (not (nil? (c-value c)))))
+            (c-optimize c)
+            (not (c-optimized-away? c))                     ;; c-streams (FNYI) may come this way repeatedly even if optimized away
+            (c-valid? c)                                    ;; /// when would this not be the case? and who cares?
+            (not (c-synaptic? c))                           ;; no prop to cache invariant result, so they have to stay around)
+            (not (c-input? c)))                             ;; yes, dependent cells can be inputp
+      (cdbg c :optimizing-away!!)
+      (when (= :freeze (c-optimize c))
+        (unlink-from-used c :freeze))
 
-    (rmap-setf [::cty/state c] :optimized-away)
-    (c-watch c prior-value :opti-away)
+      (rmap-setf [::cty/state c] :optimized-away)
+      (c-watch c prior-value :opti-away)
 
-    (when-let [me (c-model c)]
-      (rmap-meta-setf [:cz me] (assoc (:cz (meta me)) (c-prop c) nil))
-      (md-cell-flush c))
+      (when-let [me (c-model c)]
+        (rmap-meta-setf [:cz me] (assoc (:cz (meta me)) (c-prop c) nil))
+        (md-cell-flush c)
+        (when dbg? (prn :post-flush-c!!!!!!!!! (cinfo c))))
 
-    ;; let callers know they need not check us for currency again
-    (doseq [caller (seq (c-callers c))]
-      (ensure-value-is-current caller :opti-used c)
-      (when-not (c-optimized-away? caller)
-        (dependency-drop c caller)))
-    ;; (prn :ACTUALLY-OPTI-AWAY! (cinfo c))
-    (#?(:clj ref-set :cljs reset!) c (c-value c))))
+      ;; let callers know they need not check us for currency again
+      (doseq [caller (seq (c-callers c))]
+        (when dbg? (prn :optimized-c-runs-caller (cinfo c) :cinfo caller))
+        (ensure-value-is-current caller :opti-used c)
+        (when-not (c-optimized-away? caller)
+          (dependency-drop c caller)))
+      ;; (prn :ACTUALLY-OPTI-AWAY! (cinfo c))
+      (when dbg? (prn :resetting-cell-to-val!!! (c-value c)))
+      (#?(:clj ref-set :cljs reset!) c (c-value c)))))
 
 ;; --- c-quiesce -----------
 
