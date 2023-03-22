@@ -48,8 +48,7 @@
            "MXAPI_ILLEGAL_GET_NO_SUCH_prop> mget was attempted on non-existent prop \"" prop "\"."
            "\n...> FYI: known props are" (keys @me)
            "\n...> FYI: use mget? if prop might not exist."))
-    (let [dbg? (and (= :style prop)
-                 (= :badspan (md-name me)))]
+    (let [dbg? false]
       (when dbg?
         (prn :mget-sees-c? (cinfo (md-cell me prop)))
         (prn :me-prop (prop @me)))
