@@ -8,11 +8,11 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.10.773"]
                  [clj-http "3.10.3"]
-                 [cljs-http "0.1.46"]]
+                 [cljs-http "0.1.46"]
+                 ]
 
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
-  :plugins [[lein-cljsbuild "1.1.8"]
-            [lein-npm "0.6.2"]]
+  :plugins [[lein-cljsbuild "1.1.8"]]
 
   :profiles {:dev {:dependencies [[cider/piggieback "0.5.1"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}

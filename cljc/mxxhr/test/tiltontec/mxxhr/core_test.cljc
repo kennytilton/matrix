@@ -14,7 +14,7 @@
     [tiltontec.cell.base :refer :all]
        :cljs [tiltontec.cell.base
               :refer-macros [without-c-dependency]
-              :refer [cells-init *dp-log* unbound cpr]])
+              :refer [cells-init *dp-log* unbound prn]])
     [tiltontec.cell.core :refer :all]
 
     #?(:clj
@@ -101,7 +101,7 @@
     (client/get uri
       {:async? true}
       (fn [response]
-        (cpr :xhr-response!!! (:status response) (keys response) uri)
+        (prn :xhr-response!!! (:status response) (keys response) uri)
         (pprint (parse-json# (:body response))))
       (fn [exception]
         ;; (println :exc exception)
@@ -110,7 +110,7 @@
         (println :status (:status (:data (bean exception)))
                  :body (parse-json$ (:body (:data (bean exception))) true))
 
-        (cpr :error!!!!!)
+        (prn :error!!!!!)
         )))
 
 (def ae-aldactone
@@ -245,17 +245,17 @@
   ([xhr] (xhr-dump "untagged" xhr))
   ([tag xhr] (if (= 200 (xhr-status-key xhr))
                (case (:name @xhr)
-                 :drug-label (cpr tag (:name @xhr) (:dbg @xhr)
+                 :drug-label (prn tag (:name @xhr) (:dbg @xhr)
                                   :status (xhr-status-key xhr)
                                   :drug-label-warning (first (:warnings (first (:results (mget xhr :selection))))))
-                 :mfr-recall (cpr tag (:name @xhr) (:dbg @xhr)
+                 :mfr-recall (prn tag (:name @xhr) (:dbg @xhr)
                                   :status (xhr-status-key xhr)
                                   (first (:results (mget xhr :selection)))
                                   :sel (select-keys (first (:results (mget xhr :selection)))
                                                     [:state :reason_for_recall]))
-                 (cpr tag :xhr-dump-unknown (:name @xhr) (:dbg @xhr)))
+                 (prn tag :xhr-dump-unknown (:name @xhr) (:dbg @xhr)))
                (do
-                 (cpr tag :xhr-dump-fail! tag (xhr-status-key xhr) (:uri @xhr))))))
+                 (prn tag :xhr-dump-fail! tag (xhr-status-key xhr) (:uri @xhr))))))
 
 (defn xhr-html [uri]
   (send-xhr uri
@@ -329,7 +329,7 @@
     (let [top (make-xhr "http://google.com"
                         {:send?       true
                          :body-parser identity
-                         :kids        (cF (cpr :kidrule!!!!!!)
+                         :kids        (cF (prn :kidrule!!!!!!)
                                           (when-let [parent (mget me :response)]
                                             (the-kids
                                               (make-xhr "http://yahoo.com"
@@ -378,7 +378,7 @@
                            (when-let [youtube (xhr-response
                                                 (with-synapse (:s-tube)
                                                   (xhr-html "http://youtube.com")))]
-                             (cpr :youtube!)
+                             (prn :youtube!)
                              (list google yahoo youtube)))))]
     ;; cf-await means cell-formulaic await. Although the body above shows xhr-wait, that
     ;; is just the body of the cell. In cf-await we patiently wait for the cell formula to
@@ -414,18 +414,18 @@
   (cells-init)
   (binding [*dp-log* true]
     (letfn [(cx-if-else [goog-uri]
-              (cF (cpr :runnning!!!)
+              (cF (prn :runnning!!!)
                   (when-let [google (with-synapse (:s-goog)
                                       (send-unparsed-xhr :s-goog "http://google.com" false))]
-                    (cpr :got-goog??? google)
+                    (prn :got-goog??? google)
                     (when (mget google :response)
-                      (cpr :got-goog!!! (xhrfo google))
+                      (prn :got-goog!!! (xhrfo google))
                       (if (xhr-error? google)
                         (when-let [yahoo (synaptic-xhr-unparsed :s-yahoo "http://yahoo.com")]
-                          (cpr :goog-error-try-yahoo)
+                          (prn :goog-error-try-yahoo)
                           (list yahoo))
                         (when-let [youtube (synaptic-xhr-unparsed :s-youtube "http://youtube.com")]
-                          (cpr :goog-ok-add-youtube)
+                          (prn :goog-ok-add-youtube)
                           (list google youtube)))))))]
       (let [cx-ok (cx-if-else "http://google.com")]
         (let [r (cf-await cx-ok)]
@@ -553,7 +553,7 @@
                                     :response #(str "responseB-" (:f1 %))})))
 
               :f45 (cF (when-let [f2v (:body (xhr-response (mget me :f2)))]
-                         (cpr :building-245!!!!!!!!!!!!!!!!!!!!!!)
+                         (prn :building-245!!!!!!!!!!!!!!!!!!!!!!)
                          (vector
                            (xhr-dummy :service-d
                                       {:params   {:f2 f2v}
@@ -639,12 +639,12 @@
    (or (fn)
        (if (> max-seconds 0)
          #?(:clj  (do
-                    (cpr :no-response-xhr-await-sleeping-max max-seconds)
+                    (prn :no-response-xhr-await-sleeping-max max-seconds)
                     (Thread/sleep 1000)
                     (recur tag fn (dec max-seconds)))
             :cljs (js/setTimeout
                     (fn []
-                        (cpr :fn-await-sleeping-max max-seconds)
+                        (prn :fn-await-sleeping-max max-seconds)
                         (fn-await tag fn (dec max-seconds))) 1000))
 
          (do (println :fn-await-timeout! max-seconds)
@@ -682,7 +682,7 @@
 ;                   (when-let [r (xhr-response xhr)]
 ;                     (pln :the-html-rule-returns!!!!!! r)
 ;                     (str (cget site) " = <h1>" (subs (:body r) 0 40) "</h1>"))))]
-;      (cpr :kickoff (cget h))
+;      (prn :kickoff (cget h))
 ;
-;      (cpr :changing-site!!!!!!!!!!!!!!!!!!)
+;      (prn :changing-site!!!!!!!!!!!!!!!!!!)
 ;      (c-reset! site "http://yahoo.com")))

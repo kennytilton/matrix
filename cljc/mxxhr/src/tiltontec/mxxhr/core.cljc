@@ -12,7 +12,7 @@
              counts countit counts-reset]]
 
     #?(:cljs [tiltontec.cell.base
-              :refer-macros [pcell un-stopped without-c-dependency cpr]
+              :refer-macros [ un-stopped without-c-dependency ]
 
               :refer [c-pulse c-optimized-away?
                       mdead? md-ref? mx-type
@@ -88,7 +88,7 @@
     (client/get uri
       {:async? true}
       (fn [response]
-        (cpr :xhr-response!!! (:status response) (keys response) uri)
+        (prn :xhr-response!!! (:status response) (keys response) uri)
         (pprint (parse-json$ (:body response))))
       (fn [exception]
         ;; (println :exc exception)
@@ -97,7 +97,7 @@
         (println :status (:status (:data (bean exception)))
           :body (parse-json$ (:body (:data (bean exception)))))
         (println "exception message is: " (.getMessage exception))
-        (cpr :error!!!!!)
+        (prn :error!!!!!)
         )))
 
 (defn xhr-send [xhr]
@@ -113,9 +113,9 @@
                  (prn :xhr-send-response!!! (:id @xhr) (:status response) uri)
                  (countit [:xhr :reponse])
                  (if (mdead? xhr)
-                   (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                   (do (prn :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
                    (do
-                     ;;(cpr :hitting-with-cc *within-integrity*)
+                     ;;(prn :hitting-with-cc *within-integrity*)
                      (with-cc :xhr-handler-sets-responded
                        (md-reset! xhr :response {:status (:status response)
                                                  :body   ((:body-parser @xhr) (:body response))})))))
@@ -139,7 +139,7 @@
                        ;(prn :body (keys (:body response)))
                        ;(prn :success (:status response)  (keys response) (count (:body response)))
                        (if (mdead? xhr)
-                         (do (cpr :ignoring-response-to-dead-XHR!!! uri #_(meta xhr)))
+                         (do (prn :ignoring-response-to-dead-XHR!!! uri #_(meta xhr)))
                          (with-cc :xhr-handler-sets-responded
                            (js/setTimeout
                              #(do
@@ -156,7 +156,7 @@
                          :etext (:error-text response))
 
                        (if (mdead? xhr)
-                         (do (cpr :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
+                         (do (prn :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
                          (with-cc :xhr-handler-sets-responded
                            (md-reset! xhr :response {:status (:status response)
                                                      :body   [(:error-code response)
@@ -332,17 +332,17 @@
 
      (xhr-response xhr)
      (do                                                    ;;(println :xhr-resolved (xhr-response xhr))
-       ;;(cpr :xhr-resolved (xhrfo xhr))
+       ;;(prn :xhr-resolved (xhrfo xhr))
        xhr)
 
      (> max-seconds 0)
      #?(:clj  (do
-                (cpr :no-response-xhr-await-sleeping-max (:id @xhr) (:uri @xhr) max-seconds (xhrfo xhr))
+                (prn :no-response-xhr-await-sleeping-max (:id @xhr) (:uri @xhr) max-seconds (xhrfo xhr))
                 (Thread/sleep 1000)
                 (recur xhr (dec max-seconds)))
         :cljs (js/setTimeout
                 (fn []
-                  (cpr :xhr-await-sleeping-max max-seconds (xhrfo xhr))
+                  (prn :xhr-await-sleeping-max max-seconds (xhrfo xhr))
                   (xhr-await xhr (dec max-seconds))) 1000))
 
      :default (do (println :xhr-await-timeout! max-seconds (xhrfo xhr))
