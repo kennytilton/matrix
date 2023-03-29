@@ -1,5 +1,6 @@
 (ns tiltontec.util.base
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.spec.alpha :as s]))
 
 #?(:cljs (enable-console-print!))
 
@@ -90,3 +91,46 @@
 
 (defn mx-type? [it type]
   (isa? (mx-type it) type))
+
+(comment
+  (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
+  (s/def :acct/email-type (s/and string? #(re-matches email-regex %)))
+
+  (s/def :acct/acctid int?)
+  (s/def :acct/first-name string?)
+  (s/def :acct/last-name string?)
+  (s/def :acct/email :acct/email-type)
+
+  (s/def :acct/person (s/keys :req [:acct/first-name :acct/last-name :acct/email]
+                        :opt [:acct/phone]))
+
+  (let [reqd [:acct/first-name :acct/last-name :acct/email :acct/zip]]
+    (s/def :acct/person-ex (s/keys :req (~@reqd)
+                          :opt [:acct/phone])))
+
+  (s/explain :acct/person-ex
+    {:acct/first-name "Bugs"})
+
+  (s/valid? :acct/person
+    {:acct/first-name "Bugs"
+     :acct/last-name "Bunny"
+     :acct/email "bugs@example.com"
+     :acct/zip "10023"})
+
+  (let [product-reqs '[::name ::sales-price ::cost-of-sale]
+        product-opts [::intro-date ::disco-date ::seasonality]]
+    (s/def ::product [:req-un [::name] :opt-un [::intro-date ::disco-date ::seasonality]]))
+
+  (s/valid? ::product
+    {::name "test"
+     ::intro-date 42})
+
+  (s/def ::overrides (macros/skeys :opt-un (disj (conj product-reqs product-opts) ::name)))
+  (s/def ::complete-product (macros/skeys :req-un products-reqs :opt-un product-opts))
+  (s/def ::full-product (macros/skeys :req-un (concat product-reqs product-opts))) ; For specs, generate a product with everything, optional or not.
+  (map (fn [[x y]] (and x (pos? y))) [true 1 2 4 5])
+  (find-if even? [1 2 3])
+  (some even? [1 2 3])
+  (some (fn [n] (when (even? n) n)) [1 2 3])
+  (some #(when (even? %) %) [1 2 3])
+  )

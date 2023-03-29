@@ -56,11 +56,15 @@
         (cget c)
         (prop @me)))))
 
-(defn mget? [me prop]
-  (assert me (str "mget passed nil for me accessing prop: " prop))
-  (assert (any-ref? me) (str "mget passed non-model for me accessing prop: " prop ": " me))
-  (when (contains? @me prop)
-    (mget me prop)))
+(defn mget?
+  ([me prop]
+   (mget? me prop nil))
+  ([me prop alt-val]
+   (assert me (str "mget passed nil for me accessing prop: " prop))
+   (assert (any-ref? me) (str "mget passed non-model for me accessing prop: " prop ": " me))
+   (if (contains? @me prop)
+     (mget me prop)
+     alt-val)))
 
 (comment
   (let [m (make ::test

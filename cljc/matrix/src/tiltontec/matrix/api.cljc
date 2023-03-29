@@ -48,6 +48,22 @@
 (defn md-ref? [it]
   (cb/md-ref? it))
 
+(comment
+  (mapv ;; we use mapv instead of map to get the result in the desired vector form
+    (fn [item]
+      (if (map? item)
+        [(:name item)(:surname item)]
+        ;; else unchanged:
+        item))
+    [1 {:id 1 :name "ali" :surname "veli"}
+     2 {:id 2 :name "batu" :surname "can"}])
+
+  (let [my-vec [1 {:id 1 :name "ali" :surname "veli"}
+                2 {:id 2 :name "batu" :surname "can"}]
+        [a {n1 :name s1 :surname}
+         b {n2 :name s2 :surname}] my-vec]
+    [a [n1 s1] b [n2 s2]]))
+
 ;;;--- cells ------------------------------------------
 
 ;;;;;; --- cell accessors ------------------------------------------
@@ -166,8 +182,8 @@ call parameters: prop, me, new, old, and c."
 (defn mget [me prop]
   (tiltontec.model.core/mget me prop))
 
-(defn mget? [me prop]
-  (tiltontec.model.core/mget? me prop))
+(defn mget? [me prop & [alt-value]]
+  (tiltontec.model.core/mget? me prop alt-value))
 
 ;;; --- integrity ---------------------------------
 
