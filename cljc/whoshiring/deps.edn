@@ -1,7 +1,7 @@
 {:deps {com.bhauman/figwheel-main       {:mvn/version "0.2.18"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
-        com.tiltontec/matrix            {:mvn/version "5.0.0-SNAPSHOT"}
-        com.tiltontec/web-mx            {:mvn/version "2.0.0-SNAPSHOT"}
+        com.tiltontec/matrix            {:mvn/version "5.0.0"}
+        com.tiltontec/web-mx            {:mvn/version "2.0.0"}
         org.slf4j/slf4j-nop             {:mvn/version "1.7.30"}
         com.taoensso/tufte              {:mvn/version "2.4.5"}
         }

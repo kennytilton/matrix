@@ -1,4 +1,4 @@
-(defproject com.tiltontec/matrix "5.0.0-SNAPSHOT"
+(defproject com.tiltontec/matrix "5.0.1-SNAPSHOT"
   :description "Matrix dataflow library for CLJ/CLJS"
   :scm {:name "git"
         :url  "https://github.com/kennytilton/matrix"}
@@ -8,8 +8,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.10.773"]
                  [clj-http "3.10.3"]
-                 [cljs-http "0.1.46"]
-                 ]
+                 [cljs-http "0.1.46"]]
 
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-cljsbuild "1.1.8"]]
