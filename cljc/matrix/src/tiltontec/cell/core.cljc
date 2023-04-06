@@ -42,7 +42,7 @@
 (def +valid-formula-options+
   #{:watch :prop :input? :lazy :optimize :ephemeral? :unchanged-if
     :model :synaptic? :synapse-id
-    :code :value :rule :async? :and-then :debug :on-quiesce})
+    :code :rule :async? :and-then :debug :on-quiesce})
 
 (defn c-options-canonicalize [options allowed]
   (loop [[k v & more] options
@@ -126,21 +126,18 @@
 (defmacro cF [& body]
   `(make-c-formula
      :code '~body
-     :value unbound
      :rule (c-fn ~@body)))
 
 (defmacro cF+ [[& options] & body]
   `(make-c-formula
      ~@options
      :code '~body
-     :value unbound
      :rule (c-fn ~@body)))
 
 (defmacro cFn [& body]
   `(make-c-formula
      :code '(without-c-dependency ~@body)
      :input? true
-     :value unbound
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF+n [[& options] & body]
@@ -148,7 +145,6 @@
      ~@options
      :code '(tiltontec.cell.base/without-c-dependency ~@body)
      :input? true
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro c_Fn [& body]
@@ -156,7 +152,6 @@
      :code '(without-c-dependency ~@body)
      :input? true
      :lazy :until-asked
-     :value unbound
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-dbg [& body]
@@ -164,7 +159,6 @@
      :code '(without-c-dependency ~@body)
      :input? true
      :debug true
-     :value unbound
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-until [args & body]
@@ -172,7 +166,6 @@
      :optimize :when-value-t
      :code '~body
      :input? true
-     :value unbound
      :rule (c-fn ~@body)
      ~@args))
 
@@ -180,7 +173,6 @@
   `(make-c-formula
      :code '(without-c-dependency ~@body)
      :input? nil
-     :value unbound
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro c_1 [& body]
@@ -188,7 +180,6 @@
      :code '(without-c-dependency ~@body)
      :input? nil
      :lazy true
-     :value unbound
      :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF1 [& body]
@@ -197,7 +188,6 @@
 (defmacro cFdbg [& body]
   `(make-c-formula
      :code '~body
-     :value unbound
      :debug true
      :rule (c-fn ~@body)))
 
@@ -205,7 +195,6 @@
   `(make-c-formula
      ~@options
      :code '~body
-     :value unbound
      :lazy true
      :rule (c-fn ~@body)))
 
@@ -214,7 +203,6 @@
   `(make-c-formula
      ~@options
      :code '~body
-     :value unbound
      :lazy :until-asked
      :rule (c-fn ~@body)))
 
@@ -222,8 +210,6 @@
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
      :code '~body
-     :value unbound
-     :lazy :until-asked
      :rule (c-fn ~@body)
      :debug true))
 
@@ -232,7 +218,6 @@
 (defmacro c-formula [[& kvs] & body]
   `(make-c-formula
      :code '~body                                           ;; debug aid
-     :value unbound
      :rule (c-fn ~@body)
      ~@keys))
 

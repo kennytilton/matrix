@@ -74,6 +74,9 @@
 
 ;;; --- cell formula utilities ----------------------------------
 
+(defmacro without-c-dependency [& body]
+  `(tiltontec.cell.base/without-c-dependency ~@body))
+
 (defmacro cf-freeze
   "Stop listening to dependents.
   Return the specified optional value, or the current latest value."
@@ -128,21 +131,18 @@ call parameters: prop, me, new, old, and c."
 (defmacro cF [& body]
   `(tiltontec.cell.core/make-c-formula
      :code '~body
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn ~@body)))
 
 (defmacro cF+ [[& options] & body]
   `(tiltontec.cell.core/make-c-formula
      ~@options
      :code '~body
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn ~@body)))
 
 (defmacro cFn [& body]
   `(tiltontec.cell.core/make-c-formula
      :code '(tiltontec.cell.base/without-c-dependency ~@body)
      :input? true
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cF+n [[& options] & body]
@@ -150,14 +150,12 @@ call parameters: prop, me, new, old, and c."
      ~@options
      :code '(tiltontec.cell.base/without-c-dependency ~@body)
      :input? true
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cFonce [& body]
   `(tiltontec.cell.core/make-c-formula
      :code '(tiltontec.cell.base/without-c-dependency ~@body)
      :input? nil
-     :value tiltontec.cell.base/unbound
      :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cF1 [& body]
