@@ -38,7 +38,7 @@
     #?(:clj  [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [mget fm! make md-reset!]
+              :refer [mget fm! make mset!]
               :as md])))
 
 (deftest k-notq2be
@@ -57,13 +57,13 @@
       (is (empty? (mget f :kids)))
 
       (do
-        (md-reset! f :ee 3)
+        (mset! f :ee 3)
         (is (not (empty? (mget f :kids))))
         (is (= 42 (mdv! :yep :value f)))
 
         (let [dmw (first (mget f :kids))]
           (assert (md-ref? dmw))
-          (md-reset! f :ee 0)
+          (mset! f :ee 0)
           (is (empty? (mget f :kids)))
           (is (nil? @dmw))
           (is (= :dead (::cty/state (meta dmw)))))))))

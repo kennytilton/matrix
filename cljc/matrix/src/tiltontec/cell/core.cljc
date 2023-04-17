@@ -57,7 +57,7 @@
   (let [options (apply hash-map (c-options-canonicalize kvs
                                   +valid-input-options+))]
     (#?(:clj ref :cljs atom)
-      (merge {:mx-sid                (mx-sid-next)
+      (merge {:mx-sid             (mx-sid-next) ;; debug aid
               :value              unbound
               ::cty/state         :nascent
               :pulse              nil
@@ -71,6 +71,7 @@
               :ephemeral?         false
               :input?             true}
         options)
+      ;; type goes in meta to be consistent with model
       :meta {:mx-type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
@@ -81,7 +82,7 @@
     (assert (fn? rule))
 
     (#?(:clj ref :cljs atom) (merge {:value              unbound
-                                     :mx-sid     (mx-sid-next)
+                                     :mx-sid             (mx-sid-next)
                                      ::cty/state         :nascent ;; s/b :unbound?
                                      :pulse              nil
                                      :pulse-last-changed nil
@@ -270,7 +271,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (not (c-input? c))
     (let [me (c-model c)]
       (err str
-        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/md-reset! to the property '" (c-prop-name c) "', which is not mediated by an input cell.\n"
+        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/mset! to the property '" (c-prop-name c) "', which is not mediated by an input cell.\n"
         "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI', 'cFn', or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
         "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
         "..> FYI: intended new value is [" new-value "].\n"
@@ -283,7 +284,7 @@ in the CL version of Cells SETF itself is the change API dunction."
     (let [prop (c-prop-name c)
           me (c-model c)]
       (err
-        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/md-reset! to the property '" prop "' by an watch detected."
+        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/mset! to the property '" prop "' by an watch detected."
         "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
         "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
         "...> FYI: intended new value is [" new-value "]; current value is [" (get @me prop :no-such-prop) "].\n"

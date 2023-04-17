@@ -28,7 +28,7 @@
     #?(:cljs [tiltontec.cell.integrity
               :refer-macros [with-integrity with-cc]]
        :clj  [tiltontec.cell.integrity :refer [with-integrity with-cc]])
-    [tiltontec.matrix.api :refer [fn-watch]]
+    [tiltontec.matrix.api :refer [fn-watch mswap!]]
 
     #?(:cljs [tiltontec.cell.core
               :refer-macros [cF cF+ c-reset-next! cFonce cFn]
@@ -41,10 +41,10 @@
     [tiltontec.matrix.api :refer [mget mset!] :as mx]
     #?(:clj  [tiltontec.model.core
               :refer [cFkids the-kids mdv!   md-name
-                      fm-navig fm! make md-reset! ] :as md]
+                      fm-navig fm! make  ] :as md]
        :cljs [tiltontec.model.core
               :refer-macros [cFkids the-kids mdv!]
-              :refer [  md-name fm-navig fm! make md-reset! ]
+              :refer [  md-name fm-navig fm! make  ]
               :as md])
     ))
 
@@ -98,6 +98,27 @@
         (is (fm-navig :aa bba :inside? false :up? true))
         (is (fm-navig :bb bba :inside? true :up? true))
         (is (fm-navig :bbb bba :inside? false :up? true))))))
+
+(deftest bmi
+  (with-mx
+    (let [md (md/make
+               :height 2 ;; meters
+               :weight (cI 80) ;; kg
+               :bmi (cF (/ (mget me :weight)
+                          (Math/pow (mget me :height) 2)))
+               :weight-status (cF (let [bmi (mget me :bmi)]
+                                    (cond
+                                      (< bmi 18.5) :underweight
+                                      (<= 18.5 bmi 24.9) :healthy
+                                      (<= 25.0 bmi 29.9) :overweight
+                                      :else :obese))))]
+      (prn :bmi (mget md :bmi) (mget md :weight-status))
+      (is (= (mget md :bmi) 20.0))
+      (is (= (mget md :weight-status) :healthy))
+      (mswap! md :weight + 20)
+      (prn :bmi (mget md :bmi) (mget md :weight-status))
+      (is (= (mget md :bmi) 25.0))
+      (is (= (mget md :weight-status) :overweight)))))
 
 (deftest fm-3
   (with-mx
@@ -255,9 +276,24 @@
       (is (= :missing (:loc @res)))
       (is (= 1 @bct))
       (reset! bct 0)
-      (md-reset! res :action :return)
+      (mset! res :action :return)
       (is (= :home (:loc @res)))
       (is (zero? @bct)))))
+
+(comment
+  (defn filter-vector-func [coll ?s]
+    (reduce
+      (fn [x y]
+        (prn :x x)
+        (prn :y y)
+        (let [{:keys [id name surname]} y]
+          (if (str/includes? (str/lower-case name) (str/lower-case ?s))
+            (conj x id name)
+            x)))
+      []
+      coll))
+  (filter-vector-func [{:id 1 :name "ali" :surname "veli"}
+                       {:id 2 :name "anna" :surname "k"}] "a"))
 
 (deftest hello-model
   (with-mx
@@ -306,12 +342,12 @@
         (is (not (nil? rez)))
         (is (not (nil? (md-cell rez :action))))
         (is (= :missing (mdv! :resident :location uni)))
-        (md-reset! viz :action :knock-knock)
-        (md-reset! viz :action :smashing-window)
+        (mset! viz :action :knock-knock)
+        (mset! viz :action :smashing-window)
         (is (not (nil? (md-cell rez :action))))
-        (md-reset! rez :action :return)
+        (mset! rez :action :return)
         (is (= :home (mdv! :resident :location uni)))
-        (md-reset! viz :action :knock-knock)))))
+        (mset! viz :action :knock-knock)))))
 
 (deftest clock-with-cc
   (with-mx

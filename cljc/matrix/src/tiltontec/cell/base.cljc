@@ -1,5 +1,7 @@
 (ns tiltontec.cell.base
   (:require
+    #?(
+       :clj  [clojure.string :as str])
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:cljs [tiltontec.util.base :as utm
               :refer [mx-type mx-type?]
@@ -45,9 +47,6 @@ rule to get once behavior or just when fm-traversing to find someone"
 (def ^:dynamic *defer-changes* false)
 (def +client-q-handler+ (atom nil))
 
-(comment
-  (first ":test")
-  (subs ":test" 1))
 (defonce unbound (gensym "unbound-cell-value"))
 (defn when-bound [x]
   (when (not= x unbound) x))
@@ -171,12 +170,7 @@ rule to get once behavior or just when fm-traversing to find someone"
   (assert (c-ref? c) "c-awy?-got-not-c")
   (or (not (map? @c))
     (not (contains? @c ::state))
-    (= :optimized-away (::state @c)))
-  #_(cond
-      (c-ref? c) (or (not (map? @c))
-                   (not (contains? @c ::state))
-                   (= :optimized-away (::state @c)))
-      :else true))
+    (= :optimized-away (::state @c))))
 
 (defn c-model [rc]
   (:me @rc))
@@ -253,6 +247,20 @@ rule to get once behavior or just when fm-traversing to find someone"
   (= :dead (md-state me)))
 
 ;;---
+
+(comment
+  (defn filter-vector-func [coll ?s]
+    (reduce
+      (fn [x y]
+        (prn :y y)
+        (let [{:keys [id name surname]} y]
+          (prn :keys id name surname)
+          (if (str/includes? (str/lower-case name) (str/lower-case ?s))
+            (conj x id name)
+            x)))
+      []
+      coll))
+  (filter-vector-func {:id 1 :name "ali" :surname "veli"} "a"))
 
 #?(:clj  (set! *print-level* 3)
    :cljs (set! *print-level* 3))                            ;; cells are recursive data for now

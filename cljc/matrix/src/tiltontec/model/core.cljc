@@ -66,11 +66,6 @@
      (mget me prop)
      alt-val)))
 
-(comment
-  (let [m (make ::test
-                :answer 42)]
-    (mget m :answerx)))
-
 (defmacro def-mget [reader-prefix & props]
   `(do
      ~@(map (fn [prop#]
@@ -96,7 +91,7 @@
       (if (contains? @me prop)
         (do
           (err str
-               "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/md-reset! to the property '" prop "', which is not mediated by any cell.\n"
+               "MXAPI_ILLEGAL_MUTATE_NONCELL> invalid mswap!/mset!/mset! to the property '" prop "', which is not mediated by any cell.\n"
                "...> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI'. eg: (make... :answer (cI 42)).\n"
                "...> look for MXAPI_ILLEGAL_MUTATE_NONCELL in the Errors documentation for  more details.\n"
                "...> FYI: intended new value is [" new-value "]; initial value was [" (get @me prop :no-such-prop) "].\n"
@@ -105,7 +100,7 @@
                "...> FYI: instance meta is " (meta me) "\n.")
           )
         (err str
-             "MXAPI_ILLEGAL_MUTATE_NO_SUCH_prop> mswap!/mset!/md-reset! was attempted to non-existent prop \"" prop "\".\n"
+             "MXAPI_ILLEGAL_MUTATE_NO_SUCH_prop> mswap!/mset!/mset! was attempted to non-existent prop \"" prop "\".\n"
              "...> FYI: known props are" (keys @me))
         ))))
 
@@ -114,24 +109,8 @@
   [me prop new-value]
   (mset! me prop new-value))
 
-(defn md-reset! "deprecated. use mset!"
-  [me prop new-value]
-  (mset! me prop new-value))
-
-(defn md-set! "deprecated. use mset!"
-  [me prop new-value]
-  (mset! me prop new-value))
-
 (defn mswap! [me prop swap-fn & swap-fn-args]
   (mset! me prop (apply swap-fn (mget me prop) swap-fn-args)))
-
-(defn backdoor-reset!? [me prop new-value]
-  (if-let [c (md-cell me prop)]
-    (c-reset! c new-value)
-    (rmap-setf [prop me] new-value)))
-
-(defn backdoor-reset! [me prop new-value]
-  (rmap-setf [prop me] new-value))
 
 (defn make [& arg-list]
   (cond
