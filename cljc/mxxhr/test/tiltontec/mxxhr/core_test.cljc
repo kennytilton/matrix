@@ -21,7 +21,7 @@
     [tiltontec.model.core :refer :all :as md]
        :cljs [tiltontec.model.core
               :refer-macros [the-kids mdv!]
-              :refer [mget fasc fm! make md-reset! backdoor-reset!]
+              :refer [mget fasc fm! make mset! ]
               :as md])
 
     [tiltontec.mxxhr.core

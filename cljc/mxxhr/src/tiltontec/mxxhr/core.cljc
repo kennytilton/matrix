@@ -52,7 +52,7 @@
 
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [mget fasc fm! make md-reset! mswap! backdoor-reset!]
+     :refer [mget fasc fm! make mset! mswap! ]
      :as md]
 
     #?(:clj
@@ -117,7 +117,7 @@
                    (do
                      ;;(prn :hitting-with-cc *within-integrity*)
                      (with-cc :xhr-handler-sets-responded
-                       (md-reset! xhr :response {:status (:status response)
+                       (mset! xhr :response {:status (:status response)
                                                  :body   ((:body-parser @xhr) (:body response))})))))
                (fn [exception]
                  (countit [:xhr :exception])
@@ -127,7 +127,7 @@
                    (prn :xhr-exception!!! (:id @xhr) uri (:status edata) (parse-json$ (:body edata)))
                    (when-not (mdead? xhr)
                      (with-cc :xhr-handler-sets-error
-                       (md-reset! xhr :response {:status (:status edata)
+                       (mset! xhr :response {:status (:status edata)
                                                  :body   (parse-json$ (:body edata))}))))))
 
        :cljs (go
@@ -145,7 +145,7 @@
                              #(do
                                 (when-let [d (:fake-delay @xhr)]
                                   (println :fake-delayed!!!!!! d))
-                                (md-reset! xhr :response
+                                (mset! xhr :response
                                   {:status (:status response)
                                    :body   ((:body-parser @xhr) (:body response))}))
                              (or (:fake-delay @xhr) 0)))))
@@ -158,7 +158,7 @@
                        (if (mdead? xhr)
                          (do (prn :ignoring-response-to-dead-XHR!!! uri (meta xhr)))
                          (with-cc :xhr-handler-sets-responded
-                           (md-reset! xhr :response {:status (:status response)
+                           (mset! xhr :response {:status (:status response)
                                                      :body   [(:error-code response)
                                                               (:error-text response)]})))))))))))
 
