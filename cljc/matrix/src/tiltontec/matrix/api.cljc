@@ -1,6 +1,10 @@
 (ns tiltontec.matrix.api
   #?(:cljs
-     (:require-macros [tiltontec.matrix.api]))
+     (:require-macros [tiltontec.matrix.api
+                       :refer [with-mx without-c-dependency cf-freeze the-kids cFkids with-par
+                               fn-watch cF cF+ cFn cF+n cFonce cF1 with-cc mpar fmu mdv!
+                               with-mx-trace with-minfo with-minfo-std
+                               with-integrity]]))
   (:require
     #?(:cljs [tiltontec.util.base
               :refer-macros [trx prog1 *trx?* def-rmap-props]
@@ -11,7 +15,7 @@
     ;[tiltontec.cell.diagnostic :refer ]
     [tiltontec.cell.base :as cb]
     #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF+ c-reset-next! cFonce cFn]
+              :refer-macros [c-reset-next!]
               :refer [c-reset! make-cell] :as c]
        :clj  [tiltontec.cell.core :as c])
     [tiltontec.cell.diagnostic :as diag]
@@ -238,6 +242,8 @@ call parameters: prop, me, new, old, and c."
 (defmacro with-minfo-std [& body]
   `(binding [cb/*mx-minfo* nil]
      ~@body))
+
+
 
 (defn minfo [me]
   (cb/minfo me))

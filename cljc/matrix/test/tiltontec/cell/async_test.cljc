@@ -1,6 +1,9 @@
 (ns tiltontec.cell.async-test
   (:import (java.util.concurrent TimeoutException TimeUnit))
   (:require
+    #?(:clj  [clojure.test :refer :all]
+       :cljs [cljs.test
+              :refer-macros [deftest is are]])
     #?(:clj
        [clj-http.util :as httpu]
        :cljs [cljs-http.util :as httpu])
@@ -8,6 +11,11 @@
     #?(:clj
        [clj-http.client :as client]
        :cljs [cljs-http.client :as client])))
+
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
 
 (comment
   (client/get "http://example.com")

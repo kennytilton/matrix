@@ -34,8 +34,6 @@
               :refer [c-current? c-pulse-update]]
        :clj  [tiltontec.cell.integrity :refer :all])))
 
-#?(:cljs (set! *print-level* 3))
-
 (defn ephemeral-reset [rc]
   ;; (trx :eph-reset?????? (:prop @rc)(:ephemeral? @rc))
   (when (c-ephemeral? rc)                                   ;; allow call on any cell, catch here

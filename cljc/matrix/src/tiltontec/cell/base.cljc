@@ -1,7 +1,8 @@
 (ns tiltontec.cell.base
+  #?(:cljs (:require-macros [tiltontec.cell.base
+                             :refer [un-stopped without-c-dependency]]))
   (:require
-    #?(
-       :clj  [clojure.string :as str])
+    #?(:clj [clojure.string :as str])
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:cljs [tiltontec.util.base :as utm
               :refer [mx-type mx-type?]
@@ -261,9 +262,6 @@ rule to get once behavior or just when fm-traversing to find someone"
       []
       coll))
   (filter-vector-func {:id 1 :name "ali" :surname "veli"} "a"))
-
-#?(:clj  (set! *print-level* 3)
-   :cljs (set! *print-level* 3))                            ;; cells are recursive data for now
 
 (defn md-prop-owning? [class-name prop-name]
   ;; hhack

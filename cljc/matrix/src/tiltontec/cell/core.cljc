@@ -31,8 +31,6 @@
               :refer []])
     [tiltontec.cell.evaluate :refer [cget c-value-assume ensure-value-is-current]]))
 
-;;#?(:cljs (set! *print-level* 3))
-
 ; todo: stand-alone cells with watchs should be watched when they are made
 
 (def +valid-input-options+

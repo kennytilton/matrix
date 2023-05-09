@@ -36,6 +36,11 @@
     [tiltontec.cell.evaluate :refer [cget]]
     ))
 
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
+
 (deftest opti-away
   (with-mx
     (let [aa (cF 42)]

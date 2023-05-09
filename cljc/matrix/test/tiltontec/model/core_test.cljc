@@ -48,7 +48,10 @@
               :as md])
     ))
 
-#?(:cljs (set! *print-level* 3))
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
 
 (deftest fm-0
   (with-mx

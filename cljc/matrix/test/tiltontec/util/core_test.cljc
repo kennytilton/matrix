@@ -19,6 +19,11 @@
                       :as ut]
                :clj [tiltontec.util.core :refer :all :as ut])))
 
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
+
 (deftest fake-cl
   (is (= 42 (utm/prog1 42 43 44)))
   (is (= 42 (utm/b-when x (+ 21 21)

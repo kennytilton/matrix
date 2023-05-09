@@ -45,6 +45,11 @@
 
     [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]))
 
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
+
 (deftest non-syn-even-filtering
   ; first we look at how a formula can filter inputs *without* any special
   ; support, just by having the rule close over some state.

@@ -36,6 +36,11 @@
    [tiltontec.cell.poly :refer [c-awaken]]
    ))
 
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
+
 (deftest hw-01
   (cells-init)
   (let [v ;;"visitor"

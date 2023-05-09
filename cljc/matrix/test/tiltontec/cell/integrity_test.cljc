@@ -34,6 +34,11 @@
        :clj  [tiltontec.cell.core :refer :all])
     ))
 
+(defn prn-level-3 [f]
+  (binding [*print-level* 3] (f)))
+
+(use-fixtures :once prn-level-3)
+
 (defn watchdbg []
   ;;(fn-watch (trx :watchdbg prop new old (type-of c)))
   )

@@ -1,12 +1,11 @@
 (ns tiltontec.cell.integrity
+  #?(:cljs (:require-macros [tiltontec.cell.integrity
+                             :refer [with-integrity with-cc without-integrity with-async-change]]))
   (:require
-    ;#?(:clj [taoensso.tufte :as tufte :refer :all]
-    ;  :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
     #?(:cljs [tiltontec.util.base
               :refer-macros [wtrx trx prog1]]
        :clj  [tiltontec.util.base
               :refer :all])
-
     [tiltontec.util.core
      :refer [ensure-vec err pln plnk fifo-add fifo-peek fifo-pop cl-find]]
     [tiltontec.cell.base
@@ -15,8 +14,6 @@
              *within-integrity* *defer-changes* *depender*]]))
 
 ;; --- the pulse ------------------------------
-
-#?(:cljs (set! *print-level* 3))
 
 (defn data-pulse-next
   ([] (data-pulse-next :anon))
