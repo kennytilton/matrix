@@ -56,6 +56,11 @@
 (defmacro wtrx [[lo hi & trxargs] & body]
   `(call-wtrx (fn [] ~@body) ~lo ~hi (list ~@trxargs)))
 
+(defn prx [tag & bits]
+  (when tag
+    (binding [*print-level* 3]
+      (apply prn tag bits))))
+
 (defmacro prog1 [& body]
   `(let [result# ~(first body)]
      ~@(rest body)

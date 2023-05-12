@@ -21,6 +21,9 @@
     [tiltontec.cell.diagnostic :as diag]
     [tiltontec.model.core :as md]))
 
+(defn prx [tag & bits]
+  (apply ubase/prx tag bits))sun
+
 (defn any-ref? [it]
   (ucore/any-ref? it))
 
@@ -41,6 +44,9 @@
 
 ;;;
 (defn md-name [me]
+  (:name @me))
+
+(defn mname [me]
   (:name @me))
 
 (defn mx-type [it]
@@ -70,6 +76,15 @@
   Return the specified optional value, or the current latest value."
   [& [value-form]]
   `(tiltontec.cell.core/cf-freeze ~value-form))
+
+;;; --- models ---------------------------------------
+
+(defmacro def-mget [reader-prefix & props]
+  `(do
+     ~@(map (fn [prop#]
+              `(defn ~(symbol (str (or reader-prefix "") (name prop#)))
+                 [~'ref]
+                 (tiltontec.model.core/mget ~'ref ~(keyword (name prop#))))) props)))
 
 ;;; --- parent/kids ---------------------------------------------
 
