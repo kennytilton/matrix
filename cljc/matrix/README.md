@@ -6,7 +6,7 @@ The Matrix dataflow engine solves this problem on its own: when (7) changes, how
 
 [By Johannes Rössel](https://commons.wikimedia.org/w/index.php?curid=5559952)
 
-The win? Fine-grained, gltch-free, transparent reactivity automatically extracted from declarative forms.
+The win? Fine-grained, glitch-free, transparent reactivity automatically extracted from declarative forms.
 
 Too abstract? Here is how it looks/works [in a GUI](https://kennytilton.github.io/web-mx-quickstart/#/).
 
