@@ -6,7 +6,7 @@ The Matrix dataflow engine solves this problem on its own: when (7) changes, how
 
 [By Johannes Rössel](https://commons.wikimedia.org/w/index.php?curid=5559952)
 
-The win? Fine-grained, glitch-free, transparent reactivity automatically extracted from declarative forms.
+The win? Prosaically, fine-grained, glitch-free, transparent reactivity automatically extracted from declarative forms. More grandly, a delightful something-for-nothing paradigm shift allowing more powerful code to be delivered more easily and reliably, code more easily refactored when requirements change.
 
 Too abstract? Here is how it looks/works [in a GUI](https://kennytilton.github.io/web-mx-quickstart/#/).
 
@@ -20,6 +20,12 @@ Not bad. We were motivated by this dictionary entry:
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
 
 Any property can be expressed as a formula, but when the property is the _children_ of an object, the very _population_ of our apps can grow or shrink as app events unfold. So "Matrix".
+
+That said...
+
+> The red pill and blue pill represent a choice between the willingness to learn a potentially unsettling or life-changing truth by taking the red pill or remaining in the contented experience of ordinary reality with the blue pill. -- [WikiPedia](https://en.wikipedia.org/wiki/Red_pill_and_blue_pill)
+
+Matrix _does_ constitute a paradigm shift from _imperativethink_ to solving problems with a cascade of formulaic derivations and watch functions, and it _did_ take several months before even its author made that shift and learned to undertake new features by thinking about dataflow instead of imperative logic..._shrug._
 
 ### Applications
 
