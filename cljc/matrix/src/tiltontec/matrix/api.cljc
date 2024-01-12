@@ -21,8 +21,10 @@
     [tiltontec.cell.diagnostic :as diag]
     [tiltontec.model.core :as md]))
 
+
+
 (defn prx [tag & bits]
-  (apply ubase/prx tag bits))sun
+  (apply ubase/prx tag bits))
 
 (defn any-ref? [it]
   (ucore/any-ref? it))
@@ -99,7 +101,7 @@
   "Syntax sugar for formulae that define :kids props"
   [& tree]
   `(cF (assert ~'me "no me for cFkids")
-       (the-kids ~@tree)))
+     (the-kids ~@tree)))
 
 (defmacro with-par [meform & body]
   `(binding [tiltontec.model.core/*parent* ~meform]
@@ -251,14 +253,9 @@ call parameters: prop, me, new, old, and c."
 (defmacro as-ignored [expr]
   (list 'do (symbol "#_") expr))
 
-(comment
-  (prn 1 (as-ignored [:x 1]) 2))
-
 (defmacro with-minfo-std [& body]
   `(binding [cb/*mx-minfo* nil]
      ~@body))
-
-
 
 (defn minfo [me]
   (cb/minfo me))

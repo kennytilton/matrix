@@ -43,6 +43,7 @@
     (let [c (make-cell
               :prop :mol
               :value 42)]
+      #?(:cljd (prn :booya!!!!!!!!!!!!!!))
       (prn :cell @c)
       (prn :meta (meta c))
       (prn :mx-type (mx-type c) :type (type c))
