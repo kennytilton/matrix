@@ -23,12 +23,10 @@
              *one-pulse?* *dp-log* *unfinished-business* pulse-initial
              *c-prop-depth* md-prop-owning? c-lazy] :as cty]
 
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     #?(:clj
        [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]
-              :refer []])
+              :refer-macros [with-integrity]])
     [tiltontec.cell.evaluate :refer [cget c-value-assume ensure-value-is-current]]))
 
 ; todo: stand-alone cells with watchs should be watched when they are made

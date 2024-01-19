@@ -29,8 +29,7 @@
     [tiltontec.matrix.api :refer [fn-watch]]
 
     #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+]
-              :refer [c-in]]
+              :refer-macros [cF cF+]]
        :clj  [tiltontec.cell.core :refer :all])
     ))
 

@@ -1,7 +1,6 @@
 (ns tiltontec.model.opti-test
   (:require
     [clojure.string :as str]
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format] :as pp]
     #?(:clj  [clojure.test :refer :all]
        :cljs [cljs.test
               :refer-macros [deftest is are]])

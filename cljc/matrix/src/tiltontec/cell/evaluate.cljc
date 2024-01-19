@@ -1,7 +1,6 @@
 (ns tiltontec.cell.evaluate
   (:require
     [clojure.string :as str]
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [clojure.set :refer [difference]]
     ;#?(:clj [taoensso.tufte :as tufte :refer :all]
     ;   :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])

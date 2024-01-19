@@ -43,7 +43,7 @@
        :clj
        [tiltontec.cell.core :refer :all])
 
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]))
+    ))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))

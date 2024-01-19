@@ -1,6 +1,5 @@
 (ns tiltontec.cell.synapse
   (:require
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
     [tiltontec.util.core :refer [pln rmap-setf]]
     #?(:clj
     [tiltontec.cell.base :refer :all]
@@ -10,8 +9,7 @@
     #?(:clj
     [tiltontec.cell.integrity :refer :all]
        :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]
-              :refer []])
+              :refer-macros [with-integrity]])
 
     [tiltontec.cell.evaluate :refer [ cget c-value-assume
                                       ensure-value-is-current]]
