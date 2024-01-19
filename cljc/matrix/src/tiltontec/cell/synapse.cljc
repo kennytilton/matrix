@@ -1,24 +1,14 @@
 (ns tiltontec.cell.synapse
   (:require
-   #?(:clj
-      [tiltontec.cell.base :refer :all]
+   #?(:clj [tiltontec.cell.base
+            :refer [*depender* c-model c-synapses dependency-record]]
       :cljs [tiltontec.cell.base
-              ;;:refer-macros [without-c-dependency]
              :refer [*depender* c-synapses dependency-record]])
-   #?(:clj
-      [tiltontec.cell.integrity :refer :all]
-      :cljs [tiltontec.cell.integrity
-             :refer-macros [with-integrity]])
-   #?(:clj
-      [tiltontec.cell.core :refer :all]
-      :cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c_F cF_]
-             :refer [make-c-formula]])
+   #?(:clj [tiltontec.cell.core :refer [c-fn make-c-formula]]
+      :cljs [tiltontec.cell.core :refer [make-c-formula]])
    [tiltontec.cell.evaluate :refer [ensure-value-is-current]]
+   [tiltontec.cell.integrity]
    [tiltontec.util.core :refer [rmap-setf]]))
-
-(defn- really? []
-  true)
 
 (defn existing-syn [synapse-id]
   (assert (keyword? synapse-id) "Synapse ID must be a keyword")

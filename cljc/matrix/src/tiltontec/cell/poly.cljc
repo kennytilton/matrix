@@ -1,4 +1,5 @@
 (ns tiltontec.cell.poly
+  {:clj-kondo/ignore [:unused-binding]}
   (:require
    [tiltontec.util.base
     :refer [mx-type]]))
@@ -39,7 +40,7 @@
 
 (defmethod watch :default [prop me new-val old-val c]
   (if-let [w @+watch-default-handler+]
+    #_{:clj-kondo/ignore [:redundant-do]}
     (do                                                     ;; (println :app-def-obs-hanler!!!)
       (w prop me new-val old-val c))
     (watch-by-type prop me new-val old-val c)))
-

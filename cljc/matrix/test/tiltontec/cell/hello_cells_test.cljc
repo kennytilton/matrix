@@ -1,19 +1,15 @@
 (ns tiltontec.cell.hello-cells-test
+  {:clj-kondo/ignore [:unused-binding]}
   (:require
    #?(:clj [clojure.test :refer :all]
-      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
-   #?(:cljs [tiltontec.util.base
-             :refer-macros [trx prog1 *trx?*]]
-      :clj  [tiltontec.util.base
-             :refer [trx]])
-   #?(:clj [tiltontec.cell.base :refer :all :as cty]
-      :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
-             :refer [cells-init] :as cty])
-   #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
+   #?(:cljs [tiltontec.util.base :refer-macros [trx]]
+      :clj  [tiltontec.util.base :refer [trx]])
+   #?(:clj [tiltontec.cell.base :refer [cells-init] :as cty]
+      :cljs [tiltontec.cell.base :refer [cells-init] :as cty])
+   #?(:cljs [tiltontec.cell.core :refer-macros [cF+]
              :refer [c-reset! cI make-c-formula make-cell]]
-      :clj [tiltontec.cell.core :refer :all])
+      :clj [tiltontec.cell.core :refer [c-reset! cF+ cI make-c-formula make-cell]])
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.cell.poly :refer [c-awaken]]
    [tiltontec.matrix.api :refer [fn-watch]]))

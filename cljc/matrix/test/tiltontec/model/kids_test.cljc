@@ -1,26 +1,17 @@
 (ns tiltontec.model.kids-test
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
-   #?(:cljs [tiltontec.util.base
-             :refer [mx-type?]
-             :refer-macros [trx prog1 *trx?*]]
-      :clj  [tiltontec.util.base
-             :refer :all])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-      :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
-             :refer [md-ref?] :as cty])
-   #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn with-mx]
-             :refer [cI]]
+      :cljs [cljs.test :refer-macros [deftest is]])
+   #?(:cljs [tiltontec.cell.core :refer-macros [cF with-mx] :refer [cI]]
       :clj  [tiltontec.cell.core :refer [cF cI with-mx]])
    #?(:clj  [tiltontec.model.core :refer [mdv! mget mset! the-kids] :as md]
       :cljs [tiltontec.model.core
              :refer-macros [the-kids mdv!]
-             :refer [make mget mset!]
-             :as md])))
+             :refer [mget mset!]
+             :as md])
+   [tiltontec.cell.base :refer [md-ref?] :as cty]
+   [tiltontec.util.base :refer [mx-type?]]))
 
 (deftest k-notq2be
   (with-mx
@@ -39,7 +30,7 @@
 
       (do
         (mset! f :ee 3)
-        (is (not (empty? (mget f :kids))))
+        (is (seq (mget f :kids)))
         (is (= 42 (mdv! :yep :value f)))
 
         (let [dmw (first (mget f :kids))]
@@ -51,4 +42,3 @@
 
 #?(:cljs (do
            (cljs.test/run-tests)))
-

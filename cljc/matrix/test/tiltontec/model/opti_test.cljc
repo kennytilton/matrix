@@ -1,19 +1,10 @@
 (ns tiltontec.model.opti-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
-   #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF+ c-reset-next! cFonce cFn]
-             :refer [c-reset! cI make-c-formula make-cell]]
-      :clj  [tiltontec.cell.core
-             :refer [c-reset! cI make-c-formula make-cell]])
-   #?(:clj  [tiltontec.model.core :refer :all :as md]
-      :cljs [tiltontec.model.core
-             :refer-macros [cFkids the-kids mdv!]
-             :refer [make mget mswap!]
-             :as md])
-   [tiltontec.matrix.api :refer [cF cf-freeze with-mx]]))
+      :cljs [cljs.test :refer-macros [deftest is]])
+   [tiltontec.cell.core :refer [cI]]
+   [tiltontec.matrix.api :refer [cF cf-freeze with-mx]]
+   [tiltontec.model.core :refer [mget mswap!] :as md]))
 
 (deftest opti-map-value
   (with-mx

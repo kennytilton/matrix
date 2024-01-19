@@ -1,11 +1,10 @@
 (ns tiltontec.model.base
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:clj  [clojure.test :refer :all])
-   #?(:cljs [tiltontec.util.base
-             :refer-macros [trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
+   #?(:cljs [tiltontec.util.base :refer-macros [def-rmap-props def-rmap-meta-props]]
       :clj [tiltontec.util.base :refer [def-rmap-meta-props def-rmap-props]])
-   [tiltontec.cell.base
-    :refer [c-input? c-ref? c-value md-state unbound] :as cty]
+   [tiltontec.cell.base :refer [c-input? c-ref? c-value md-state unbound] :as cty]
    [tiltontec.cell.poly :refer [c-awaken md-awaken-before watch]]
    [tiltontec.util.core :refer [rmap-meta-setf rmap-setf]]))
 

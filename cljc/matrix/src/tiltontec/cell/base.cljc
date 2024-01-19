@@ -6,13 +6,13 @@
    #?(:clj [clojure.string :as str])
    #?(:cljs [tiltontec.util.base :as utm
              :refer [mx-type mx-type?]
-             :refer-macros [prog1 b-when def-rmap-props]]
+             :refer-macros [def-rmap-props]]
       :clj  [tiltontec.util.base :as utm
-             :refer :all])
+             :refer [def-rmap-props mx-type mx-type?]])
    #?(:cljs [tiltontec.util.core
              :refer [any-ref? mut-set!]
              :as ut]
-      :clj  [tiltontec.util.core :refer :all :as ut])))
+      :clj  [tiltontec.util.core :refer [any-ref? mut-set!] :as ut])))
 
 ;; --- the Cells beef -----------------------
 (defn pulse-initial []
@@ -214,8 +214,9 @@ rule to get once behavior or just when fm-traversing to find someone"
   (doseq [caller (c-callers used)]
     (dependency-drop used caller)))
 
-(defn unlink-from-used [caller why]
+(defn unlink-from-used
   "Tell dependencies they need not notify us when they change, then clear our record of them."
+  [caller _why]
   (doseq [used (c-useds caller)]
     (dependency-drop used caller)))
 
@@ -229,7 +230,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn md-ref? [x]
   ;;(trx :md-ref?-sees x)
-  (and (any-ref? x)))
+  (any-ref? x))
 ;; hhack (mx-type? x ::model)
 
 ;; --- mdead? ---
@@ -242,21 +243,22 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 ;;---
 
-(comment
-  (defn filter-vector-func [coll ?s]
-    (reduce
-     (fn [x y]
-       (prn :y y)
-       (let [{:keys [id name surname]} y]
-         (prn :keys id name surname)
-         (if (str/includes? (str/lower-case name) (str/lower-case ?s))
-           (conj x id name)
-           x)))
-     []
-     coll))
-  (filter-vector-func {:id 1 :name "ali" :surname "veli"} "a"))
+#?(:clj
+   (comment
+     (defn filter-vector-func [coll ?s]
+       (reduce
+        (fn [x y]
+          (prn :y y)
+          (let [{:keys [id name surname]} y]
+            (prn :keys id name surname)
+            (if (str/includes? (str/lower-case name) (str/lower-case ?s))
+              (conj x id name)
+              x)))
+        []
+        coll))
+     (filter-vector-func {:id 1 :name "ali" :surname "veli"} "a")))
 
-(defn md-prop-owning? [class-name prop-name]
+(defn md-prop-owning? [_class-name _prop-name]
   ;; hhack
   false)
 
@@ -304,6 +306,3 @@ rule to get once behavior or just when fm-traversing to find someone"
     (when (or (= c true) (:debug @c))
       (prn)
       (apply prn :cdbg> tag :cinfo (cinfo c) bits))))
-
-
-

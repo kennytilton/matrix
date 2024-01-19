@@ -2,19 +2,18 @@
   (:require
    #?(:clj [clojure.test :refer :all]
       :cljs [cljs.test
-             :refer-macros [deftest is are]])
+             :refer-macros [deftest is]])
    #?(:cljs [tiltontec.util.base
-             :refer-macros [trx prog1]]
+             :refer-macros [trx]]
       :clj  [tiltontec.util.base
-             :refer :all])
-   #?(:clj [tiltontec.cell.base :refer :all :as cty]
+             :refer [trx]])
+   #?(:clj [tiltontec.cell.base :refer [c-callers c-useds cells-init unbound] :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
              :refer [c-callers c-useds cells-init unbound] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c_F cF_]
+             :refer-macros [cF+ c_F cF_]
              :refer [c-reset! cI]]
-      :clj [tiltontec.cell.core :refer :all])
+      :clj [tiltontec.cell.core :refer [c-reset! c_F cF+ cF_ cI]])
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.matrix.api :refer [fn-watch]]))
 

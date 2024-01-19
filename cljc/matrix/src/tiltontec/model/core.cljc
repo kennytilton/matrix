@@ -1,11 +1,12 @@
 (ns tiltontec.model.core
+  {:clj-kondo/ignore [:redundant-do]}
   #?(:cljs (:require-macros
             [tiltontec.model.core :refer [cFkids with-par]]))
   (:require
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer-macros [cF]
              :refer [c-reset!]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core :refer [c-reset! cF]])
    [clojure.set :refer [difference]]
    [tiltontec.cell.base
     :refer [*depender* c-ref? cinfo md-ref? mdead? minfo unbound
@@ -14,7 +15,6 @@
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.cell.integrity :refer [with-integrity]]
    [tiltontec.cell.poly :refer [md-quiesce md-quiesce-self watch]]
-   [tiltontec.cell.poly :refer [md-quiesce]]
    [tiltontec.model.base :refer [md-awaken md-cell md-install-cell]]
    [tiltontec.util.base
     :refer [mx-sid-next mx-type trx]]
@@ -111,7 +111,7 @@
                (merge {:parent *parent*}
                       (->> arg-list
                            (partition 2)
-                           (filter (fn [[prop v]]
+                           (filter (fn [[prop _v]]
                                      (not (some #{prop} meta-keys))))
                            (map (fn [[k v]]
                                   (vector k (if (c-ref? v)
@@ -145,7 +145,7 @@
 
 (defn md-kids [me] (mget me :kids))
 
-(defn fm-kids-watch [me newk oldk c]
+(defn fm-kids-watch [me newk oldk _c]
   (when-not (= oldk unbound)
     ;;(prn :fm-kids-watch)
     (let [lostks (difference (set oldk) (set newk))]
@@ -156,7 +156,7 @@
           (md-quiesce k))))))
 
 (defmethod watch [:kids ::family]
-  [prop me newk oldk c]
+  [_prop me newk oldk c]
   ;;(prn :watcherve-kids-family-method)
   (fm-kids-watch me newk oldk c))
 
@@ -414,6 +414,7 @@
                  (into {} (for [k x-kids]
                             [(k-key k) k])))
         k-factory (mget me :kid-factory)]
+    #_{:clj-kondo/ignore [:single-logical-operand]}
     (assert (and k-factory))
 
     #_(prn :kvk-loading (count (mget me :kid-values))
@@ -421,7 +422,7 @@
 
     (doall
      (map-indexed
-      (fn [idx kid-value]
+      (fn [_idx kid-value]
         (or (and x-kids (get x-kids kid-value))
             (binding [*parent* me]
               (k-factory me kid-value))))

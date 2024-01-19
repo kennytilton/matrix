@@ -4,18 +4,19 @@
              :refer-macros [deftest is are use-fixtures]]
       :clj [clojure.test :refer :all])
    #?(:cljs [tiltontec.util.base :as utm
-             :refer [*trxdepth*]
-             :refer-macros [wtrx trx prog1 b-when unless
-                            def-rmap-props]]
+             :refer-macros [trx def-rmap-props]]
       :clj [tiltontec.util.base :as utm
             :refer [*trxdepth* def-rmap-props trx wtrx]])
    #?(:cljs [tiltontec.util.core
-             :refer [any-ref? cl-find err fifo-add fifo-data fifo-empty?
-                     fifo-peek fifo-pop ia-ref make-fifo-queue rmap-setf
-                     set-ify wtrx-test]
+             :refer [any-ref? err fifo-add fifo-data fifo-empty? fifo-peek
+                     fifo-pop ia-ref make-fifo-queue rmap-setf set-ify
+                     wtrx-test]
              :as ut]
-      :clj [tiltontec.util.core :refer :all :as ut])
-   [clojure.set :as cset :refer [difference]]))
+      :clj [tiltontec.util.core
+            :refer [any-ref? err fifo-add fifo-data fifo-empty? fifo-peek
+                    fifo-pop ia-ref make-fifo-queue rmap-setf set-ify]
+            :as ut])
+   [clojure.set :as cset]))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))
@@ -26,7 +27,7 @@
   (is (= 42 (utm/prog1 42 43 44)))
   (is (= 42 (utm/b-when x (+ 21 21)
                         42 x)))
-  (is (nil? (utm/b-when x false
+  (is (nil? (utm/b-when _x false
                         43 42)))
   (are [lst] (= 42 (ut/cl-find 42 lst))
     '(41 42 43)
@@ -57,7 +58,7 @@
     (trx nil :xxx x @x (:value @x))
     (is (= 42 (:value @x)))
     (is (let [j (#?(:clj dosync :cljs do) (rmap-setf [:value x] 43))]
-                                        ;(trx nil :xxx x @x (:value @x))          
+                                        ;(trx nil :xxx x @x (:value @x))
                                         ;(trx nil :j j (type j))
           (= 43 j)))
     (is (= 44 (#?(:clj dosync :cljs do) (rmap-setf [:value x] 44))))))
@@ -132,4 +133,3 @@
      (is (fifo-empty? q)))))
 
 #?(:cljs (do (cljs.test/run-tests)))
-

@@ -1,28 +1,28 @@
 (ns tiltontec.model.core-test
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:clj  [clojure.test :refer :all]
       :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
    #?(:cljs [tiltontec.util.base
              :refer [mx-type?]
-             :refer-macros [trx prog1 *trx?*]]
+             :refer-macros [trx]]
       :clj  [tiltontec.util.base
              :refer [mx-type? trx]])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+   #?(:clj  [tiltontec.cell.base :refer [c-me c-prop c-ref?] :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
              :refer [c-me c-prop c-ref?] :as cty])
    #?(:cljs [tiltontec.cell.integrity
-             :refer-macros [with-integrity with-cc]]
-      :clj  [tiltontec.cell.integrity :refer [with-cc with-integrity]])
+             :refer-macros [with-cc]]
+      :clj  [tiltontec.cell.integrity :refer [with-cc]])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn with-mx]
+             :refer-macros [cF cF+ with-mx]
              :refer [c-reset! cI]]
       :clj  [tiltontec.cell.core :refer [c-reset! cF cF+ cI with-mx]])
    #?(:clj  [tiltontec.model.core
-             :refer [cFkids fm! fm-navig make md-name mdv! the-kids] :as md]
+             :refer [fm! fm-navig md-name mdv! the-kids] :as md]
       :cljs [tiltontec.model.core
-             :refer-macros [cFkids the-kids mdv!]
-             :refer [fm! fm-navig make md-name]
+             :refer-macros [the-kids mdv!]
+             :refer [fm! fm-navig md-name]
              :as md])
    [clojure.string :as str]
    [tiltontec.cell.poly :refer [md-quiesce]]
@@ -46,7 +46,7 @@
                         :name :konzo
                         :kzo (cI 3))))))]
       (is (nil? (:kids @u)))
-      (let [kc (md-cell u :kids)
+      (let [_kc (md-cell u :kids)
             kon (md-cell u :kon)]
         (c-reset! kon true)
         (is (= 1 (count (:kids @u))))
@@ -76,6 +76,7 @@
       ;;      Exception #"fm-navig-must-failed"
       ;;      (fm-navig :bbax u :inside? true :must? true)))
       ;; (is (nil? (fm-navig :bbax u :inside? true :must? false)))
+      #_{:clj-kondo/ignore [:redundant-let]}
       (let [bba (fm-navig :bba u :inside? true :must? true)]
         (is bba)
         (is (md/fm-navig :uni bba :inside? true :up? true))
@@ -269,7 +270,7 @@
      (fn [x y]
        (prn :x x)
        (prn :y y)
-       (let [{:keys [id name surname]} y]
+       (let [{:keys [id name _surname]} y]
          (if (str/includes? (str/lower-case name) (str/lower-case ?s))
            (conj x id name)
            x)))
@@ -288,7 +289,7 @@
                            :moniker "World"
                            :action (cI nil
                                        :ephemeral? true
-                                       :watch (fn [prop me new old c]
+                                       :watch (fn [_prop _me new _old _c]
                                                 (when new (trx visitor-did new)))))
                           (md/make
                            :name :resident
@@ -319,6 +320,7 @@
                                               (case action
                                                 :smashing-window :call-police
                                                 nil))))))))]
+      #_{:clj-kondo/ignore [:redundant-let]}
       (let [viz (fm! :visitor uni)
             rez (fm! :resident uni)]
         (is (not (nil? viz)))

@@ -1,15 +1,12 @@
 (ns tiltontec.cell.synapse-test
-  ;;#?(:cljs (:import [goog.net XhrIo]))
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:clj  [clojure.test :refer :all]
       :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
    #?(:clj [tiltontec.cell.synapse :refer [with-synapse]]
       :cljs [tiltontec.cell.synapse :refer-macros [with-synapse]])
-   #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c_F cF_ with-mx]
-             :refer [c-reset! cI]]
-      :clj
-      [tiltontec.cell.core :refer :all])
+   #?(:cljs [tiltontec.cell.core :refer-macros [cF with-mx] :refer [c-reset! cI]]
+      :clj [tiltontec.cell.core :refer [c-reset! cF cI with-mx]])
    [tiltontec.cell.evaluate :refer [cget]]))
 
 (defn prn-level-3 [f]

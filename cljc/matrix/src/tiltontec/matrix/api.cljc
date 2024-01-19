@@ -6,14 +6,9 @@
                                with-mx-trace with-minfo with-minfo-std
                                with-integrity]]))
   (:require
-   #?(:cljs [tiltontec.util.base
-             :refer-macros [trx prog1 *trx?* def-rmap-props]
-             :as ubase]
-      :clj  [tiltontec.util.base
-             :as ubase])
-   #?(:cljs [tiltontec.cell.core
-             :refer-macros [c-reset-next!]
-             :refer [make-cell] :as c]
+   #?(:cljs [tiltontec.util.base :as ubase]
+      :clj  [tiltontec.util.base :as ubase])
+   #?(:cljs [tiltontec.cell.core :as c]
       :clj  [tiltontec.cell.core :as c])
    [tiltontec.cell.base :as cb]
    [tiltontec.cell.diagnostic :as diag]

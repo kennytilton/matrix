@@ -1,19 +1,17 @@
 (ns tiltontec.cell.integrity-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
    #?(:cljs [tiltontec.util.base
-             :refer-macros [trx prog1]]
+             :refer-macros [trx]]
       :clj  [tiltontec.util.base
-             :refer :all])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-      :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
-             :refer [*pulse* c-pulse] :as cty])
+             :refer [trx]])
+   #?(:clj  [tiltontec.cell.base :refer [*pulse* c-pulse] :as cty]
+      :cljs [tiltontec.cell.base :refer [*pulse* c-pulse] :as cty])
    #?(:cljs [tiltontec.cell.core
              :refer-macros [cF cF+ c-reset-next! with-mx]
              :refer [c-reset! cI cset!]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core :refer [c-reset! c-reset-next! cF cF+ cI cset! with-mx]])
    [tiltontec.cell.evaluate :refer [cget cget]]
    [tiltontec.matrix.api :refer [fn-watch]]
    [tiltontec.util.core :refer [err]]))
@@ -43,16 +41,16 @@
                      :leave :away
                      :return :home
                      :missing))
-          alarm-speak (cF+ [:watch (fn-watch
-                                    (is (= (cget alarm) (case (cget act)
-                                                          :return :off
-                                                          :leave :on
-                                                          :undefined)))
-                                    (is (= *pulse*
-                                           (c-pulse act)
-                                           (c-pulse loc)
-                                           (c-pulse c))))]
-                           (str "alarm-speak sees act " (cget act)))]
+          _alarm-speak (cF+ [:watch (fn-watch
+                                     (is (= (cget alarm) (case (cget act)
+                                                           :return :off
+                                                           :leave :on
+                                                           :undefined)))
+                                     (is (= *pulse*
+                                            (c-pulse act)
+                                            (c-pulse loc)
+                                            (c-pulse c))))]
+                            (str "alarm-speak sees act " (cget act)))]
       (is (= (cget alarm) :undefined))
       (is (= 1 @*pulse*))
       (is (= (cget loc) :missing))
@@ -77,17 +75,17 @@
                      :leave :away
                      :return :home
                      :missing))
-          alarm-speak (cF+ [:watch (fn-watch
-                                    (trx :alarm-speak (cget act) :sees (cget alarm) (cget loc))
-                                    (is (= (cget alarm) (case (cget act)
-                                                          :return :off
-                                                          :leave :on
-                                                          :undefined)))
-                                    (is (= *pulse*
-                                           (c-pulse act)
-                                           (c-pulse loc)
-                                           (c-pulse c))))]
-                           (str "alarm-speak sees act " (cget act)))]
+          _alarm-speak (cF+ [:watch (fn-watch
+                                     (trx :alarm-speak (cget act) :sees (cget alarm) (cget loc))
+                                     (is (= (cget alarm) (case (cget act)
+                                                           :return :off
+                                                           :leave :on
+                                                           :undefined)))
+                                     (is (= *pulse*
+                                            (c-pulse act)
+                                            (c-pulse loc)
+                                            (c-pulse c))))]
+                            (str "alarm-speak sees act " (cget act)))]
       (is (= (cget alarm) :undefined))
       (is (= 1 @*pulse*))
       (is (= (cget loc) :missing))
@@ -147,7 +145,7 @@
       (is (= 111 (cget d)))
       (is (= 111 (cget e)))
       (println @watchd)
-      (doseq [[k v] @watchd]
+      (doseq [[_k v] @watchd]
         (is (apply = v))))))
 
 (deftest no-prop-no-watch

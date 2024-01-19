@@ -1,11 +1,10 @@
 (ns tiltontec.cell.integrity
+  {:clj-kondo/ignore [:redundant-do]}
   #?(:cljs (:require-macros [tiltontec.cell.integrity
                              :refer [with-integrity with-cc without-integrity with-async-change]]))
   (:require
-   #?(:cljs [tiltontec.util.base
-             :refer-macros [wtrx trx prog1]]
-      :clj  [tiltontec.util.base
-             :refer :all])
+   #?(:cljs [tiltontec.util.base :refer-macros [trx prog1]]
+      :clj  [tiltontec.util.base :refer [prog1 trx]])
    [tiltontec.cell.base
     :refer [*defer-changes* *dp-log* *one-pulse?* *pulse*
             *unfinished-business* *within-integrity* +client-q-handler+
@@ -28,7 +27,7 @@
   (and (c-pulse c)
        (= (c-pulse c) @*pulse*)))
 
-(defn c-pulse-update [c key]
+(defn c-pulse-update [c _key]
   ;(prn :pulse-upd??? @*pulse* key (cinfo c))
   (when-not (c-optimized-away? c)
     (assert (or (nil? (c-pulse c))

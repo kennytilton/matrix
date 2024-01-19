@@ -1,6 +1,6 @@
 (ns tiltontec.cell.diagnostic
   (:require
-   [clojure.set :refer [intersection] :as set]
+   [clojure.set :as set]
    [tiltontec.cell.base :refer [*mx-trace*]]))
 
 (defn ensure-set [x]

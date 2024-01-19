@@ -2,21 +2,22 @@
   (:require
    #?(:clj  [clojure.test :refer :all]
       :cljs [cljs.test
-             :refer-macros [deftest is are]])
+             :refer-macros [deftest is]])
    #?(:cljs [tiltontec.util.base
-             :refer-macros [trx prog1]
+             :refer-macros [trx]
              :refer [*trx?* mx-type?]]
       :clj  [tiltontec.util.base
-             :refer :all])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+             :refer [*trx?* mx-type? trx]])
+   #?(:clj  [tiltontec.cell.base
+             :refer [c-callers c-input? c-model c-prop c-prop-name c-props
+                     c-useds c-valid? c-value-state] :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [with-mx]
              :refer [c-callers c-input? c-model c-prop c-prop-name c-props
                      c-useds c-valid? c-value-state] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-swap! c-reset-next!]
+             :refer-macros [cF cF+ with-mx]
              :refer [c-reset! cI]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core :refer [c-reset! cF cF+ cI with-mx]])
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.matrix.api :refer [fn-watch]]))
 
@@ -130,7 +131,7 @@
   ;;   side effects off the invalid state.
   ;;
   ;; The example is contrived but was contrived to replicate
-  ;; a real dataflow failure that arose in my RoboCup simulation and 
+  ;; a real dataflow failure that arose in my RoboCup simulation and
   ;; prompted Cells 3 and the concept of data integrity.
   ;;
   ;; For the telling story behind the useless prop names :aa, :bb et al
@@ -144,7 +145,7 @@
                  (swap! run empty)
                  (swap! watch empty))
 
-          logit (fn [log key]
+          logit (fn [_log key]
                   (swap! run assoc key
                          (inc (key @run 0))))
 
@@ -153,7 +154,7 @@
           cr (fn [c]
                (cget c))
 
-          podwatch (fn [prop me new old c]
+          podwatch (fn [prop _me _new _old _c]
                      (swap! watch assoc prop
                             (inc (prop @watch 0))))
 
@@ -222,8 +223,8 @@
 
         ; check which rules ran
         ;
-        (= #{:bb :cc :dd :ee}                               ;; but not a7
-           (set (keys @run)))
+        (is (= #{:bb :cc :dd :ee} ;; but not a7
+               (set (keys @run))))
         ;
         ; check those rules ran exactly once
         ;
@@ -234,8 +235,8 @@
 
         ; check which watchs ran
         ;
-        (= #{:aa :bb :cc :dd :ee}
-           (set (keys @watch)))
+        (is (= #{:aa :bb :cc :dd :ee}
+               (set (keys @watch))))
         ;
         ; check those watchs ran exactly once
         ;

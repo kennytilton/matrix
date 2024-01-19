@@ -3,12 +3,12 @@
    [tiltontec.cell.base
     :refer [*pulse* c-model c-prop c-ref? c-value unbound] :as cty]
    [tiltontec.cell.poly :refer [watch] :as poly]
-   [tiltontec.util.core :refer [rmap-setf] :as ucore]))
+   [tiltontec.util.core :as ucore]))
 
 (defn c-watch
   ([c why]
    (c-watch c unbound why))
-  ([c prior-value why]
+  ([c prior-value _why]
    (assert (c-ref? c))
    (assert (integer? @*pulse*))
    (ucore/rmap-setf [:pulse-watched c] @*pulse*)

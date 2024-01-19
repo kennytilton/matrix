@@ -1,10 +1,9 @@
 (ns tiltontec.cell.opti-freeze-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
    #?(:clj  [tiltontec.cell.base :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
              :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty])
    #?(:cljs [tiltontec.cell.core
              :refer-macros [cF cF+ c-swap! cf-freeze with-mx]

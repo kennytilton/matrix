@@ -20,7 +20,7 @@
           (let [ag (client/get "http://example.com"
                                {:async? true}
                          ;; respond callback
-                               (fn [response] (println "response is OK:" #_response))
+                               (fn [_response] (println "response is OK:" #_response))
                          ;; raise callback
                                (fn [exception] (println "exception message is: " (.getMessage exception))))]
             (prn :ag!!!!!!! (future? ag) (type ag))

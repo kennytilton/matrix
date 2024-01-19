@@ -1,7 +1,8 @@
 (ns tiltontec.cell.core
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:clj
-      [tiltontec.cell.integrity :refer :all]
+      [tiltontec.cell.integrity :refer [ufb-add with-integrity]]
       :cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]])
    [clojure.string :as str]
@@ -245,9 +246,10 @@
 
 ;; --- where change and animation begin -------
 
-(defn cset! [c new-value]
+(defn cset!
   "The moral equivalent of a Common Lisp SETF, and indeed
-in the CL version of Cells SETF itself is the change API dunction."
+  in the CL version of Cells SETF itself is the change API dunction."
+  [c new-value]
   (assert c)
   (assert (not (c-async? c)) (str "attempt to cset! cfuture " @c))
 

@@ -1,21 +1,22 @@
 (ns tiltontec.cell.core-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
+      :cljs [cljs.test :refer-macros [deftest is]])
    #?(:cljs [tiltontec.util.base
              :refer [mx-type mx-type?]
-             :refer-macros [trx prog1 *trx?*]]
+             :refer-macros [trx prog1]]
       :clj  [tiltontec.util.base
-             :refer :all])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+             :refer [mx-type mx-type? prog1 trx]])
+   #?(:clj  [tiltontec.cell.base
+             :refer [c-callers c-input? c-model c-optimize c-prop c-prop-name
+                     c-ref? c-rule c-useds c-valid? c-value c-value-state
+                     unbound] :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [with-mx]
              :refer [c-callers c-input? c-model c-optimize c-prop c-prop-name
                      c-ref? c-rule c-useds c-valid? c-value c-value-state
                      unbound] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ cFonce cFn]
+             :refer-macros [cF cF+ cFonce cFn with-mx]
              :refer [c-reset! cI make-cell]]
       :clj  [tiltontec.cell.core
              :refer [c-reset! cF cF+ cFn cFonce cI make-cell with-mx]])
@@ -124,6 +125,7 @@
       (is (= 1 @crun @cwatch))
       (is (nil? (:value @b)))
 
+      #_{:clj-kondo/ignore [:redundant-do]}
       (do
         (c-reset! b "Mom")
         (is (= "Hi Mom" (cget c)))
@@ -132,10 +134,11 @@
         (is (nil? (c-value b)))
         (is (nil? (:value @b))))
 
+      #_{:clj-kondo/ignore [:redundant-do]}
       (do
         (c-reset! b "Mom")
         (is (= "Hi Mom" (cget c)))
-        (is (= 3 @boct))                                    ;; b as eph reverts to nil, so "Mom" was new again
+        (is (= 3 @boct)) ;; b as eph reverts to nil, so "Mom" was new again
         (is (= 3 @crun))
         (is (= 2 @cwatch))
         (is (nil? (c-value b)))

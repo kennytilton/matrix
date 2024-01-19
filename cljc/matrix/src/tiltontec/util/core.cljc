@@ -1,9 +1,9 @@
 (ns tiltontec.util.core
   (:require
    #?(:cljs [tiltontec.util.base :as utm
-             :refer-macros [prog1 b-when wtrx]]
+             :refer-macros [wtrx]]
       :clj  [tiltontec.util.base :as utm
-             :refer :all])
+             :refer [wtrx]])
    [clojure.string :as str]))
 
 (defn type-of [x] (type x))
@@ -87,7 +87,7 @@
 ;; --- error handling -----------------
 
 ;; todo lose this altogether
-(defmulti err (fn [a1 & args] (fn? a1)))
+(defmulti err (fn [a1 & _args] (fn? a1)))
 
 (defmethod err true [fn & mas]
   (err (apply fn mas)))
@@ -157,7 +157,7 @@
   (locking *out*
     (println (str/join " " args))))
 
-(defn xpln [& args])
+(defn xpln [& _args])
 
 (defn eko [key value]
   (pln :eko!!! key value)
@@ -199,5 +199,3 @@
     (countit (list :a :b) 3)
     (countit :x 2)
     (countit :y [1 2 3 4]))
-
-

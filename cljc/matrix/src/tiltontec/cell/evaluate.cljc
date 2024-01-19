@@ -1,14 +1,12 @@
 (ns tiltontec.cell.evaluate
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
    #?(:cljs [tiltontec.cell.integrity
              :refer-macros [with-integrity]
              :refer [c-current? c-pulse-update]]
-      :clj  [tiltontec.cell.integrity :refer :all])
-   #?(:cljs [tiltontec.util.base
-             :refer [mx-type]
-             :refer-macros [wtrx trx prog1]]
-      :clj  [tiltontec.util.base
-             :refer :all])
+      :clj  [tiltontec.cell.integrity :refer [c-current? c-pulse-update with-integrity]])
+   #?(:cljs [tiltontec.util.base :refer [mx-type] :refer-macros [trx prog1]]
+      :clj  [tiltontec.util.base :refer [mx-type prog1 trx]])
    [clojure.set :refer [difference]]
    [clojure.string :as str]
    [tiltontec.cell.base
@@ -52,7 +50,7 @@
   graph to decide if we are current, and if not kick off recalculation
   and propagation."
 
-  [c debug-id ensurer]
+  [c _debug-id ensurer]
 
   (cond
     ; --------------------------------------------------
@@ -83,7 +81,7 @@
     (c-value c)
 
     ;; --- above we had valid values so did not care. now... -------
-    (when-let [md (c-model c)]
+    (when-let [_md (c-model c)]
       (mdead? (c-model c)))
     (err #?(:clj format :cljs str) "evic> model %s of cell %s is dead" (c-model c) c)
 
@@ -98,6 +96,7 @@
                   (> last-changed (c-pulse c)))
                 (recur urest)))))
     (let [dbg? (c-debug? c)]
+      #_{:clj-kondo/ignore [:redundant-let]}
       (let [calc-val (when-not (c-current? c)
                        ;; Q: how can it be current after above checks indicating not current?
                        ;; A: if dependent changed during above loop over used and its watch read/updated me
@@ -170,7 +169,7 @@
 
 (defn calculate-and-set
   "Calculate, link, record, and propagate."
-  [c dbgid dbgdata]
+  [c dbgid _dbgdata]
   (do                                                       ;; (wtrx [0 20 :cnset-entry (c-prop c)]
     (let [[raw-value propagation-code] (calculate-and-link c)]
       (cdbg c :post-cnlink-sees!!!! dbgid :opti (c-optimized-away? c) :prop (c-prop c) raw-value propagation-code)
@@ -228,7 +227,7 @@
   ;(when (some #{c} ))
   ;(prn :cnlink-entry c (count *call-stack*) (some #{c} *call-stack*))
   (when (some #{c} *call-stack*)
-    (let [me (c-model c)
+    (let [_me (c-model c)
           prop (c-prop-name c)]
       (err str
            "MXAPI_COMPUTE_CYCLE_DETECTED> cyclic dependency detected while computing prop '"
@@ -351,8 +350,8 @@
 
           ; we optimize here because even if unchanged we may not have c-useds,
           ; now that, with the :freeze option, we are doing "late" optimize-away
-              (when-let [optimize (and (c-formula? c)
-                                       (c-optimize c))]
+              (when-let [_optimize (and (c-formula? c)
+                                        (c-optimize c))]
                 (optimize-away?! c prior-value)
                 (when dbg?
                   (prn :post-opti-c!!!!!!!!!-at-ceee @c :cref (c-ref? c) :meta (meta c) :metamxty (:mx-type (meta c))
@@ -389,13 +388,13 @@
                           [(c-prop c) :val (c-value c) :pulse (c-pulse-watched c)]))))
 
 ;; --- optimize away ------------------------------------------
-;; optimizing away cells who turn out not to depend on anyone 
+;; optimizing away cells who turn out not to depend on anyone
 ;; saves a lot of work at runtime.
 
 (defn optimize-away?!
-  "Optimizes away cells who turn out not to depend on anyone, 
+  "Optimizes away cells who turn out not to depend on anyone,
   saving a lot of work at runtime. A caller/user will not bother
-  establishing a link, and when we get to models cget will 
+  establishing a link, and when we get to models cget will
   find a non-cell in a prop and Just Use It."
   [c prior-value]
   (let [dbg? (c-debug? c)]
@@ -476,7 +475,7 @@
   - notifies its callers of its change;
   - calls any watch; and
   - if ephemeral, silently reverts to nil."
-  ;; /do/ support other values besides nil as the "resting" value 
+  ;; /do/ support other values besides nil as the "resting" value
 
   [c prior-value callers]
   ;;(prn :propagate (cinfo c))
