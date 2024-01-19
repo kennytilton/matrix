@@ -10,14 +10,15 @@
              :refer :all])
    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
+             :refer-macros [with-mx]
              :refer [c-callers c-input? c-model c-optimize c-prop c-prop-name
                      c-ref? c-rule c-useds c-valid? c-value c-value-state
                      unbound] :as cty])
    #?(:cljs [tiltontec.cell.core
              :refer-macros [cF cF+ cFonce cFn]
              :refer [c-reset! cI make-cell]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core
+             :refer [c-reset! cF cF+ cFn cFonce cI make-cell with-mx]])
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.cell.poly :refer [c-awaken]]
    [tiltontec.matrix.api :refer [fn-watch]]))
@@ -76,7 +77,7 @@
 
 (deftest t-cF+
   (with-mx
-    (let [c (cF+ (:optimize false :prop :bingo)
+    (let [c (cF+ [:optimize false :prop :bingo]
                  (trx nil :cool)
                  (+ 40 2))]
       (is (c-ref? c))
@@ -190,5 +191,3 @@
 
 #?(:cljs (do
            (cljs.test/run-tests)))
-
-

@@ -2,12 +2,11 @@
   ;;#?(:cljs (:import [goog.net XhrIo]))
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test :refer-macros [deftest is are]])
-   #?(:clj
-      [tiltontec.cell.synapse :refer :all]
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
+   #?(:clj [tiltontec.cell.synapse :refer [with-synapse]]
       :cljs [tiltontec.cell.synapse :refer-macros [with-synapse]])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c_F cF_]
+             :refer-macros [cF cF+ c_F cF_ with-mx]
              :refer [c-reset! cI]]
       :clj
       [tiltontec.cell.core :refer :all])
@@ -73,7 +72,7 @@
                        (reset! syn-runs 0)
                        (reset! alarm-runs 0))
           x (cI nil)
-          alarm (cF (when-let [d (with-synapse (:delta-x [prior (atom nil)])
+          alarm (cF (when-let [d (with-synapse [:delta-x [prior (atom nil)]]
                                    (when-let [x (cget x)]
                                      (swap! syn-runs inc)
                                      (let [delta (Math/abs (if @prior

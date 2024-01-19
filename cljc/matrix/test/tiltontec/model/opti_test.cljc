@@ -11,7 +11,7 @@
    #?(:clj  [tiltontec.model.core :refer :all :as md]
       :cljs [tiltontec.model.core
              :refer-macros [cFkids the-kids mdv!]
-             :refer [make mget]
+             :refer [make mget mswap!]
              :as md])
    [tiltontec.matrix.api :refer [cF cf-freeze with-mx]]))
 

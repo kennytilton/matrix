@@ -1,8 +1,7 @@
 (ns tiltontec.cell.integrity-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
+      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
    #?(:cljs [tiltontec.util.base
              :refer-macros [trx prog1]]
       :clj  [tiltontec.util.base
@@ -12,7 +11,7 @@
              :refer-macros [without-c-dependency]
              :refer [*pulse* c-pulse] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next!]
+             :refer-macros [cF cF+ c-reset-next! with-mx]
              :refer [c-reset! cI cset!]]
       :clj  [tiltontec.cell.core :refer :all])
    [tiltontec.cell.evaluate :refer [cget cget]]

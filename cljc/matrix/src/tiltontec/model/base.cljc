@@ -1,14 +1,12 @@
 (ns tiltontec.model.base
   (:require
-   #?(:clj  [clojure.test :refer :all]
-      :cljs)
+   #?(:clj  [clojure.test :refer :all])
    #?(:cljs [tiltontec.util.base
              :refer-macros [trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
-      :clj  [tiltontec.util.base :refer :all])
+      :clj [tiltontec.util.base :refer [def-rmap-meta-props def-rmap-props]])
    [tiltontec.cell.base
     :refer [c-input? c-ref? c-value md-state unbound] :as cty]
-   [tiltontec.cell.poly :refer [md-awaken-before watch]]
-   [tiltontec.cell.poly :refer [c-awaken]]
+   [tiltontec.cell.poly :refer [c-awaken md-awaken-before watch]]
    [tiltontec.util.core :refer [rmap-meta-setf rmap-setf]]))
 
 (def-rmap-props md-
@@ -65,9 +63,3 @@
         :else (c-awaken c))))
   (rmap-meta-setf [::cty/state me] :awake)
   me)
-
-
-
-
-
-

@@ -10,7 +10,7 @@
              :refer :all])
    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
       :cljs [tiltontec.cell.base
-             :refer-macros [without-c-dependency]
+             :refer-macros [with-mx]
              :refer [c-callers c-input? c-model c-prop c-prop-name c-props
                      c-useds c-valid? c-value-state] :as cty])
    #?(:cljs [tiltontec.cell.core

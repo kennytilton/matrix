@@ -13,10 +13,10 @@
              :refer-macros [without-c-dependency]
              :refer [md-ref?] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn with-mx]
              :refer [cI]]
-      :clj  [tiltontec.cell.core :refer :all])
-   #?(:clj  [tiltontec.model.core :refer :all :as md]
+      :clj  [tiltontec.cell.core :refer [cF cI with-mx]])
+   #?(:clj  [tiltontec.model.core :refer [mdv! mget mset! the-kids] :as md]
       :cljs [tiltontec.model.core
              :refer-macros [the-kids mdv!]
              :refer [make mget mset!]

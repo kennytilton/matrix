@@ -1,12 +1,11 @@
 (ns tiltontec.cell.hello-cells-test
   (:require
    #?(:clj [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
+      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
    #?(:cljs [tiltontec.util.base
              :refer-macros [trx prog1 *trx?*]]
       :clj  [tiltontec.util.base
-             :refer :all])
+             :refer [trx]])
    #?(:clj [tiltontec.cell.base :refer :all :as cty]
       :cljs [tiltontec.cell.base
              :refer-macros [without-c-dependency]

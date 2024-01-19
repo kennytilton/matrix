@@ -1,14 +1,14 @@
 (ns tiltontec.util.core-test
   (:require
    #?(:cljs [cljs.test
-             :refer-macros [deftest is are run-all-tests]]
+             :refer-macros [deftest is are use-fixtures]]
       :clj [clojure.test :refer :all])
    #?(:cljs [tiltontec.util.base :as utm
              :refer [*trxdepth*]
              :refer-macros [wtrx trx prog1 b-when unless
                             def-rmap-props]]
       :clj [tiltontec.util.base :as utm
-            :refer :all])
+            :refer [*trxdepth* def-rmap-props trx wtrx]])
    #?(:cljs [tiltontec.util.core
              :refer [any-ref? cl-find err fifo-add fifo-data fifo-empty?
                      fifo-peek fifo-pop ia-ref make-fifo-queue rmap-setf

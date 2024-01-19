@@ -377,7 +377,7 @@
   [me id-name]
   (or (mxu-find-name me id-name)
       (mxu-find-id me id-name)
-      (throw (str "fmo> not id or name " id-name))))
+      (throw (ex-info (str "fmo> not id or name " id-name) {:id-name id-name}))))
 
 (defn fmov
   "Use 'fmo' and extract :value (or prop indicated by :prop-name)"
@@ -387,7 +387,7 @@
    (when-let [mx (fmo me id-name)]
      (if (contains? @mx prop-name)
        (mget mx prop-name)
-       (throw (str "fmov> " id-name " lacks " prop-name " property"))))))
+       (throw (ex-info (str "fmov> " id-name " lacks " prop-name " property") {:id-name id-name :prop-name prop-name}))))))
 
 (defmacro the-kids
   "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"

@@ -1,16 +1,15 @@
 (ns tiltontec.cell.opti-freeze-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
-   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+      :cljs [cljs.test :refer-macros [deftest is are use-fixtures]])
+   #?(:clj  [tiltontec.cell.base :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty]
       :cljs [tiltontec.cell.base
              :refer-macros [without-c-dependency]
-             :refer [c-callers c-optimized-away? c-useds] :as cty])
+             :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-swap! c-reset-next!]
+             :refer-macros [cF cF+ c-swap! cf-freeze with-mx]
              :refer [c-reset! cI]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core :refer [c-reset! c-swap! cF cF+ cf-freeze cI with-mx]])
    [tiltontec.cell.evaluate :refer [cget]]))
 
 (defn prn-level-3 [f]

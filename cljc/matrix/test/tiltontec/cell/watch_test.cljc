@@ -12,9 +12,10 @@
       :cljs [tiltontec.cell.base
              :refer-macros [without-c-dependency]
              :refer [c-callers c-input? c-model c-prop c-prop-name c-useds
-                     c-valid? c-value-state] :as cty])
+                     c-valid? c-value-state cI] :as cty])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+]]
+             :refer-macros [cF cF+ with-mx]
+             :refer [c-reset!]]
       :clj  [tiltontec.cell.core :refer :all])
    [tiltontec.cell.evaluate :refer [cget]]
    [tiltontec.matrix.api :refer [fn-watch]]))

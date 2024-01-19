@@ -1,13 +1,12 @@
 (ns tiltontec.model.core-test
   (:require
    #?(:clj  [clojure.test :refer :all]
-      :cljs [cljs.test
-             :refer-macros [deftest is are]])
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
    #?(:cljs [tiltontec.util.base
              :refer [mx-type?]
              :refer-macros [trx prog1 *trx?*]]
       :clj  [tiltontec.util.base
-             :refer :all])
+             :refer [mx-type? trx]])
    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
       :cljs [tiltontec.cell.base
              :refer-macros [without-c-dependency]
@@ -16,9 +15,9 @@
              :refer-macros [with-integrity with-cc]]
       :clj  [tiltontec.cell.integrity :refer [with-cc with-integrity]])
    #?(:cljs [tiltontec.cell.core
-             :refer-macros [cF cF+ c-reset-next! cFonce cFn]
+             :refer-macros [cF cF+ c-reset-next! cFonce cFn with-mx]
              :refer [c-reset! cI]]
-      :clj  [tiltontec.cell.core :refer :all])
+      :clj  [tiltontec.cell.core :refer [c-reset! cF cF+ cI with-mx]])
    #?(:clj  [tiltontec.model.core
              :refer [cFkids fm! fm-navig make md-name mdv! the-kids] :as md]
       :cljs [tiltontec.model.core
@@ -27,8 +26,7 @@
              :as md])
    [clojure.string :as str]
    [tiltontec.cell.poly :refer [md-quiesce]]
-   [tiltontec.matrix.api :refer [fn-watch mswap!]]
-   [tiltontec.matrix.api :refer [mget mset!] :as mx]
+   [tiltontec.matrix.api :refer [fn-watch mget mset! mswap!]]
    [tiltontec.model.base :refer [md-cell md-cz]]))
 
 (defn prn-level-3 [f]
