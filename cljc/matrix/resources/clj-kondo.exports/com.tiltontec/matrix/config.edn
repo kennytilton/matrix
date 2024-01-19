@@ -1,0 +1,43 @@
+{:hooks {:macroexpand
+         {tiltontec.util.base/def-rmap-props hooks.tiltontec.util.base/def-rmap-props
+          tiltontec.util.base/def-rmap-meta-props hooks.tiltontec.util.base/def-rmap-meta-props
+          tiltontec.util.base/wtrx hooks.tiltontec.util.base/wtrx
+          tiltontec.util.base/b-when hooks.tiltontec.util.base/b-when
+          tiltontec.util.base/trx hooks.tiltontec.util.base/trx
+
+          tiltontec.model.core/def-mget hooks.tiltontec.model.core/def-mget
+
+          tiltontec.cell.core/cF hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cF+ hooks.tiltontec.cell.core/c-f+
+          tiltontec.cell.core/cFn hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cF+n hooks.tiltontec.cell.core/c-f+
+          tiltontec.cell.core/c_Fn hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cFn-dbg hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cFn-until hooks.tiltontec.cell.core/c-f+
+          tiltontec.cell.core/cFonce hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/c_1 hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cF1 hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cFdbg hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/cF_ hooks.tiltontec.cell.core/c-f+
+          tiltontec.cell.core/c_F hooks.tiltontec.cell.core/c-f+
+          tiltontec.cell.core/c_Fdbg hooks.tiltontec.cell.core/c-f
+          tiltontec.cell.core/c-formula hooks.tiltontec.cell.core/c-f+
+
+          tiltontec.cell.synapse/with-synapse hooks.tiltontec.cell.synapse/with-synapse
+          tiltontec.cell.synapse/cSyn hooks.tiltontec.cell.synapse/cSyn
+
+          tiltontec.matrix.api/fn-watch hooks.tiltontec.matrix.api/fn-watch
+
+          tiltontec.matrix.api/cF hooks.tiltontec.cell.core/c-f
+          tiltontec.matrix.api/cFonce hooks.tiltontec.cell.core/c-f
+          tiltontec.matrix.api/cF+ hooks.tiltontec.cell.core/c-f+}}
+ :linters {:clojure-lsp/unused-public-var {:exclude #{tiltontec.cell.base
+                                                      tiltontec.cell.core
+                                                      tiltontec.cell.evaluate
+                                                      tiltontec.cell.integrity
+                                                      tiltontec.cell.synapse
+                                                      tiltontec.matrix.api
+                                                      tiltontec.model.base
+                                                      tiltontec.model.core
+                                                      tiltontec.util.base
+                                                      tiltontec.util.core}}}}
