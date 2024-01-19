@@ -18,3 +18,8 @@ cljs/archive
 **/.clojuredart
 **/cljd-out
 
+.clj-kondo
+!.clj-kondo/config.edn
+.lsp
+!.lsp/config.edn
+.cpcache
