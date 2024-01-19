@@ -48,9 +48,8 @@
       (apply call-trc trxargs)
       (> *trxdepth* hi)
       (throw (#?(:cljs js/Error. :clj Exception.)
-               (str "wtrx exceeded max depth " hi ":"
-                 (apply call-trc$ (first trxargs)
-                   (rest trxargs))))))
+              (str "wtrx exceeded max depth " hi ":"
+                   (call-trc$ (first trxargs) (rest trxargs))))))
     (fn)))
 
 (defmacro wtrx [[lo hi & trxargs] & body]
