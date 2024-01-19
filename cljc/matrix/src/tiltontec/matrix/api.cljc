@@ -22,7 +22,7 @@
     [tiltontec.model.core :as md]))
 
 (defn prx [tag & bits]
-  (apply ubase/prx tag bits))sun
+  (apply ubase/prx tag bits))
 
 (defn any-ref? [it]
   (ucore/any-ref? it))
