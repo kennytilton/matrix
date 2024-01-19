@@ -1,26 +1,21 @@
 (ns tiltontec.cell.synapse
   (:require
-    [tiltontec.util.core :refer [pln rmap-setf]]
-    #?(:clj
-    [tiltontec.cell.base :refer :all]
-       :cljs [tiltontec.cell.base
+   #?(:clj
+      [tiltontec.cell.base :refer :all]
+      :cljs [tiltontec.cell.base
               ;;:refer-macros [without-c-dependency]
-              :refer [*depender* c-synapses c-prop c-useds dependency-record]])
-    #?(:clj
-    [tiltontec.cell.integrity :refer :all]
-       :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]])
-
-    [tiltontec.cell.evaluate :refer [ cget c-value-assume
-                                      ensure-value-is-current]]
-
-    #?(:clj
-    [tiltontec.cell.core :refer :all]
-       :cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c_F cF_]
-              :refer [cI c-reset! make-c-formula]])
-
-    [tiltontec.cell.poly :refer [md-quiesce]]))
+             :refer [*depender* c-synapses dependency-record]])
+   #?(:clj
+      [tiltontec.cell.integrity :refer :all]
+      :cljs [tiltontec.cell.integrity
+             :refer-macros [with-integrity]])
+   #?(:clj
+      [tiltontec.cell.core :refer :all]
+      :cljs [tiltontec.cell.core
+             :refer-macros [cF cF+ c_F cF_]
+             :refer [make-c-formula]])
+   [tiltontec.cell.evaluate :refer [ensure-value-is-current]]
+   [tiltontec.util.core :refer [rmap-setf]]))
 
 (defn- really? []
   true)
@@ -39,12 +34,12 @@
                             (let [~@closure-bindings]
                               ;; (println :making-syn!? (:prop @*depender*))
                               (make-c-formula
-                                :model (:model @*depender*)
-                                :prop ~synapse-id
-                                :synapse-id ~synapse-id
-                                :code '~body
-                                :synaptic? true
-                                :rule (c-fn ~@body)))]
+                               :model (:model @*depender*)
+                               :prop ~synapse-id
+                               :synapse-id ~synapse-id
+                               :code '~body
+                               :synaptic? true
+                               :rule (c-fn ~@body)))]
                         ;;(println :built-synapse!!!!!!!!!!!!!!!! ~synapse-id @new-syn#)
                         (rmap-setf [:synapses *depender*]
                                    (conj (c-synapses *depender*) new-syn#))
@@ -78,7 +73,7 @@
 
 (defmacro cSyn [[synapse-id [& closure-bindings]] & body]
   `(call-with-synapse ~synapse-id #(let [~@closure-bindings]
-                                    (make-c-formula
+                                     (make-c-formula
                                       :model (c-model *depender*)
                                       :prop ~synapse-id
                                       :synapse-id ~synapse-id

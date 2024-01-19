@@ -1,49 +1,17 @@
 (ns tiltontec.cell.synapse-test
   ;;#?(:cljs (:import [goog.net XhrIo]))
   (:require
-    #?(:clj  [clojure.test :refer :all]
-       :cljs [cljs.test :refer-macros [deftest is are]])
-    #?(:cljs [tiltontec.util.base :refer-macros [trx prog1]]
-       :clj
-       [tiltontec.util.base :refer :all])
-
-    [tiltontec.util.core :refer [rmap-setf]]
-
-    #?(:clj
-       [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input? cells-init
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes* unbound
-                      c-rule c-me c-value-state c-callers caller-ensure
-                      *causation*
-                      c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-prop
-                      *depender*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj
-       [tiltontec.cell.integrity :refer [with-integrity]])
-
-    [tiltontec.cell.evaluate :refer [cget]]
-    [tiltontec.matrix.api :refer [fn-watch]]
-
-    #?(:clj
-       [tiltontec.cell.synapse :refer :all]
-       :cljs [tiltontec.cell.synapse :refer-macros [with-synapse]])
-
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c_F cF_]
-              :refer [cI c-reset! make-c-formula]]
-       :clj
-       [tiltontec.cell.core :refer :all])
-
-    ))
+   #?(:clj  [clojure.test :refer :all]
+      :cljs [cljs.test :refer-macros [deftest is are]])
+   #?(:clj
+      [tiltontec.cell.synapse :refer :all]
+      :cljs [tiltontec.cell.synapse :refer-macros [with-synapse]])
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [cF cF+ c_F cF_]
+             :refer [c-reset! cI]]
+      :clj
+      [tiltontec.cell.core :refer :all])
+   [tiltontec.cell.evaluate :refer [cget]]))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))
@@ -63,10 +31,10 @@
                       @prior))))
           z-runs (atom 0)
           z (cF
-              (when-let [y (cget y)]
-                (swap! z-runs inc)
-                (assert (even? y)))
-              y)]
+             (when-let [y (cget y)]
+               (swap! z-runs inc)
+               (assert (even? y)))
+             y)]
       (println :warm-up (cget z))
       (doseq [n (range max)]
         (c-reset! x n))
@@ -156,8 +124,8 @@
                                              (swap! syn-runs inc)
                                              (cond
                                                (or (nil? @reported)
-                                                 (>= (Math/abs (- x @reported))
-                                                   sensitivity))
+                                                   (>= (Math/abs (- x @reported))
+                                                       sensitivity))
                                                (do (reset! reported x)
                                                    ^{:propagate true} [x])
 

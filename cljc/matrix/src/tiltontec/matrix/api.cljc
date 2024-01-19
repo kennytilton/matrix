@@ -6,20 +6,19 @@
                                with-mx-trace with-minfo with-minfo-std
                                with-integrity]]))
   (:require
-    #?(:cljs [tiltontec.util.base
-              :refer-macros [trx prog1 *trx?* def-rmap-props]
-              :as ubase]
-       :clj  [tiltontec.util.base
-              :as ubase])
-    [tiltontec.util.core :as ucore]
-    ;[tiltontec.cell.diagnostic :refer ]
-    [tiltontec.cell.base :as cb]
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [c-reset-next!]
-              :refer [c-reset! make-cell] :as c]
-       :clj  [tiltontec.cell.core :as c])
-    [tiltontec.cell.diagnostic :as diag]
-    [tiltontec.model.core :as md]))
+   #?(:cljs [tiltontec.util.base
+             :refer-macros [trx prog1 *trx?* def-rmap-props]
+             :as ubase]
+      :clj  [tiltontec.util.base
+             :as ubase])
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [c-reset-next!]
+             :refer [make-cell] :as c]
+      :clj  [tiltontec.cell.core :as c])
+   [tiltontec.cell.base :as cb]
+   [tiltontec.cell.diagnostic :as diag]
+   [tiltontec.model.core :as md]
+   [tiltontec.util.core :as ucore]))
 
 (defn prx [tag & bits]
   (apply ubase/prx tag bits))
@@ -40,7 +39,7 @@
 
 (defmacro with-mx [& body]
   `(tiltontec.cell.core/call-with-mx
-     (fn [] ~@body)))
+    (fn [] ~@body)))
 
 ;;;
 (defn md-name [me]
@@ -127,39 +126,39 @@ call parameters: prop, me, new, old, and c."
 
 (defn cI [value & option-kvs]
   (apply tiltontec.cell.core/make-cell
-    :value value
-    :input? true
-    option-kvs))
+         :value value
+         :input? true
+         option-kvs))
 
 (defmacro cF [& body]
   `(tiltontec.cell.core/make-c-formula
-     :code '~body
-     :rule (tiltontec.cell.core/c-fn ~@body)))
+    :code '~body
+    :rule (tiltontec.cell.core/c-fn ~@body)))
 
 (defmacro cF+ [[& options] & body]
   `(tiltontec.cell.core/make-c-formula
-     ~@options
-     :code '~body
-     :rule (tiltontec.cell.core/c-fn ~@body)))
+    ~@options
+    :code '~body
+    :rule (tiltontec.cell.core/c-fn ~@body)))
 
 (defmacro cFn [& body]
   `(tiltontec.cell.core/make-c-formula
-     :code '(tiltontec.cell.base/without-c-dependency ~@body)
-     :input? true
-     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
+    :code '(tiltontec.cell.base/without-c-dependency ~@body)
+    :input? true
+    :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cF+n [[& options] & body]
   `(tiltontec.cell.core/make-c-formula
-     ~@options
-     :code '(tiltontec.cell.base/without-c-dependency ~@body)
-     :input? true
-     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
+    ~@options
+    :code '(tiltontec.cell.base/without-c-dependency ~@body)
+    :input? true
+    :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cFonce [& body]
   `(tiltontec.cell.core/make-c-formula
-     :code '(tiltontec.cell.base/without-c-dependency ~@body)
-     :input? nil
-     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
+    :code '(tiltontec.cell.base/without-c-dependency ~@body)
+    :input? nil
+    :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro cF1 [& body]
   `(tiltontec.cell.core/cFonce ~@body))
@@ -187,10 +186,10 @@ call parameters: prop, me, new, old, and c."
 
 (defmacro with-integrity [[opcode info] & body]
   `(tiltontec.cell.integrity/call-with-integrity
-     ~opcode
-     ~info
-     (fn [~'opcode ~'defer-info]
-       ~@body)))
+    ~opcode
+    ~info
+    (fn [~'opcode ~'defer-info]
+      ~@body)))
 
 (defmacro with-cc [id & body]
   `(tiltontec.cell.integrity/with-integrity (:change ~id)
@@ -214,7 +213,7 @@ call parameters: prop, me, new, old, and c."
   (let [me-ref (or me 'me)]
     `(let [name# ~name]
        (tiltontec.model.core/fm-navig #(= name# (tiltontec.model.core/mget? % :name))
-         ~me-ref :me? false :up? true :inside? false))))
+                                      ~me-ref :me? false :up? true :inside? false))))
 
 (defn fm!
   "Search matrix ascendents and descendents from node 'where', for 'what', throwing an error when not found"
@@ -257,8 +256,6 @@ call parameters: prop, me, new, old, and c."
 (defmacro with-minfo-std [& body]
   `(binding [cb/*mx-minfo* nil]
      ~@body))
-
-
 
 (defn minfo [me]
   (cb/minfo me))

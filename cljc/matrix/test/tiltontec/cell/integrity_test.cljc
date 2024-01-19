@@ -1,38 +1,23 @@
 (ns tiltontec.cell.integrity-test
   (:require
-    #?(:clj  [clojure.test :refer :all]
-       :cljs [cljs.test
-              :refer-macros [deftest is are]])
-    #?(:cljs [tiltontec.util.base
-              :refer-macros [trx prog1]]
-       :clj  [tiltontec.util.base
-              :refer :all])
-    [tiltontec.util.core :refer [type-of err]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes*
-                      c-rule c-me c-value-state c-callers caller-ensure
-                      unlink-from-callers *causation*
-                      c-prop-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-prop
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    [tiltontec.cell.evaluate :refer [cget cget]]
-    [tiltontec.matrix.api :refer [fn-watch]]
-
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-reset-next!]
-              :refer [cI c-reset! cset!]]
-       :clj  [tiltontec.cell.core :refer :all])
-    ))
+   #?(:clj  [clojure.test :refer :all]
+      :cljs [cljs.test
+             :refer-macros [deftest is are]])
+   #?(:cljs [tiltontec.util.base
+             :refer-macros [trx prog1]]
+      :clj  [tiltontec.util.base
+             :refer :all])
+   #?(:clj  [tiltontec.cell.base :refer :all :as cty]
+      :cljs [tiltontec.cell.base
+             :refer-macros [without-c-dependency]
+             :refer [*pulse* c-pulse] :as cty])
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [cF cF+ c-reset-next!]
+             :refer [c-reset! cI cset!]]
+      :clj  [tiltontec.cell.core :refer :all])
+   [tiltontec.cell.evaluate :refer [cget cget]]
+   [tiltontec.matrix.api :refer [fn-watch]]
+   [tiltontec.util.core :refer [err]]))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))
@@ -48,27 +33,27 @@
     (let [alarm (cI :undefined :watch (watchdbg))
           act (cI nil :watch (watchdbg))
           loc (cF+ [:watch (fn-watch
-                           (when-not (= new :missing)
-                             (assert (= @*pulse* 2))
-                             (c-reset-next! alarm
-                               (case new
-                                 :home :off
-                                 :away :on
-                                 (err #?(:clj format :cljs str) "unexpected loc %s" new)))))]
-                (case (cget act)
-                  :leave :away
-                  :return :home
-                  :missing))
+                            (when-not (= new :missing)
+                              (assert (= @*pulse* 2))
+                              (c-reset-next! alarm
+                                             (case new
+                                               :home :off
+                                               :away :on
+                                               (err #?(:clj format :cljs str) "unexpected loc %s" new)))))]
+                   (case (cget act)
+                     :leave :away
+                     :return :home
+                     :missing))
           alarm-speak (cF+ [:watch (fn-watch
-                                   (is (= (cget alarm) (case (cget act)
+                                    (is (= (cget alarm) (case (cget act)
                                                           :return :off
                                                           :leave :on
                                                           :undefined)))
-                                   (is (= *pulse*
-                                         (c-pulse act)
-                                         (c-pulse loc)
-                                         (c-pulse c))))]
-                        (str "alarm-speak sees act " (cget act)))]
+                                    (is (= *pulse*
+                                           (c-pulse act)
+                                           (c-pulse loc)
+                                           (c-pulse c))))]
+                           (str "alarm-speak sees act " (cget act)))]
       (is (= (cget alarm) :undefined))
       (is (= 1 @*pulse*))
       (is (= (cget loc) :missing))
@@ -79,32 +64,31 @@
 
 ;; -----------------------------------------------------------------
 
-
 (deftest watch-setf-bad-caught
   (with-mx
     (let [alarm (cI :undefined :watch (watchdbg))
           act (cI nil :watch (watchdbg))
           loc (cF+ [:watch (fn-watch
-                           (when-not (= new :missing)
-                             (c-reset-next! alarm (case new
-                                                    :home :off
-                                                    :away :on
-                                                    (err #?(:clj format :cljs str) "unexpected loc %s" new)))))]
-                (case (cget act)
-                  :leave :away
-                  :return :home
-                  :missing))
+                            (when-not (= new :missing)
+                              (c-reset-next! alarm (case new
+                                                     :home :off
+                                                     :away :on
+                                                     (err #?(:clj format :cljs str) "unexpected loc %s" new)))))]
+                   (case (cget act)
+                     :leave :away
+                     :return :home
+                     :missing))
           alarm-speak (cF+ [:watch (fn-watch
-                                   (trx :alarm-speak (cget act) :sees (cget alarm) (cget loc))
-                                   (is (= (cget alarm) (case (cget act)
+                                    (trx :alarm-speak (cget act) :sees (cget alarm) (cget loc))
+                                    (is (= (cget alarm) (case (cget act)
                                                           :return :off
                                                           :leave :on
                                                           :undefined)))
-                                   (is (= *pulse*
-                                         (c-pulse act)
-                                         (c-pulse loc)
-                                         (c-pulse c))))]
-                        (str "alarm-speak sees act " (cget act)))]
+                                    (is (= *pulse*
+                                           (c-pulse act)
+                                           (c-pulse loc)
+                                           (c-pulse c))))]
+                           (str "alarm-speak sees act " (cget act)))]
       (is (= (cget alarm) :undefined))
       (is (= 1 @*pulse*))
       (is (= (cget loc) :missing))
@@ -117,10 +101,10 @@
     (let [sia (cI 0)
           rsic (atom false)
           sic (cF (reset! rsic true)
-                (+ 42 (cget sia)))
+                  (+ 42 (cget sia)))
           fsia #(cget sia)
           sib (cF (or (+ 1 (fsia))
-                    (cget sic)))]
+                      (cget sic)))]
       (is (= (cget sib) 1))
       (is (= (:useds @sib) #{sia}))
       (is (not @rsic))
@@ -138,23 +122,22 @@
     (let [watch (atom nil)
           watchd (atom {})
           watchr (fn [tag]
-                 (fn-watch (let [o (apply concat
-                                   (sort-by first
-                                     (for [[k v] @watch]
-                                       [k (cget v)])))]
-                           (swap! watchd update-in [(cget (:a @watch))] conj o)
-                           (println :tag tag :a (cget (:a @watch)))
-                           (println :tag tag :sees o))))
+                   (fn-watch (let [o (apply concat
+                                            (sort-by first
+                                                     (for [[k v] @watch]
+                                                       [k (cget v)])))]
+                               (swap! watchd update-in [(cget (:a @watch))] conj o)
+                               (println :tag tag :a (cget (:a @watch)))
+                               (println :tag tag :sees o))))
           a (cI 0 :watch (fn-watch (println :a-now new)))
           b (cF+ [:watch (watchr :b)]
-              (* 10 (cget a)))
+                 (* 10 (cget a)))
           c (cF+ [:watch (watchr :c)]
-              (* 100 (cget a)))
+                 (* 100 (cget a)))
           d (cF+ [:watch (fn-watch (println :d-now new))]
-              (+ (cget b) (cget c) (cget a)))
+                 (+ (cget b) (cget c) (cget a)))
           e (cF+ [:watch (fn-watch (println :e-now new))]
-              (+ (cget c) (cget b) (cget a)))
-          ]
+                 (+ (cget c) (cget b) (cget a)))]
       (reset! watch {:a a :b b :c c})
       (is (= 0 (cget d) (cget e) (cget a) (cget c) (cget b)))
 
@@ -173,19 +156,19 @@
     (let [sia (cI 0)
           watch (atom false)
           sib (cF+ [:watch (fn-watch (reset! watch true))]
-                (if (even? (cget sia))
-                  42
-                  10))
+                   (if (even? (cget sia))
+                     42
+                     10))
           run (atom false)
           sic (cF (reset! run true)
-                (/ (cget sib) 2))]
+                  (/ (cget sib) 2))]
       (is (= (cget sib) 42))
       (is (= (cget sic) 21))
       (is @watch)
       (is @run)
       (#?(:clj dosync :cljs do)
-        (reset! watch false)
-        (reset! run false))
+       (reset! watch false)
+       (reset! run false))
       (c-reset! sia 2)
       (is (= (cget sib) 42))
       (is (= (cget sic) 21))

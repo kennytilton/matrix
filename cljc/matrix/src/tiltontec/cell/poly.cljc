@@ -1,7 +1,7 @@
 (ns tiltontec.cell.poly
   (:require
-    [tiltontec.util.base
-     :refer [mx-type]]))
+   [tiltontec.util.base
+    :refer [mx-type]]))
 
 ;;; --- life cycle -------------------
 

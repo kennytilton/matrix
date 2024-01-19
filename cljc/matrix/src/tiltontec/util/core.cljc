@@ -1,15 +1,16 @@
 (ns tiltontec.util.core
-  (:require [clojure.string :as str]
-            #?(:cljs [tiltontec.util.base :as utm
-                      :refer-macros [prog1 b-when wtrx]]
-               :clj  [tiltontec.util.base :as utm
-                      :refer :all])))
+  (:require
+   #?(:cljs [tiltontec.util.base :as utm
+             :refer-macros [prog1 b-when wtrx]]
+      :clj  [tiltontec.util.base :as utm
+             :refer :all])
+   [clojure.string :as str]))
 
 (defn type-of [x] (type x))
 
 (defn xor [a b]
   (or (and a (not b))
-    (and b (not a))))
+      (and b (not a))))
 
 (declare pln xpln)
 
@@ -28,14 +29,14 @@
      (letfn [(hex [] (.toString (rand-int 16) 16))]
        (let [rhex (.toString (bit-or 0x8 (bit-and 0x3 (rand-int 16))) 16)]
          (uuid
-           (str (hex) (hex) (hex) (hex)
-             (hex) (hex) (hex) (hex) "-"
-             (hex) (hex) (hex) (hex) "-"
-             "4" (hex) (hex) (hex) "-"
-             rhex (hex) (hex) (hex) "-"
-             (hex) (hex) (hex) (hex)
-             (hex) (hex) (hex) (hex)
-             (hex) (hex) (hex) (hex)))))))
+          (str (hex) (hex) (hex) (hex)
+               (hex) (hex) (hex) (hex) "-"
+               (hex) (hex) (hex) (hex) "-"
+               "4" (hex) (hex) (hex) "-"
+               rhex (hex) (hex) (hex) "-"
+               (hex) (hex) (hex) (hex)
+               (hex) (hex) (hex) (hex)
+               (hex) (hex) (hex) (hex)))))))
 
 ;; --- refs with maps conveniences -------------------
 
@@ -51,13 +52,13 @@
   ([mut prop new-value tag]
    (when-not (any-ref? mut)
      (pln "model.util.core/rmap-setf> prop:" prop :tag tag
-       "new-value:" new-value
-       "failed assertion any-ref? on ref:" mut)
+          "new-value:" new-value
+          "failed assertion any-ref? on ref:" mut)
      (assert false "see console"))
    (when-not (map? @mut)
      (pln "model.util.core/rmap-setf> prop:" prop :tag tag
-       "new-value:" (or new-value :NIL)
-       "failed assertion map? on ref:" @mut)
+          "new-value:" (or new-value :NIL)
+          "failed assertion map? on ref:" @mut)
      (assert false "see console"))
    (#?(:clj alter :cljs swap!) mut assoc prop new-value)
    new-value))
@@ -67,13 +68,13 @@
    (rmap-setf [prop ref] new-value nil))
   ([[prop ref] new-value tag]
    (assert (any-ref? ref)
-     (pln "model.util.core/rmap-setf> prop:" prop :tag tag
-       "new-value:" new-value
-       "failed assertion any-ref? on ref:" ref))
+           (pln "model.util.core/rmap-setf> prop:" prop :tag tag
+                "new-value:" new-value
+                "failed assertion any-ref? on ref:" ref))
    (when-not (map? @ref)
      (pln "model.util.core/rmap-setf> prop:" prop :tag tag
-       "new-value:" (or new-value :NIL)
-       "failed assertion map? on ref:" @ref)
+          "new-value:" (or new-value :NIL)
+          "failed assertion map? on ref:" @ref)
      (assert false))
    (#?(:clj alter :cljs swap!) ref assoc prop new-value)
    new-value))
@@ -93,7 +94,7 @@
 
 (defmethod err :default [& bits]
   (throw (#?(:cljs js/Error. :clj Exception.)
-           (str/join " " (cons "mxerr>" bits)))))
+          (str/join " " (cons "mxerr>" bits)))))
 
 (defn flz [x]
   (if (isa? (type x) #?(:cljs cljs.core.LazySeq
@@ -104,9 +105,9 @@
 
 (defn wtrx-test [n]
   (wtrx
-    (0 10 "test" n)
-    (when (> n 0)
-      (wtrx-test (dec n)))))
+   (0 10 "test" n)
+   (when (> n 0)
+     (wtrx-test (dec n)))))
 
 ;; --- deftest support ---------------------
 ;; These next two are lame because they just
@@ -117,13 +118,13 @@
 
 (defn prop-users [me prop]
   (set (map :propq
-         (map deref
-           (:callers @(prop @me) #{})))))
+            (map deref
+                 (:callers @(prop @me) #{})))))
 
 (defn prop-useds [me prop]
   (set (map :prop
-         (map deref
-           (:useds @(prop @me) #{})))))
+            (map deref
+                 (:useds @(prop @me) #{})))))
 
 ;;; --- FIFO Queue -----------------------------
 
@@ -144,8 +145,8 @@
 (defn fifo-pop [q]
   (when-not (fifo-empty? q)
     (utm/prog1
-      (first @q)
-      (#?(:clj alter :cljs swap!) q subvec 1))))
+     (first @q)
+     (#?(:clj alter :cljs swap!) q subvec 1))))
 
 ;;; --- detritus ----------------------
 
@@ -168,7 +169,7 @@
   (if (string? (first r))
     (println (pr-str r))
     (when (or (= k :force)
-            (some #{k} [*plnk-keys*]))                      ;; [:qxme :addk])
+              (some #{k} [*plnk-keys*]))                      ;; [:qxme :addk])
       (println (pr-str r)))))
 
 (defn now []
@@ -200,4 +201,3 @@
     (countit :y [1 2 3 4]))
 
 
-    

@@ -1,16 +1,11 @@
 (ns tiltontec.cell.async-test
-  (:import (java.util.concurrent TimeoutException TimeUnit))
   (:require
-    #?(:clj  [clojure.test :refer :all]
-       :cljs [cljs.test
-              :refer-macros [deftest is are]])
-    #?(:clj
-       [clj-http.util :as httpu]
-       :cljs [cljs-http.util :as httpu])
-
-    #?(:clj
-       [clj-http.client :as client]
-       :cljs [cljs-http.client :as client])))
+   #?(:clj  [clojure.test :refer :all])
+   #?(:clj
+      [clj-http.client :as client]
+      :cljs [cljs-http.client :as client]))
+  (:import
+   (java.util.concurrent TimeUnit TimeoutException)))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))
@@ -21,24 +16,21 @@
   (client/get "http://example.com")
   ;(import '(java.util.concurrent TimeoutException TimeUnit))
 
-
-  ;; :async? in options map need to be true
+;; :async? in options map need to be true
   (let [ag (client/get "http://example.com"
-    {:async? true}
+                       {:async? true}
     ;; respond callback
-    (fn [response] (println "response is OK:" #_ response))
+                       (fn [response] (println "response is OK:" #_response))
     ;; raise callback
-    (fn [exception] (println "exception message is: " (.getMessage exception))))]
+                       (fn [exception] (println "exception message is: " (.getMessage exception))))]
     (prn :ag!!!!!!! (future? ag) (type ag))
     (let [er (try
-      (let [r (.get ag 1 TimeUnit/SECONDS)]
-        (prn :got-ag!)
-        r)
+               (let [r (.get ag 1 TimeUnit/SECONDS)]
+                 (prn :got-ag!)
+                 r)
 
-      (catch TimeoutException e
+               (catch TimeoutException e
         ;; Cancel the request, it's taken too long
-        (.cancel ag true)
-        e))]
-      (prn :xhr er)))
-  )
-
+                 (.cancel ag true)
+                 e))]
+      (prn :xhr er))))

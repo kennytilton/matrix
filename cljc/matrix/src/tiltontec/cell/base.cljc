@@ -2,23 +2,17 @@
   #?(:cljs (:require-macros [tiltontec.cell.base
                              :refer [un-stopped without-c-dependency]]))
   (:require
-    #?(:clj [clojure.string :as str])
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
-    #?(:cljs [tiltontec.util.base :as utm
-              :refer [mx-type mx-type?]
-              :refer-macros [prog1 b-when def-rmap-props]]
-       :clj  [tiltontec.util.base :as utm
-              :refer :all])
-    #?(:cljs [cljs.test
-              :refer-macros [deftest is]])
-
-    #?(:cljs [tiltontec.util.core
-              :refer [mut-set! cl-find set-ify any-ref? err ia-ref
-                      make-fifo-queue fifo-empty? fifo-peek fifo-pop
-                      fifo-data fifo-add rmap-setf wtrx-test]
-              :as ut]
-       :clj  [tiltontec.util.core :refer :all :as ut])))
-
+   [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint]]
+   #?(:clj [clojure.string :as str])
+   #?(:cljs [tiltontec.util.base :as utm
+             :refer [mx-type mx-type?]
+             :refer-macros [prog1 b-when def-rmap-props]]
+      :clj  [tiltontec.util.base :as utm
+             :refer :all])
+   #?(:cljs [tiltontec.util.core
+             :refer [any-ref? mut-set!]
+             :as ut]
+      :clj  [tiltontec.util.core :refer :all :as ut])))
 
 ;; --- the Cells beef -----------------------
 (defn pulse-initial []
@@ -34,7 +28,7 @@
 (defn cells-init []
   #?(:cljs (reset! *pulse* 0)
      :clj  (dosync
-             (ref-set *pulse* 0))))
+            (ref-set *pulse* 0))))
 
 (def ^:dynamic *causation* '())
 (def ^:dynamic *call-stack* nil)
@@ -141,7 +135,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 
 (defn c-ref? [x]
   (and (any-ref? x)
-    (mx-type? x ::cell)))
+       (mx-type? x ::cell)))
 
 (def-rmap-props c-
   me prop state input? rule pulse pulse-last-changed pulse-watched
@@ -160,7 +154,7 @@ rule to get once behavior or just when fm-traversing to find someone"
   (assert (any-ref? c))
   (cond
     (and (c-ref? c)
-      (map? @c)) (:value @c)
+         (map? @c)) (:value @c)
     :else @c))
 
 (declare cdbg)
@@ -170,8 +164,8 @@ rule to get once behavior or just when fm-traversing to find someone"
     (prn :caway-notc c (meta c)))
   (assert (c-ref? c) "c-awy?-got-not-c")
   (or (not (map? @c))
-    (not (contains? @c ::state))
-    (= :optimized-away (::state @c))))
+      (not (contains? @c ::state))
+      (= :optimized-away (::state @c))))
 
 (defn c-model [rc]
   (:me @rc))
@@ -179,7 +173,7 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn c-md-name [c]
   (if-let [md (c-model c)]
     (or (:name @md)
-      "anon")
+        "anon")
     "no-md"))
 
 (defn c-prop-name [rc]
@@ -208,9 +202,9 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn dependency-record [used]
   (when-not (c-optimized-away? used)
     (mut-set! *depender* :useds
-      (conj (c-useds *depender*) used))
+              (conj (c-useds *depender*) used))
     (mut-set! used :callers
-      (conj (c-callers used) *depender*))))
+              (conj (c-callers used) *depender*))))
 
 (defn dependency-drop [used caller]
   (mut-set! caller :useds (disj (c-useds caller) used))
@@ -238,7 +232,6 @@ rule to get once behavior or just when fm-traversing to find someone"
   (and (any-ref? x)))
 ;; hhack (mx-type? x ::model)
 
-
 ;; --- mdead? ---
 
 (defn md-state [me]
@@ -252,15 +245,15 @@ rule to get once behavior or just when fm-traversing to find someone"
 (comment
   (defn filter-vector-func [coll ?s]
     (reduce
-      (fn [x y]
-        (prn :y y)
-        (let [{:keys [id name surname]} y]
-          (prn :keys id name surname)
-          (if (str/includes? (str/lower-case name) (str/lower-case ?s))
-            (conj x id name)
-            x)))
-      []
-      coll))
+     (fn [x y]
+       (prn :y y)
+       (let [{:keys [id name surname]} y]
+         (prn :keys id name surname)
+         (if (str/includes? (str/lower-case name) (str/lower-case ?s))
+           (conj x id name)
+           x)))
+     []
+     coll))
   (filter-vector-func {:id 1 :name "ali" :surname "veli"} "a"))
 
 (defn md-prop-owning? [class-name prop-name]
@@ -272,8 +265,8 @@ rule to get once behavior or just when fm-traversing to find someone"
   ([c tag]
    (when-let [dbg (:debug @c)]
      (or (true? dbg)
-       (= dbg tag)
-       (and (coll? dbg) (some #{tag} dbg))))))
+         (= dbg tag)
+         (and (coll? dbg) (some #{tag} dbg))))))
 
 (defn minfo [me]
   (cond
@@ -292,8 +285,7 @@ rule to get once behavior or just when fm-traversing to find someone"
     (nil? c) :NIL-C
     (not (any-ref? c)) :NOT-ANY-REF-C
     (not (c-ref? c)) :NOT-C-REF
-    :else [
-           (c-prop-name c)
+    :else [(c-prop-name c)
            (c-md-name c)
            (:mx-sid @c)
            [:pulse (:pulse @c)]
@@ -306,8 +298,8 @@ rule to get once behavior or just when fm-traversing to find someone"
 (defn cdbg [c tag & bits]
   (when c
     (assert (or (= c true)
-              (c-ref? c)) (str "cdbg> passed non c-ref? " tag (if (any-ref? c)
-                                                                @c c)))
+                (c-ref? c)) (str "cdbg> passed non c-ref? " tag (if (any-ref? c)
+                                                                  @c c)))
     (assert (keyword? tag) (str "cdbg> second parame s/b keyword tag, got: " tag))
     (when (or (= c true) (:debug @c))
       (prn)

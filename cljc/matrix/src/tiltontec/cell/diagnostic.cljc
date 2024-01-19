@@ -1,15 +1,13 @@
 (ns tiltontec.cell.diagnostic
   (:require
-    [clojure.string :as str]
-    [clojure.set :refer [intersection difference] :as set]
-    [tiltontec.cell.base :refer [*mx-trace*]]))
+   [clojure.set :refer [intersection] :as set]
+   [tiltontec.cell.base :refer [*mx-trace*]]))
 
 (defn ensure-set [x]
   (cond
     (set? x) x
     (coll? x) (set x)
-    :else #{x})
-  )
+    :else #{x}))
 
 (comment
   (ensure-set nil)
@@ -19,8 +17,7 @@
   (ensure-set [:a :b])
   (apply set/intersection
          (map ensure-set [42 [1 2 42] #{42}]))
-  (conj [1 2] 3)
-  )
+  (conj [1 2] 3))
 
 (defn match-loose [seek in]
   (when-not (nil? in)
@@ -29,7 +26,7 @@
       (and (coll? in)
            (some #{:all} in)) true
       :else (not-empty
-              (set/intersection (ensure-set seek)(ensure-set in))))))
+             (set/intersection (ensure-set seek) (ensure-set in))))))
 
 (defn mxtrc [& bits]
   (let [tag (first bits)]
