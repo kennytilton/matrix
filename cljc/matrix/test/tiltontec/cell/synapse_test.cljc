@@ -129,7 +129,7 @@
                                                (do (reset! reported x)
                                                    ^{:propagate true} [x])
 
-                                               :default ^{:propagate false} [x])))]
+                                               :else ^{:propagate false} [x])))]
                       (println :changed changed-x)
                       (swap! alarm-runs inc)
                       (if (> changed-x 5)
@@ -172,7 +172,7 @@
                                        (reset! buffer [])
                                        ^{:propagate true} [buffer-val])
 
-                                     :default ^{:propagate false} [buffer-val]))))]
+                                     :else ^{:propagate false} [buffer-val]))))]
 
                   (is (= 3 (count g)))
 

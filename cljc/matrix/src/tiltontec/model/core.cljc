@@ -273,7 +273,7 @@
        (cond
          (= mx (first sibs)) nil
          (= mx (second sibs)) (first sibs)
-         :default
+         :else
          (recur (rest sibs)))))))
 
 (defn fm-navig

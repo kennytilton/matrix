@@ -70,7 +70,7 @@ Transforming a stream of values to its first derivative is fun, but synapses wer
                           (do (reset! reported raw-temp)
                               ^{:propagate true} [raw-temp])
                           
-                          :default ^{:propagate false} [raw-temp])))))]
+                          :else ^{:propagate false} [raw-temp])))))]
     ...testing code...
     ))
 ````

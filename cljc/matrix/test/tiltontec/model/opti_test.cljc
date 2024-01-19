@@ -34,7 +34,7 @@
               :bb (cF (cond
                         (= 2 (mget me :aa)) (cf-freeze)
                         (> (mget me :aa) 2) 43
-                        :default 42)))]
+                        :else 42)))]
       (is (= 1 (mget fm :aa)))
       (is (= 42 (mget fm :bb)))
       (mswap! fm :aa inc)
@@ -52,7 +52,7 @@
               :bb (cF (cond
                         (= 2 (mget me :aa)) (cf-freeze 17)
                         (> (mget me :aa) 2) 43
-                        :default 42)))]
+                        :else 42)))]
       (is (= 1 (mget fm :aa)))
       (is (= 42 (mget fm :bb)))
       (mswap! fm :aa inc)
