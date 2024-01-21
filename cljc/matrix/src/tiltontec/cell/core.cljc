@@ -216,9 +216,9 @@
 
 (defmacro c-formula [[& kvs] & body]
   `(make-c-formula
-     :code '~body                                           ;; debug aid
-     :rule (c-fn ~@body)
-     ~@keys))
+    :code '~body                                           ;; debug aid
+    :rule (c-fn ~@body)
+    ~@kvs))
 
 (defmacro cf-freeze [& [value-form]]
   (let [value-source (or value-form '_cache)]
