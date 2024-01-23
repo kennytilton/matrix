@@ -1,40 +1,15 @@
 (ns tiltontec.cell.opti-freeze-test
   (:require
-    #?(:clj  [clojure.test :refer :all]
-       :cljs [cljs.test
-              :refer-macros [deftest is are]])
-    #?(:cljs [tiltontec.util.base
-              :refer-macros [trx prog1]
-              :refer [*trx?*]]
-       :clj  [tiltontec.util.base
-              :refer :all])
-    [tiltontec.util.core :refer [type-of err]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes*
-                      c-rule c-me c-value-state c-callers caller-ensure
-                      unlink-from-callers *causation*
-                      c-prop-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-    [tiltontec.matrix.api :refer [fn-watch]]
-
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-swap! c-reset-next!]
-              :refer [cI c-reset!]]
-       :clj  [tiltontec.cell.core :refer :all])
-
-    [tiltontec.cell.evaluate :refer [cget]]
-    ))
+   #?(:clj  [clojure.test :refer :all]
+      :cljs [cljs.test :refer-macros [deftest is use-fixtures]])
+   #?(:clj  [tiltontec.cell.base :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty]
+      :cljs [tiltontec.cell.base
+             :refer [c-callers c-optimized-away? c-useds pulse-now] :as cty])
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [cF cF+ c-swap! cf-freeze with-mx]
+             :refer [c-reset! cI]]
+      :clj  [tiltontec.cell.core :refer [c-reset! c-swap! cF cF+ cf-freeze cI with-mx]])
+   [tiltontec.cell.evaluate :refer [cget]]))
 
 (defn prn-level-3 [f]
   (binding [*print-level* 3] (f)))
@@ -67,40 +42,39 @@
   (with-mx
     (let [a (cI 1 :prop :aa)
           b (cF+ [:prop :bb]
-              42)                                           ;; should optimize away
+                 42)                                           ;; should optimize away
           c (cF+ [:prop :cc]
-              (inc (cget b)))                              ;; should recursively optimize away, since b should
+                 (inc (cget b)))                              ;; should recursively optimize away, since b should
           d (cF+ [:prop :dd]
-              (if (< (cget a) 3)
-                (+ (cget a) (cget b) (cget c))
-                17))
+                 (if (< (cget a) 3)
+                   (+ (cget a) (cget b) (cget c))
+                   17))
           ect (atom 0)
           e (let [frozen (atom nil)]
               (cF+ [:prop :ee]
-                (swap! ect inc)
-                (prn :efrz @ect @frozen)
-                (if @frozen
-                  _cache
-                  (if (< (cget a) 3)
-                    (+ (cget a) (cget b) (cget c))
-                    (do (reset! frozen true)
-                        _cache)))))]
+                   (swap! ect inc)
+                   (prn :efrz @ect @frozen)
+                   (if @frozen
+                     _cache
+                     (if (< (cget a) 3)
+                       (+ (cget a) (cget b) (cget c))
+                       (do (reset! frozen true)
+                           _cache)))))]
       (#?(:clj dosync :cljs do)
-        (is (= (cget a) 1))
-        (is (= (cget b) 42))
-        (is (= (cget c) 43))
-        (is (= (cget d) 86))
-        (is (c-optimized-away? b))
-        (is (not (seq (c-useds b))))
-        (is (c-optimized-away? c))
-        (is (not (seq (c-useds c))))
-        (is (not (c-optimized-away? d)))
-        (is (= 1 (count (c-useds d))))
-        (is (= 86 (cget e)))
-        (is (not (c-optimized-away? e)))
-        (is (= 1 (count (c-useds e))))
-        (is (= 1 @ect))
-        )
+       (is (= (cget a) 1))
+       (is (= (cget b) 42))
+       (is (= (cget c) 43))
+       (is (= (cget d) 86))
+       (is (c-optimized-away? b))
+       (is (not (seq (c-useds b))))
+       (is (c-optimized-away? c))
+       (is (not (seq (c-useds c))))
+       (is (not (c-optimized-away? d)))
+       (is (= 1 (count (c-useds d))))
+       (is (= 86 (cget e)))
+       (is (not (c-optimized-away? e)))
+       (is (= 1 (count (c-useds e))))
+       (is (= 1 @ect)))
 
       (c-swap! a inc)
       (is (= (cget a) 2))
@@ -134,34 +108,34 @@
   (with-mx
     (let [a (cI 1 :prop :aa)
           b (cF+ [:prop :bb]
-              42)                                           ;; should optimize away
+                 42)                                           ;; should optimize away
           c (cF+ [:prop :cc]
-              (inc (cget b)))                              ;; should recursively optimize away, since b should
+                 (inc (cget b)))                              ;; should recursively optimize away, since b should
           d (cF+ [:prop :dd]
-              (if (< (cget a) 3)
-                (+ (cget a) (cget b) (cget c))
-                17))
+                 (if (< (cget a) 3)
+                   (+ (cget a) (cget b) (cget c))
+                   17))
           ect (atom 0)
           e (cF+ [:prop :ee]
-              (swap! ect inc)
-              (if (< (cget a) 3)
-                (+ (cget a) (cget b) (cget c))
-                (cf-freeze _cache)))]
+                 (swap! ect inc)
+                 (if (< (cget a) 3)
+                   (+ (cget a) (cget b) (cget c))
+                   (cf-freeze _cache)))]
       (#?(:clj dosync :cljs do)
-        (is (= (cget a) 1))
-        (is (= (cget b) 42))
-        (is (= (cget c) 43))
-        (is (= (cget d) 86))
-        (is (c-optimized-away? b))
-        (is (not (seq (c-useds b))))
-        (is (c-optimized-away? c))
-        (is (not (seq (c-useds c))))
-        (is (not (c-optimized-away? d)))
-        (is (= 1 (count (c-useds d))))
-        (is (= 86 (cget e)))
-        (is (not (c-optimized-away? e)))
-        (is (= 1 (count (c-useds e))))
-        (is (= 1 @ect)))
+       (is (= (cget a) 1))
+       (is (= (cget b) 42))
+       (is (= (cget c) 43))
+       (is (= (cget d) 86))
+       (is (c-optimized-away? b))
+       (is (not (seq (c-useds b))))
+       (is (c-optimized-away? c))
+       (is (not (seq (c-useds c))))
+       (is (not (c-optimized-away? d)))
+       (is (= 1 (count (c-useds d))))
+       (is (= 86 (cget e)))
+       (is (not (c-optimized-away? e)))
+       (is (= 1 (count (c-useds e))))
+       (is (= 1 @ect)))
 
       (c-swap! a inc)
       (is (= (cget a) 2))
@@ -191,9 +165,9 @@
   (with-mx
     (let [a (cI 1 :prop :aa)
           b (cF+ [:prop :bb]
-              (if (= 2 (cget a))
-                (cf-freeze)
-                42))]
+                 (if (= 2 (cget a))
+                   (cf-freeze)
+                   42))]
       (is (= 1 (cget a)))
       (is (= 42 (cget b)))
       (c-swap! a inc)
@@ -207,17 +181,17 @@
   (with-mx
     (let [a (cI nil :prop :aa)
           b (cF+ [:prop :bb :debug true]
-              (when (cget a)
-                (prn :freezing-b 42)
-                (cf-freeze 42)))
+                 (when (cget a)
+                   (prn :freezing-b 42)
+                   (cf-freeze 42)))
           c (cF+ [:prop :cc]
-              (prn :cc-runs!!)
-              (let [b (cget b)]
-                (prn :cc-sees-b b)
-                (if b
-                  [:bam b]
-                  (do (prn :no-bb)
-                      nil))))]
+                 (prn :cc-runs!!)
+                 (let [b (cget b)]
+                   (prn :cc-sees-b b)
+                   (if b
+                     [:bam b]
+                     (do (prn :no-bb)
+                         nil))))]
       (is (= nil (cget a)))
       (is (= nil (cget b)))
       (is (= nil (cget c)))

@@ -1,35 +1,22 @@
 (ns tiltontec.cell.core
+  {:clj-kondo/ignore [:redundant-do]}
   (:require
-
-    [clojure.string :as str]
-    [tiltontec.util.core
-     :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
-
-    ;#?(:clj [taoensso.tufte :as tufte :refer :all]
-    ;   :cljs [taoensso.tufte :as tufte :refer-macros [defnp p profiled profile]])
-    [tiltontec.util.base
-     :refer [mx-type mx-sid-next trx wtrx prog1 *trx?* def-rmap-props def-rmap-meta-props]]
-
-    [tiltontec.cell.base
-     :refer [c-optimized-away? c-formula? c-value c-optimize
-             c-unbound? c-input? c-async? unbound c-md-name
-             c-model mdead? c-valid? c-useds c-ref? md-ref?
-             c-state *pulse* c-pulse-watched without-c-dependency
-             *call-stack* *defer-changes* *custom-propagator*
-             c-rule c-me c-value-state c-callers
-             c-synapses unfin-biz-build *causation*
-             c-synaptic? c-pulse c-ephemeral? c-prop c-prop-name
-             *depender* *quiesce* *within-integrity*
-             *one-pulse?* *dp-log* *unfinished-business* pulse-initial
-             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
-
-    [#?(:cljs cljs.pprint :clj clojure.pprint) :refer [pprint cl-format]]
-    #?(:clj
-       [tiltontec.cell.integrity :refer :all]
-       :cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]
-              :refer []])
-    [tiltontec.cell.evaluate :refer [cget c-value-assume ensure-value-is-current]]))
+   #?(:clj
+      [tiltontec.cell.integrity :refer [ufb-add with-integrity]]
+      :cljs [tiltontec.cell.integrity
+             :refer-macros [with-integrity]])
+   [clojure.string :as str]
+   [tiltontec.cell.base
+    :refer [*c-prop-depth* *call-stack* *causation* *custom-propagator*
+            *defer-changes* *depender* *dp-log* *one-pulse?* *pulse* *quiesce*
+            *unfinished-business* *within-integrity* c-async? c-callers
+            c-input? c-lazy c-md-name c-model c-prop c-prop-name c-useds
+            c-value pulse-initial unbound unfin-biz-build without-c-dependency] :as cty]
+   [tiltontec.cell.evaluate :refer [c-value-assume cget]]
+   [tiltontec.util.base
+    :refer [mx-sid-next mx-type]]
+   [tiltontec.util.core
+    :refer [err rmap-setf]]))
 
 ; todo: stand-alone cells with watchs should be watched when they are made
 
@@ -53,28 +40,28 @@
 
 (defn make-cell [& kvs]
   (let [options (apply hash-map (c-options-canonicalize kvs
-                                  +valid-input-options+))]
+                                                        +valid-input-options+))]
     (#?(:clj ref :cljs atom)
-      (merge {:mx-sid             (mx-sid-next) ;; debug aid
-              :value              unbound
-              ::cty/state         :nascent
-              :pulse              nil
-              :pulse-last-changed nil
-              :pulse-watched      nil
-              :callers            #{}
-              :synapses           #{}                       ;; these stay around between evaluations
+     (merge {:mx-sid             (mx-sid-next) ;; debug aid
+             :value              unbound
+             ::cty/state         :nascent
+             :pulse              nil
+             :pulse-last-changed nil
+             :pulse-watched      nil
+             :callers            #{}
+             :synapses           #{}                       ;; these stay around between evaluations
               ;; todo: if a rule branches away from a synapse
               ;;       it needs to be GCed so it starts fresh
-              :lazy               false                     ;; not a predicate (can hold, inter alia, :until-asked)
-              :ephemeral?         false
-              :input?             true}
-        options)
+             :lazy               false                     ;; not a predicate (can hold, inter alia, :until-asked)
+             :ephemeral?         false
+             :input?             true}
+            options)
       ;; type goes in meta to be consistent with model
-      :meta {:mx-type :tiltontec.cell.base/cell})))
+     :meta {:mx-type :tiltontec.cell.base/cell})))
 
 (defn make-c-formula [& kvs]
   (let [options (apply hash-map (c-options-canonicalize kvs
-                                  +valid-formula-options+))
+                                                        +valid-formula-options+))
         rule (:rule options)]
     (assert rule)
     (assert (fn? rule))
@@ -92,13 +79,13 @@
                                      :optimize           true ;; this can also be :when-not-nil
                                      :input?             false} ;; not redundant: can start with rule, continue as input
 
-                               options)
-      :meta {:mx-type :tiltontec.cell.base/c-formula})))
+                                    options)
+                             :meta {:mx-type :tiltontec.cell.base/c-formula})))
 
 ;;___________________ constructors _______________________________
 ;; I seem to have created a zillion of these, but I normally
 ;; use just cI, cF, and cFn (which starts out as cF and becomes cI).
-;; 
+;;
 
 (defmacro c-fn-var [[c] & body]
   `(fn [~c]
@@ -124,101 +111,101 @@
 
 (defmacro cF [& body]
   `(make-c-formula
-     :code '~body
-     :rule (c-fn ~@body)))
+    :code '~body
+    :rule (c-fn ~@body)))
 
 (defmacro cF+ [[& options] & body]
   `(make-c-formula
-     ~@options
-     :code '~body
-     :rule (c-fn ~@body)))
+    ~@options
+    :code '~body
+    :rule (c-fn ~@body)))
 
 (defmacro cFn [& body]
   `(make-c-formula
-     :code '(without-c-dependency ~@body)
-     :input? true
-     :rule (c-fn (without-c-dependency ~@body))))
+    :code '(without-c-dependency ~@body)
+    :input? true
+    :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF+n [[& options] & body]
   `(tiltontec.cell.core/make-c-formula
-     ~@options
-     :code '(tiltontec.cell.base/without-c-dependency ~@body)
-     :input? true
-     :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
+    ~@options
+    :code '(tiltontec.cell.base/without-c-dependency ~@body)
+    :input? true
+    :rule (tiltontec.cell.core/c-fn (tiltontec.cell.base/without-c-dependency ~@body))))
 
 (defmacro c_Fn [& body]
   `(make-c-formula
-     :code '(without-c-dependency ~@body)
-     :input? true
-     :lazy :until-asked
-     :rule (c-fn (without-c-dependency ~@body))))
+    :code '(without-c-dependency ~@body)
+    :input? true
+    :lazy :until-asked
+    :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-dbg [& body]
   `(make-c-formula
-     :code '(without-c-dependency ~@body)
-     :input? true
-     :debug true
-     :rule (c-fn (without-c-dependency ~@body))))
+    :code '(without-c-dependency ~@body)
+    :input? true
+    :debug true
+    :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cFn-until [args & body]
   `(make-c-formula
-     :optimize :when-value-t
-     :code '~body
-     :input? true
-     :rule (c-fn ~@body)
-     ~@args))
+    :optimize :when-value-t
+    :code '~body
+    :input? true
+    :rule (c-fn ~@body)
+    ~@args))
 
 (defmacro cFonce [& body]
   `(make-c-formula
-     :code '(without-c-dependency ~@body)
-     :input? nil
-     :rule (c-fn (without-c-dependency ~@body))))
+    :code '(without-c-dependency ~@body)
+    :input? nil
+    :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro c_1 [& body]
   `(make-c-formula
-     :code '(without-c-dependency ~@body)
-     :input? nil
-     :lazy true
-     :rule (c-fn (without-c-dependency ~@body))))
+    :code '(without-c-dependency ~@body)
+    :input? nil
+    :lazy true
+    :rule (c-fn (without-c-dependency ~@body))))
 
 (defmacro cF1 [& body]
   `(cFonce ~@body))
 
 (defmacro cFdbg [& body]
   `(make-c-formula
-     :code '~body
-     :debug true
-     :rule (c-fn ~@body)))
+    :code '~body
+    :debug true
+    :rule (c-fn ~@body)))
 
 (defmacro cF_ [[& options] & body]
   `(make-c-formula
-     ~@options
-     :code '~body
-     :lazy true
-     :rule (c-fn ~@body)))
+    ~@options
+    :code '~body
+    :lazy true
+    :rule (c-fn ~@body)))
 
 (defmacro c_F [[& options] & body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
-     ~@options
-     :code '~body
-     :lazy :until-asked
-     :rule (c-fn ~@body)))
+    ~@options
+    :code '~body
+    :lazy :until-asked
+    :rule (c-fn ~@body)))
 
 (defmacro c_Fdbg [& body]
   "Lazy until asked, then eagerly propagating"
   `(make-c-formula
-     :code '~body
-     :rule (c-fn ~@body)
-     :debug true))
+    :code '~body
+    :rule (c-fn ~@body)
+    :debug true))
 
 ;; todo add validation somewhere of lazy option
 
 (defmacro c-formula [[& kvs] & body]
   `(make-c-formula
-     :code '~body                                           ;; debug aid
-     :rule (c-fn ~@body)
-     ~@keys))
+    :code '~body                                           ;; debug aid
+    :rule (c-fn ~@body)
+    ~@kvs))
 
 (defmacro cf-freeze [& [value-form]]
   (let [value-source (or value-form '_cache)]
@@ -249,19 +236,20 @@
 (defmacro with-c-latest [& body]
   `(let [curr# (when-not (= ~'_cache tiltontec.cell.base/unbound) ~'_cache)]
      (or (do ~@body)
-       curr#)))
+         curr#)))
 
 (defn cI [value & option-kvs]
   (apply make-cell
-    :value value
-    :input? true
-    option-kvs))
+         :value value
+         :input? true
+         option-kvs))
 
 ;; --- where change and animation begin -------
 
-(defn cset! [c new-value]
+(defn cset!
   "The moral equivalent of a Common Lisp SETF, and indeed
-in the CL version of Cells SETF itself is the change API dunction."
+  in the CL version of Cells SETF itself is the change API dunction."
+  [c new-value]
   (assert c)
   (assert (not (c-async? c)) (str "attempt to cset! cfuture " @c))
 
@@ -269,28 +257,28 @@ in the CL version of Cells SETF itself is the change API dunction."
     (not (c-input? c))
     (let [me (c-model c)]
       (err str
-        "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/mset! to the property '" (c-prop-name c) "', which is not mediated by an input cell.\n"
-        "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI', 'cFn', or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
-        "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
-        "..> FYI: intended new value is [" new-value "].\n"
-        "..> FYI: the non-input cell is " @c "\n"
-        "..> FYI: instance is of type " (mx-type me) ".\n"
-        "..> FYI: full instance is " @me "\n"
-        "..> FYI: instance meta is " (meta me) "\n."))
+           "MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL> invalid mswap!/mset!/mset! to the property '" (c-prop-name c) "', which is not mediated by an input cell.\n"
+           "..> if such post-make mutation is in fact required, wrap the initial argument to model.core/make in 'cI', 'cFn', or 'cF+n'. eg: (make... :answer (cFn <computation>)).\n"
+           "..> look for MXAPI_ILLEGAL_MUTATE_NONINPUT_CELL in the Matrix Errors documentation for  more details.\n"
+           "..> FYI: intended new value is [" new-value "].\n"
+           "..> FYI: the non-input cell is " @c "\n"
+           "..> FYI: instance is of type " (mx-type me) ".\n"
+           "..> FYI: full instance is " @me "\n"
+           "..> FYI: instance meta is " (meta me) "\n."))
 
     *defer-changes*
     (let [prop (c-prop-name c)
           me (c-model c)]
       (err
-        "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/mset! to the property '" prop "' by an watch detected."
-        "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
-        "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
-        "...> FYI: intended new value is [" new-value "]; current value is [" (get @me prop :no-such-prop) "].\n"
-        "...> FYI: instance is of type " (mx-type me) ".\n"
-        "...> FYI: full instance is " @me "\n"
-        "...> FYI: instance meta is " (meta me) "\n.")
+       "MXAPI_UNDEFERRED_CHANGE> undeferred mswap!/mset!/mset! to the property '" prop "' by an watch detected."
+       "...> such mutations must be wrapped by WITH-INTEGRITY, must conveniently with macro WITH-CC."
+       "...> look for MXAPI_UNDEFERRED_CHANGE in the Errors documentation for  more details.\n"
+       "...> FYI: intended new value is [" new-value "]; current value is [" (get @me prop :no-such-prop) "].\n"
+       "...> FYI: instance is of type " (mx-type me) ".\n"
+       "...> FYI: full instance is " @me "\n"
+       "...> FYI: instance meta is " (meta me) "\n.")
       #_(err (cl-format true "MXAPI_UNDEFERRED_CHANGE> change to ~s must be deferred by wrapping it in WITH-INTEGRITY"
-               (c-prop c))))
+                        (c-prop c))))
     ;-----------------------------------
     (some #{(c-lazy c)} [:once-asked :always true])
     (c-value-assume c new-value nil)
@@ -298,16 +286,15 @@ in the CL version of Cells SETF itself is the change API dunction."
     :else
     (do                                                     ;; tufte/p :wi-cvassume-sync
       (#?(:clj dosync :cljs do)
-        (with-integrity (:change (c-prop c))
+       (with-integrity (:change (c-prop c))
           ;;(prn :inside-wi!!!-cval-assuming new-value)
-          (c-value-assume c new-value nil))))))
+         (c-value-assume c new-value nil))))))
 
 (defn c-reset! [c new-value]
   (cset! c new-value))
 
 (defn c-swap! [c swap-fn & swap-fn-args]
   (cset! c (apply swap-fn (cget c) swap-fn-args)))
-
 
 (defmacro c-reset-next! [f-c f-new-value]
   "watchs should have side-effects only outside the
@@ -319,21 +306,20 @@ execution as soon as the current change is manifested."
      (not *within-integrity*)
      ;; todo new error to test and document
      (throw (#?(:clj Exception. :cljs js/Error.) "c-reset-next! deferred change to %s not under WITH-INTEGRITY supervision."
-              (c-prop ~f-c)))
+                                                 (c-prop ~f-c)))
      ;---------------------------------------------
      :else
      (ufb-add :change
-       [:c-reset-next!
-        (fn [~'opcode ~'defer-info]
-          (let [c# ~f-c
-                new-value# ~f-new-value]
-            (call-c-reset-next! c# new-value#)))])))
+              [:c-reset-next!
+               (fn [~'opcode ~'defer-info]
+                 (let [c# ~f-c
+                       new-value# ~f-new-value]
+                   (call-c-reset-next! c# new-value#)))])))
 
 (defmacro cset-next!
   "Completely untested!!!!!!!!!!!!!!!"
   [f-c f-new-value]
   `(c-reset-next! ~f-c ~f-new-value))
-
 
 (defn call-c-reset-next! [c new-value]
   (cond
@@ -343,7 +329,7 @@ execution as soon as the current change is manifested."
     ;;-------------------------------------------
     :else
     (#?(:cljs do :clj dosync)
-      (c-value-assume c new-value nil))))
+     (c-value-assume c new-value nil))))
 
 (defn call-with-mx [fn]
   (binding [*pulse* (pulse-initial)
@@ -362,7 +348,7 @@ execution as soon as the current change is manifested."
 
 (defmacro with-mx [& body]
   `(call-with-mx
-     (fn [] ~@body)))
+    (fn [] ~@body)))
 
 ;;; --- dag dump utility ----------------------------------------
 
@@ -389,7 +375,7 @@ execution as soon as the current change is manifested."
 
 (defn dag-dump-callers [c]
   (let [ccs (take (or *dag-prn-len* 999)
-              (c-callers c))]
+                  (c-callers c))]
     (when (seq ccs)
       (binding [*dag-depth* (inc *dag-depth*)]
         (doseq [cc ccs]
@@ -399,7 +385,7 @@ execution as soon as the current change is manifested."
 
 (defn dag-dump-useds [c]
   (let [ccs (take (or *dag-prn-len* 999)
-              (c-useds c))]
+                  (c-useds c))]
     (when (seq ccs)
       (binding [*dag-depth* (inc *dag-depth*)]
         (doseq [cc ccs]

@@ -1,8 +1,8 @@
 (ns tiltontec.util.base
   #?(:cljs (:require-macros [tiltontec.util.base
                              :refer [wtrx trx prog1 b-when unless def-rmap-props def-rmap-meta-props]]))
-  (:require [clojure.string :as str]
-            [clojure.spec.alpha :as s]))
+  #?(:clj (:require
+           [clojure.string :as str])))
 
 #?(:cljs (enable-console-print!))
 
@@ -10,8 +10,7 @@
 
 (def ^:dynamic *trx?* true)
 
-#_
-(alter-var-root #'*trx?* not)
+#_(alter-var-root #'*trx?* not)
 
 (def ^:dynamic *trc-ensure* nil)
 (def ^:dynamic *trx-path-id* nil)
@@ -26,7 +25,6 @@
 (defn call-trc$ [s bits]
   (str s ": " #?(:cljs (str bits)
                  :clj (str/join ", " bits))))
-
 
 (defn call-trc [s & os]
   ;; (break) ;; uncomment to escape loop
@@ -48,9 +46,8 @@
       (apply call-trc trxargs)
       (> *trxdepth* hi)
       (throw (#?(:cljs js/Error. :clj Exception.)
-               (str "wtrx exceeded max depth " hi ":"
-                 (apply call-trc$ (first trxargs)
-                   (rest trxargs))))))
+              (str "wtrx exceeded max depth " hi ":"
+                   (call-trc$ (first trxargs) (rest trxargs))))))
     (fn)))
 
 (defmacro wtrx [[lo hi & trxargs] & body]
@@ -95,7 +92,7 @@
 (defn mx-type [it]
   (or (when-let [m (meta it)]
         (:mx-type m))
-    (type it)))
+      (type it)))
 
 (defn mx-type? [it type]
   (isa? (mx-type it) type))

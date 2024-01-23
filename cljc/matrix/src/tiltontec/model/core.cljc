@@ -1,36 +1,25 @@
 (ns tiltontec.model.core
+  {:clj-kondo/ignore [:redundant-do]}
   #?(:cljs (:require-macros
-             [tiltontec.model.core :refer [cFkids with-par]]))
+            [tiltontec.model.core :refer [cFkids with-par]]))
   (:require
-    [clojure.set :refer [difference]]
-    [tiltontec.util.base
-     :refer [mx-sid-next mx-type trx prog1 *trx?* def-rmap-props]]
-    [tiltontec.util.core
-     :refer [any-ref? type-of err rmap-setf rmap-meta-setf pln]]
-    [tiltontec.cell.diagnostic :refer [mxtrc]]
-    [tiltontec.cell.base
-     :refer [without-c-dependency minfo cells-init c-optimized-away? c-formula? c-value c-optimize
-             c-unbound? c-input? cinfo
-             c-model mdead? c-valid? c-useds c-ref? md-ref?
-             c-state *pulse* c-pulse-watched
-             *call-stack* *defer-changes* unbound
-             c-rule c-me c-value-state c-callers *causation*
-             c-synaptic? c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
-             *depender* *quiesce*
-             *c-prop-depth* md-prop-owning? c-lazy] :as cty]
-    [tiltontec.cell.integrity :refer [with-integrity]]
-
-    [tiltontec.cell.poly :refer [watch md-quiesce md-quiesce-self]]
-
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-reset-next! cFonce cFn]
-              :refer [cI c-reset! make-cell]]
-       :clj  [tiltontec.cell.core :refer :all])
-
-    [tiltontec.cell.evaluate :refer [cget]]
-    [tiltontec.cell.poly :refer [md-quiesce]]
-    [tiltontec.model.base :refer [md-cell md-install-cell md-awaken]]
-    ))
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [cF]
+             :refer [c-reset!]]
+      :clj  [tiltontec.cell.core :refer [c-reset! cF]])
+   [clojure.set :refer [difference]]
+   [tiltontec.cell.base
+    :refer [*depender* c-ref? cinfo md-ref? mdead? minfo unbound
+            without-c-dependency] :as cty]
+   [tiltontec.cell.diagnostic :refer [mxtrc]]
+   [tiltontec.cell.evaluate :refer [cget]]
+   [tiltontec.cell.integrity :refer [with-integrity]]
+   [tiltontec.cell.poly :refer [md-quiesce md-quiesce-self watch]]
+   [tiltontec.model.base :refer [md-awaken md-cell md-install-cell]]
+   [tiltontec.util.base
+    :refer [mx-sid-next mx-type trx]]
+   [tiltontec.util.core
+    :refer [any-ref? err rmap-meta-setf]]))
 
 (def matrix
   "Each app will populate this with the root of its application matrix."
@@ -97,12 +86,10 @@
                "...> FYI: intended new value is [" new-value "]; initial value was [" (get @me prop :no-such-prop) "].\n"
                "...> FYI: instance is of type " (mx-type me) ".\n"
                "...> FYI: full instance is " @me "\n"
-               "...> FYI: instance meta is " (meta me) "\n.")
-          )
+               "...> FYI: instance meta is " (meta me) "\n."))
         (err str
              "MXAPI_ILLEGAL_MUTATE_NO_SUCH_prop> mswap!/mset!/mset! was attempted to non-existent prop \"" prop "\".\n"
-             "...> FYI: known props are" (keys @me))
-        ))))
+             "...> FYI: known props are" (keys @me))))))
 
 (defn mreset!
   "alternate syntax conforming with clojure terminology"
@@ -118,39 +105,39 @@
     :else
     (#?(:clj dosync :cljs do)
       ;;(println :md-making (nth arg-list 1))
-      (let [iargs (apply hash-map arg-list)
-            meta-keys #{:mx-type :on-quiesce}
-            me (#?(:clj ref :cljs atom)
-                 (merge {:parent *parent*}
-                        (->> arg-list
-                             (partition 2)
-                             (filter (fn [[prop v]]
-                                       (not (some #{prop} meta-keys))))
-                             (map (fn [[k v]]
-                                    (vector k (if (c-ref? v)
-                                                unbound
-                                                v))))
-                             (into {})))
-                 :meta {::cty/state      :nascent
-                        :mx-sid        (mx-sid-next)
-                        :mx-type    (get iargs :mx-type ::cty/model)
-                        :on-quiesce (get iargs :on-quiesce)})]
-        (assert (meta me))
+     (let [iargs (apply hash-map arg-list)
+           meta-keys #{:mx-type :on-quiesce}
+           me (#?(:clj ref :cljs atom)
+               (merge {:parent *parent*}
+                      (->> arg-list
+                           (partition 2)
+                           (filter (fn [[prop _v]]
+                                     (not (some #{prop} meta-keys))))
+                           (map (fn [[k v]]
+                                  (vector k (if (c-ref? v)
+                                              unbound
+                                              v))))
+                           (into {})))
+               :meta {::cty/state      :nascent
+                      :mx-sid        (mx-sid-next)
+                      :mx-type    (get iargs :mx-type ::cty/model)
+                      :on-quiesce (get iargs :on-quiesce)})]
+       (assert (meta me))
 
-        (rmap-meta-setf
-          [:cz me]
-          (->> arg-list
-               (partition 2)
-               (filter (fn [[prop v]]
-                         (when-not (some #{prop} meta-keys)
-                           (md-install-cell me prop v))))
-               (map vec)
-               (into {})))
+       (rmap-meta-setf
+        [:cz me]
+        (->> arg-list
+             (partition 2)
+             (filter (fn [[prop v]]
+                       (when-not (some #{prop} meta-keys)
+                         (md-install-cell me prop v))))
+             (map vec)
+             (into {})))
 
-        (with-integrity (:awaken me)
-                        (md-awaken me))
+       (with-integrity (:awaken me)
+         (md-awaken me))
 
-        me))))
+       me))))
 
 ;;; --- family ------------------------------------
 
@@ -158,7 +145,7 @@
 
 (defn md-kids [me] (mget me :kids))
 
-(defn fm-kids-watch [me newk oldk c]
+(defn fm-kids-watch [me newk oldk _c]
   (when-not (= oldk unbound)
     ;;(prn :fm-kids-watch)
     (let [lostks (difference (set oldk) (set newk))]
@@ -169,7 +156,7 @@
           (md-quiesce k))))))
 
 (defmethod watch [:kids ::family]
-  [prop me newk oldk c]
+  [_prop me newk oldk c]
   ;;(prn :watcherve-kids-family-method)
   (fm-kids-watch me newk oldk c))
 
@@ -250,44 +237,44 @@
   (mxtrc :navig :fasc-entry :what what :where (minfo where))
   (try
     (let [options (merge {:me?   false
-                        :wocd? true
-                        :must? true}
-                       (apply hash-map options))]
-    (binding [*depender* (if (:wocd? options) nil *depender*)]
-      (or (fasc-higher what where options)
-          (when (:must? options)
-            (prn :fasc-failed what :from  (minfo where) :options options)
-            (when (and (not (:me? options))
-                       (fm-navig= what where))
-              (prn :fasc-failed-with-me?-option-false-but-me-matches-what!!!!!!!!))
-            (loop [md (if (:me? options) where (:parent @where))]
-              (when md
-                (prn :fasc-fail-saw (minfo md))
-                (recur (:parent @md))))
-            (prn :fasc-failed-asc-end)
+                          :wocd? true
+                          :must? true}
+                         (apply hash-map options))]
+      (binding [*depender* (if (:wocd? options) nil *depender*)]
+        (or (fasc-higher what where options)
+            (when (:must? options)
+              (prn :fasc-failed what :from  (minfo where) :options options)
+              (when (and (not (:me? options))
+                         (fm-navig= what where))
+                (prn :fasc-failed-with-me?-option-false-but-me-matches-what!!!!!!!!))
+              (loop [md (if (:me? options) where (:parent @where))]
+                (when md
+                  (prn :fasc-fail-saw (minfo md))
+                  (recur (:parent @md))))
+              (prn :fasc-failed-asc-end)
             ;;(err :fasc-must-failed what where options)
-            nil))))
+              nil))))
     (catch #?(:clj Exception :cljs js/Error) e
       (prn :fasc-sees-err-returns-nil e)
       nil)))
 
 (defn nextsib [mx]
   (without-c-dependency
-    (loop [sibs (md-kids (md-par mx))]
-      (when sibs
-        (if (= mx (first sibs))
-          (second sibs)
-          (recur (rest sibs)))))))
+   (loop [sibs (md-kids (md-par mx))]
+     (when sibs
+       (if (= mx (first sibs))
+         (second sibs)
+         (recur (rest sibs)))))))
 
 (defn prevsib [mx]
   (without-c-dependency
-    (loop [sibs (md-kids (md-par mx))]
-      (when sibs
-        (cond
-          (= mx (first sibs)) nil
-          (= mx (second sibs)) (first sibs)
-          :default
-          (recur (rest sibs)))))))
+   (loop [sibs (md-kids (md-par mx))]
+     (when sibs
+       (cond
+         (= mx (first sibs)) nil
+         (= mx (second sibs)) (first sibs)
+         :else
+         (recur (rest sibs)))))))
 
 (defn fm-navig
   "Search matrix ascendents and descendents for 'what', starting at 'where'
@@ -303,7 +290,7 @@
   (when (and where what (any-ref? where))
     ;(println :w)
     (let [options (merge {:must? true :me? false, :inside? false, :up? true, :wocd? true ;; without-c-dependency
-                          } (apply hash-map options))]
+                          }(apply hash-map options))]
       ;;(println :fm-navig-opts options)
       ;(println :T)
       (binding [*depender* (if (:wocd? options) nil *depender*)]
@@ -390,7 +377,7 @@
   [me id-name]
   (or (mxu-find-name me id-name)
       (mxu-find-id me id-name)
-      (throw (str "fmo> not id or name " id-name))))
+      (throw (ex-info (str "fmo> not id or name " id-name) {:id-name id-name}))))
 
 (defn fmov
   "Use 'fmo' and extract :value (or prop indicated by :prop-name)"
@@ -400,7 +387,7 @@
    (when-let [mx (fmo me id-name)]
      (if (contains? @mx prop-name)
        (mget mx prop-name)
-       (throw (str "fmov> " id-name " lacks " prop-name " property"))))))
+       (throw (ex-info (str "fmov> " id-name " lacks " prop-name " property") {:id-name id-name :prop-name prop-name}))))))
 
 (defmacro the-kids
   "Macro to flatten kids in 'tree' and relate them to 'me' via the *parent* dynamic binding"
@@ -427,15 +414,16 @@
                  (into {} (for [k x-kids]
                             [(k-key k) k])))
         k-factory (mget me :kid-factory)]
+    #_{:clj-kondo/ignore [:single-logical-operand]}
     (assert (and k-factory))
 
     #_(prn :kvk-loading (count (mget me :kid-values))
            (map :hn-id (mget me :kid-values)))
 
     (doall
-      (map-indexed
-        (fn [idx kid-value]
-          (or (and x-kids (get x-kids kid-value))
-              (binding [*parent* me]
-                (k-factory me kid-value))))
-        (mget me :kid-values)))))
+     (map-indexed
+      (fn [_idx kid-value]
+        (or (and x-kids (get x-kids kid-value))
+            (binding [*parent* me]
+              (k-factory me kid-value))))
+      (mget me :kid-values)))))

@@ -1,8 +1,6 @@
 (ns testrun
   (:require
-	[cljs.test :refer-macros [run-tests]]
-	;; hhack [tiltontec.model.core]
-        ))
+   [cljs.test :refer-macros [run-tests]]))
 
 (enable-console-print!)
 

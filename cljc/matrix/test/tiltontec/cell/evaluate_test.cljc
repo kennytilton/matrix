@@ -1,40 +1,25 @@
 (ns tiltontec.cell.evaluate-test
   (:require
-    #?(:clj  [clojure.test :refer :all]
-       :cljs [cljs.test
-              :refer-macros [deftest is are]])
-    #?(:cljs [tiltontec.util.base
-              :refer-macros [trx prog1]
-              :refer [mx-type? *trx?*]]
-       :clj  [tiltontec.util.base
-              :refer :all])
-    [tiltontec.util.core :refer [type-of err]]
-    #?(:clj  [tiltontec.cell.base :refer :all :as cty]
-       :cljs [tiltontec.cell.base
-              :refer-macros [without-c-dependency]
-              :refer [cells-init c-optimized-away? c-formula? c-value c-optimize
-                      c-unbound? c-input?
-                      c-model mdead? c-valid? c-useds c-ref? md-ref?
-                      c-state *pulse* c-pulse-watched
-                      *call-stack* *defer-changes*
-                      c-rule c-me c-value-state c-callers caller-ensure
-                      unlink-from-callers *causation*
-                      c-prop-name c-synaptic? caller-drop
-                      c-pulse c-pulse-last-changed c-ephemeral? c-prop c-props
-                      *depender* *quiesce*
-                      *c-prop-depth* md-prop-owning? c-lazy] :as cty])
-    #?(:cljs [tiltontec.cell.integrity
-              :refer-macros [with-integrity]]
-       :clj  [tiltontec.cell.integrity :refer [with-integrity]])
-
-    #?(:cljs [tiltontec.cell.core
-              :refer-macros [cF cF+ c-swap! c-reset-next!]
-              :refer [cI c-reset!]]
-       :clj  [tiltontec.cell.core :refer :all])
-    [tiltontec.cell.evaluate :refer [cget]]
-    [tiltontec.matrix.api :refer [fn-watch]]
-    ))
-
+   #?(:clj  [clojure.test :refer :all]
+      :cljs [cljs.test
+             :refer-macros [deftest is]])
+   #?(:cljs [tiltontec.util.base
+             :refer-macros [trx]
+             :refer [*trx?* mx-type?]]
+      :clj  [tiltontec.util.base
+             :refer [*trx?* mx-type? trx]])
+   #?(:clj  [tiltontec.cell.base
+             :refer [c-callers c-input? c-model c-prop c-prop-name c-props
+                     c-useds c-valid? c-value-state] :as cty]
+      :cljs [tiltontec.cell.base
+             :refer [c-callers c-input? c-model c-prop c-prop-name c-props
+                     c-useds c-valid? c-value-state] :as cty])
+   #?(:cljs [tiltontec.cell.core
+             :refer-macros [cF cF+ with-mx]
+             :refer [c-reset! cI]]
+      :clj  [tiltontec.cell.core :refer [c-reset! cF cF+ cI with-mx]])
+   [tiltontec.cell.evaluate :refer [cget]]
+   [tiltontec.matrix.api :refer [fn-watch]]))
 
 #?(:cljs (set! *print-level* 3))
 
@@ -63,8 +48,7 @@
       (is (not (c-valid? c)))
       (is (nil? (c-model c)))
       (trx nil :readddd (cget c))
-      (is (= (cget c) 42))
-      )))
+      (is (= (cget c) 42)))))
 
 (deftest t-formula-2
   (with-mx
@@ -72,10 +56,10 @@
           cct (atom 0)
           dct (atom 0)
           c (cF (swap! cct inc)
-              (+ 40 (cget b)))
+                (+ 40 (cget b)))
           d (cF (swap! dct inc)
-              (+ (cget c)
-                (cget b)))]
+                (+ (cget c)
+                   (cget b)))]
       (is (= (cget d) 44))
       (is (= (cget c) 42))
       (is (= (cget b) 2))
@@ -95,7 +79,7 @@
     (reset! yowza 0)
     (is (= @yowza 0))
     (let [b (cI 2 :prop :yowza
-              :watch (fn-watch (reset! yowza new)))]
+                :watch (fn-watch (reset! yowza new)))]
       (is (= 2 (cget b)))
       (is (= 0 @yowza))
       (c-reset! b 42)
@@ -108,18 +92,18 @@
           cct (atom 0)
           dct (atom 0)
           c (cF+ [:prop :cc]
-              (swap! cct inc)
-              (+ 40 (cget b)))
+                 (swap! cct inc)
+                 (+ 40 (cget b)))
           d (cF+ [:prop :dd]
-              (swap! dct inc)
-              (+ (cget c)
-                (cget b)))]
+                 (swap! dct inc)
+                 (+ (cget c)
+                    (cget b)))]
       (#?(:clj dosync :cljs do)
-        (is (= (cget d) 44))
-        (is (= (cget c) 42))
-        (is (= (cget b) 2))
-        (is (= 1 @dct))
-        (is (= 1 @cct)))
+       (is (= (cget d) 44))
+       (is (= (cget c) 42))
+       (is (= (cget b) 2))
+       (is (= 1 @dct))
+       (is (= 1 @cct)))
 
       (c-reset! b 3)
       (is (= (cget d) 46))
@@ -147,7 +131,7 @@
   ;;   side effects off the invalid state.
   ;;
   ;; The example is contrived but was contrived to replicate
-  ;; a real dataflow failure that arose in my RoboCup simulation and 
+  ;; a real dataflow failure that arose in my RoboCup simulation and
   ;; prompted Cells 3 and the concept of data integrity.
   ;;
   ;; For the telling story behind the useless prop names :aa, :bb et al
@@ -161,47 +145,46 @@
                  (swap! run empty)
                  (swap! watch empty))
 
-          logit (fn [log key]
+          logit (fn [_log key]
                   (swap! run assoc key
-                    (inc (key @run 0))))
+                         (inc (key @run 0))))
 
           logrun #(logit run %)
 
           cr (fn [c]
                (cget c))
 
-          podwatch (fn [prop me new old c]
+          podwatch (fn [prop _me _new _old _c]
                      (swap! watch assoc prop
-                       (inc (prop @watch 0))))
+                            (inc (prop @watch 0))))
 
           aa (cI 1 :prop :aa :watch podwatch)
           a7 (cI 7 :prop :a7 :watch podwatch)
           a70 (cF+ [:prop :a70 :watch podwatch]
-                (logrun :a70)
-                (* 10 (cr a7)))
+                   (logrun :a70)
+                   (* 10 (cr a7)))
           bb (cF+ [:prop :bb :watch podwatch]
-               (logrun :bb)
-               (cr aa))
+                  (logrun :bb)
+                  (cr aa))
           cc (cF+ [:prop :cc :watch podwatch]
-               (logrun :cc)
-               (* 10 (cr aa)))
+                  (logrun :cc)
+                  (* 10 (cr aa)))
           dd (cF+ [:prop :dd :watch podwatch]
-               (logrun :dd)
-               (if (even? (cr bb))
-                 (* 10 (cr cc))
-                 42))
+                  (logrun :dd)
+                  (if (even? (cr bb))
+                    (* 10 (cr cc))
+                    42))
           ee (cF+ [:prop :ee :watch podwatch]
-               (logrun :ee)
-               (+ (cr a70) (cr bb) (* 10000 (cr dd))))
+                  (logrun :ee)
+                  (+ (cr a70) (cr bb) (* 10000 (cr dd))))
           verify-p-current (fn []
                              (is (= 2 (cr aa)))
                              (is (= 2 (cr bb)))
                              (is (= 20 (cr cc)))
                              (is (= 200 (cr dd)))
-                             (is (= 2000072 (cr ee))))
-          ]
+                             (is (= 2000072 (cr ee))))]
 
-      ;; next checks are just that the engine calculated well
+;; next checks are just that the engine calculated well
       ;; and built a good dependency graph
       ;;
       (is (= 1 (cr aa)))
@@ -235,32 +218,32 @@
         (doseq [[k v] (seq @watch)]
           (trx nil :watchchk k v)
           (is (and (keyword? k)
-                (= 0 v))))
+                   (= 0 v))))
         (c-reset! aa (inc (cr aa)))
 
         ; check which rules ran
         ;
-        (= #{:bb :cc :dd :ee}                               ;; but not a7
-          (set (keys @run)))
+        (is (= #{:bb :cc :dd :ee} ;; but not a7
+               (set (keys @run))))
         ;
         ; check those rules ran exactly once
         ;
         (doseq [[k v] (seq @run)]
           (trx nil :runchk k v)
           (is (and (keyword? k)
-                (= 1 v))))
+                   (= 1 v))))
 
         ; check which watchs ran
         ;
-        (= #{:aa :bb :cc :dd :ee}
-          (set (keys @watch)))
+        (is (= #{:aa :bb :cc :dd :ee}
+               (set (keys @watch))))
         ;
         ; check those watchs ran exactly once
         ;
         (doseq [[k v] (seq @watch)]
           (trx nil :watchchk k v)
           (is (and (keyword? k)
-                (= 1 v))))
+                   (= 1 v))))
 
         ; check that this time dd branched to use cc as well as bb
         ;
@@ -282,18 +265,18 @@
   (with-mx
     (let [ob (atom 0)
           b (cI 2 :prop :bb
-              :watch (fn-watch
-                       (swap! ob inc))
-              :unchanged-if (fn [n p]
-                              (trx nil :ucif-sees n p)
-                              (and (number? n)
-                                (number? p)
-                                (or (and (even? n) (even? p))
-                                  (and (odd? n) (odd? p))))))
+                :watch (fn-watch
+                        (swap! ob inc))
+                :unchanged-if (fn [n p]
+                                (trx nil :ucif-sees n p)
+                                (and (number? n)
+                                     (number? p)
+                                     (or (and (even? n) (even? p))
+                                         (and (odd? n) (odd? p))))))
           cct (atom 0)
           c (cF+ [:prop :cc]
-              (swap! cct inc)
-              (+ 40 (cget b)))]
+                 (swap! cct inc)
+                 (+ 40 (cget b)))]
       (is (= (cget c) 42))
       (is (= (cget b) 2))
       (is (= 0 @ob))
@@ -312,5 +295,4 @@
       (is (= 2 @cct)))))
 
 #?(:cljs (do
-           (cljs.test/run-tests)
-           ))
+           (cljs.test/run-tests)))
