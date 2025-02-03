@@ -1,8 +1,0 @@
-(ns cljd.tiltontec.util.base-test
-  (:require [tiltontec.util.base :as ub
-             :refer [def-rmap-slots rmap-setf]])
-  (:use [cljd.test :only [deftest is testing are]]))
-
-(deftest test-testing
-  (let [x 42]
-    (is (== x 42))))

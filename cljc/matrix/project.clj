@@ -5,7 +5,7 @@
   :url "http://tiltontec.com"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.11.1"]
+  :dependencies [[org.clojure/clojure "1.12.0-alpha7"]
                  [org.clojure/clojurescript "1.10.773"]
                  [clj-http "3.10.3"]
                  [cljs-http "0.1.46"]]
