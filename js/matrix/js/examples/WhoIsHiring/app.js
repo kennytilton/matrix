@@ -116,7 +116,7 @@ const appHelpEntry = [
     , "RFEs welcome and can be raised " +
     "<a href='https://github.com/kennytilton/matrix/issues'>here</a>. "
     , "GitHub source can be " +
-    "<a href='https://github.com/kennytilton/kennytilton.github.io/tree/master/whoishiring'>" +
+    "<a href='https://github.com/kennytilton/kennytilton.github.io/tree/main/whoishiring'>" +
     "found here</a>."
 ]
 
@@ -193,4 +193,3 @@ function moreOrLess () {
         })
     })
 }
-

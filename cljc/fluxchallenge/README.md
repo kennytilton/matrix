@@ -1,10 +1,10 @@
 # SithTrak&trade;
 
-Welcome to the Matrix&trade; implementation of [The Flux Challenge](https://github.com/staltz/flux-challenge), part three of an introduction to Matrix. 
+Welcome to the Matrix&trade; implementation of [The Flux Challenge](https://github.com/staltz/flux-challenge), part three of an introduction to Matrix.
 
-In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/master/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/master/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle. 
+In part one we covered [the big picture](https://github.com/kennytilton/mxtodomvc/blob/main/README.md), and in part two we looked at [building TodoMVC](https://github.com/kennytilton/mxtodomvc/blob/main/documentation/BuildingTodoMVC.md). In part three we explore the less glamorous but still vital mechanics of bringing a functional application to life: the Matrix lifecycle.
 
-The very need for a part three came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's excellent [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting. 
+The very need for a part three came as a surprise to us. We confronted the lifecycle challenge in the first weeks after [stumbling into Matrix](http://smuglispweeny.blogspot.com/2017/06/the-making-of-cells-case-study-in-dumb.html) and it rolled over so easily for us that we take it for granted. But by chance we noticed an overlap with Stuart Sierra's excellent [Component library](https://github.com/stuartsierra/component) and realized the Matrix lifecycle was worth highlighting.
 
 ## Running the beast (optional)
 Running this solution is not at all needed to follow the rest of this discussion, so feel free to skip down to "The Challenge spec".
@@ -42,7 +42,7 @@ Andre Staltz designed the Flux Challenge to expose weaknesses he sees in [Facebo
 
 > This challenge's requirements were tailored to touch Flux's weakest spots, these are not typical web app requirements. On the other hand, analytics and sensors dashboard UIs resemble this challenge a lot.
 
-Fortunately for our purposes, the Challenge tries to stymie Flux with a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate Ajax requests as application state dictates, while at the same time tweaking the view in critical ways. 
+Fortunately for our purposes, the Challenge tries to stymie Flux with a herky-jerky, start-stop behavior that in turn forces an app to allocate and deallocate Ajax requests as application state dictates, while at the same time tweaking the view in critical ways.
 
 The tl;dr is that the spec requires an app to to do fresh lookups of Sith info as Siths come into view and to cancel lookups when their results would be moot. In its own words:
 
@@ -58,8 +58,8 @@ The "brakes" are disabling scroll controls, changing one Sith's text color, and 
 ## The Matrix Defined
 Let us first reprise why this library is called Matrix (forget the otherwise entertaining movies):
 
-> Formulas can compute more than just descriptive properties such as "completed". We might have `K` for "kids" holding the children of some parent, such as the `LI` nodes under a `UL` DOM list. In other words, the population of our application model can grow or shrink with events.  
-  
+> Formulas can compute more than just descriptive properties such as "completed". We might have `K` for "kids" holding the children of some parent, such as the `LI` nodes under a `UL` DOM list. In other words, the population of our application model can grow or shrink with events.
+
 We call a dynamic population of causally connected models a *matrix*.
 
 > ma·trix ˈmātriks *noun* an environment in which something else takes form. *Origin:* Latin, female animal used for breeding, parent plant, from *matr-*, *mater*
@@ -132,7 +132,7 @@ Specifically, establishing a socket connection in a formulaic cell struck us as 
 
 An interesting exercise would be replicating Component capabilities using a Matrix-powered system in place of Component systems. Motivation for such an exercise would be limitations noted in the Component documentation:
 
-> You must explicitly specify all the dependency relationships among components: the code cannot discover these relationships automatically.  
+> You must explicitly specify all the dependency relationships among components: the code cannot discover these relationships automatically.
 
 The Matrix dependency graph is identified automatically and dynamically maintained at runtime by Matrix internals. By contrast, the Component developer builds and maintains the DAG themself.
 
@@ -144,7 +144,3 @@ Matrix formulas have unfettered access to other Matrix state via the anaphoric `
 The automatic state management provided by reactive/dataflow systems greatly simplifies application development but presents a challenge: what if we *want* to be involved when state changes? And how do entire populations of dataflow-powered objects come and go from a running application?
 
 The Matrix library, by providing a few callbacks and specializable lifecycle methods such as `md-awaken` and `not-to-be`, provides the developer with the hooks required for external dependency injection and resource allocation/deallocation, all with the same reliability and predictability with which it manages internal application state.
-
-
-
-

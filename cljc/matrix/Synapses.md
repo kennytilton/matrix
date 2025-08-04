@@ -1,6 +1,6 @@
 # Synapses
 
-[Just tossing in some random thoughts before dashing on to a write-up of Callback Purgatory, where we will in fact see a tremendous motivating example of Synapses. This write-up assumes the reader has read the [Matrix overview](https://github.com/kennytilton/tag/blob/master/cljs/README.md); we pick up here from a quick mention there of what we call *synapses*.]
+[Just tossing in some random thoughts before dashing on to a write-up of Callback Purgatory, where we will in fact see a tremendous motivating example of Synapses. This write-up assumes the reader has read the [Matrix overview](https://github.com/kennytilton/tag/blob/main/cljs/README.md); we pick up here from a quick mention there of what we call *synapses*.]
 
 > syn·apse [sin-aps, si-naps] Physiology *noun* - A junction between two nerve cells, consisting of a minute gap across which impulses pass by diffusion of a neurotransmitter.
 
@@ -21,7 +21,7 @@ So synapses are Cells that sit between two other Cells mediating the values pass
                       :on :off)))]
     ...))
 ````
-In the remaining test code not shown we reset the sensor to different values checking that the alarm state follows correctly given the simulated sensor readings. 
+In the remaining test code not shown we reset the sensor to different values checking that the alarm state follows correctly given the simulated sensor readings.
 
 The `with-synapse` form can be thought of this way (which would never work!):
 ````
@@ -38,7 +38,7 @@ The `with-synapse` form can be thought of this way (which would never work!):
                       :on :off)))]
     ...))
 ````
-That would never work because we would get a new internal formulaic Cell (with all new state in the `prior` atom), but the `with-synapse` form addresses that and we end up with a standalone (anonymous cell) that sits between the `alarm` and `sensor` cells. 
+That would never work because we would get a new internal formulaic Cell (with all new state in the `prior` atom), but the `with-synapse` form addresses that and we end up with a standalone (anonymous cell) that sits between the `alarm` and `sensor` cells.
 
 By the way, the full form is rather verbose, but where we see common uses of synapses we can create a library of canned synapses so the above looks like:
 ````
@@ -61,7 +61,7 @@ Transforming a stream of values to its first derivative is fun, but synapses wer
   (let [temp (cI 0)
         alarm (cF (expensive-alarm-determination
                     (with-synapse (:sensitivity-x [sensitivity 10.0
-                                                   reported (atom nil)]) 
+                                                   reported (atom nil)])
                       (when-let [raw-temp (c-get temp)]
                         (cond
                           (or (nil? @reported)
@@ -69,14 +69,14 @@ Transforming a stream of values to its first derivative is fun, but synapses wer
                                   sensitivity))
                           (do (reset! reported raw-temp)
                               ^{:propagate true} [raw-temp])
-                          
+
                           :else ^{:propagate false} [raw-temp])))))]
     ...testing code...
     ))
 ````
 In the above case we report the sampled value untransformed but only often enough to get the alarmed turned on in time without killing the CPU with superfluous determinations.
 
-For more examples of synapses, check the source of the [synapse tests](https://github.com/kennytilton/matrix/blob/master/cljs/test/tiltontec/cell/synapse_test.cljc). One of those tests (`synaptic-grouping`) monitors an input Cell, buffering each value as it arrives, and emiting them in groups of three. ie, the synapse treats a dependency on an individual property as a stream. Let us look at this more closely.
+For more examples of synapses, check the source of the [synapse tests](https://github.com/kennytilton/matrix/blob/main/cljs/test/tiltontec/cell/synapse_test.cljc). One of those tests (`synaptic-grouping`) monitors an input Cell, buffering each value as it arrives, and emiting them in groups of three. ie, the synapse treats a dependency on an individual property as a stream. Let us look at this more closely.
 
 ## Synapses: Islands in a Stream
 Two other excellent dataflow libraries are Javascript libraries [MobX](https://github.com/mobxjs/mobx) and [RxJS](https://github.com/Reactive-Extensions/RxJS). In its doc, MobX [compares itself with RxJS](https://github.com/mobxjs/mobx/wiki/Mobx-vs-Reactive-Stream-Libraries-%28RxJS,-Bacon,-etc%29) and concludes MobX is better for steady-state expressiveness and RxJS is better for streams.
@@ -85,10 +85,6 @@ Two other excellent dataflow libraries are Javascript libraries [MobX](https://g
 
 But if we think on it, where there is data*flow* we should be able to find *streams*. We felt MobX was being modest and sent them [this JsFiddle](https://jsfiddle.net/kennytilton/s7mp43tr/) derived from one of theirs, showing MobX could indeed work over streams of values. And MobX like synapses have a major advantage over the RxJS approach: instead of trying to work out how to get desired semantics from fixed stream operators joining multiple streams, we write arbitrary HLL code that pulls from multiple streams and then adds whatever semantics we like via the HLL logic. Consider again this diagram from the earlier write-up.
 
-![DAG graphic](https://github.com/kennytilton/matrix/blob/master/cljs/resources/Directed_acyclic_graph.png) 
+![DAG graphic](https://github.com/kennytilton/matrix/blob/main/cljs/resources/Directed_acyclic_graph.png)
 
-Every node in that graph presents a stream of values, even the input cells although we are forced to guess the source of their values since any imperative code is free to write to them. (They are the "goto"s of dataflow.) But these streams arise naturally from our application coding, so we do not think about them until the rare case where we have a performance problem that can be ameliorated by throtttling or some such, or the case of [the XHR module](https://github.com/kennytilton/xhr/blob/master/cljs/XHR.md) where we use synapses to let a normally functional Cell body maintain state across invocations.
-
-
-
-
+Every node in that graph presents a stream of values, even the input cells although we are forced to guess the source of their values since any imperative code is free to write to them. (They are the "goto"s of dataflow.) But these streams arise naturally from our application coding, so we do not think about them until the rare case where we have a performance problem that can be ameliorated by throtttling or some such, or the case of [the XHR module](https://github.com/kennytilton/xhr/blob/main/cljs/XHR.md) where we use synapses to let a normally functional Cell body maintain state across invocations.
