@@ -1,9 +1,9 @@
 # MatrixRN -- The Petri Dish
-Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/master/cljs/expo/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks. 
+Two scrolls down you will find [the read-me](https://github.com/kennytilton/matrix/blob/main/cljs/expo/matrixrn/README.md#react-native-using-shadow-cljs-in-3-minutes) from the original [rn-rf-shadow](https://github.com/PEZ/rn-rf-shadow) project from which this effort was cloned. That will help you set up different IDE stacks.
 
 What follows are rough directions to help the early curious explore MatrixRN. But first a caveat.
 
-> Caveat adaptor: I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome! 
+> Caveat adaptor: I am comfortable with Matrix reactive logic and UIs in general, having wrapped a dozen libraries like ReactNative, but I am no rock star when it comes to React Native or CLJS build tools such as Figwheel, shadow-cljs, and Krell. Advice on RN or builds will be welcome!
 
 ## Did I say "Petri dish"?
 ![A Petri dish](../../../images/mx-banner-red.jpg)
@@ -15,9 +15,9 @@ The good news is that, so far, we have needed just 150LOC to wrap ReactNative wi
 Furthermore, MatrixRN wraps ReactNative thinly. We use props with functional components, and have access to `createElement` as the examples show. If we know RN, we can code with MatrixRN.
 
 ## Psst! re-frame?
-`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN? 
+`re-frame` is a sophisticated and proven UI/UX framework. So why MatrixRN?
 
-We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form. 
+We will cover more in a Wiki write-up, but Matrix is quite simply an inside-out different approach to GUIs. Where `re-frame` works by analytic desconstruction, Matrix works organically. `re-frame` has us break down an application problem into so many events, subscriptions, and views. Matrix accepts the problem in its natural form.
 
 These different approaches will suit different developers. `re-frame` fits those who enjoy seeing the structure of a problem laid out as so many `re-frame` artifacts, neatly organized by type of artifact into different directories. Matrix suits those who want to code applications organically, in the image of the problems they solve. Events, dependencies, state change, and views are all co-located and largely transparent.
 
@@ -111,7 +111,7 @@ From there use your favorite editor and/or the prompt.
 1. Then **Run Build Task**. This will start Expo and the Metro
    builder. Wait for it to fire up Expo DevTools in your browser.
    1. Click **Run in web browser**
-1. When the app is running the Calva CLJS REPL can be used. Confirm this by evaluating something like: 
+1. When the app is running the Calva CLJS REPL can be used. Confirm this by evaluating something like:
    ``` clojure
    (js/alert "Hello world!")
    ```
@@ -143,31 +143,31 @@ Open Emacs and a bash shell:
    simulator, and transmit the bundled app. Be patient at this step as
    it can take many seconds to complete. When the app is finally
    running expo will display the message:
-   
+
        WebSocket connected!
        REPL init successful
 1. Once you see that the REPL is initalized, you can return to Emacs
    and confirm the REPL is connected and functional:
    ``` clojure
    cljs.user> (js/alert "hello world!")
-   ```   
+   ```
    Which should pop-up a modal alert in the simulator, confirming the
    app is running and the REPL is connected end to end.
 
 ## Using IntelliJ + Cursive REPL
 
 1. Follow the instructions specified in [Or the Command line](#or-the-command-line).
-2. Open up the project in IntelliJ by pressing `Open or Import` and opening the project root directory. 
+2. Open up the project in IntelliJ by pressing `Open or Import` and opening the project root directory.
 3. Setup a project SDK by pressing `File > Project Structure`, selecting an SDK under `Project SDK` and pressing `OK`.
-4. Select the REPL by pressing `Run > Edit Configurations` and selecting `Clojure REPL > REPL`. 
-5. Run the REPL by pressing `Run > Run 'REPL'`. 
+4. Select the REPL by pressing `Run > Edit Configurations` and selecting `Clojure REPL > REPL`.
+5. Run the REPL by pressing `Run > Run 'REPL'`.
 6. Run the commands in [Using ClojureScript REPL](#using-clojurescript-repl)
 
 ## Or the Command line
 ```sh
 $ npm i
 $ npx shadow-cljs watch app
-# wait for first compile to finish or expo gets confused 
+# wait for first compile to finish or expo gets confused
 # on another terminal tab/window:
 $ npm start
 ```
@@ -180,9 +180,9 @@ Note that you can also run the following instead of `npm start` to run the app i
    ```
    # same as npx expo start --web
    $ npm run web
-   
+
    # or
-   
+
    # same as npx expo start --web-only
    $ npm run web-only
    ```
