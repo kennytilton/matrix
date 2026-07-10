@@ -62,7 +62,7 @@ Let us take a walk through the source of `MatrixJS * TodoMVC` keeping any eye ou
 * dataflow/reactivity, transparent and efficient
 * efficient DOM updates
 
-Starting with [`index.html`](https://github.com/kennytilton/MatrixJS/blob/master/js/matrixjs/index.html), aside from some diagnostic HTML the body is fairly obvious:
+Starting with [`index.html`](https://github.com/kennytilton/MatrixJS/blob/main/js/matrixjs/index.html), aside from some diagnostic HTML the body is fairly obvious:
 ```html
 <body>
   <script>
@@ -73,7 +73,7 @@ Starting with [`index.html`](https://github.com/kennytilton/MatrixJS/blob/master
 Super. Well, one thing:
 > Speed: initially the matrix proxy page loads as a single wodge of HTML for the browser to consume all at once. Thereafter, *all* updates are incremental.
 
-Now take a look at the function `todoMVC` defined in [`app.js`](https://github.com/kennytilton/MatrixJS/blob/master/js/matrixjs/js/app.js) and compare it with the `<body>` in [the original HTML](https://github.com/kennytilton/MatrixJS/blob/master/js/matrixjs/todo-orig.html) supplied by the TodoMVC folks. Pretty close (except for the structure we have broken out into subroutines just to keep the source visually manageable). 
+Now take a look at the function `todoMVC` defined in [`app.js`](https://github.com/kennytilton/MatrixJS/blob/main/js/matrixjs/js/app.js) and compare it with the `<body>` in [the original HTML](https://github.com/kennytilton/MatrixJS/blob/main/js/matrixjs/todo-orig.html) supplied by the TodoMVC folks. Pretty close (except for the structure we have broken out into subroutines just to keep the source visually manageable). 
 
 > HTML "subroutines" in the form of simple JS subroutines are part of the expressive power of MatrixJS,
 

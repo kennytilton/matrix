@@ -539,7 +539,7 @@ The application developed will cover half the classic \
 appear live above.\
 \n\
 My focus will be the developer experience, but inquiring minds will wonder what is going on \
-behind the scenes. <a target='_blank' href='https://github.com/kennytilton/matrix/blob/master/js/matrix/readme.md'>\
+behind the scenes. <a target='_blank' href='https://github.com/kennytilton/matrix/blob/main/js/matrix/readme.md'>\
 This will help.</a>\
 \n\
 Please check the notes below, then hit 'Next' to get started.");
@@ -754,7 +754,7 @@ The FDA.gov search endpoint is aggressive about matching, so 'Wash car' will fin
 And all drugs have adverse events, so do not be concerned by <i>any</i> results.\
 \n\
 This is a trivial callback scenario, but the data flow solution does scale. \
-Here is my <a target='_blank' href='https://github.com/kennytilton/xhr/blob/master/cljs/xhr/XHR.md'>\
+Here is my <a target='_blank' href='https://github.com/kennytilton/xhr/blob/main/cljs/xhr/XHR.md'>\
 original investigation</a> into complex XHR via data flow.");
 
 
@@ -1011,4 +1011,3 @@ function nTabs(n) {
 
 
 // document.body.innerHTML =  tag2html( CPMatrixTodo());
-

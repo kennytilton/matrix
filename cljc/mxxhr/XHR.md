@@ -5,9 +5,9 @@ We continue [our exploration](https://github.com/kennytilton/todoFRP/blob/matrix
 
 If the reader is not familiar with CBH, here is one solid example:
 
-![callback hell code example](https://github.com/kennytilton/xhr/blob/master/cljs/xhr/resources/callback-hell.jpg)
+![callback hell code example](https://github.com/kennytilton/xhr/blob/main/cljs/xhr/resources/callback-hell.jpg)
 
-The telltale signature of CBH is (a) the deep indentation of (b) asynchronous handler within handler. 
+The telltale signature of CBH is (a) the deep indentation of (b) asynchronous handler within handler.
 
 ## Enter Matrix
 We approached this challenge with no little trepidation, mostly because we had never had the occasion to code such a beast, and partly because of the "Hell" bit. We trust our fellow developers on such things. Bracing us was the history of dataflow success against hard problems. And had we thought on it, we might have seen that CBH would be no different.
@@ -28,7 +28,7 @@ Let us pause to make sure the reader groks "implement as matrix object". One goo
      :deleted   (or (:deleted todo-json-map) ;; once deleted, always deleted
                     (cI nil))})))))
 ````
-Since the tricky requirements of the [TodoMVC spec](https://github.com/tastejs/todomvc/blob/master/app-spec.md) involved having the view reflect the state of the Todo items, we were pretty much done once Todos were in the Matrix. 
+Since the tricky requirements of the [TodoMVC spec](https://github.com/tastejs/todomvc/blob/master/app-spec.md) involved having the view reflect the state of the Todo items, we were pretty much done once Todos were in the Matrix.
 
 Let us then begin our attempt to resolve CBH with a matrix version of an XHR:
 ````
@@ -37,18 +37,18 @@ Let us then begin our attempt to resolve CBH with a matrix version of an XHR:
     :uri uri
     :response (cI nil))))))
 ````
-Oh, cool. We need only one* XHR property backed by a Cell, the `response`. Our plan is to pack the entire response (or error) into that property when the Ajax request completes. Look for `mset!>`, the dataflow trigger function: 
+Oh, cool. We need only one* XHR property backed by a Cell, the `response`. Our plan is to pack the entire response (or error) into that property when the Ajax request completes. Look for `mset!>`, the dataflow trigger function:
 ````
 (defn xhr-send [xhr]
   ;; dispatch the actual XHR....
   (client/get (<mget xhr :uri)
      {:async? true}
-      
+
      ;; when the remote resource answers, trigger a matrix dataflow with the response...
      (fn [response]
         (mset!> xhr :response {:status (:status response)
                                :body   (parse-string (:body response) true)}))
-                                  
+
      ;; or exception
      (fn [exception]
         (let [error-data (:data (bean exception))]
@@ -72,8 +72,8 @@ Awesome. But we also need to vary the *population* of to-dos in the to-do list v
                   (map todo-list-item
                      ;;
                      ;; both the overall number of (mx-todos me) (effectively an app-global input cell into which
-                     ;; new to-dos are pushed in a way that triggers dataflow) and the route/filter chosen by 
-                     ;; the user (another input cell) will fluctuate over time, reinvoking this code. 
+                     ;; new to-dos are pushed in a way that triggers dataflow) and the route/filter chosen by
+                     ;; the user (another input cell) will fluctuate over time, reinvoking this code.
                      ;;
                      ;; (Not shown is our mechanism for avoiding regenerating everything each time.)
                      ;;
@@ -90,7 +90,7 @@ The WebMX HTML library has an observer on the `kids` property so it knows when t
 Below we will see dynamic `kids` expressing in tree form the sequence of callbacks of our Hellish use case above. But first, let us look now at how we came to see that sequence as a tree. (OK, the indentation should have been a tip-off.)
 
 ### Step Three: Hey, is that SQL?
-Look again at the diagram above of our use case. Does it remind you of anything? Let me help: it takes a given user and collects all the comments for each post made by the friend. ie, Each XHR after the first is effectively doing an SQL join off information gleaned from earlier XHRs! 
+Look again at the diagram above of our use case. Does it remind you of anything? Let me help: it takes a given user and collects all the comments for each post made by the friend. ie, Each XHR after the first is effectively doing an SQL join off information gleaned from earlier XHRs!
 
 Just as Postgres (our fav) reads a little data then reads a little more based on what it found, the hellish callback cluster works outwards from an initial lookup by issuing new XHRs to get related data. The "hell" is in having to get there by juggling callbacks.
 
@@ -146,7 +146,7 @@ What you see above is actually our second take on applying Matrix to Callback He
 
 The idea was to let a complex query requiring multiple nested XHRs be expressed as a single block of apparently callback-free structured code in a single Cell formula. `if-else` and `for-each` and all that.
 
-We got it to work using (a) [synapses](https://github.com/kennytilton/todoFRP/blob/matrixjs/todo/MatrixCLJS/Synapses.md)  (anonymous formulaic Cells "owned" by a property's formulaic cell) and (b) repeated invocations of one declarative formula until that formula produced a cumulative result of so many XHR responses. The repeated invocations needed to resolve a single formula prompted the [Shake 'n Bake](https://youtu.be/i208-wFj8qs?t=1m28s) moniker. 
+We got it to work using (a) [synapses](https://github.com/kennytilton/todoFRP/blob/matrixjs/todo/MatrixCLJS/Synapses.md)  (anonymous formulaic Cells "owned" by a property's formulaic cell) and (b) repeated invocations of one declarative formula until that formula produced a cumulative result of so many XHR responses. The repeated invocations needed to resolve a single formula prompted the [Shake 'n Bake](https://youtu.be/i208-wFj8qs?t=1m28s) moniker.
 
 Here are some examples excerpted from [the XHR test suite](https://github.com/kennytilton/todoFRP/blob/matrixjs/todo/MatrixCLJS/test/tiltontec/xhr/core_test.cljc).
 
@@ -168,7 +168,7 @@ How on earth does that work? If you are new to Matrix dataflow, it will be hard 
 * The key is recalling that a formulaic cell rule gets re-run by Matrix internals any time one of its dependencies changes.
 * On the first invocation, a matrix XHR with a null `response` is created and an actual XHR hitting google.com is dispatched.  The function `xhr-resolved` looks at the `response` and sees that it is null, so it returns NIL and we fall out of the `content` rule with a NIL result. But the `content` rule is now "watching" the `response` of the matrix XHR.
 * Next, the actual XHR gets a response and the callback supplied by `send-xhr` calls `md-reset!` on the `response` of the matrix XHR. The dataflow engine sees it must re-run the `content` rule and does so.
-* Now the synapse wrapping the google XHR proves crucial. Synapses let rules maintain state across invocations. In this case, the form that created the synapse (and sent the XHR) sees the XHR already exists simply returns it. 
+* Now the synapse wrapping the google XHR proves crucial. Synapses let rules maintain state across invocations. In this case, the form that created the synapse (and sent the XHR) sees the XHR already exists simply returns it.
 * The function `xhr-resolved` sees the XHR has a `response` and returns it (to the `when-let` binding of `google`).
 * The `google` variable is now bound to an XHR which of course is truthy, so we continue on to the next synapse and send an XHR to Yahoo.
 * Rinse, repeat (shake 'n bake) until the third XHR is resolved and the `content` cell returns HTML generated from the responses to all three requests.
@@ -213,4 +213,3 @@ Each test involves running the cell formula three times:
 *Shake 'n Bake* is a viable alternative to complex callback sequences, but introduces synapses and the oddity of a formula running repeatedly to come up with one result. On the other hand, it lets us write natural structured code while more transparently arranging for the same tree of XHRs to be built, so it may be the XHR 3GL to the explicit 2GL construction of a tree of XHRs.
 
 Sounds like one for developer preference.
-
